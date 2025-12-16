@@ -1,0 +1,137 @@
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    padding: 0 40px;
+
+    input {
+        background-color: #ebebeb;
+        border: 2px solid transparent;
+        border-radius: 4px;
+        padding: 11px 15px;
+        margin: 16px 0 0;
+        width: 100%;
+
+        &:focus {
+            border: 2px solid transparent;
+            outline: 0;
+            -webkit-box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.3);
+            -moz-box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.3);
+        }
+    }
+
+    .error {
+        border: 2px solid red;
+    }
+
+    .badRequest {
+        color: red;
+        font-size: 12px;
+        margin-top: 14px;
+    }
+
+    a {
+        color: var(--text-color);
+        font-size: 14px;
+        text-decoration: none;
+        margin-top: 16px;
+    }
+
+    button {
+        border-radius: 20px;
+        border: 1px solid #0053b0;
+        background-color: #0053b0;
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 12px 45px;
+        margin-top: 16px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+
+        &:active {
+            transform: scale(0.97);
+        }
+
+        &:hover {
+            background-color: #0369dd;
+            border: 1px solid #0369dd;
+            transition: 0.3s;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &.ghost {
+            background-color: transparent;
+            border-color: #fff;
+
+            &:hover {
+                transform: scale(1.03);
+                transition: all 0.6s ease-in-out;
+            }
+
+            &:active {
+                transform: scale(0.97);
+            }
+        }
+
+        &.disabled {
+            background-color: #ebebeb;
+            color: #838383;
+            border: #838383;
+
+            &:active {
+                transform: scale(1);
+            }
+
+            &:hover {
+                background-color: #ebebeb;
+                color: #838383;
+                border: #838383;
+            }
+        }
+    }
+}
+
+/* ----------------------------------------------
+ *                 responsividade
+ * ---------------------------------------------- */
+@media only screen and (max-width: 800px) {
+    form {
+        input {
+            padding: 15px 15px;
+
+            &:focus {
+                outline: 2px #0053b0 solid;
+                -webkit-box-shadow: none;
+                -moz-box-shadow: none;
+                box-shadow: none;
+            }
+        }
+
+        a {
+            text-align: end;
+            padding-right: 5px;
+            margin: 24px 0 8px;
+        }
+
+        button {
+            border-radius: 8px;
+            padding: 15px 45px;
+        }
+    }
+}
+
+@media only screen and (max-width: 350px) {
+    form {
+        a {
+            text-align: center;
+        }
+    }
+}

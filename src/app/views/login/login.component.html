@@ -1,0 +1,121 @@
+<main>
+  <div class="container" [class.right-panel-active]="togglePage">
+    <div class="form-container sign-up-container">
+      <h1>Solicitar Acesso</h1>
+      <div class="social-container">
+        <span>entre em contato pelas nossas redes</span>
+        <div class="icons">
+          <a
+            href="https://www.facebook.com/metarosolucoes"
+            target="_blank"
+            class="social"
+            title="Facebook"
+          >
+            <img
+              src="./assets/images/icons/login-icon-fb.svg"
+              alt="Facebook logo"
+            />
+          </a>
+          <a
+            href="https://www.linkedin.com/company/metaro-industria-e-com%C3%A9rcio-ltda/mycompany/"
+            target="_blank"
+            class="social"
+            title="Linkedin"
+          >
+            <img
+              src="./assets/images/icons/login-icon-in.svg"
+              alt="Linkedin logo"
+            />
+          </a>
+          <a
+            href="https://www.instagram.com/metaro_ind/"
+            target="_blank"
+            class="social"
+            title="Instagram"
+          >
+            <img
+              src="./assets/images/icons/login-icon-insta.svg"
+              alt="Instagram logo"
+            />
+          </a>
+        </div>
+      </div>
+      <span>ou nos envie seu nome e e-mail:</span>
+
+      <app-signup-form></app-signup-form>
+    </div>
+
+    <div class="form-container sign-in-container">
+      <div class="mobile-only logo">
+        <img src="./assets/images/brand/black-logo.svg" alt="Metaro logo" />
+      </div>
+
+      <h1>Acessar Conta</h1>
+      <app-login-form
+        (loginTask)="onLogin($event)"
+        #loginFormComp
+      ></app-login-form>
+
+      <div class="social-container mobile-only">
+        <span>ou entre em contato pelas nossas redes</span>
+        <div class="icons">
+          <a
+            href="https://www.facebook.com/metarosolucoes"
+            target="_blank"
+            class="social"
+            title="Facebook"
+          >
+            <img
+              src="./assets/images/icons/login-icon-fb.svg"
+              alt="Facebook logo"
+            />
+          </a>
+          <a
+            href="https://www.linkedin.com/company/metaro-industria-e-com%C3%A9rcio-ltda/mycompany/"
+            target="_blank"
+            class="social"
+            title="Linkedin"
+          >
+            <img
+              src="./assets/images/icons/login-icon-in.svg"
+              alt="Linkedin logo"
+            />
+          </a>
+          <a
+            href="https://www.instagram.com/metaro_ind/"
+            target="_blank"
+            class="social"
+            title="Instagram"
+          >
+            <img
+              src="./assets/images/icons/login-icon-insta.svg"
+              alt="Instagram logo"
+            />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>É cadastrado?</h1>
+          <p>Já possui uma conta? Clique aqui em baixo para acessa-la.</p>
+          <button class="ghost" (click)="changePage()">Entrar</button>
+        </div>
+
+        <div class="overlay-panel overlay-right">
+          <img
+            src="./assets/images/brand/full-white-logo.svg"
+            class="img-logo"
+          />
+          <p>
+            Ainda não tem uma conta? Clique aqui em baixo para solicitar um
+            acesso.
+          </p>
+          <button class="ghost" (click)="changePage()">Inscrever-se</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

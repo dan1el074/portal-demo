@@ -1,0 +1,15 @@
+<form [formGroup]="signupForm" (ngSubmit)="onSignUp()">
+    <input
+        id="name"
+        type="name"
+        formControlName="name"
+        placeholder="Nome"
+    />
+    <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="E-mail"
+    />
+    <button type="submit" [class.disabled]="!signupForm.valid" [disabled]="!signupForm.valid">Enviar</button>
+</form>
