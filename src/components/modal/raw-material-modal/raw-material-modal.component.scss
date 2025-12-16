@@ -17,7 +17,7 @@
     flex-wrap: nowrap;
     justify-content: center;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 20px;
 
     .input-item {
       display: flex;
@@ -39,8 +39,13 @@
     }
 
     button, input {
-      height: 40px;
+      height: 60px;
       text-align: center;
+      font-size: 25px;
+    }
+
+    button {
+      width: 60px;
     }
   }
 }
