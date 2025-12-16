@@ -1,0 +1,38 @@
+<c-modal id="staticBackdropModal-{{ item.id }}" backdrop="static" alignment="center">
+  <form cForm>
+    <c-modal-header>
+      <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
+      <h5 cModalTitle>Editar estoque - {{ item.code }}</h5>
+      <button [cModalToggle]="'staticBackdropModal-' + item.id" cButtonClose></button>
+    </c-modal-header>
+
+    <c-modal-body>
+      <div class="custom-card text">
+        <h6>Nome</h6>
+        <span>{{ item.name }}</span>
+      </div>
+      <div class="custom-card text">
+        <h6>Descrição</h6>
+        <span>{{ item.description }}</span>
+      </div>
+      <div class="custom-card">
+        <h6>Quantidade em estoque</h6>
+        <div class="flex-container">
+          <button cButton matPrefix color="info" (click)="decrement()" aria-label="Diminuir" variant="outline">-</button>
+          <div class="input-item">
+            <input type="number" id="inputNumber" [value]="value" cFormControl>
+            <div cFormText>
+              Atual: <strong>{{ item.currentStorage }}</strong>
+            </div>
+          </div>
+          <button cButton matSuffix color="info" (click)="increment()" aria-label="Aumentar" variant="outline">+</button>
+        </div>
+      </div>
+    </c-modal-body>
+
+    <c-modal-footer>
+      <button [cModalToggle]="'staticBackdropModal-' + item.id" cButton color="secondary"> Cancelar </button>
+      <button cButton color="primary"> Salvar </button>
+    </c-modal-footer>
+  </form>
+</c-modal>

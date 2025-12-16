@@ -1,0 +1,56 @@
+c-tabs.header-space {
+  margin-top: 20px;
+
+  button {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+}
+
+c-card {
+  margin-bottom: 24px;
+}
+
+.caption-container {
+  margin-top: 30px;
+}
+
+.accordion-body.accordion {
+  padding: 18px 16px 0;
+  width: 300px;
+
+  .accordion-header {
+    .accordion-button.ng-star-inserted {
+      padding: 0;
+    }
+  }
+
+  .accordion-body {
+    padding: 22px 20px 14px;
+  }
+
+  span {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 4px;
+
+    &.ok {
+      background-color: var(--cui-success-bg-subtle);
+      color: var(--cui-success-text-emphasis);
+    }
+    &.warning {
+      background-color: var(--cui-warning-bg-subtle);
+      color: var(--cui-warning-text-emphasis);
+    }
+    &.danger {
+      background-color: var(--cui-danger-bg-subtle);
+      color: var(--cui-danger-text-emphasis);
+    }
+  }
+}

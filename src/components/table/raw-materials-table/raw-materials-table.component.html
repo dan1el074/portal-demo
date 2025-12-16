@@ -1,0 +1,68 @@
+<mat-form-field appearance="outline" class="search raw-materials">
+  <span matPrefix>
+    <svg [cIcon]="icons.cilSearch" size="lg"></svg>
+  </span>
+
+  <input matInput (keyup)="applyFilter($event)" placeholder="Buscar">
+</mat-form-field>
+
+<c-container class="scroll-x" fluid>
+  <table mat-table [dataSource]="dataSource" matSort class="table stripe">
+    <ng-container matColumnDef="code">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+      <td mat-cell *matCellDef="let item" class="center">{{ item.code }}</td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Descrição</th>
+      <td mat-cell *matCellDef="let item" class="wrap">
+        <button [cModalToggle]="'staticBackdropModal-' + item.id" cTooltipPlacement="top" class="me-1 btn-tooltip left" color="secondary">
+          {{ item.name }}
+        </button>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="currentStorage">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Estoque</th>
+      <td mat-cell *matCellDef="let item" class="center {{ getColor(item) }}">
+        {{ item.currentStorage }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="currentStorageKg">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Estoque (kg)</th>
+      <td mat-cell *matCellDef="let item" class="right">{{ item.currentStorageKg | number:'1.2-2':'pt-BR' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="minStorage">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Estoque Min</th>
+      <td mat-cell *matCellDef="let item" class="right">{{ item.minStorage }}</td>
+    </ng-container>
+    <ng-container matColumnDef="minStorageKg">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Estoque Min (kg)</th>
+      <td mat-cell *matCellDef="let item" class="right">{{ item.minStorageKg | number:'1.2-2':'pt-BR' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="maxStorage">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Estoque Max</th>
+      <td mat-cell *matCellDef="let item" class="right">{{ item.maxStorage }}</td>
+    </ng-container>
+    <ng-container matColumnDef="maxStorageKg">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Estoque Max (kg)</th>
+      <td mat-cell *matCellDef="let item" class="right">{{ item.maxStorageKg | number:'1.2-2':'pt-BR' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="updateAt">
+      <th class="color" mat-header-cell *matHeaderCellDef mat-sort-header>Modificado</th>
+      <td mat-cell *matCellDef="let item">{{ item.updateAt | date: "dd/MM/yyyy" : '-0300' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="activated">
+      <th class="color" mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let item" class="btn-container x1">
+        <button [cModalToggle]="'staticBackdropModal-' + item.id" color="secondary" cButton class="custom-btn">
+          <svg [cIcon]="icons.cilPencil" size="sm"></svg>
+        </button>
+        <app-raw-material-modal [item]="item"></app-raw-material-modal>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let item; columns: displayedColumns"></tr>
+  </table>
+</c-container>
+
+<mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" class="pagination"></mat-paginator>

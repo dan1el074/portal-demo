@@ -1,1 +1,26 @@
-<p>users works!</p>
+<c-row>
+  <c-col xs="12">
+    <c-card class="border">
+      <c-card-body>
+        <h4 cCardTitle>Usuários</h4>
+
+        <c-tabs [activeItemKey]="0" class="header-space">
+          <c-tabs-list variant="underline-border">
+            <button cTab [itemKey]="0">Todos</button>
+            <button cTab [itemKey]="1">Desativados</button>
+          </c-tabs-list>
+          <c-tabs-content>
+            <c-tab-panel class="p-3" [itemKey]="0">
+              <app-user-table [data]="activeUsers"></app-user-table>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3" [itemKey]="1">
+              <app-user-table [data]="inactiveUsers"></app-user-table>
+            </c-tab-panel>
+          </c-tabs-content>
+        </c-tabs>
+
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

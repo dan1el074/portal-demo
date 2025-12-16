@@ -1,1 +1,55 @@
-<p>raw-materials works!</p>
+<c-card class="border">
+  <c-card-body>
+    <h4 cCardTitle>Inventário de matérias primas</h4>
+
+    <c-tabs [activeItemKey]="0" class="header-space" >
+      <c-tabs-list variant="underline-border">
+
+        @for (tab of tabs; track tab.name; let i = $index) {
+          <button cTab [itemKey]="i" [disabled]="!tab.active">{{ tab.name }}</button>
+        }
+
+      </c-tabs-list>
+
+      <c-tabs-content>
+        <c-accordion class="accordion-body">
+          <c-accordion-item #item0="cAccordionItem" [visible]="false">
+            <ng-template cTemplateId="accordionHeaderTemplate">
+              <button (click)="item0.toggleItem()" [collapsed]="!item0.visible" cAccordionButton>Legenda</button>
+            </ng-template>
+            <ng-template cTemplateId="accordionBodyTemplate">
+              <div class="accordion-body">
+                <span class="ok">
+                  <svg [cIcon]="icons.cilCheckCircle" size="xl"></svg>
+                  Dentro do previsto
+                </span>
+                <span class="warning">
+                  <svg [cIcon]="icons.cilWarning" size="xl"></svg>
+                  Acima máximo
+                </span>
+                <span class="danger">
+                  <svg [cIcon]="icons.cilXCircle" size="xl"></svg>
+                  Abaixo mínimo
+                </span>
+              </div>
+            </ng-template>
+          </c-accordion-item>
+        </c-accordion>
+
+        @for (tab of tabs; track tab.name; let i = $index) {
+          @if (i == tabs.length - 1) {
+            <c-tab-panel class="p-3" [itemKey]="i" >
+              <app-raw-materials-table [data]="disableItems"></app-raw-materials-table>
+            </c-tab-panel>
+          }
+          @else {
+            <c-tab-panel class="p-3 fix-position" [itemKey]="i" >
+              <app-raw-materials-table [data]="items[i]"></app-raw-materials-table>
+            </c-tab-panel>
+          }
+        }
+
+      </c-tabs-content>
+    </c-tabs>
+  </c-card-body>
+</c-card>

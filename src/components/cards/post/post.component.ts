@@ -1,9 +1,9 @@
 import { CarouselCustomConfig } from './carouse.config';
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { AvatarComponent, ButtonCloseDirective, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, ModalToggleDirective, RowComponent } from '@coreui/angular';
+import { AvatarComponent, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, ModalToggleDirective, RowComponent } from '@coreui/angular';
 import { PostCard } from '../../../app/interface/post.interface';
-import { ImageComponent } from '../../modal/image/image.component';
+import { ImageComponent } from '../../modal/image-modal/image.component';
 
 @Component({
   selector: 'app-post',
@@ -16,7 +16,6 @@ import { ImageComponent } from '../../modal/image/image.component';
     CardComponent,
     CardImgDirective,
     CardBodyComponent,
-    ButtonCloseDirective,
     RowComponent,
     ColComponent,
     ModalToggleDirective,

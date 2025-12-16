@@ -55,11 +55,11 @@ export const navItems: INavData[] = [
     url: '/general',
     iconComponent: { name: 'cilFork' },
     children: [
-      {
-        name: 'Controle Interno',
-        url: '/general/internal-control',
-        icon: 'nav-icon-bullet'
-      },
+      // {
+      //   name: 'Controle Interno',
+      //   url: '/general/internal-control',
+      //   icon: 'nav-icon-bullet'
+      // },
       {
         name: 'Matérias primas',
         url: '/general/raw-materials',
