@@ -4,7 +4,7 @@ import { GridModule, WidgetModule } from '@coreui/angular';
 import { ChartjsModule } from '@coreui/angular-chartjs';
 import { IconModule } from '@coreui/icons-angular';
 import { IconSetService } from '@coreui/icons-angular';
-import { iconSubset } from '../../../icons/icon-subset';
+import { iconSubset } from '../../../app/icons/icon-subset';
 import { WidgetsBrandComponent } from './widgets-brand.component';
 
 describe('WidgetsBrandComponent', () => {
@@ -14,10 +14,15 @@ describe('WidgetsBrandComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [WidgetModule, GridModule, ChartjsModule, IconModule, WidgetsBrandComponent],
-    providers: [IconSetService]
-})
-    .compileComponents();
+      imports: [
+        WidgetModule,
+        GridModule,
+        ChartjsModule,
+        IconModule,
+        WidgetsBrandComponent,
+      ],
+      providers: [IconSetService],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -14,10 +14,6 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/dashboard',
     iconComponent: { name: 'cilChartPie' },
-    badge: {
-      color: 'info',
-      text: 'NOVO'
-    }
   },
   {
     name: 'Jornal Digital',
@@ -93,6 +89,10 @@ export const navItems: INavData[] = [
     name: 'Suporte',
     url: 'http://suporte.metaro.com.br/',
     iconComponent: { name: 'cilCommentBubble' },
-    attributes: { target: '_blank' }
+    attributes: { target: '_blank' },
+    badge: {
+      color: 'info',
+      text: 'NOVO'
+    }
   }
 ];

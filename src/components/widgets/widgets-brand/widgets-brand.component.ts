@@ -65,7 +65,7 @@ export class WidgetsBrandComponent implements AfterContentInit {
   brandData: BrandData[] = [
     {
       icon: 'cibFacebook',
-      values: [{ title: 'friends', value: '89K' }, { title: 'feeds', value: '459' }],
+      values: [{ title: 'amigos', value: '89K' }, { title: 'posts', value: '459' }],
       capBg: { '--cui-card-cap-bg': '#3b5998' },
       labels: [...this.labels],
       data: {
@@ -75,7 +75,7 @@ export class WidgetsBrandComponent implements AfterContentInit {
     },
     {
       icon: 'cibTwitter',
-      values: [{ title: 'followers', value: '973k' }, { title: 'tweets', value: '1.792' }],
+      values: [{ title: 'seguidores', value: '973k' }, { title: 'tweets', value: '1.792' }],
       capBg: { '--cui-card-cap-bg': '#00aced' },
       data: {
         labels: [...this.labels],
@@ -84,7 +84,7 @@ export class WidgetsBrandComponent implements AfterContentInit {
     },
     {
       icon: 'cib-linkedin',
-      values: [{ title: 'contacts', value: '500' }, { title: 'feeds', value: '1.292' }],
+      values: [{ title: 'conexões', value: '500' }, { title: 'posts', value: '1.292' }],
       capBg: { '--cui-card-cap-bg': '#4875b4' },
       data: {
         labels: [...this.labels],
@@ -93,7 +93,7 @@ export class WidgetsBrandComponent implements AfterContentInit {
     },
     {
       icon: 'cilCalendar',
-      values: [{ title: 'events', value: '12+' }, { title: 'meetings', value: '4' }],
+      values: [{ title: 'eventos', value: '12+' }, { title: 'reuniões', value: '4' }],
       capBg: { '--cui-card-cap-bg': 'var(--cui-warning)' },
       data: {
         labels: [...this.labels],
