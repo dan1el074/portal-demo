@@ -1,0 +1,38 @@
+@if (post.pictures.length == 1) {
+  <c-modal [id]="'modal-' + post.id" alignment="center" class="img-modal">
+    <c-modal-body class="img-modal-body">
+      <div style="position: relative">
+        <button [cModalToggle]="'modal-' + post.id" class="modal-img-btn" cButtonClose></button>
+        <img cCardImg="bottom" [src]="post.pictures[0].uri" />
+      </div>
+    </c-modal-body>
+  </c-modal>
+}
+
+@if (post.pictures.length > 1) {
+  <c-modal [id]="'modal-' + post.id" alignment="center" class="img-modal">
+    <c-modal-body class="img-modal-body">
+
+      @if (ready) {
+        <ng-container>
+        <c-carousel [activeIndex]="index" [interval]="0" [wrap]="false">
+          <button [cModalToggle]="'modal-' + post.id" class="modal-img-btn" cButtonClose></button>
+          <c-carousel-indicators />
+          <c-carousel-inner>
+
+            @for (slide of slides; track slide.id) {
+              <c-carousel-item>
+                <img [src]="slide.src" class="d-block w-100" loading="lazy" />
+              </c-carousel-item>
+            }
+
+          </c-carousel-inner>
+          <c-carousel-control [routerLink] caption="Previous" direction="prev" />
+          <c-carousel-control [routerLink] caption="Next" direction="next" />
+        </c-carousel>
+      </ng-container>
+      }
+
+    </c-modal-body>
+  </c-modal>
+}

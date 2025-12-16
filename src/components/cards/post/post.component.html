@@ -1,0 +1,64 @@
+<c-card class="border">
+  <c-card-body>
+    <c-container class="flex" [class.margin]="post.content.length > 0">
+      <c-avatar shape="rounded-1" size="xl" [src]="post.authorPicture" textColor="primary" alt="User avatar" />
+      <c-container>
+        <p cCardText class="no-margin">
+          <strong>{{ post.author }}</strong>
+          {{ post.position }}
+        </p>
+        <p cCardText>
+          <small class="text-medium-emphasis">{{ post.instant }}</small>
+        </p>
+      </c-container>
+    </c-container>
+    <p cCardText [innerHtml]="post.content"></p>
+  </c-card-body>
+
+  <div class="post-images" >
+
+    @if (post.pictures.length == 1) {
+      <img cCardImg="bottom" (click)="openCarousel(0)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[0].uri" />
+    }
+
+    @if (post.pictures.length > 1 && post.pictures.length <= 3) {
+      <c-row>
+        @for (picture of post.pictures; track picture.id; let i = $index) {
+          <c-col>
+            <img cCardImg="bottom" (click)="openCarousel(i)" [cModalToggle]="'modal-' + post.id" [src]="picture.uri" />
+          </c-col>
+        }
+      </c-row>
+    }
+
+    @if (post.pictures.length > 3) {
+      <div class="four-grid">
+        <c-row>
+          <c-col>
+            <img cCardImg="bottom" (click)="openCarousel(0)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[0].uri" />
+          </c-col>
+          <c-col>
+            <img cCardImg="bottom" (click)="openCarousel(1)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[1].uri" />
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col>
+            <img cCardImg="bottom" (click)="openCarousel(2)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[2].uri" />
+          </c-col>
+          <c-col>
+            <img cCardImg="bottom" (click)="openCarousel(3)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[3].uri" />
+
+              @if (post.pictures.length > 4) {
+                <div class="overlay" (click)="openCarousel(3)" [cModalToggle]="'modal-' + post.id">
+                  +{{ post.pictures.length - 4 }}
+                </div>
+              }
+
+          </c-col>
+        </c-row>
+      </div>
+    }
+
+    <app-image [post]="post" [index]="slideIndex" [ready]="carouselReady"></app-image>
+  </div>
+</c-card>

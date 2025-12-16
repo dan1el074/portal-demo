@@ -1,1 +1,17 @@
-<p>home works!</p>
+<c-container>
+  <c-row>
+    <c-col xl="4">
+      <app-files [files]="files" class="card"></app-files>
+      <app-event [event]="event" class="card sticky-card"></app-event>
+    </c-col>
+
+    <c-col xl="8">
+      <app-todo [tabs]="todoItems" class="card"></app-todo>
+
+      @for (post of feed; track post) {
+        <app-post [post]="post" class="card"></app-post>
+      }
+
+    </c-col>
+  </c-row>
+</c-container>

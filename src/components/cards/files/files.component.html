@@ -1,0 +1,15 @@
+<c-card class="border">
+  <c-card-body>
+    <h5 cCardTitle>Arquivos</h5>
+    <ul class="no-bullet">
+      @for (file of files; track file.id) {
+        <li>
+          <svg [cIcon]="icons.cilCopy" size="xl" title="List Icon"></svg>
+          <a [routerLink]="['/home']" cCardLink>{{ file.name }}</a>
+        </li>
+      } @empty {
+        <li>Itens não encontrados</li>
+      }
+    </ul>
+  </c-card-body>
+</c-card>

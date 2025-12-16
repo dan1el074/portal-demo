@@ -1,0 +1,35 @@
+c-modal.img-modal {
+  display: flex !important;
+
+  c-modal-body.img-modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+
+    img {
+      max-height: 90vh;
+      max-width: 90vw;
+      width: auto;
+      height: auto;
+    }
+
+    .modal-img-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      padding: 20px;
+      background-color: rgba(var(--cui-emphasis-color-rgb), 0.5);
+
+      &.btn-close {
+        --cui-btn-close-opacity: 1;
+        filter: invert(1);
+
+        &:focus {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}

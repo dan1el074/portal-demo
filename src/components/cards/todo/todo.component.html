@@ -1,0 +1,41 @@
+<c-card class="border">
+  <c-card-body>
+    <h5 cCardTitle>Para fazer</h5>
+
+    <c-tabs activeItemKey="Active" class="no-border">
+      <c-card>
+        <c-card-header>
+          <c-tabs-list class="card-header-pills" variant="pills">
+
+            @for (tab of tabs; track tab) {
+              <button [itemKey]="tab.priority" cTab>
+                {{ tab.priority }}
+              </button>
+            }
+
+          </c-tabs-list>
+        </c-card-header>
+        <c-card-body>
+          <c-tabs-content>
+
+            @for (tab of tabs; track tab) {
+              <c-tab-panel [itemKey]="tab.priority" class="item-container">
+
+                @for (item of tab.items; track item) {
+                  <div class="item" [class.late]="item.late">
+                    <h6 cCardTitle>{{ item.title }}</h6>
+                    <p cCardText>
+                      <small class="text-medium-emphasis">{{ item.date | date: "dd MMM, y 'às' HH:mm" : '-0300' }}</small>
+                    </p>
+                  </div>
+                }
+
+              </c-tab-panel>
+            }
+
+          </c-tabs-content>
+        </c-card-body>
+      </c-card>
+    </c-tabs>
+  </c-card-body>
+</c-card>

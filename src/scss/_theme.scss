@@ -12,6 +12,16 @@ body {
   @include transition(padding .15s);
 }
 
+@media (min-width: 992px) {
+  .sidebar:not(.hide):not(.sidebar-narrow):not(.sidebar-narrow-unfoldable:not(:hover)):not(.sidebar-narrow-unfoldable):not(.sidebar-overlaid):not(.sidebar-end)~ * {
+    --cui-sidebar-occupy-start: 17rem;
+  }
+}
+
+.sidebar {
+  --cui-sidebar-width: 17rem;
+}
+
 .header > .container-fluid,
 .sidebar-header {
   min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
@@ -35,6 +45,10 @@ body {
   }
 }
 
+.sidebar-footer:hover {
+  background-color: #272f3f;
+}
+
 .sidebar-toggler {
   margin-inline-start: auto;
 }
@@ -54,6 +68,34 @@ body {
   width: 210px;
 }
 
+.card {
+  border: none;
+}
+
+.no-bullet {
+  padding: 10px 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    list-style-type: none;
+  }
+}
+
+.sticky-card {
+  position: sticky;
+  top: 138px;
+}
+
+c-modal.img-modal c-modal-content.modal-content {
+  background-color: transparent;
+  border: none;
+}
+
 button.icon-notify {
   border: none;
   background-color: transparent;
@@ -71,6 +113,15 @@ button.icon-notify {
 
 .footer {
   min-height: calc(3rem + 1px); // stylelint-disable-line function-disallowed-list
+}
+
+@media (min-width: 576px) {
+  c-modal.img-modal .modal-dialog {
+    max-width: initial;
+    max-height: initial;
+    margin-right: auto;
+    margin-left: auto;
+  }
 }
 
 @include color-mode(dark) {

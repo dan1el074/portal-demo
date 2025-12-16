@@ -1,0 +1,28 @@
+c-card {
+  .date {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+
+    .month {
+      background-color: #0369dd;
+      padding: 7px 20px;
+      font-weight: 600;
+      font-family: "DM Sans", sans-serif;
+      color: #fff;
+      text-align: center;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .day {
+      width: 100%;
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 600;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 6px 0;
+      text-align: center;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+.no-border {
+  c-card,
+  c-card c-card-header{
+    border: none;
+    background-color: var(--cui-card-bg);
+  }
+
+  .item {
+    margin-bottom: 16px;
+    padding-left: 16px;
+    border-left: 4px solid #0369dd;
+
+    &.late {
+      border-left: 4px solid #dd0315;
+    }
+
+    &:last-child,
+    .card-title {
+      margin-bottom: 0;
+    }
+  }
+}
