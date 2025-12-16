@@ -1,28 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 export interface Credential {
-    username: string;
-    password: string;
+  username: string;
+  password: string;
 }
 
 @Component({
   selector: 'app-login-form',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss',
 })
 export class LoginFormComponent {
   @Output() loginTask = new EventEmitter<Credential>();
-
-  badRequest = false;
-  loginForm: FormGroup;
+  protected badRequest = false;
+  protected loginForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder) {
     this.loginForm = this.formBuilder.group({
@@ -52,5 +46,9 @@ export class LoginFormComponent {
       this.loginForm.markAsUntouched();
       this.badRequest = false;
     }, 300);
+  }
+
+  showError() {
+    this.badRequest = true;
   }
 }

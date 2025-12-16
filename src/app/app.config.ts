@@ -21,8 +21,8 @@ export const appConfig: ApplicationConfig = {
       withHashLocation()
     ),
     IconSetService,
-    provideAnimationsAsync(),
-    { provide: MatPaginatorIntl, useFactory: CustomPaginator }
+    { provide: MatPaginatorIntl, useFactory: CustomPaginator },
+    provideAnimationsAsync()
   ]
 };
 

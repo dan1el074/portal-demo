@@ -12,7 +12,9 @@
         formControlName="password"
         placeholder="Senha"
     />
-    <div *ngIf="badRequest" class="badRequest">Usuário ou senha inválido!</div>
+    @if (badRequest) {
+      <div class="badRequest">Usuário ou senha inválido!</div>
+    }
     <a href="https://wa.me/555421060260" target="_blank">Falar com um administrador</a>
     <button type="submit" [class.disabled]="!loginForm.valid" [disabled]="!loginForm.valid">Entrar</button>
 </form>

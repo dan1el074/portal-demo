@@ -30,7 +30,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.#router.events.pipe(
         takeUntilDestroyed(this.#destroyRef)
       ).subscribe((evt) => {
