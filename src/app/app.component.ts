@@ -6,11 +6,12 @@ import { delay, filter, map, tap } from 'rxjs/operators';
 import { ColorModeService } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
 import { cilHome, cilChartPie, cilNewspaper, cilCalendar, cilSettings, cilCursor, cilFork, cilCommentBubble, cibFacebook, cibTwitter, cibLinkedin, cibGoogle, cilUserFemale, cilUser } from '@coreui/icons';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
     selector: 'app-root',
-    template: '<router-outlet />',
-    imports: [RouterOutlet]
+    template: '<ngx-spinner name="loginSpinner" bdColor="#ebebeb" size="default" color="#0053b0" type="ball-clip-rotate" [fullScreen]="true"></ngx-spinner><router-outlet />',
+    imports: [RouterOutlet, NgxSpinnerModule]
 })
 export class AppComponent implements OnInit {
   title = 'Portal Demo';

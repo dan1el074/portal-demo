@@ -37,8 +37,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/scss/styles.scss",
-              "node_modules/ngx-toastr/toastr.css"
+              "src/scss/styles.scss"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [],

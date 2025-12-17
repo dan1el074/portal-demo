@@ -4,6 +4,8 @@
 
 @use '@angular/material' as mat;
 @use "@coreui/chartjs/scss/coreui-chartjs";
+@use "ngx-toastr/toastr";
+@use "ngx-spinner/animations/ball-clip-rotate";
 @use "theme";
 @use "custom";
 

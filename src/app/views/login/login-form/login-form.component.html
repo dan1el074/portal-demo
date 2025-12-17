@@ -1,20 +1,13 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <input
-        id="username"
-        type="username"
-        formControlName="username"
-        placeholder="Usuário"
-        autofocus
-    />
-    <input
-        id="password"
-        type="password"
-        formControlName="password"
-        placeholder="Senha"
-    />
-    @if (badRequest) {
-      <div class="badRequest">Usuário ou senha inválido!</div>
-    }
-    <a href="https://wa.me/555421060260" target="_blank">Falar com um administrador</a>
-    <button type="submit" [class.disabled]="!loginForm.valid" [disabled]="!loginForm.valid">Entrar</button>
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="needs-validation">
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl [valid]="valid" formControlName="username" id="pmusername" type="username" placeholder="Usuário" autofocus required />
+    <label cLabel for="pmusername">Usuário</label>
+  </div>
+  <div cFormFloating>
+    <input cFormControl [valid]="valid" formControlName="password" id="password" type="password" placeholder="Senha" autocomplete="off" required />
+    <label cLabel for="password">Senha</label>
+  </div>
+
+  <a href="https://wa.me/555421060260" style="outline: none;" target="_blank">Falar com um administrador</a>
+  <button type="submit">Entrar</button>
 </form>

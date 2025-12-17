@@ -1,15 +1,12 @@
-<form [formGroup]="signupForm" (ngSubmit)="onSignUp()">
-    <input
-        id="name"
-        type="name"
-        formControlName="name"
-        placeholder="Nome"
-    />
-    <input
-        id="email"
-        type="email"
-        formControlName="email"
-        placeholder="E-mail"
-    />
-    <button type="submit" [class.disabled]="!signupForm.valid" [disabled]="!signupForm.valid">Enviar</button>
+<form [formGroup]="signupForm" (ngSubmit)="onSignUp()" class="needs-validation">
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl [valid]="valid" formControlName="name" id="pmname" type="text" placeholder="Nome" required />
+    <label cLabel for="name">Nome</label>
+  </div>
+  <div cFormFloating>
+    <input cFormControl [valid]="valid" formControlName="email" id="email" type="email" placeholder="E-mail" required />
+    <label cLabel for="password">E-mail</label>
+  </div>
+
+  <button type="submit">Enviar</button>
 </form>

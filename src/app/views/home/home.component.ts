@@ -1,3 +1,6 @@
+import { Component, OnInit } from '@angular/core';
+import { ColComponent, ContainerComponent, RowComponent } from '@coreui/angular';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { PostComponent } from './../../../components/cards/post/post.component';
 import { TodoComponent } from './../../../components/cards/todo/todo.component';
 import { EventComponent } from './../../../components/cards/event/event.component';
@@ -5,8 +8,6 @@ import { FilesComponent } from './../../../components/cards/files/files.componen
 import { PostCard } from './../../interface/post.interface';
 import { FileCard } from './../../interface/file.interface';
 import { EventCard } from './../../interface/event.interface';
-import { ColComponent, ContainerComponent, RowComponent } from '@coreui/angular';
-import { Component } from '@angular/core';
 import { TodoTableCard } from '../../interface/todo.interface';
 
 @Component({
@@ -23,8 +24,8 @@ import { TodoTableCard } from '../../interface/todo.interface';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
-    protected event: EventCard = {
+export class HomeComponent implements OnInit {
+  protected event: EventCard = {
     title: 'Minuto da Qualidade',
     picture: '.\\assets\\images\\others\\event_03.webp',
     date: '2025-06-21T15:00:00Z',
@@ -133,4 +134,12 @@ export class HomeComponent {
       pictures: [{id: 8, uri: '.\\assets\\images\\others\\img_00008.jpeg'}],
     },
   ];
+
+  constructor(
+    private spinner: NgxSpinnerService,
+  ) {}
+
+  ngOnInit(): void {
+    this.spinner.hide();
+  }
 }

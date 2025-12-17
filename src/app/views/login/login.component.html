@@ -42,7 +42,7 @@
       </div>
       <span>ou nos envie seu nome e e-mail:</span>
 
-      <app-signup-form></app-signup-form>
+      <app-signup-form #signFormComp></app-signup-form>
     </div>
 
     <div class="form-container sign-in-container">
@@ -51,10 +51,7 @@
       </div>
 
       <h1>Acessar Conta</h1>
-      <app-login-form
-        (loginTask)="onLogin($event)"
-        #loginFormComp
-      ></app-login-form>
+      <app-login-form #loginFormComp (loginTask)="onLogin($event)"></app-login-form>
 
       <div class="social-container mobile-only">
         <span>ou entre em contato pelas nossas redes</span>
