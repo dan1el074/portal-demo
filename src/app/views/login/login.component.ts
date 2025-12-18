@@ -1,3 +1,4 @@
+import { AuthGuard } from './../../config/authGuard';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { SignupFormComponent } from './signup-form/signup-form.component';
@@ -22,16 +23,20 @@ export class LoginComponent implements OnInit {
   @ViewChild('signFormComp') signFormComp!: LoginFormComponent;
   togglePage = false;
 
+  // TODO: colocar cores fixas no login, para não mudar no modo escuro
+
   constructor(
     private router: Router,
     private loginService: LoginService,
+    private authGuardService: AuthGuard,
     private toasterService: ToastrService,
     private spinner: NgxSpinnerService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    sessionStorage.clear();
+    document.documentElement.setAttribute('data-coreui-theme', 'light');
+    this.authGuardService.clearUser();
   }
 
   async onLogin(credentials: Credential) {
@@ -44,9 +49,7 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         this.spinner.hide("loginSpinner");
-        console.log(error.error.error);
-        const statusCode = error.error.error == "user_disabled" ? 422 : error.status;
-        this.showError(statusCode);
+        this.showError(error.error.error == "user_disabled" ? 422 : error.status);
         this.cdr.detectChanges();
       }
     });

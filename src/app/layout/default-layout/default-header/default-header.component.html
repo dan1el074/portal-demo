@@ -14,7 +14,7 @@
     <c-header-nav class="d-none d-md-flex ms-auto ">
       <button cButton color="link" class="position-relative icon-notify">
         <svg [cIcon]="icons.cilBell" class="my-1" name="cilBell" size="lg"></svg>
-        <c-badge color="danger" position="bottom-end" shape="rounded-pill">3</c-badge>
+        <c-badge color="danger" position="bottom-end" shape="rounded-pill">{{ user.notifications }}</c-badge>
       </button>
     </c-header-nav>
 
@@ -37,7 +37,8 @@
 
 <ng-template #userDropdown>
   <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
-    <button [caret]="false" cDropdownToggle class="py-0 pe-0" aria-label="Open user menu">
+    <button [caret]="false" cDropdownToggle class="py-0 pe-0 flex" aria-label="Open user menu">
+      <span>{{ user.name }}</span>
       <c-avatar
         shape="rounded-1"
         size="md"
@@ -52,7 +53,7 @@
         <a cDropdownItem routerLink="">
           <svg [cIcon]="icons.cilBell" class="me-2" name="cilBell"></svg>
           Notificações
-          <c-badge class="ms-2 float-end" color="danger">3</c-badge>
+          <c-badge class="ms-2 float-end" color="danger">{{ user.notifications }}</c-badge>
         </a>
       </li>
       <li>

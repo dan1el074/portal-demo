@@ -18,6 +18,13 @@ body {
   }
 }
 
+.header-nav button.flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 6px;
+}
+
 .sidebar {
   --cui-sidebar-width: 17rem;
 }

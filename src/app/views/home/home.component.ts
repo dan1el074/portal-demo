@@ -140,6 +140,8 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.spinner.hide();
+    setTimeout(() => {
+      this.spinner.hide("loginSpinner")
+    }, 500);
   }
 }

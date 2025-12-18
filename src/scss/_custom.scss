@@ -16,6 +16,10 @@
   --cui-btn-hover-bg: rgb(37, 114, 214);
 }
 
+.btn-close {
+  --cui-btn-close-focus-shadow: 0 0 0 0.25rem rgba(32, 81, 216, 0.25);
+}
+
 .accordion {
   --cui-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(32, 81, 216, 0.25);
 }
