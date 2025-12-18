@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   constructor() {
     this.#titleService.setTitle(this.title);
     this.#iconSetService.icons = { cilHome, cilChartPie, cilNewspaper, cilCalendar, cilSettings, cilCursor, cilFork, cilCommentBubble, cibFacebook, cibTwitter, cibLinkedin, cibGoogle, cilUserFemale, cilUser };
-    this.#colorModeService.localStorageItemName.set('portal-demo');
+    this.#colorModeService.localStorageItemName.set('theme');
     this.#colorModeService.eventName.set('ColorSchemeChange');
   }
 

@@ -1,11 +1,10 @@
-import { AuthGuard } from '../../../config/authGuard';
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
 import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilSun, cilMoon, cilContrast } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
-import { Me } from 'src/app/interface/user.interface';
+import { Me } from '../../../interface/user.interface';
 
 @Component({
   selector: 'app-default-header',
@@ -28,6 +27,9 @@ import { Me } from 'src/app/interface/user.interface';
   ]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
+  @Input() user!: Me;
+  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout };
+  readonly sidebarId = input('sidebar1');
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
   readonly colorModes = [
@@ -35,9 +37,6 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     { name: 'dark', text: 'Escuro', icon: cilMoon },
     { name: 'auto', text: 'Automático', icon: cilContrast }
   ];
-
-  protected icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout };
-  public sidebarId = input('sidebar1');
 
   /*
     public newNotifications = [
@@ -61,29 +60,16 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       -> adicionar: picture, tasks, notifications
 
     TODO: levar essa lógica para o componente pai
-
-    TODO: ver como mudar o tema, deixar a cargo do locastorage fazer isso, e mudar sempre para o "light" na página de login
   */
-  protected user: Me = {
-    id: 0,
-    name: '',
-    username: '',
-    email: '',
-    birthDate: '',
-    theme: '',
-    activated: true,
-    notifications: 0,
-    roles: [],
-  };
 
-  constructor(
-    private authGuardService: AuthGuard
-  ) { super() }
+  constructor() { super() }
 
   ngOnInit(): void {
-    this.authGuardService.getUser().subscribe(user => {
-      this.user = user;
-    });
+    let theme = this.colorModes.find(mode => localStorage.getItem('theme')?.includes(mode.name))?.name ?? 'light';
+    this.colorMode.set(theme);
+
+    if (theme == 'auto') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    document.documentElement.setAttribute('data-coreui-theme', theme);
   }
 
   public getIcon(): Array<string> {

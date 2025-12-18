@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { AuthGuard } from '../..//config/authGuard';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import {
@@ -14,6 +15,7 @@ import {
 } from '@coreui/angular';
 import { DefaultFooterComponent, DefaultHeaderComponent } from './';
 import { navItems } from './_nav';
+import { Me } from '../../interface/user.interface';
 
 function isOverflown(element: HTMLElement) {
   return (
@@ -43,6 +45,25 @@ function isOverflown(element: HTMLElement) {
     ShadowOnScrollDirective
   ]
 })
-export class DefaultLayoutComponent {
+export class DefaultLayoutComponent implements OnInit {
   public navItems = [...navItems];
+  protected user: Me = {
+    id: 0,
+    name: '',
+    username: '',
+    email: '',
+    birthDate: '',
+    theme: '',
+    activated: true,
+    notifications: 0,
+    roles: [],
+  };
+
+  constructor(private authGuardService: AuthGuard) {}
+
+  ngOnInit() {
+    this.authGuardService.getUser().subscribe(user => {
+      this.user = user;
+    });
+  }
 }

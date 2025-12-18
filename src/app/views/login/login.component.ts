@@ -23,8 +23,6 @@ export class LoginComponent implements OnInit {
   @ViewChild('signFormComp') signFormComp!: LoginFormComponent;
   togglePage = false;
 
-  // TODO: colocar cores fixas no login, para não mudar no modo escuro
-
   constructor(
     private router: Router,
     private loginService: LoginService,
@@ -39,7 +37,7 @@ export class LoginComponent implements OnInit {
     this.authGuardService.clearUser();
   }
 
-  async onLogin(credentials: Credential) {
+  async onLogin(credentials: Credential): Promise<void> {
     this.spinner.show("loginSpinner");
     await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -55,7 +53,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  showError(status: number) {
+  showError(status: number): void {
     if (status == 422) {
       this.loginFormComp.showError();
       this.toasterService.error("Usuário desativado!")
@@ -69,7 +67,7 @@ export class LoginComponent implements OnInit {
     this.toasterService.error("Erro ao comunicar com o servidor!")
   }
 
-  changePage() {
+  changePage(): void {
     this.togglePage = !this.togglePage;
     this.loginFormComp.resetValidation();
     this.signFormComp.resetValidation();
