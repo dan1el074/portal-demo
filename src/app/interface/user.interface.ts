@@ -1,4 +1,6 @@
 import { Role } from './role.interface';
+import { Notification } from './notification.interface';
+
 export interface UserTable {
   id: number;
   picture: string | null;
@@ -13,13 +15,14 @@ export interface UserTable {
 export interface Me {
   id: number;
   name: string;
-  username: string;
   email: string;
+  position: string | null;
   birthDate: string;
-  theme: string;
+  picture: string | null;
   activated: boolean;
-  notifications: number;
+  username: string;
   roles: Array<Role>;
+  notifications: Array<Notification>;
 }
 
 export interface UserMinData {

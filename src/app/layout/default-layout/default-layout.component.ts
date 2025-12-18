@@ -50,13 +50,14 @@ export class DefaultLayoutComponent implements OnInit {
   protected user: Me = {
     id: 0,
     name: '',
-    username: '',
     email: '',
+    position: null,
     birthDate: '',
-    theme: '',
+    picture: null,
     activated: true,
-    notifications: 0,
+    username: '',
     roles: [],
+    notifications: []
   };
 
   constructor(private authGuardService: AuthGuard) {}

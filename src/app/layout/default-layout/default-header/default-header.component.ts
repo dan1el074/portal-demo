@@ -2,7 +2,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
-import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilSun, cilMoon, cilContrast } from '@coreui/icons';
+import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { Me } from '../../../interface/user.interface';
 
@@ -28,7 +28,8 @@ import { Me } from '../../../interface/user.interface';
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   @Input() user!: Me;
-  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout };
+
+  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX };
   readonly sidebarId = input('sidebar1');
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
@@ -37,8 +38,6 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     { name: 'dark', text: 'Escuro', icon: cilMoon },
     { name: 'auto', text: 'Automático', icon: cilContrast }
   ];
-
-  // TODO: levar essa lógica para o componente pai
 
   constructor() { super() }
 

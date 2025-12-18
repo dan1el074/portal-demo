@@ -113,8 +113,35 @@ button.icon-notify {
     color: var(--cui-header-hover-color);
   }
 
-  c-badge.translate-middle {
-    transform: translate(-60%, -100%) !important;
+  c-badge.custom-badge {
+    transform: translate(-100%, -100%) !important;
+  }
+}
+
+.notification-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 16px;
+  text-wrap: nowrap;
+
+  &:hover {
+    color: var(--cui-dropdown-link-hover-color);
+    background-color: var(--cui-dropdown-link-hover-bg);
+  }
+
+  button {
+    border: none;
+    border-radius: 6px;
+    padding: 0px 6px;
+    transition: .2s;
+
+    &:hover {
+      background-color: var(--cui-primary);
+      color: #fff;
+    }
   }
 }
 
