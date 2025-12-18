@@ -38,29 +38,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     { name: 'auto', text: 'Automático', icon: cilContrast }
   ];
 
-  /*
-    public newNotifications = [
-      { id: 0, title: 'New user registered', icon: 'cilUserFollow', color: 'success' },
-      { id: 1, title: 'User deleted', icon: 'cilUserUnfollow', color: 'danger' },
-      { id: 2, title: 'Sales report is ready', icon: 'cilChartPie', color: 'info' },
-      { id: 3, title: 'New client', icon: 'cilBasket', color: 'primary' },
-      { id: 4, title: 'Server overloaded', icon: 'cilSpeedometer', color: 'warning' }
-    ];
-
-    public newTasks = [
-      { id: 0, title: 'Upgrade NPM', value: 0, color: 'info' },
-      { id: 1, title: 'ReactJS Version', value: 25, color: 'danger' },
-      { id: 2, title: 'VueJS Version', value: 50, color: 'warning' },
-      { id: 3, title: 'Add new layouts', value: 75, color: 'info' },
-      { id: 4, title: 'Angular Version', value: 100, color: 'success' }
-    ];
-
-    TODO: editar informações de "Me"
-      -> remover: theme, notifications
-      -> adicionar: picture, tasks, notifications
-
-    TODO: levar essa lógica para o componente pai
-  */
+  // TODO: levar essa lógica para o componente pai
 
   constructor() { super() }
 
