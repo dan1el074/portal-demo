@@ -41,6 +41,7 @@ chrome-profiler-events*.json
 testem.log
 /typings
 /src/environments/environment.ts
+/src/environments/environment.development.ts
 
 # System files
 .DS_Store
