@@ -39,12 +39,12 @@
         @for (tab of tabs; track tab.name; let i = $index) {
           @if (i == tabs.length - 1) {
             <c-tab-panel class="p-3" [itemKey]="i" >
-              <app-raw-materials-table [data]="disableItems"></app-raw-materials-table>
+              <app-raw-materials-table [data]="disableItems" [noMargin]="true"></app-raw-materials-table>
             </c-tab-panel>
           }
           @else {
             <c-tab-panel class="p-3 fix-position" [itemKey]="i" >
-              <app-raw-materials-table [data]="items[i]"></app-raw-materials-table>
+              <app-raw-materials-table [data]="items[i]" [noMargin]="true"></app-raw-materials-table>
             </c-tab-panel>
           }
         }

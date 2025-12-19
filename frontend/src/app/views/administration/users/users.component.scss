@@ -5,3 +5,13 @@ c-row {
 c-tabs.header-space {
   margin-top: 20px;
 }
+
+button {
+  margin: 10px 0 20px 0;
+}
+
+@media screen and (max-width: 720px) {
+  button {
+    margin: 0 0 74px 0;
+  }
+}

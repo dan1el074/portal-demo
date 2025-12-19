@@ -272,30 +272,40 @@ table {
   }
 }
 
-html[data-coreui-theme=dark] table.table tbody tr td{
-  &.success {
-    background-color: #27AE60;
-    color: var(--cui-body-color);
+html[data-coreui-theme=dark] {
+  .btn-primary {
+    --cui-btn-bg: #285ea5;
+    --cui-btn-hover-bg: rgb(37, 114, 214);
+    --cui-btn-border-color: #285ea5;
+    --cui-btn-hover-border-color: #285ea5;
   }
 
-  &.warning {
-    background-color: #F4D03F;
-    color: #1C1C1C;
-  }
+  table.table tbody tr td{
+    &.success {
+      background-color: #27AE60;
+      color: var(--cui-body-color);
+    }
 
-  &.danger {
-    background-color: #C0392B;
-    color: #FFFFFF;
+    &.warning {
+      background-color: #F4D03F;
+      color: #1C1C1C;
+    }
+
+    &.danger {
+      background-color: #C0392B;
+      color: #FFFFFF;
+    }
   }
 }
 
 mat-form-field.search {
-  margin-top: 16px;
+  display: block;
+  margin-left: auto;
   font-size: 14px;
+  width: 267px;
 
-  &.raw-materials {
-    margin-top: 4px;
-    width: 267px;
+  &.no-margin {
+    margin-top: -60px;
   }
 
   svg {
@@ -313,10 +323,9 @@ mat-paginator.pagination {
 }
 
 @media screen and (max-width: 720px) {
-  mat-form-field.search.raw-materials {
-    margin-top: 30px;
-    margin-left: 30px;
-    width: calc(100% - 60px);
+  mat-form-field.search {
+    margin-top: 0;
+    width: 100%;
   }
 }
 

@@ -1,4 +1,4 @@
-<mat-form-field appearance="outline" class="search">
+<mat-form-field appearance="outline" class="search" [class.no-margin]="noMargin">
   <span matPrefix>
     <svg [cIcon]="icons.cilSearch" size="lg"></svg>
   </span>
@@ -37,9 +37,11 @@
         <button color="secondary" cButton class="custom-btn">
           <svg [cIcon]="icons.cilPencil" size="sm"></svg>
         </button>
-        <button color="secondary" cButton class="custom-btn delete">
+        <button cButton cModalToggle="staticBackdropModal-{{ user.id }}" color="secondary" class="custom-btn delete">
           <svg [cIcon]="icons.cilX" size="sm"></svg>
         </button>
+
+        <app-user-delete-modal [user]="user"></app-user-delete-modal>
       </td>
     </ng-container>
 

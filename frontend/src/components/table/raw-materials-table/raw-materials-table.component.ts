@@ -36,6 +36,7 @@ export class RawMaterialsTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @Input() data: Array<RawMaterialsTable> = [];
+  @Input() noMargin: boolean = false;
 
   protected displayedColumns: string[] = [
     'code',

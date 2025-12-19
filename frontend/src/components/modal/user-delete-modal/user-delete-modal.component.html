@@ -1,0 +1,18 @@
+<c-modal id="staticBackdropModal-{{ user.id }}" backdrop="static" alignment="center">
+  <c-modal-header>
+    <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
+    <h5 cModalTitle>Desativar - {{ user.name }}</h5>
+    <button cModalToggle="staticBackdropModal-{{ user.id }}" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja desativar o usuário?
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" cModalToggle="staticBackdropModal-{{ user.id }}">
+      Cancelar
+    </button>
+    <button cButton color="primary" class="delete">
+      Desativar
+    </button>
+  </c-modal-footer>
+</c-modal>

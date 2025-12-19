@@ -6,9 +6,10 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AvatarComponent, ButtonDirective, ContainerComponent } from '@coreui/angular';
+import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective } from '@coreui/angular';
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
 import { UserTable } from '../../../app/interface/user.interface';
+import { UserDeleteModalComponent } from '../../modal/user-delete-modal/user-delete-modal.component';
 
 @Component({
   selector: 'app-user-table',
@@ -22,7 +23,9 @@ import { UserTable } from '../../../app/interface/user.interface';
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
-    ButtonDirective
+    ButtonDirective,
+    ModalToggleDirective,
+    UserDeleteModalComponent
   ],
   templateUrl: './user-table.component.html',
   styleUrl: './user-table.component.scss',
@@ -31,6 +34,7 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @Input() data: Array<UserTable> = [];
+  @Input() noMargin: boolean = false;
 
   protected displayedColumns: string[] = ['name', 'username', 'position', 'email', 'updateAt', 'activated'];
   protected dataSource = new MatTableDataSource<UserTable>([]);

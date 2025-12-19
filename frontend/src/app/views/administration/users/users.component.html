@@ -11,7 +11,11 @@
           </c-tabs-list>
           <c-tabs-content>
             <c-tab-panel class="p-3" [itemKey]="0">
-              <app-user-table [data]="activeUsers"></app-user-table>
+              <button cButton color="primary">
+                <svg [cIcon]="icons.cilPlus" size="md"></svg>
+                Novo usuário
+              </button>
+              <app-user-table [data]="activeUsers" [noMargin]="true"></app-user-table>
             </c-tab-panel>
 
             <c-tab-panel class="p-3" [itemKey]="1">
