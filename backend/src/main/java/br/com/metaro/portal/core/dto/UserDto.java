@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -40,9 +41,10 @@ public class UserDto {
         createdAt = user.getCreatedAt();
         updateAt = user.getUpdateAt();
 
-        if (user.getRoles() == null || user.getRoles().isEmpty()) return;
+        roles = new ArrayList<>();
         for (Role role : user.getRoles()) {
-            roles.add(new RoleDto(role));
+            RoleDto roleDto = new RoleDto(role);
+            roles.add(roleDto);
         }
     }
 }

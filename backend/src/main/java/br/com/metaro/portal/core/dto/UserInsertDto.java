@@ -19,5 +19,5 @@ public class UserInsertDto {
     private String username;
     private String password;
     private Boolean activated;
-    private List<RoleDto> roles;
+    private List<Long> roles;
 }

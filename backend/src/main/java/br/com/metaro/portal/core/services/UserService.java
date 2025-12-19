@@ -60,13 +60,12 @@ public class UserService implements UserDetailsService {
         entity.setActivated(true);
         entity.setCreatedAt(Instant.now());
         entity.setUpdateAt(Instant.now());
+        entity.setRoles(new HashSet<>());
 
-        Set<Role> roles = new HashSet<>();
-        for (RoleDto roleDto : dto.getRoles()) {
-            Role role = roleRepository.getReferenceById(roleDto.getId());
-            roles.add(role);
+        for (Long roleId : dto.getRoles()) {
+            Role role = roleRepository.getReferenceById(roleId);
+            entity.addRole(role);
         }
-        entity.setRoles(roles);
     }
 
     @Override
