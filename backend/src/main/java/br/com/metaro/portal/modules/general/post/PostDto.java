@@ -1,8 +1,8 @@
 package br.com.metaro.portal.modules.general.post;
 
 import br.com.metaro.portal.core.dto.UserSummaryDto;
-import br.com.metaro.portal.util.File;
-import br.com.metaro.portal.util.FileDto;
+import br.com.metaro.portal.util.picture.Picture;
+import br.com.metaro.portal.util.picture.PictureDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ public class PostDto {
     private Instant createdAt;
     private Instant updateAt;
 
-    private List<FileDto> pictures = new ArrayList<>();
+    private List<PictureDto> pictures = new ArrayList<>();
 
     public PostDto(Post post) {
         id = post.getId();
@@ -30,8 +30,8 @@ public class PostDto {
         updateAt = post.getUpdateAt();
         author = new UserSummaryDto(post.getAuthor());
 
-        for (File file : post.getFiles()) {
-            this.pictures.add(new FileDto(file));
+        for (Picture picture : post.getPictures()) {
+            this.pictures.add(new PictureDto(picture));
         }
     }
 }

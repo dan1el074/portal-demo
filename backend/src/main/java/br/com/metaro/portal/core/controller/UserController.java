@@ -1,17 +1,21 @@
 package br.com.metaro.portal.core.controller;
 
-import br.com.metaro.portal.core.dto.MeDto;
-import br.com.metaro.portal.core.dto.UserDto;
-import br.com.metaro.portal.core.dto.UserInsertDto;
-import br.com.metaro.portal.core.dto.UserMinDto;
+import br.com.metaro.portal.core.dto.*;
 import br.com.metaro.portal.core.services.UserService;
+import br.com.metaro.portal.modules.general.post.PostDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,6 +31,13 @@ public class UserController {
         return ResponseEntity.ok(dtos);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL')")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<UserEditDto> findById(@PathVariable Long id) {
+        UserEditDto dto = userService.findById(id);
+        return ResponseEntity.ok(dto);
+    }
+
     @GetMapping(value = "/me")
     public ResponseEntity<MeDto> getMe() {
         MeDto dto = userService.getMe();
@@ -35,13 +46,46 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL')")
     @PostMapping
-    public ResponseEntity<UserDto> insert(@RequestBody UserInsertDto insertDto) {
-        UserDto dto = userService.insert(insertDto);
+    public ResponseEntity<List<UserMinDto>> insert(
+            @RequestPart(name = "picture", required = false) MultipartFile picture,
+            @RequestPart("name") String name,
+            @RequestPart("position") String position,
+            @RequestPart("email") String email,
+            @RequestPart("birthDate") String birthDate,
+            @RequestPart("username") String username,
+            @RequestPart("password") String password,
+            @RequestPart("roles") String roles,
+            @RequestPart("activated") String activated
+    ) throws IOException {
+        UserMinDto userMinDto = userService.insert(new UserInsertDto(picture, name, position, email, birthDate, username,
+                password, roles, activated));
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
-                .buildAndExpand(dto.getId())
+                .buildAndExpand(userMinDto.getId())
                 .toUri();
-        return ResponseEntity.created(uri).body(dto);
+        List<UserMinDto> dtos = userService.findAll();
+        return ResponseEntity.created(uri).body(dtos);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL')")
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<List<UserMinDto>> update(
+            @PathVariable Long id,
+            @RequestPart(name = "picture", required = false) MultipartFile picture,
+            @RequestPart(name = "resetPicture", required = false) String resetPicture,
+            @RequestPart("name") String name,
+            @RequestPart("position") String position,
+            @RequestPart("email") String email,
+            @RequestPart("birthDate") String birthDate,
+            @RequestPart("username") String username,
+            @RequestPart(name = "password", required = false) String password,
+            @RequestPart("roles") String roles,
+            @RequestPart("activated") String activated
+    ) throws IOException {
+        UserMinDto userMinDto = userService.update(id, new UserInsertDto(picture, name, position, email, birthDate,
+                username, password, roles, activated), resetPicture);
+        List<UserMinDto> dtos = userService.findAll();
+        return ResponseEntity.ok(dtos);
     }
 }

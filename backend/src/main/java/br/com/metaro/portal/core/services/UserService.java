@@ -6,21 +6,25 @@ import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.RoleRepository;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.repositories.projections.UserDetailsProjection;
+import br.com.metaro.portal.util.picture.Picture;
+import br.com.metaro.portal.util.picture.PictureService;
+import br.com.metaro.portal.util.picture.PictureType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -28,11 +32,23 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private PictureService pictureService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<UserMinDto> findAll() {
         List<User> users = userRepository.findAll();
         return users.stream().map(UserMinDto::new).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public UserEditDto findById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> {
+            throw new RuntimeException("Erro ao buscar usuário por ID");
+        });
+        return new UserEditDto(user);
     }
 
     @Transactional(readOnly = true)
@@ -42,30 +58,104 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDto insert(UserInsertDto dto) {
+    public UserMinDto insert(UserInsertDto dto) throws IOException {
         User user = new User();
-        dtoToEntity(dto, user);
+        rulesForInsert(dto, user);
         user = userRepository.save(user);
-        return new UserDto(user);
+        return new UserMinDto(user);
     }
 
-    private void dtoToEntity(UserInsertDto dto, User entity) {
+    @Transactional
+    public UserMinDto update(Long id, UserInsertDto dto, String resetPicture) throws IOException {
+        User user = userRepository.getReferenceById(id);
+        rulesForUpdate(dto, user, resetPicture);
+        user = userRepository.save(user);
+        return new UserMinDto(user);
+    }
+
+    private void rulesForUpdate(UserInsertDto dto, User entity, String resetPicture) throws IOException {
         entity.setName(dto.getName());
         entity.setPosition(dto.getPosition());
-        entity.setBirthDate(dto.getBirthDate());
+        entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         entity.setEmail(dto.getEmail());
-        entity.setPicture(dto.getPicture());
         entity.setUsername(dto.getUsername());
-        entity.setPassword(dto.getPassword());
-        entity.setActivated(true);
+        entity.setActivated(dto.getActivated().equals("true"));
+        entity.setUpdateAt(Instant.now());
+        entity.setRoles(new HashSet<>());
+
+        if (dto.getPassword() != null) {
+            String newPassword = passwordEncoder.encode(dto.getPassword());
+            entity.setPassword(newPassword);
+        }
+
+        List<Long> rolesList = Arrays.stream(dto.getRoles().split(","))
+                .map(String::trim)
+                .map(Long::valueOf)
+                .toList();
+        for (Long roleId : rolesList) {
+            Role role = roleRepository.getReferenceById(roleId);
+            entity.addRole(role);
+        }
+
+        if (resetPicture != null && resetPicture.equals("true")) {
+            if (entity.getPicture() != null) {
+                pictureService.delete(entity.getPicture().getId());
+            }
+
+            entity.setPicture(null);
+            return;
+        }
+
+        if (dto.getPicture() != null)  {
+            List<MultipartFile> fileList = new ArrayList<>();
+            fileList.add(dto.getPicture());
+            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE).get(0);
+
+            if (entity.getPicture() != null) {
+                pictureService.delete(entity.getPicture().getId());
+            }
+
+            entity.setPicture(picture);
+        }
+    }
+
+    private void rulesForInsert(UserInsertDto dto, User entity) throws IOException {
+        entity.setName(dto.getName());
+        entity.setPosition(dto.getPosition());
+        entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
+        entity.setEmail(dto.getEmail());
+        entity.setUsername(dto.getUsername());
+        entity.setActivated(dto.getActivated().equals("true"));
         entity.setCreatedAt(Instant.now());
         entity.setUpdateAt(Instant.now());
         entity.setRoles(new HashSet<>());
 
-        for (Long roleId : dto.getRoles()) {
+        String newPassword = passwordEncoder.encode(dto.getPassword());
+        entity.setPassword(newPassword);
+
+        if (dto.getPicture() != null)  {
+            List<MultipartFile> fileList = new ArrayList<>();
+            fileList.add(dto.getPicture());
+            entity.setPicture(pictureService.saveFiles(fileList, PictureType.PROFILE).get(0));
+        }
+
+        List<Long> rolesList = Arrays.stream(dto.getRoles().split(","))
+                .map(String::trim)
+                .map(Long::valueOf)
+                .toList();
+        for (Long roleId : rolesList) {
             Role role = roleRepository.getReferenceById(roleId);
             entity.addRole(role);
         }
+    }
+
+    protected User authenticate() {
+        // pega os claims do token
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
+        String username = jwtPrincipal.getClaim("username");
+
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Email not found"));
     }
 
     @Override
@@ -83,14 +173,5 @@ public class UserService implements UserDetailsService {
                     Role(projection.getRoleId(),projection.getAuthority(), projection.getTitle(), projection.getParent()));
         }
         return user;
-    }
-
-    protected User authenticate() {
-        // pega os claims do token
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
-        String username = jwtPrincipal.getClaim("username");
-
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Email not found"));
     }
 }

@@ -3,6 +3,7 @@ package br.com.metaro.portal.core.dto;
 import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.util.picture.PictureDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class MeDto {
     private String email;
     private String position;
     private LocalDate birthDate;
-    private String picture;
+    private Long pictureId;
     private Boolean activated;
     private String username;
 
@@ -33,9 +34,12 @@ public class MeDto {
         this.email = user.getEmail();
         this.position = user.getPosition();
         this.birthDate = user.getBirthDate();
-        this.picture = user.getPicture();
         this.activated = user.getActivated();
         this.username = user.getUsername();
+
+        if (user.getPicture() != null) {
+            this.pictureId = user.getPicture().getId();
+        }
 
         for(Role role : user.getRoles()) {
             roles.add(new RoleDto(role));

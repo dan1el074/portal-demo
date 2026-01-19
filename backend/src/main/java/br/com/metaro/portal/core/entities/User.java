@@ -1,6 +1,7 @@
 package br.com.metaro.portal.core.entities;
 
 import br.com.metaro.portal.modules.general.post.Post;
+import br.com.metaro.portal.util.picture.Picture;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +26,6 @@ public class User implements UserDetails {
     private String email;
     private String position;
     private LocalDate birthDate;
-    private String picture;
     private Boolean activated;
     @Column(unique = true)
     private String username;
@@ -46,6 +46,10 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "picture_id", unique = true)
+    private Picture picture;
 
     public void addRole(Role role) {
         roles.add(role);

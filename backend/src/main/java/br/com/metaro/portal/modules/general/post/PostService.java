@@ -2,9 +2,9 @@ package br.com.metaro.portal.modules.general.post;
 
 import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.services.UserService;
-import br.com.metaro.portal.util.File;
-import br.com.metaro.portal.util.FileService;
-import br.com.metaro.portal.util.FileType;
+import br.com.metaro.portal.util.picture.Picture;
+import br.com.metaro.portal.util.picture.PictureService;
+import br.com.metaro.portal.util.picture.PictureType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +25,7 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private FileService fileService;
+    private PictureService pictureService;
     @Autowired
     private UserService userService;
 
@@ -48,21 +48,21 @@ public class PostService {
         Instant now = Instant.now();
 
         Post post = new Post();
-        if (files != null) post.setFiles(fileService.save(files, FileType.POST));
+        if (files != null) post.setPictures(pictureService.saveFiles(files, PictureType.POST));
         post.setContent(content);
         post.setAuthor(userRepository.getReferenceById(userService.getMe().getId()));
         post.setCreatedAt(now);
         post.setUpdateAt(now);
         post = postRepository.save(post);
 
-        List<File> fileList = new ArrayList<>();
-        for (File file : post.getFiles()) {
-            file.setPost(post);
-            fileList.add(file);
+        List<Picture> pictureList = new ArrayList<>();
+        for (Picture picture : post.getPictures()) {
+            picture.setPost(post);
+            pictureList.add(picture);
         }
 
-        post.setFiles(fileList);
-        fileService.setPost(fileList);
+        post.setPictures(pictureList);
+        pictureService.savePictures(pictureList);
 
         return new PostDto(post);
     }

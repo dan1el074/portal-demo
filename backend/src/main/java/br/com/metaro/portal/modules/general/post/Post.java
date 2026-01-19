@@ -1,7 +1,7 @@
 package br.com.metaro.portal.modules.general.post;
 
 import br.com.metaro.portal.core.entities.User;
-import br.com.metaro.portal.util.File;
+import br.com.metaro.portal.util.picture.Picture;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,5 +27,5 @@ public class Post {
     private User author;
 
     @OneToMany(mappedBy = "post")
-    private List<File> files = new ArrayList<>();
+    private List<Picture> pictures = new ArrayList<>();
 }

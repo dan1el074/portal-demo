@@ -2,12 +2,10 @@ package br.com.metaro.portal.core.dto;
 
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
-import br.com.metaro.portal.util.picture.PictureDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,37 +13,33 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class UserDto {
+public class UserEditDto {
     private Long id;
+    private Long pictureId;
     private String name;
-    private String email;
     private String position;
+    private String email;
     private LocalDate birthDate;
-    private PictureDto picture;
-    private Boolean activated;
     private String username;
-    private String password;
-    private Instant createdAt;
-    private Instant updateAt;
-    private List<RoleDto> roles;
+    private List<Long> roles;
+    private Boolean activated;
 
-    public UserDto(User user) {
+    public UserEditDto(User user) {
         id = user.getId();
         name = user.getName();
-        email = user.getEmail();
         position = user.getPosition();
+        email = user.getEmail();
         birthDate = user.getBirthDate();
-        picture = new PictureDto(user.getPicture());
-        activated = user.getActivated();
         username = user.getUsername();
-        password = user.getPassword();
-        createdAt = user.getCreatedAt();
-        updateAt = user.getUpdateAt();
-
+        activated = user.getActivated();
         roles = new ArrayList<>();
+
+        if (user.getPicture() != null) {
+            pictureId = user.getPicture().getId();
+        }
+
         for (Role role : user.getRoles()) {
-            RoleDto roleDto = new RoleDto(role);
-            roles.add(roleDto);
+            roles.add(role.getId());
         }
     }
 }

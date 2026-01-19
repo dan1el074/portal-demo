@@ -1,6 +1,7 @@
 package br.com.metaro.portal.core.dto;
 
 import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.util.picture.PictureDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.time.Instant;
 @Getter
 public class UserMinDto {
     private Long id;
-    private String picture;
+    private Long pictureId;
     private String name;
     private String username;
     private String position;
@@ -22,12 +23,15 @@ public class UserMinDto {
 
     public UserMinDto(User user) {
         this.id = user.getId();
-        this.picture = user.getPicture();
         this.name = user.getName();
         this.username = user.getUsername();
         this.position = user.getPosition();
         this.email = user.getEmail();
         this.activated = user.getActivated();
         this.updateAt = user.getUpdateAt();
+
+        if (user.getPicture() != null) {
+            this.pictureId = user.getPicture().getId();
+        }
     }
 }

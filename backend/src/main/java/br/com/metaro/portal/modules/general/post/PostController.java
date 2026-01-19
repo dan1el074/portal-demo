@@ -37,7 +37,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostDto> insert(
             @RequestPart("content") String content,
-            @RequestPart(name = "files", required = false)  List<MultipartFile> files
+            @RequestPart(name = "files", required = false) List<MultipartFile> files
     ) throws IOException {
         PostDto newDto = postService.insert(content, files);
         URI uri = ServletUriComponentsBuilder
