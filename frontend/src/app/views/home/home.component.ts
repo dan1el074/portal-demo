@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit {
     {
       id: 3,
       author: 'Aline Moterle',
-      authorPicture: '.\\assets\\images\\avatars\\10.jpg',
+      authorPictureId: 2,
       position: 'Recursos Humanos',
       instant: '6 horas atrás',
       content:
@@ -107,7 +107,7 @@ export class HomeComponent implements OnInit {
     {
       id: 1,
       author: 'Aline Moterle',
-      authorPicture: '.\\assets\\images\\avatars\\10.jpg',
+      authorPictureId: 2,
       position: 'Recursos Humanos',
       instant: '2 horas atrás',
       content: '',
@@ -116,7 +116,7 @@ export class HomeComponent implements OnInit {
     {
       id: 2,
       author: 'Juliano Bortoletti',
-      authorPicture: '.\\assets\\images\\avatars\\11.jpg',
+      authorPictureId: 3,
       position: 'Marketing',
       instant: '2 horas atrás',
       content:
@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
     {
       id: 4,
       author: 'Aline Moterle',
-      authorPicture: '.\\assets\\images\\avatars\\10.jpg',
+      authorPictureId: 2,
       position: 'Recursos Humanos',
       instant: '2 horas atrás',
       content:

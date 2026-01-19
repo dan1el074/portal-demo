@@ -3,7 +3,7 @@ import { ImageCard } from "./image.interface";
 export interface PostCard {
   id: number;
   author: string,
-  authorPicture: string,
+  authorPictureId: number,
   position: string,
   instant: string,
   content: string,

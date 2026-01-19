@@ -11,8 +11,10 @@
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
       <td mat-cell *matCellDef="let user">
-        <c-avatar [src]="user.picture || '.\\assets\\images\\avatars\\default.png'" />
-        {{ user.name }}
+        <span (click)="editUser(user.id)" class="edit">
+          <c-avatar [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'" />
+          {{ user.name }}
+        </span>
       </td>
     </ng-container>
     <ng-container matColumnDef="username">
@@ -34,7 +36,7 @@
     <ng-container matColumnDef="activated">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let user" class="btn-container multiple">
-        <button color="secondary" cButton class="custom-btn">
+        <button cButton (click)="editUser(user.id)" color="secondary" class="custom-btn">
           <svg [cIcon]="icons.cilPencil" size="sm"></svg>
         </button>
         <button cButton cModalToggle="staticBackdropModal-{{ user.id }}" color="secondary" class="custom-btn delete">

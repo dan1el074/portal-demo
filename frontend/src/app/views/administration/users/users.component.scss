@@ -8,6 +8,29 @@ c-tabs.header-space {
 
 button {
   margin: 10px 0 20px 0;
+
+  &:not(.hide).close-button {
+    display: flex;
+    gap: 4px;
+  }
+}
+
+.close-icon {
+  color: var(--cui-nav-link-color);
+  width: 14px !important;
+  height: 14px !important;
+
+  &:hover {
+    color: red;
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.remove-outline {
+  outline: none;
 }
 
 @media screen and (max-width: 720px) {

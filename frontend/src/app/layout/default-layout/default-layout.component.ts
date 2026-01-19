@@ -53,7 +53,7 @@ export class DefaultLayoutComponent implements OnInit {
     email: '',
     position: null,
     birthDate: '',
-    picture: null,
+    pictureId: null,
     activated: true,
     username: '',
     roles: [],

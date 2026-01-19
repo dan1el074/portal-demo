@@ -3,7 +3,7 @@ import { Notification } from './notification.interface';
 
 export interface UserTable {
   id: number;
-  picture: string | null;
+  pictureId: string | null;
   name: string;
   username: string;
   position: string;
@@ -18,7 +18,7 @@ export interface Me {
   email: string;
   position: string | null;
   birthDate: string;
-  picture: string | null;
+  pictureId: number | null;
   activated: boolean;
   username: string;
   roles: Array<Role>;
@@ -27,11 +27,23 @@ export interface Me {
 
 export interface UserMinData {
   id: number;
-  picture: string | null;
+  pictureId: number | null;
   name: string;
   username: string;
   position: string;
   email: string;
   activated: boolean;
   updateAt: string;
+}
+
+export interface UserData {
+  id: number;
+  pictureId: number | null;
+  name: string;
+  position: string;
+  email: string;
+  birthDate: string;
+  username: string;
+  roles: Array<Role>;
+  activated: boolean;
 }

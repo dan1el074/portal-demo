@@ -1,6 +1,6 @@
 import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -10,6 +10,7 @@ import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirect
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
 import { UserTable } from '../../../app/interface/user.interface';
 import { UserDeleteModalComponent } from '../../modal/user-delete-modal/user-delete-modal.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-user-table',
@@ -35,25 +36,31 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatSort) sort!: MatSort;
   @Input() data: Array<UserTable> = [];
   @Input() noMargin: boolean = false;
+  @Output() updateUser = new EventEmitter<number>();
 
+  protected apiUrl = environment.apiUrl;
   protected displayedColumns: string[] = ['name', 'username', 'position', 'email', 'updateAt', 'activated'];
   protected dataSource = new MatTableDataSource<UserTable>([]);
   protected icons = { cilSearch, cilPencil, cilX };
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (this.data) {
       this.dataSource.data = this.data;
     }
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  applyFilter(event: Event) {
+  applyFilter(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.dataSource.filter = value.trim().toLowerCase();
+  }
+
+  editUser(id: number): void {
+    this.updateUser.emit(id);
   }
 
 }

@@ -4,22 +4,46 @@
       <c-card-body>
         <h4 cCardTitle>Usuários</h4>
 
-        <c-tabs [activeItemKey]="0" class="header-space">
+        <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
           <c-tabs-list variant="underline-border">
             <button cTab [itemKey]="0">Todos</button>
             <button cTab [itemKey]="1">Desativados</button>
+            <button cTab [itemKey]="2" [class.hide]="!newUserTab" class="close-button">
+              Novo
+              <div (click)="toggleNewUserTab(false)">
+                <svg [cIcon]="icons.cilX" class="close-icon"></svg>
+              </div>
+            </button>
+            <button cTab [itemKey]="3" [class.hide]="!editUserTab" class="close-button">
+              {{ editUserData.name }}
+              <div (click)="toggleEditUserTab(false)">
+                <svg [cIcon]="icons.cilX" class="close-icon"></svg>
+              </div>
+            </button>
           </c-tabs-list>
           <c-tabs-content>
-            <c-tab-panel class="p-3" [itemKey]="0">
-              <button cButton color="primary">
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="0">
+              <button cButton color="primary" (click)="toggleNewUserTab(true)">
                 <svg [cIcon]="icons.cilPlus" size="md"></svg>
                 Novo usuário
               </button>
-              <app-user-table [data]="activeUsers" [noMargin]="true"></app-user-table>
+              <app-user-table [data]="activeUsers" [noMargin]="true" (updateUser)="updateUserTask($event)"></app-user-table>
             </c-tab-panel>
 
-            <c-tab-panel class="p-3" [itemKey]="1">
-              <app-user-table [data]="inactiveUsers"></app-user-table>
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="1">
+              <button cButton color="primary" (click)="toggleNewUserTab(true)">
+                <svg [cIcon]="icons.cilPlus" size="md"></svg>
+                Novo usuário
+              </button>
+              <app-user-table [data]="inactiveUsers" [noMargin]="true" (updateUser)="updateUserTask($event)"></app-user-table>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!newUserTab">
+              <app-user-form (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="3" [class.hide]="!editUserTab">
+              <app-user-edit-form [userData]="editUserData" (editTask)="onUpdateUser($event)" (exitTask)="toggleEditUserTab(false)"></app-user-edit-form>
             </c-tab-panel>
           </c-tabs-content>
         </c-tabs>

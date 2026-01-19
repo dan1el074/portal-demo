@@ -5,6 +5,7 @@ import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeSe
 import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { Me } from '../../../interface/user.interface';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-default-header',
@@ -28,7 +29,7 @@ import { Me } from '../../../interface/user.interface';
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   @Input() user!: Me;
-
+  protected apiUrl = environment.apiUrl;
   readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX };
   readonly sidebarId = input('sidebar1');
   readonly #colorModeService = inject(ColorModeService);

@@ -1,0 +1,121 @@
+<form [formGroup]="createForm" (ngSubmit)="onSubmit()" autocomplete="off">
+  <h4 class="mb-4">Novo usuário</h4>
+
+  <c-row class="align-items-start">
+    <c-col>
+      <div class="avatar-container">
+        <div class="image-container" *ngIf="file; else placeholder"
+        [ngStyle]="{backgroundImage: 'url(' + file + ')'}">
+        </div>
+
+        <ng-template #placeholder>
+          <div class="image-container avatar-placeholder"></div>
+        </ng-template>
+
+        <label for="fileInput">
+          <div class="icon-wrapper">
+            <input #fileInput id="fileInput" type="file" accept="image/*" (change)="onFileChange($event)" />
+            <svg [cIcon]="icons.cilPencil" size="lg" title="List Icon"></svg>
+          </div>
+        </label>
+
+        @if (file) {
+          <button type="button" class="delete-icon" (click)="removePicture()">
+            <svg [cIcon]="icons.cilX" size="lg" title="List Icon"></svg>
+          </button>
+        }
+      </div>
+
+      @if (createForm.get('picture')?.errors?.['invalidImageType']) {
+        <div class="text-danger">
+          Apenas imagens são permitidas
+        </div>
+      }
+      @if (createForm.get('picture')?.errors?.['imageTooLarge']) {
+        <div class="text-danger">
+          A imagem deve ter no máximo 2MB
+        </div>
+      }
+
+      <c-modal id="modal" [visible]="modalReady" (visibleChange)="handleModalChange($event)" backdrop="static" alignment="center">
+        <c-modal-header>
+          <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
+          <h5 cModalTitle>Nova imagem</h5>
+          <button (click)="toggleModal(true)" cButtonClose></button>
+        </c-modal-header>
+
+        <c-modal-body>
+          <image-cropper
+            [imageChangedEvent]="imageChangedEvent"
+            [maintainAspectRatio]="true"
+            [aspectRatio]="1 / 1"
+            [resizeToWidth]="256"
+            format="png"
+            (imageCropped)="imageCropped($event)">
+          </image-cropper>
+        </c-modal-body>
+
+        <c-modal-footer>
+          <button cButton color="secondary" (click)="toggleModal(true)">
+            Cancelar
+          </button>
+          <button cButton color="primary" (click)="processImage()">Salvar</button>
+        </c-modal-footer>
+      </c-modal>
+
+      <h3 class="username">
+        {{ createForm.get('name')?.value ? createForm.get('name')?.value : 'Nome Sobrenome' }}
+        <span>{{ createForm.get('position')?.value ? '● ' + createForm.get('position')?.value : '' }}</span>
+      </h3>
+    </c-col>
+
+    <c-col>
+      <div [cFormFloating]="true" class="mb-3">
+        <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: createForm.get('name')?.errors != null ? false : undefined" id="name" type="text" placeholder="Nome" />
+        <label cLabel for="name">Nome</label>
+      </div>
+      <div cFormFloating class="mb-3">
+        <input cFormControl formControlName="position" [valid]="!showErrors ? undefined: createForm.get('position')?.errors != null ? false : undefined" id="position" type="text" placeholder="Setor" />
+        <label cLabel for="position">Setor</label>
+      </div>
+      <div cFormFloating class="mb-3">
+        <input cFormControl formControlName="email" [valid]="!showErrors ? undefined: createForm.get('email')?.errors != null ? false : undefined" id="email" type="email" placeholder="E-mail" />
+        <label cLabel for="email">E-mail</label>
+      </div>
+      <div cFormFloating class="mb-3">
+        <input cFormControl formControlName="birthDate" [valid]="!showErrors ? undefined: createForm.get('birthDate')?.errors != null ? false : undefined" id="bithDate" type="date" placeholder="Data de nascimento" />
+        <label cLabel for="bithDate">Data de nascimento</label>
+      </div>
+      <div cFormFloating class="mb-3">
+        <input cFormControl formControlName="username" [valid]="!showErrors ? undefined: createForm.get('username')?.errors != null ? false : undefined" id="nUN" type="text" placeholder="Nome de usuário" autocomplete="new-username" />
+        <label cLabel for="nUN">Nome de usuário</label>
+      </div>
+      <div cFormFloating class="mb-3">
+        <input cFormControl formControlName="password" [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : undefined" id="nPW" type="password" placeholder="Nova senha" autocomplete="new-password" />
+        <label cLabel for="nPW">Senha</label>
+      </div>
+      <div cFormFloating>
+        <input cFormControl formControlName="repeatPassword" [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : createForm.hasError('passwordMismatch') ? false : undefined" id="repeatPassword" type="password" placeholder="Senha" autocomplete="new-password" />
+        <label cLabel for="repeatPassword">Repetir senha</label>
+      </div>
+      @if (createForm.hasError('passwordMismatch') && createForm.touched) {
+        <div class="text-danger">
+          As senhas não coincidem
+        </div>
+      }
+      <div cFormFloating class="mb-3 fix-margin">
+        <input cFormControl formControlName="roles" id="roles" type="text" placeholder="Acessos" />
+        <label cLabel for="roles">Acessos</label>
+      </div>
+      <c-form-check>
+        <input cFormCheckInput formControlName="disabled" id="checkOne" type="checkbox" />
+        <label cFormCheckLabel for="checkOne">Desativar usuário</label>
+      </c-form-check>
+    </c-col>
+  </c-row>
+
+  <div class="button-container">
+    <button cButton (click)="onExit()" color="secondary">Cancelar</button>
+    <button cButton type="submit" color="primary">Criar</button>
+  </div>
+</form>

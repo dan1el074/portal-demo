@@ -1,0 +1,144 @@
+form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px 40px 0;
+
+  h4 {
+    text-align: start;
+  }
+
+  h3 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    &.username {
+      margin-bottom: 20px;
+
+      span {
+        color: var(--cui-secondary-color);
+        font-size: 19px;
+        padding-top: 4px;
+      }
+    }
+  }
+
+  .avatar-container {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+
+    .image-container {
+      height: 200px;
+      width: 200px;
+      z-index: 1;
+      border-radius: 50%;
+      background-color: #fff;
+      background-position: center;
+      background-size: cover;
+      box-shadow: 0 10px 20px 20px #00000015;
+
+      &.avatar-placeholder{
+        background-image: url('../../../assets/images/avatars/default.png');
+      }
+    }
+
+    .icon-wrapper {
+      position: absolute;
+      height: 40px;
+      width: 40px;
+      padding: .35rem;
+      background-color:#2962FF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      right: 8px;
+      top: 156px;
+      z-index: 2;
+      cursor: pointer;
+
+      &:hover {
+        transition: all .25s;
+        background-color: #1d4ac7;
+      }
+
+      .icon {
+        color: white;
+      }
+
+      label {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      input[type='file'] {
+        display: none;
+      }
+    }
+
+    .delete-icon {
+      position: absolute;
+      right: -32px;
+      top: 157px;
+      padding: 9px 9px 6px;
+      border-radius: 100px;
+      border: none;
+      background-color: red;
+      z-index: 2;
+      cursor: pointer;
+      transition: .3s;
+
+      &:hover {
+        background-color: rgb(204, 0, 0);
+      }
+
+      .icon {
+        color: white;
+      }
+    }
+  }
+
+  .text-danger {
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  input {
+    border-radius: 4px;
+  }
+
+  select {
+    border-radius: 4px;
+    padding: 16px 12px;
+
+    option:first-child {
+      display: none;
+    }
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: right;
+    gap: 8px;
+  }
+
+  .fix-margin {
+    margin-top: 16px;
+  }
+
+}
+
+@media (max-width: 720px) {
+  form {
+    padding: 20px 0 0;
+
+    c-row.row {
+      flex-direction: column;
+    }
+  }
+}

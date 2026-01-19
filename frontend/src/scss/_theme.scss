@@ -152,7 +152,7 @@ c-container.scroll-x {
 }
 
 table {
-  &.stripe tbody tr:nth-child(odd) {
+  &.stripe tbody tr:nth-child(even) {
     background-color: rgba(var(--cui-emphasis-color-rgb), 0.06);
   }
 
@@ -337,6 +337,10 @@ mat-paginator.pagination {
 
 .accordion-button {
   padding: 10px 16px;
+}
+
+.bell.fix::after {
+  display: none;
 }
 
 .form-control:focus {

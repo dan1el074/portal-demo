@@ -1,7 +1,13 @@
 <c-card class="border">
   <c-card-body>
     <c-container class="flex" [class.margin]="post.content.length > 0">
-      <c-avatar shape="rounded-1" size="xl" [src]="post.authorPicture" textColor="primary" alt="User avatar" />
+      <c-avatar
+        shape="rounded-1"
+        size="xl"
+        [src]="post.authorPictureId ? apiUrl + '/images/' + post.authorPictureId : './assets/images/avatars/default.png'"
+        textColor="primary"
+        alt="User avatar"
+      />
       <c-container>
         <p cCardText class="no-margin">
           <strong>{{ post.author }}</strong>
