@@ -32,56 +32,6 @@ export const navItems: INavData[] = [
   },
   {
     title: true,
-    name: 'Ferramentas'
-  },
-  {
-    name: 'Gestão',
-    url: '/administration',
-    iconComponent: { name: 'cilCursor' },
-    children: [
-      {
-        name: 'Usuários',
-        url: '/administration/users',
-        icon: 'nav-icon-bullet'
-      }
-    ]
-  },
-  {
-    name: 'Geral',
-    url: '/general',
-    iconComponent: { name: 'cilFork' },
-    children: [
-      // {
-      //   name: 'Controle Interno',
-      //   url: '/general/internal-control',
-      //   icon: 'nav-icon-bullet'
-      // },
-      {
-        name: 'Matérias primas',
-        url: '/general/raw-materials',
-        icon: 'nav-icon-bullet'
-      },
-      {
-        name: 'Para Fazer',
-        url: '/general/todo',
-        icon: 'nav-icon-bullet'
-      }
-    ]
-  },
-  {
-    name: 'Qualidade',
-    url: '/quality',
-    iconComponent: { name: 'cilFork' },
-    children: [
-      {
-        name: 'Checklist',
-        url: '/quality/checklist',
-        icon: 'nav-icon-bullet'
-      }
-    ]
-  },
-  {
-    title: true,
     name: 'Links',
     class: 'mt-auto'
   },

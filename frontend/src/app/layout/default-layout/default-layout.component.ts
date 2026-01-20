@@ -4,6 +4,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import {
   ContainerComponent,
+  INavData,
   ShadowOnScrollDirective,
   SidebarBrandComponent,
   SidebarComponent,
@@ -16,13 +17,6 @@ import {
 import { DefaultFooterComponent, DefaultHeaderComponent } from './';
 import { navItems } from './_nav';
 import { Me } from '../../interface/user.interface';
-
-function isOverflown(element: HTMLElement) {
-  return (
-    element.scrollHeight > element.clientHeight ||
-    element.scrollWidth > element.clientWidth
-  );
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -46,7 +40,7 @@ function isOverflown(element: HTMLElement) {
   ]
 })
 export class DefaultLayoutComponent implements OnInit {
-  public navItems = [...navItems];
+  public navItems!: Array<INavData>;
   protected user: Me = {
     id: 0,
     name: '',
@@ -62,9 +56,47 @@ export class DefaultLayoutComponent implements OnInit {
 
   constructor(private authGuardService: AuthGuard) {}
 
-  ngOnInit() {
+  public ngOnInit() {
     this.authGuardService.getUser().subscribe(user => {
       this.user = user;
+      this.updateTools();
     });
+  }
+
+  private updateTools(): void {
+    const customNav: Array<INavData> = [];
+
+    this.user.roles.forEach(role => {
+      if (role.authority == 'ROLE_USER' || role.authority == 'ROLE_ADMIN') return;
+
+      const toolList = {
+        name: role.parent,
+        url: role.parentUrl,
+        iconComponent: { name: role.parent == 'Gestão' ? 'cilCursor' : 'cilFork' },
+        children: []
+      }
+
+      let index = customNav.findIndex(tool => tool.name == role.parent);
+
+      if (index < 0) {
+        if (role.parent == 'Gestão') {
+          customNav.unshift(toolList);
+          index = 0;
+        } else {
+          customNav.push(toolList);
+          index = customNav.length - 1;
+        }
+      }
+
+      customNav[index].children?.push({
+        name: role.title,
+        url: role.parentUrl + role.titleUrl,
+        icon: 'nav-icon-bullet'
+      });
+    })
+
+    const tempNavItems = [...navItems];
+    tempNavItems.splice(6, 0, customNav.length > 0 ? {title: true, name: 'Ferramentas'} : {}, ...customNav);
+    this.navItems = [...tempNavItems];
   }
 }

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from 'src/app/config/authGuard';
+import { AuthGuard } from '../../config/authGuard';
 
 export const routes: Routes = [
   {
@@ -10,7 +10,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'checklist',
+        redirectTo: '/',
         pathMatch: 'full'
       },
       {
