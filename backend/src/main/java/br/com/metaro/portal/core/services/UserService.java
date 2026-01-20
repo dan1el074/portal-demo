@@ -73,6 +73,13 @@ public class UserService implements UserDetailsService {
         return new UserMinDto(user);
     }
 
+    @Transactional
+    public void deactivateUser(Long id) {
+        User user = userRepository.getReferenceById(id);
+        user.setActivated(false);
+        userRepository.save(user);
+    }
+
     private void rulesForUpdate(UserInsertDto dto, User entity, String resetPicture) throws IOException {
         entity.setName(dto.getName());
         entity.setPosition(dto.getPosition());

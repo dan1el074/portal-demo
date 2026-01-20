@@ -88,4 +88,13 @@ public class UserController {
         List<UserMinDto> dtos = userService.findAll();
         return ResponseEntity.ok(dtos);
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL')")
+    @PutMapping(value = "/deactivate-user/{id}")
+    public ResponseEntity<List<UserMinDto>> deactivateUser(@PathVariable Long id) {
+        this.userService.deactivateUser(id);
+        List<UserMinDto> dtos = userService.findAll();
+        return ResponseEntity.ok(dtos);
+    }
+
 }
