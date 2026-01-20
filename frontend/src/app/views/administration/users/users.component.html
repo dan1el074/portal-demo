@@ -35,7 +35,7 @@
                 <svg [cIcon]="icons.cilPlus" size="md"></svg>
                 Novo usuário
               </button>
-              <app-user-table [data]="inactiveUsers" [noMargin]="true" (deactivateTask)="deactivateUser($event)" (updateUser)="updateUserTask($event)"></app-user-table>
+              <app-user-table [data]="inactiveUsers" [hideDeactiveButton]="true" [noMargin]="true" (deactivateTask)="deactivateUser($event)" (updateUser)="updateUserTask($event)"></app-user-table>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!newUserTab">

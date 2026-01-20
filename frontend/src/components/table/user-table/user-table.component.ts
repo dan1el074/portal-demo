@@ -36,6 +36,7 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatSort) sort!: MatSort;
   @Input() data: Array<UserTable> = [];
   @Input() noMargin: boolean = false;
+  @Input() hideDeactiveButton: boolean = false;
   @Output() updateUser = new EventEmitter<number>();
   @Output() deactivateTask = new EventEmitter<number>();
 

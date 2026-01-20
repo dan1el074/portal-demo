@@ -39,11 +39,15 @@
         <button cButton (click)="editUser(user.id)" color="secondary" class="custom-btn">
           <svg [cIcon]="icons.cilPencil" size="sm"></svg>
         </button>
-        <button cButton cModalToggle="staticBackdropModal-{{ user.id }}" color="secondary" class="custom-btn delete">
-          <svg [cIcon]="icons.cilX" size="sm"></svg>
-        </button>
 
-        <app-user-delete-modal (deactivateTask)="deactivateUser($event)" [user]="user"></app-user-delete-modal>
+        @if (!hideDeactiveButton) {
+          <button cButton cModalToggle="staticBackdropModal-{{ user.id }}" color="secondary" class="custom-btn delete">
+            <svg [cIcon]="icons.cilX" size="sm"></svg>
+          </button>
+
+          <app-user-delete-modal (deactivateTask)="deactivateUser($event)" [user]="user"></app-user-delete-modal>
+        }
+
       </td>
     </ng-container>
 
