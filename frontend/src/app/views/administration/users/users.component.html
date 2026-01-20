@@ -7,7 +7,7 @@
         <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
           <c-tabs-list variant="underline-border">
             <button cTab [itemKey]="0">Todos</button>
-            <button cTab [itemKey]="1">Desativados</button>
+            <button cTab [itemKey]="1" [disabled]="inactiveUsers.length <= 0">Desativados</button>
             <button cTab [itemKey]="2" [class.hide]="!newUserTab" class="close-button">
               Novo
               <div (click)="toggleNewUserTab(false)">
@@ -27,7 +27,7 @@
                 <svg [cIcon]="icons.cilPlus" size="md"></svg>
                 Novo usuário
               </button>
-              <app-user-table [data]="activeUsers" [noMargin]="true" (updateUser)="updateUserTask($event)"></app-user-table>
+              <app-user-table [data]="activeUsers" [noMargin]="true" (deactivateTask)="deactivateUser($event)" (updateUser)="updateUserTask($event)"></app-user-table>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="1">
@@ -35,7 +35,7 @@
                 <svg [cIcon]="icons.cilPlus" size="md"></svg>
                 Novo usuário
               </button>
-              <app-user-table [data]="inactiveUsers" [noMargin]="true" (updateUser)="updateUserTask($event)"></app-user-table>
+              <app-user-table [data]="inactiveUsers" [noMargin]="true" (deactivateTask)="deactivateUser($event)" (updateUser)="updateUserTask($event)"></app-user-table>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!newUserTab">

@@ -56,4 +56,13 @@ export class UserService {
 
     return this.http.put<Array<UserMinData>>(this.api + '/' + id, data, { headers });
   }
+
+  public deactivateUser(id: number): Observable<any> {
+    const token = sessionStorage.getItem('auth-token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.put<Array<UserMinData>>(this.api + '/deactivate-user/' + id, null, { headers });
+  }
 }

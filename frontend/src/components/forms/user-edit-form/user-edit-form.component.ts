@@ -204,7 +204,7 @@ export class UserEditFormComponent implements OnChanges {
       formData.append(key, String(value));
     });
 
-    formData.append('activated', this.editForm.get('disabled') ? 'true' : 'false');
+    formData.append('activated', this.editForm.get('disabled')?.value ? 'false' : 'true');
 
     if (this.resetPicture) {
       formData.append('resetPicture', 'true');

@@ -11,7 +11,7 @@
     <button cButton color="secondary" cModalToggle="staticBackdropModal-{{ user.id }}">
       Cancelar
     </button>
-    <button cButton color="primary" class="delete">
+    <button cButton color="primary" cModalToggle="staticBackdropModal-{{ user.id }}" (click)="deactivateUser()" class="delete">
       Desativar
     </button>
   </c-modal-footer>

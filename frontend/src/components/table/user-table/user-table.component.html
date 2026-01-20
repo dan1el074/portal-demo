@@ -43,7 +43,7 @@
           <svg [cIcon]="icons.cilX" size="sm"></svg>
         </button>
 
-        <app-user-delete-modal [user]="user"></app-user-delete-modal>
+        <app-user-delete-modal (deactivateTask)="deactivateUser($event)" [user]="user"></app-user-delete-modal>
       </td>
     </ng-container>
 

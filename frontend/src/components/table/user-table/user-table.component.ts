@@ -37,6 +37,7 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
   @Input() data: Array<UserTable> = [];
   @Input() noMargin: boolean = false;
   @Output() updateUser = new EventEmitter<number>();
+  @Output() deactivateTask = new EventEmitter<number>();
 
   protected apiUrl = environment.apiUrl;
   protected displayedColumns: string[] = ['name', 'username', 'position', 'email', 'updateAt', 'activated'];
@@ -61,6 +62,10 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
 
   editUser(id: number): void {
     this.updateUser.emit(id);
+  }
+
+  deactivateUser(id: number) {
+    this.deactivateTask.emit(id);
   }
 
 }

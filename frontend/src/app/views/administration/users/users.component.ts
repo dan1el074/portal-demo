@@ -150,4 +150,16 @@ export class UsersComponent implements OnInit {
       complete: () => this.toggleEditUserTab(false),
     });
   }
+
+  protected deactivateUser(id: number): void {
+    this.userService.deactivateUser(id).subscribe({
+      next: (data: Array<UserTable>) => {
+        this.updateUsers(data);
+        this.toasterService.success("Usuário editado com sucesso!");
+      },
+      error: (e: any) => {
+        this.toasterService.error('Erro ao editar usuário!', e);
+      }
+    })
+  }
 }

@@ -168,7 +168,7 @@ export class UserFormComponent {
     });
 
     if (this.croppedImage) formData.append('picture', this.croppedImage, 'profile.png');
-    formData.append('activated', this.createForm.get('disabled') ? 'true' : 'false');
+    formData.append('activated', this.createForm.get('disabled') ? 'false' : 'true');
 
     this.createTask.emit(formData);
     this.onExit();
