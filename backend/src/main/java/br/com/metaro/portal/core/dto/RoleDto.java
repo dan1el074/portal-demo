@@ -12,12 +12,16 @@ public class RoleDto {
     private Long id;
     private String authority;
     private String title;
+    private String titleUrl;
     private String parent;
+    private String parentUrl;
 
     public RoleDto(Role role) {
-        this.id = role.getId();
-        this.authority = role.getAuthority();
-        this.title = role.getTitle();
-        this.parent = role.getParent();
+        id = role.getId();
+        authority = role.getAuthority();
+        title = role.getTitle();
+        titleUrl = role.getTitleUrl();
+        parent = role.getParent();
+        parentUrl = role.getParentUrl();
     }
 }

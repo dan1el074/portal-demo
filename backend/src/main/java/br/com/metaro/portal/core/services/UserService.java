@@ -54,6 +54,17 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public MeDto getMe() {
         User user = authenticate();
+
+        if (user.getRoles().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"))) {
+            user.getRoles().clear();
+            List<Role> roleList = roleRepository.findAll();
+
+            for (Role role : roleList) {
+                if (role.getAuthority().equals("ROLE_USER")) continue;
+                user.getRoles().add(role);
+            }
+        }
+
         return new MeDto(user);
     }
 
@@ -176,8 +187,7 @@ public class UserService implements UserDetailsService {
         user.setUsername(userName);
         user.setPassword(projections.getFirst().getPassword());
         for (UserDetailsProjection projection : projections) {
-            user.addRole(new
-                    Role(projection.getRoleId(),projection.getAuthority(), projection.getTitle(), projection.getParent()));
+            user.addRole(new Role(projection.getRoleId(),projection.getAuthority(), projection.getTitle(), projection.getTitleUrl(), projection.getParent(), projection.getParentUrl()));
         }
         return user;
     }

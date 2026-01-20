@@ -6,5 +6,7 @@ public interface UserDetailsProjection {
     Long getRoleId();
     String getAuthority();
     String getTitle();
+    String getTitleUrl();
     String getParent();
+    String getParentUrl();
 }
