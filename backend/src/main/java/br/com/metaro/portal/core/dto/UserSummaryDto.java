@@ -11,9 +11,14 @@ import lombok.NoArgsConstructor;
 public class UserSummaryDto {
     private Long id;
     private String name;
+    private Long pictureId;
 
     public UserSummaryDto(User user) {
         this.id = user.getId();
         this.name = user.getName();
+
+        if (user.getPicture() != null) {
+            this.pictureId = user.getPicture().getId();
+        }
     }
 }

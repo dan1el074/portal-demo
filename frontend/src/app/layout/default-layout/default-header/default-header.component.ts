@@ -1,11 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
-import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast } from '@coreui/icons';
+import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownDividerDirective, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
+import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast, cilPaperclip } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { Me } from '../../../interface/user.interface';
 import { environment } from '../../../../environments/environment';
+import { TimeAgoPipe } from './../../../pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-default-header',
@@ -24,13 +25,15 @@ import { environment } from '../../../../environments/environment';
     AvatarComponent,
     DropdownMenuDirective,
     DropdownItemDirective,
-    BadgeComponent
+    DropdownDividerDirective,
+    BadgeComponent,
+    TimeAgoPipe
   ]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   @Input() user!: Me;
   protected apiUrl = environment.apiUrl;
-  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX };
+  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilPaperclip };
   readonly sidebarId = input('sidebar1');
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
@@ -48,6 +51,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
     if (theme == 'auto') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     document.documentElement.setAttribute('data-coreui-theme', theme);
+
+    console.log(this.user);
   }
 
   public getIcon(): Array<string> {

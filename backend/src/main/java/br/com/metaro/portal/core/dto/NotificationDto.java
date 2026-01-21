@@ -14,6 +14,7 @@ public class NotificationDto {
     private Long id;
     private String title;
     private Boolean isNew;
+    private UserSummaryDto createdBy;
     private Instant createdAt;
 
     public NotificationDto(Notification entity) {
@@ -21,5 +22,9 @@ public class NotificationDto {
         title = entity.getTitle();
         isNew = entity.getIsNew();
         createdAt = entity.getCreatedAt();
+
+        if (entity.getCreatedBy() != null) {
+            createdBy = new UserSummaryDto(entity.getCreatedBy());
+        }
     }
 }

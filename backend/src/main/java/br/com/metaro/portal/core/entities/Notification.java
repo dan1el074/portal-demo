@@ -24,4 +24,8 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "created_by_user_id", unique = true)
+    private User createdBy;
 }

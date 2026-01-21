@@ -27,9 +27,9 @@ INSERT INTO tb_user_role (user_id, role_id) VALUES (4,1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (5,1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (6,1);
 
-INSERT INTO tb_notification (title, is_new, user_id, created_at) VALUES ('CI 3921 - Erro...', true, 1, TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_notification (title, is_new, user_id, created_at) VALUES ('Checklist pendente...', true, 1, TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_notification (title, is_new, user_id, created_at) VALUES ('Novo evento!!', true, 1, TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('Novo evento!!', true, 1, 3, TIMESTAMP WITH TIME ZONE '2026-01-21T11:00:00Z');
+INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('2 Checklist pendentes...', true, 1, null, TIMESTAMP WITH TIME ZONE '2026-01-21T09:00:00Z');
+INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('CI 3921 - Equipamento estruturado com a cor errada.', false, 1, 2, TIMESTAMP WITH TIME ZONE '2026-01-19T15:00:00Z');
 
-INSERT INTO tb_post (content, user_id, created_at, update_at)  VALUES ('Na próxima semana daremos continuidade as vivências do SESI, esta é uma excelente oportunidade para melhorar o bem-estar e a ergonomia no ambiente de trabalho.', 3, TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_post (content, user_id, created_at, update_at)  VALUES ('Hoje tivemos uma excelente reunião com o time de desenvolvimento. Grandes ideias surgiram para o nosso próximo sistema interno!', 5, TIMESTAMP WITH TIME ZONE '2025-05-01T10:00:00Z', TIMESTAMP WITH TIME ZONE '2025-05-01T10:00:00Z');
+--INSERT INTO tb_post (content, user_id, created_at, update_at)  VALUES ('Na próxima semana daremos continuidade as vivências do SESI, esta é uma excelente oportunidade para melhorar o bem-estar e a ergonomia no ambiente de trabalho.', 3, TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+--INSERT INTO tb_post (content, user_id, created_at, update_at)  VALUES ('Hoje tivemos uma excelente reunião com o time de desenvolvimento. Grandes ideias surgiram para o nosso próximo sistema interno!', 5, TIMESTAMP WITH TIME ZONE '2025-05-01T10:00:00Z', TIMESTAMP WITH TIME ZONE '2025-05-01T10:00:00Z');

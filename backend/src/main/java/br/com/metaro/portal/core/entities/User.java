@@ -47,6 +47,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications = new ArrayList<>();
 
+    @OneToOne(mappedBy = "createdBy")
+    private Notification notificationsCreated;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "picture_id", unique = true)
     private Picture picture;

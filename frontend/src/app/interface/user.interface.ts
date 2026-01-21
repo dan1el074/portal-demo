@@ -47,3 +47,9 @@ export interface UserData {
   roles: Array<Role>;
   activated: boolean;
 }
+
+export interface UserSummary {
+  id: number;
+  name: string;
+  pictureId: number;
+}
