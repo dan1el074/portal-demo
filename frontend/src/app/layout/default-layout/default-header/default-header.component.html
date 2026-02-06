@@ -27,7 +27,7 @@
               <div class="notification-container" [class.is-new]="item.isNew">
 
                 @if (item.createdBy) {
-                  <c-avatar class="fix-avatar-width" [src]="item.createdBy.pictureId ? apiUrl + '/images/' + item.createdBy.pictureId : './assets/images/avatars/default.png'" />
+                  <c-avatar class="fix-avatar-width" [src]="item.createdBy.picture ? apiUrl + '/images/' + item.createdBy.picture.id : './assets/images/avatars/default.png'" />
                 }
                 @if (!item.createdBy) {
                   <svg [cIcon]="icons.cilPaperclip" class="custom-icon" title="List Icon"></svg>

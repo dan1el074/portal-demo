@@ -5,5 +5,4 @@ export interface ImageCard {
 
 export interface Picture {
   id: number;
-  uri: string;
 }

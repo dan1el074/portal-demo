@@ -1,5 +1,7 @@
-package br.com.metaro.portal.util.picture;
+package br.com.metaro.portal.util.picture.dto;
 
+import br.com.metaro.portal.util.picture.Picture;
+import br.com.metaro.portal.util.picture.PictureType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

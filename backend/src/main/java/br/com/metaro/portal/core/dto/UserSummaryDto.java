@@ -1,7 +1,7 @@
 package br.com.metaro.portal.core.dto;
 
 import br.com.metaro.portal.core.entities.User;
-import br.com.metaro.portal.util.picture.PictureDto;
+import br.com.metaro.portal.util.picture.dto.PictureMinDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ public class UserSummaryDto {
     private Long id;
     private String name;
     private PositionDto position;
-    private PictureDto picture;
+    private PictureMinDto picture;
 
     public UserSummaryDto(User user) {
         this.id = user.getId();
@@ -21,7 +21,7 @@ public class UserSummaryDto {
         this.position = new PositionDto(user.getPosition());
 
         if (user.getPicture() != null) {
-            this.picture = new PictureDto(user.getPicture());
+            this.picture = new PictureMinDto(user.getPicture());
         }
     }
 }

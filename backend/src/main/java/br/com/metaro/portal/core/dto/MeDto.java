@@ -3,7 +3,6 @@ package br.com.metaro.portal.core.dto;
 import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
-import br.com.metaro.portal.util.picture.PictureDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -2,7 +2,7 @@ package br.com.metaro.portal.core.dto;
 
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
-import br.com.metaro.portal.util.picture.PictureDto;
+import br.com.metaro.portal.util.picture.dto.PictureDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
