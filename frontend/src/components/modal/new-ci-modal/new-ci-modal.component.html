@@ -1,0 +1,24 @@
+<c-modal [visible]="visible" alignment="center" backdrop="static" id="newCIModal" >
+  <form [formGroup]="newCIForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <c-modal-header>
+      <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
+      <h5 cModalTitle>Nova comunicação interna</h5>
+      <button (click)="closeCIModal()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+
+    <label cLabel for="orderNumber">Número do pedido</label>
+    <input cFormControl formControlName="orderNumber" [valid]="!showErrors ? undefined: newCIForm.get('orderNumber')?.errors != null ? false : undefined" id="orderNumber" type="text" />
+    @if (showErrors && newCIForm.get('orderNumber')?.errors != null) {
+      <div class="text-danger">
+        Escreva um número de pedido válido!
+      </div>
+    }
+
+    </c-modal-body>
+    <c-modal-footer>
+      <button cButton color="secondary" (click)="closeCIModal()">Cancelar</button>
+      <button cButton color="primary" type="submit">Continuar</button>
+    </c-modal-footer>
+  </form>
+</c-modal>

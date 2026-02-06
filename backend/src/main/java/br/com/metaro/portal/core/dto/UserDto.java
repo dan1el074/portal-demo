@@ -33,7 +33,7 @@ public class UserDto {
         id = user.getId();
         name = user.getName();
         email = user.getEmail();
-        position = user.getPosition();
+        position = user.getPosition().getName();
         birthDate = user.getBirthDate();
         picture = new PictureDto(user.getPicture());
         activated = user.getActivated();

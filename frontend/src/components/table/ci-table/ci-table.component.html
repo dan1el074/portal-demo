@@ -1,0 +1,79 @@
+<mat-form-field appearance="outline" class="search" [class.no-margin]="noMargin">
+  <span matPrefix>
+    <svg [cIcon]="icons.cilSearch" size="lg"></svg>
+  </span>
+
+  <input matInput (keyup)="applyFilter($event)" placeholder="Buscar">
+</mat-form-field>
+
+<c-container class="scroll-x" fluid>
+  <table mat-table [dataSource]="dataSource" matSort class="table stripe">
+    <ng-container matColumnDef="ciNumber">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nº CI</th>
+      <td mat-cell *matCellDef="let internalControl">
+        <a [routerLink]="['./', internalControl.id]" class="edit">
+          {{ internalControl.number }}/{{ internalControl.createAt | date: "yyyy" : '-0300' }}
+        </a>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="orderNumber">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nº pedido</th>
+      <td mat-cell *matCellDef="let internalControl">{{ internalControl.request }}</td>
+    </ng-container>
+    <ng-container matColumnDef="client">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
+      <td mat-cell *matCellDef="let internalControl">{{ internalControl.client }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let internalControl">
+        @switch (internalControl.status) {
+          @case ('CREATED') {
+            <c-badge color="info">salvo</c-badge>
+          }
+
+          @case ('PUBLISH') {
+            <c-badge color="primary">publicado</c-badge>
+          }
+
+          @case ('APPROVED') {
+            <c-badge color="success">aprovado</c-badge>
+          }
+
+          @case ('CANCELED') {
+            <c-badge color="danger">cancelado</c-badge>
+          }
+        }
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="interaction">
+      <th mat-header-cell *matHeaderCellDef>Interações</th>
+      <td mat-cell *matCellDef="let internalControl">
+        <div class="avatar-fix">
+          @for (item of internalControl.interactions; track item.id) {
+            <a [cTooltip]="item.name">
+              <c-avatar [src]="item.pictureId ? apiUrl + '/images/' + item.pictureId : './assets/images/avatars/default.png'" />
+            </a>
+          }
+        </div>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado</th>
+      <td mat-cell *matCellDef="let internalControl">{{ internalControl.createAt | date: "dd/MM/yyyy" : '-0300' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="buttons">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let internalControl" class="btn-container multiple">
+        <button cButton color="secondary" class="custom-btn">
+          <svg [cIcon]="icons.cilPencil" size="sm"></svg>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let internalControl; columns: displayedColumns"></tr>
+  </table>
+</c-container>
+
+<mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" class="pagination"></mat-paginator>

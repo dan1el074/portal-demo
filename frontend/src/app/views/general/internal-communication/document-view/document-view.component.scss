@@ -1,0 +1,125 @@
+.paper-container {
+  position: relative;
+  width: 900px;
+  height: 100%;
+  margin-bottom: 30px;
+  overflow: hidden;
+
+  .button-container {
+    display: flex;
+    gap: 4px;
+    padding-bottom: 20px;
+
+    button {
+      color: #fff;
+    }
+  }
+
+  .paper {
+    width: 100%;
+    height: 1480px;
+    background-color: var(--cui-body-bg);
+    padding: 20px;
+
+    c-col {
+      border: 1px solid var(--cui-border-color-translucent);
+      padding-bottom: .75rem;
+      padding-top: .75rem;
+      margin: 0 0 -1px -1px;
+    }
+
+    .align-center {
+      text-align: center;
+    }
+
+    .bold {
+      font-weight: 700;
+    }
+
+    .small {
+      font-size: 12px;
+    }
+
+    .flex {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .ci-logo {
+      width: 120px;
+      height: 25px;
+      margin: 6px 0 4px;
+      background-image: var(--cui-ci-logo);
+    }
+
+    .departments {
+      padding: 20px 20px 20px 30px;
+
+      c-form-check {
+        margin-bottom: 12px;
+
+        .signature {
+          margin-left: 10px;
+          position: relative;
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+
+          .sign {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%);
+            font-family: "Bad Script", cursive;
+            font-size: 17px;
+            font-weight: 400;
+            font-style: normal;
+          }
+        }
+      }
+    }
+  }
+}
+
+.logs-container {
+  margin-bottom: 30px;
+  width: 100%;
+
+  h4 {
+    margin-bottom: 20px;
+  }
+
+  .logs {
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 15px;
+
+      .time {
+        color: var(--cui-secondary-color);
+      }
+  }
+}
+
+.form-check-input.fix:disabled,
+.form-check-label.fix {
+  opacity: 1;
+}
+
+@media screen and (max-width: 1220px) {
+  .paper-container {
+    overflow-x: scroll;
+  }
+
+  .logs-container {
+    text-wrap: nowrap;
+    overflow-x: scroll;
+  }
+}

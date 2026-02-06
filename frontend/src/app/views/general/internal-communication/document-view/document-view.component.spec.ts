@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InternalControlComponent } from './internal-control.component';
+import { DocumentViewComponent } from './document-view.component';
 
-describe('InternalControlComponent', () => {
-  let component: InternalControlComponent;
-  let fixture: ComponentFixture<InternalControlComponent>;
+describe('DocumentViewComponent', () => {
+  let component: DocumentViewComponent;
+  let fixture: ComponentFixture<DocumentViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InternalControlComponent]
+      imports: [DocumentViewComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(InternalControlComponent);
+    fixture = TestBed.createComponent(DocumentViewComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

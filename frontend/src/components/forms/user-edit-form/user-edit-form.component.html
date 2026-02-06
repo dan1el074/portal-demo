@@ -7,25 +7,21 @@
         <div class="image-container" *ngIf="file; else placeholder"
         [ngStyle]="{backgroundImage: 'url(' + file + ')'}">
         </div>
-
         <ng-template #placeholder>
           <div class="image-container avatar-placeholder"></div>
         </ng-template>
-
         <label for="fileInput2">
           <div class="icon-wrapper">
             <input #fileInput2 id="fileInput2" type="file" accept="image/*" (change)="onFileChange($event)" />
             <svg [cIcon]="icons.cilPencil" size="lg" title="List Icon"></svg>
           </div>
         </label>
-
         @if (file) {
           <button type="button" class="delete-icon" (click)="removePicture()">
             <svg [cIcon]="icons.cilX" size="lg" title="List Icon"></svg>
           </button>
         }
       </div>
-
       @if (editForm.get('picture')?.errors?.['invalidImageType']) {
         <div class="text-danger">
           Apenas imagens são permitidas
@@ -36,14 +32,12 @@
           A imagem deve ter no máximo 2MB
         </div>
       }
-
       <c-modal id="modal2" [visible]="modalReady" (visibleChange)="handleModalChange($event)" backdrop="static" alignment="center">
         <c-modal-header>
           <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
           <h5 cModalTitle>Nova imagem</h5>
           <button (click)="toggleModal(true)" cButtonClose></button>
         </c-modal-header>
-
         <c-modal-body>
           <image-cropper
             [imageChangedEvent]="imageChangedEvent"
@@ -54,7 +48,6 @@
             (imageCropped)="imageCropped($event)">
           </image-cropper>
         </c-modal-body>
-
         <c-modal-footer>
           <button cButton color="secondary" (click)="toggleModal(true)">
             Cancelar
@@ -63,21 +56,25 @@
         </c-modal-footer>
       </c-modal>
 
-
-        <h3 class="username">
-          {{ editForm.get('name')?.value ? editForm.get('name')?.value : 'Nome Sobrenome' }}
-          <span>{{ editForm.get('position')?.value ? '● ' + editForm.get('position')?.value : '' }}</span>
-        </h3>
+      <h3 class="username">
+        {{ editForm.get('name')?.value ? editForm.get('name')?.value : 'Nome Sobrenome' }}
+      </h3>
     </c-col>
-
     <c-col>
       <div [cFormFloating]="true" class="mb-3">
         <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: editForm.get('name')?.errors != null ? false : undefined" id="name2" type="text" placeholder="Nome" />
         <label cLabel for="name2">Nome</label>
       </div>
-      <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="position" [valid]="!showErrors ? undefined: editForm.get('position')?.errors != null ? false : undefined" id="position2" type="text" placeholder="Setor" />
-        <label cLabel for="position2">Setor</label>
+      <div [cFormFloating]="true" class="mb-3">
+        <select cSelect formControlName="position" id="position2" [class.custom-float]="userData.positionId != 0">
+          <option disabled></option>
+          @for (item of positions; track item.id) {
+            <option [value]="item.id" >{{ item.name }}</option>
+          } @empty {
+            <option disabled>Lista vazia</option>
+          }
+        </select>
+        <label cLabel for="position2">Departamento</label>
       </div>
       <div cFormFloating class="mb-3">
         <input cFormControl formControlName="email" [valid]="!showErrors ? undefined: editForm.get('email')?.errors != null ? false : undefined" id="email2" type="email" placeholder="E-mail" />

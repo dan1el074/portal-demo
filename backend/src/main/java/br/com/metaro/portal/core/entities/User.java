@@ -1,5 +1,7 @@
 package br.com.metaro.portal.core.entities;
 
+import br.com.metaro.portal.modules.general.internalCommunication.InternalCommunication;
+import br.com.metaro.portal.modules.general.internalCommunication.InternalCommunicationLog;
 import br.com.metaro.portal.modules.general.post.Post;
 import br.com.metaro.portal.util.picture.Picture;
 import jakarta.persistence.*;
@@ -24,7 +26,6 @@ public class User implements UserDetails {
     private Long id;
     private String name;
     private String email;
-    private String position;
     private LocalDate birthDate;
     private Boolean activated;
     @Column(unique = true)
@@ -34,6 +35,10 @@ public class User implements UserDetails {
     private Instant createdAt;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updateAt;
+
+    @ManyToOne
+    @JoinColumn(name = "position_id")
+    private Position position;
 
     @ManyToMany
     @JoinTable(name = "tb_user_role",
@@ -50,9 +55,18 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "createdBy")
     private Notification notificationsCreated;
 
+    @OneToMany(mappedBy = "user")
+    private Set<InternalCommunicationLog> ciLog = new HashSet<>();
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "picture_id", unique = true)
     private Picture picture;
+
+    @OneToMany(mappedBy = "createdBy")
+    private Set<InternalCommunication> InternalCommunications = new HashSet<>();
+
+    @ManyToMany(mappedBy = "interactions")
+    private Set<InternalCommunication> CIInteractions = new HashSet<>();
 
     public void addRole(Role role) {
         roles.add(role);

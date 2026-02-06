@@ -7,7 +7,7 @@
         <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
           <c-tabs-list variant="underline-border">
             <button cTab [itemKey]="0">Todos</button>
-            <button cTab [itemKey]="1" [disabled]="inactiveUsers.length <= 0">Desativados</button>
+            <button cTab [itemKey]="1" [class.no-select]="inactiveUsers.length <= 0" [disabled]="inactiveUsers.length <= 0">Desativados</button>
             <button cTab [itemKey]="2" [class.hide]="!newUserTab" class="close-button">
               Novo
               <div (click)="toggleNewUserTab(false)">
@@ -39,11 +39,11 @@
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!newUserTab">
-              <app-user-form (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
+              <app-user-form [positions]="positions" (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="3" [class.hide]="!editUserTab">
-              <app-user-edit-form [userData]="editUserData" (editTask)="onUpdateUser($event)" (exitTask)="toggleEditUserTab(false)"></app-user-edit-form>
+              <app-user-edit-form [positions]="positions" [userData]="editUserData" (editTask)="onUpdateUser($event)" (exitTask)="toggleEditUserTab(false)"></app-user-edit-form>
             </c-tab-panel>
           </c-tabs-content>
         </c-tabs>

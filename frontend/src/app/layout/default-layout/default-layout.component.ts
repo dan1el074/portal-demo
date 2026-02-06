@@ -1,5 +1,5 @@
 import { AuthGuard } from '../..//config/authGuard';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import {
@@ -54,7 +54,10 @@ export class DefaultLayoutComponent implements OnInit {
     notifications: []
   };
 
-  constructor(private authGuardService: AuthGuard) {}
+  constructor(
+    private authGuardService: AuthGuard,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   public ngOnInit() {
     this.authGuardService.getUser().subscribe(user => {
@@ -79,13 +82,8 @@ export class DefaultLayoutComponent implements OnInit {
       let index = customNav.findIndex(tool => tool.name == role.parent);
 
       if (index < 0) {
-        if (role.parent == 'Gestão') {
-          customNav.unshift(toolList);
-          index = 0;
-        } else {
-          customNav.push(toolList);
-          index = customNav.length - 1;
-        }
+        customNav.push(toolList);
+        index = customNav.length - 1;
       }
 
       customNav[index].children?.push({
@@ -95,8 +93,15 @@ export class DefaultLayoutComponent implements OnInit {
       });
     })
 
+    customNav.sort((a, b) => {
+      if ((a.name ?? "") === "Gestão" && (b.name ?? "") !== "Gestão") return -1;
+      if ((a.name ?? "") !== "Gestão" && (b.name ?? "") === "Gestão") return 1;
+      return (a.name ?? "").localeCompare((b.name ?? ""), "pt-BR", { sensitivity: "base" });
+    });
+
     const tempNavItems = [...navItems];
     tempNavItems.splice(6, 0, customNav.length > 0 ? {title: true, name: 'Ferramentas'} : {}, ...customNav);
     this.navItems = [...tempNavItems];
+    this.cdr.detectChanges();
   }
 }

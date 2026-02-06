@@ -1,0 +1,52 @@
+<form [formGroup]="createForm" autocomplete="off">
+  <h4 class="mb-4">Nova Comunicação Interna</h4>
+
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl readOnly formControlName="request" [valid]="!showErrors ? undefined: createForm.get('request')?.errors != null ? false : undefined" id="request" type="text" placeholder="00000" />
+    <label cLabel for="name">Número do pedido</label>
+  </div>
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl readOnly formControlName="client" [valid]="!showErrors ? undefined: createForm.get('client')?.errors != null ? false : undefined" id="client" type="text" placeholder="Cliente" />
+    <label cLabel for="name">Cliente</label>
+  </div>
+
+  <div [cFormFloating]="true" class="mb-3">
+    <select formControlName="item">
+      <option value="0">Selecione</option>
+      @for (item of items; track item.item) {
+        <option [value]="item.item">{{ item.item }}</option>
+      }
+    </select>
+    <label cLabel for="name" class="custon-label">Item</label>
+  </div>
+
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl formControlName="title" [valid]="!showErrors ? undefined: createForm.get('title')?.errors != null ? false : undefined" id="title" type="text" placeholder="Título" />
+    <label cLabel for="name">Título</label>
+  </div>
+  <div [cFormFloating]="true" class="mb-3">
+    <textarea
+      cFormControl
+      formControlName="description"
+      rows="5" [valid]="!showErrors ? undefined: createForm.get('description')?.errors != null ? false : undefined"
+      class="fix-height"
+      id="description"
+      type="text"
+      placeholder="Descrição">
+    </textarea>
+    <label cLabel for="name">Descrição</label>
+  </div>
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl formControlName="reason" [valid]="!showErrors ? undefined: createForm.get('reason')?.errors != null ? false : undefined" id="reason" type="text" placeholder="Motivo" />
+    <label cLabel for="name">Motivo</label>
+  </div>
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl formControlName="departments" [valid]="!showErrors ? undefined: createForm.get('departments')?.errors != null ? false : undefined" id="departments" type="text" placeholder="Departamentos" />
+    <label cLabel for="name">Departamentos</label>
+  </div>
+  <div class="button-container">
+    <button cButton color="secondary" (click)="onExit()">Cancelar</button>
+    <button cButton color="info" (click)="onSave()">Salvar</button>
+    <button cButton color="primary" (click)="onPublish()">Publicar</button>
+  </div>
+</form>

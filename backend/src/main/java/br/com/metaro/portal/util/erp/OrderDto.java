@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class ExternalCustomerDto {
-    private final Long id;
-    private final String name;
-    private final String status;
+public class OrderDto {
+    private final Integer number;
+    private final String client;
+    private final String item;
 }

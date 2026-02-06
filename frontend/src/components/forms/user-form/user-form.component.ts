@@ -6,6 +6,7 @@ import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent
 import { passwordMatchValidator } from '../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
+import { Position } from '../../../app/interface/position.interface';
 
 @Component({
   selector: 'app-user-form',
@@ -35,6 +36,7 @@ import { cilPencil, cilX } from '@coreui/icons';
 })
 export class UserFormComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @Input() positions!: Array<Position>;
   @Output() createTask = new EventEmitter<FormData>();
   @Output() exitTask = new EventEmitter<void>();
 
@@ -57,7 +59,7 @@ export class UserFormComponent {
       username: [ '', [Validators.required, Validators.minLength(7), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: ['', [Validators.required]],
-      roles: [[1,2]],
+      roles: [[1,3,4,6]],
       picture: [null as Blob | null],
       disabled: [false]
     },
@@ -159,7 +161,6 @@ export class UserFormComponent {
     }
 
     const formData = new FormData();
-
     Object.entries(this.createForm.value).forEach(([key, value]) => {
       if (key === 'repeatPassword') return;
       if (key === 'picture') return;
@@ -168,7 +169,7 @@ export class UserFormComponent {
     });
 
     if (this.croppedImage) formData.append('picture', this.croppedImage, 'profile.png');
-    formData.append('activated', this.createForm.get('disabled') ? 'false' : 'true');
+    formData.append('activated', (this.createForm.value.disabled ? String("false") : String("true")));
 
     this.createTask.emit(formData);
     this.onExit();

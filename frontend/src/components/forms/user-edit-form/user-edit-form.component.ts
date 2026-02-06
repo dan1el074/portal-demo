@@ -1,13 +1,14 @@
 import { UserData } from './../../../app/interface/user.interface';
 import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, FormSelectDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { passwordMatchValidator } from '../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { environment } from '../../../environments/environment';
+import { Position } from '../../../app/interface/position.interface';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -15,14 +16,15 @@ import { environment } from '../../../environments/environment';
     CommonModule,
     ReactiveFormsModule,
     ImageCropperComponent,
+    ColComponent,
+    RowComponent,
     FormFloatingDirective,
     FormLabelDirective,
     FormControlDirective,
-    RowComponent,
-    ColComponent,
     FormCheckComponent,
     FormCheckInputDirective,
     FormCheckLabelDirective,
+    FormSelectDirective,
     IconDirective,
     ButtonDirective,
     ModalComponent,
@@ -38,6 +40,7 @@ import { environment } from '../../../environments/environment';
 export class UserEditFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Input() userData!: UserData;
+  @Input() positions!: Array<Position>;
   @Output() editTask = new EventEmitter<{data: FormData, id: number}>();
   @Output() exitTask = new EventEmitter<void>();
 
@@ -55,7 +58,7 @@ export class UserEditFormComponent implements OnChanges {
   constructor(private formBuilder: FormBuilder) {
     this.editForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
-      position: ['', [Validators.required]],
+      position: [0, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       birthDate: ['', [Validators.required]],
       username: [ '', [Validators.required, Validators.minLength(7), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
@@ -72,16 +75,15 @@ export class UserEditFormComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.clearUserData();
-
-    if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;;
-
     this.editForm.get('name')?.setValue(this.userData.name);
-    this.editForm.get('position')?.setValue(this.userData.position);
     this.editForm.get('email')?.setValue(this.userData.email);
     this.editForm.get('birthDate')?.setValue(this.userData.birthDate);
     this.editForm.get('username')?.setValue(this.userData.username);
     this.editForm.get('roles')?.setValue(this.userData.roles);
     this.editForm.get('disabled')?.setValue(!this.userData.activated);
+
+    if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;
+    if (this.userData.positionId > 0) this.editForm.get('position')?.setValue(this.userData.positionId);
   }
 
   protected onFileChange(event: Event): void {

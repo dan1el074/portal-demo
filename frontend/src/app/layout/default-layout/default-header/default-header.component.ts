@@ -51,8 +51,6 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
     if (theme == 'auto') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     document.documentElement.setAttribute('data-coreui-theme', theme);
-
-    console.log(this.user);
   }
 
   public getIcon(): Array<string> {

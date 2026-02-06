@@ -1,0 +1,25 @@
+.avatar-fix {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-left: 4px;
+
+  c-avatar {
+    width: 32px;
+    margin: 0 -8px 0 0;
+
+    .avatar-img {
+      margin-right: 0;
+    }
+  }
+}
+
+a.edit {
+  color: var(--cui-table-color);
+  text-decoration: none;
+
+  &:hover {
+    color: #285ea5;
+    cursor: pointer;
+  }
+}

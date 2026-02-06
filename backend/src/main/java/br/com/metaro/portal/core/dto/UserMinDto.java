@@ -25,7 +25,7 @@ public class UserMinDto {
         this.id = user.getId();
         this.name = user.getName();
         this.username = user.getUsername();
-        this.position = user.getPosition();
+        this.position = user.getPosition().getName();
         this.email = user.getEmail();
         this.activated = user.getActivated();
         this.updateAt = user.getUpdateAt();

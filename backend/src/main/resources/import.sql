@@ -1,13 +1,34 @@
+INSERT INTO tb_param (id, name, content) VALUES (1, 'version', '0.01');
+INSERT INTO tb_param (id, name, content) VALUES (2, 'internalControlCount', '1');
+
 INSERT INTO tb_picture (name, path, type) VALUES ('1768850938328_1', 'C:\\workspace\\outros\\imagens\\1768850938328_1.png', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1768478289921_2', 'C:\\workspace\\outros\\imagens\\1768478289921_2.jpg', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1768478302771_3', 'C:\\workspace\\outros\\imagens\\1768478302771_3.jpg', 'PROFILE');
 
-INSERT INTO tb_user (name, email, position, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Daniel Vargas', 'ti@metaro.com.br', 'TI', '1999-07-08', 1, true, 'daniel-vargas','$2a$10$/38.DeKTEvwu4eCpOAe0GO298DNA7fXWvdPXDPMHe0bu/j53j5bA2', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_user (name, email, position, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Carlos Fronza', 'carlos.fronza@metaro.com.br', 'Compras', '1820-07-13', null, true, 'carlos-fronza','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_user (name, email, position, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Aline Moterle', 'rh@metaro.com.br', 'Recursos Humanos', '1987-11-25', 2, true, 'aline-moterle','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_user (name, email, position, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Luana Kohlrausch', 'luana.k@metaro.com.br', 'Recursos Humanos', '1998-07-14', null, true, 'luana-kohlrausch','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_user (name, email, position, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Juliano Bortoletti', 'marketing@metaro.com.br', 'Marketing', '1987-11-25', 3, true, 'juliano-bortoletti','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
-INSERT INTO tb_user (name, email, position, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Adriano Miolo', 'compras@metaro.com.br', 'Compras', '1992-07-14', null, true, 'adriano-miolo','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+INSERT INTO tb_position (id, name) VALUES (1, 'TI');
+INSERT INTO tb_position (id, name) VALUES (2, 'Compras');
+INSERT INTO tb_position (id, name) VALUES (3, 'Recursos Humanos');
+INSERT INTO tb_position (id, name) VALUES (4, 'Marketing');
+INSERT INTO tb_position (id, name) VALUES (5, 'Pós Vendas');
+INSERT INTO tb_position (id, name) VALUES (6, 'Engenharia');
+INSERT INTO tb_position (id, name) VALUES (7, 'Financeiro');
+INSERT INTO tb_position (id, name) VALUES (8, 'Comercial');
+INSERT INTO tb_position (id, name) VALUES (9, 'Qualidade');
+INSERT INTO tb_position (id, name) VALUES (10, 'Almoxarifado');
+INSERT INTO tb_position (id, name) VALUES (11, 'PCP');
+INSERT INTO tb_position (id, name) VALUES (12, 'Produção');
+INSERT INTO tb_position (id, name) VALUES (13, 'Manutenção');
+INSERT INTO tb_position (id, name) VALUES (14, 'Corte/Dobra');
+INSERT INTO tb_position (id, name) VALUES (15, 'Montagem/Solda');
+INSERT INTO tb_position (id, name) VALUES (16, 'TST');
+INSERT INTO tb_position (id, name) VALUES (17, 'Direção');
+
+INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Daniel Vargas', 'ti@metaro.com.br', 1, '1999-07-08', 1, true, 'daniel-vargas','$2a$10$/38.DeKTEvwu4eCpOAe0GO298DNA7fXWvdPXDPMHe0bu/j53j5bA2', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Carlos Fronza', 'carlos.fronza@metaro.com.br', 2, '1820-07-13', null, true, 'carlos-fronza','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Aline Moterle', 'rh@metaro.com.br', 3, '1987-11-25', 2, true, 'aline-moterle','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Luana Kohlrausch', 'luana.k@metaro.com.br', 3, '1998-07-14', null, true, 'luana-kohlrausch','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Juliano Bortoletti', 'marketing@metaro.com.br', 4, '1987-11-25', 3, true, 'juliano-bortoletti','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
+INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at)VALUES ('Adriano Miolo', 'compras@metaro.com.br', 2, '1992-07-14', null, true, 'adriano-miolo','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
 
 INSERT INTO tb_role (id, authority) VALUES (1, 'ROLE_USER');
 INSERT INTO tb_role (id, authority) VALUES (2, 'ROLE_ADMIN');
@@ -15,7 +36,7 @@ INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (4, 'ROLE_RAW_MATERIALS', 'Matérias primas', '/raw-materials', 'Geral','/general');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (5, 'ROLE_TODO', 'Para fazer', '/todo', 'Geral', '/general');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (6, 'ROLE_CHECKLIST', 'Checklist', '/checklist', 'Qualidade', '/quality');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (7, 'ROLE_INTERNAL_CONTROL', 'Controle Interno', '/internal-control', 'Geral', '/general');
+INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (7, 'ROLE_INTERNAL_COMMUNICATION', 'Comunicação Interna', '/internal-communication', 'Geral', '/general');
 
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1,2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,1);
@@ -31,5 +52,18 @@ INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created
 INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('2 Checklist pendentes...', true, 1, null, TIMESTAMP WITH TIME ZONE '2026-01-21T09:00:00Z');
 INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('CI 3921 - Equipamento estruturado com a cor errada.', false, 1, 2, TIMESTAMP WITH TIME ZONE '2026-01-19T15:00:00Z');
 
---INSERT INTO tb_post (content, user_id, created_at, update_at)  VALUES ('Na próxima semana daremos continuidade as vivências do SESI, esta é uma excelente oportunidade para melhorar o bem-estar e a ergonomia no ambiente de trabalho.', 3, TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z');
---INSERT INTO tb_post (content, user_id, created_at, update_at)  VALUES ('Hoje tivemos uma excelente reunião com o time de desenvolvimento. Grandes ideias surgiram para o nosso próximo sistema interno!', 5, TIMESTAMP WITH TIME ZONE '2025-05-01T10:00:00Z', TIMESTAMP WITH TIME ZONE '2025-05-01T10:00:00Z');
+INSERT INTO tb_internal_communication (number, request, client, item, title, description, reason, create_at, status, user_id) VALUES (357, 12080, 'KOVALENT DO BRASIL LTDA', '46831 - ME MT-302030 C17 EH GC BAE SANF PE500 F600 P12080', 'RETRABALHAR PLATAFORMA', 'Retrabalhar suporte da mola da pestana.<br><br>Necessário recortar e retrabalhar o suporte da mola a gas de acionamento da pestana.<br><br>Fabricar:<br>40128 - PRF U #6,35 90x80 L70mm - 01 PEÇA<br>11098 - TB A53 #2,00 50x100 L245mm - 01 PEÇA', 'Posicionamento incorreto no projeto', TIMESTAMP WITH TIME ZONE '2025-01-19T15:00:00Z', 'PUBLISH', 2);
+
+INSERT INTO tb_internal_communication_interaction (internal_communication_id, user_id) VALUES (1, 2);
+INSERT INTO tb_internal_communication_interaction (internal_communication_id, user_id) VALUES (1, 1);
+INSERT INTO tb_internal_communication_interaction (internal_communication_id, user_id) VALUES (1, 3);
+
+INSERT INTO tb_internal_communication_departments (internal_communication_id, departments_id) VALUES (1, 2);
+INSERT INTO tb_internal_communication_departments (internal_communication_id, departments_id) VALUES (1, 1);
+
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Criou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:30:32Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Publicou o documento nº 372/2026', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:32:11Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Alterou o título de "Acabamento inadequado" para "Pintura inadequado"', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:46:33Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:27Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T17:10:56Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Documento nº 372/2026 aprovado por todas as áreas', null, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:41Z');

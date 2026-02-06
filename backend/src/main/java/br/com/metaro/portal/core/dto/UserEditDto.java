@@ -17,7 +17,7 @@ public class UserEditDto {
     private Long id;
     private Long pictureId;
     private String name;
-    private String position;
+    private Long positionId;
     private String email;
     private LocalDate birthDate;
     private String username;
@@ -27,7 +27,7 @@ public class UserEditDto {
     public UserEditDto(User user) {
         id = user.getId();
         name = user.getName();
-        position = user.getPosition();
+        positionId = user.getPosition().getId();
         email = user.getEmail();
         birthDate = user.getBirthDate();
         username = user.getUsername();

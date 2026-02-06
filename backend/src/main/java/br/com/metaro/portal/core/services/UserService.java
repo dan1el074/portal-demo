@@ -3,6 +3,7 @@ package br.com.metaro.portal.core.services;
 import br.com.metaro.portal.core.dto.*;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.core.repositories.PositionRepository;
 import br.com.metaro.portal.core.repositories.RoleRepository;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.repositories.projections.UserDetailsProjection;
@@ -30,6 +31,8 @@ import java.util.*;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PositionRepository positionRepository;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
@@ -93,7 +96,7 @@ public class UserService implements UserDetailsService {
 
     private void rulesForUpdate(UserInsertDto dto, User entity, String resetPicture) throws IOException {
         entity.setName(dto.getName());
-        entity.setPosition(dto.getPosition());
+        entity.setPosition(positionRepository.getReferenceById(Long.valueOf(dto.getPosition())));
         entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         entity.setEmail(dto.getEmail());
         entity.setUsername(dto.getUsername());
@@ -139,7 +142,7 @@ public class UserService implements UserDetailsService {
 
     private void rulesForInsert(UserInsertDto dto, User entity) throws IOException {
         entity.setName(dto.getName());
-        entity.setPosition(dto.getPosition());
+        entity.setPosition(positionRepository.getReferenceById(Long.valueOf(dto.getPosition())));
         entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         entity.setEmail(dto.getEmail());
         entity.setUsername(dto.getUsername());
@@ -167,13 +170,13 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    protected User authenticate() {
+    public User authenticate() {
         // pega os claims do token
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
         String username = jwtPrincipal.getClaim("username");
 
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Email not found"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     @Override

@@ -1,6 +1,6 @@
-package br.com.metaro.portal.modules.general.internalControl;
+package br.com.metaro.portal.modules.general.internalCommunication;
 
-public enum InternalControlStatus {
+public enum InternalCommunicationStatus {
     CREATED,
     PUBLISH,
     APPROVED,

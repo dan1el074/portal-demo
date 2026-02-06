@@ -1,7 +1,7 @@
-package br.com.metaro.portal.modules.general.internalControl;
+package br.com.metaro.portal.modules.general.internalCommunication;
 
-import br.com.metaro.portal.modules.general.internalControl.dots.InternalControlDto;
-import br.com.metaro.portal.modules.general.internalControl.dots.InternalControlInsertDto;
+import br.com.metaro.portal.modules.general.internalCommunication.dots.InternalCommunicationDto;
+import br.com.metaro.portal.modules.general.internalCommunication.dots.InternalCommunicationInsertDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,25 +12,25 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/ci")
-public class InternalControlController {
+public class InternalCommunicationController {
     @Autowired
-    private InternalControlService internalControlService;
+    private InternalCommunicationService internalCommunicationService;
 
     @GetMapping
-    public ResponseEntity<List<InternalControlDto>> findAll() {
-        List<InternalControlDto> dtos = internalControlService.findAll();
+    public ResponseEntity<List<InternalCommunicationDto>> findAll() {
+        List<InternalCommunicationDto> dtos = internalCommunicationService.findAll();
         return ResponseEntity.ok(dtos);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<InternalControlDto> findById(@PathVariable Long id) {
-        InternalControlDto dto = internalControlService.findById(id);
+    public ResponseEntity<InternalCommunicationDto> findById(@PathVariable Long id) {
+        InternalCommunicationDto dto = internalCommunicationService.findById(id);
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public ResponseEntity<InternalControlDto> insert(@RequestBody InternalControlInsertDto insertDto) {
-        InternalControlDto dto = internalControlService.insert(insertDto);
+    public ResponseEntity<InternalCommunicationDto> insert(@RequestBody InternalCommunicationInsertDto insertDto) {
+        InternalCommunicationDto dto = internalCommunicationService.insert(insertDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
@@ -40,15 +40,14 @@ public class InternalControlController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<InternalControlDto> update(@PathVariable Long id, @RequestBody InternalControlInsertDto insertDto) {
-        InternalControlDto dto = internalControlService.update(id, insertDto);
+    public ResponseEntity<InternalCommunicationDto> update(@PathVariable Long id, @RequestBody InternalCommunicationInsertDto insertDto) {
+        InternalCommunicationDto dto = internalCommunicationService.update(id, insertDto);
         return ResponseEntity.ok(dto);
     }
 
     @PutMapping(value = "/disable/{id}")
-    public ResponseEntity<InternalControlDto> disable(@PathVariable Long id) {
-        InternalControlDto dto = internalControlService.disable(id);
+    public ResponseEntity<InternalCommunicationDto> disable(@PathVariable Long id) {
+        InternalCommunicationDto dto = internalCommunicationService.disable(id);
         return ResponseEntity.ok(dto);
     }
-
 }

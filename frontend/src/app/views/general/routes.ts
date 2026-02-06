@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../../config/authGuard';
+import { DocumentViewComponent } from './internal-communication/document-view/document-view.component';
 
 export const routes: Routes = [
   {
@@ -14,12 +15,21 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
-        path: 'internal-control',
-        loadComponent: () => import('./internal-control/internal-control.component').then(m => m.InternalControlComponent),
+        path: 'internal-communication',
+        loadComponent: () => import('./internal-communication/internal-communication.component').then(m => m.InternalCommunicationComponent),
         canActivate: [AuthGuard],
         data: {
-          roles: ['ROLE_ADMIN','ROLE_INTERNAL_CONTROL'],
-          title: 'Controle Interno'
+          roles: ['ROLE_ADMIN','ROLE_INTERNAL_COMMUNICATION'],
+          title: 'Comunicação Interna'
+        }
+      },
+      {
+        path: 'internal-communication/:id',
+        loadComponent: () => import('./internal-communication/document-view/document-view.component').then(m => m.DocumentViewComponent),
+        canActivate: [AuthGuard],
+        data: {
+          roles: ['ROLE_ADMIN','ROLE_INTERNAL_COMMUNICATION'],
+          title: 'Comunicação Interna'
         }
       },
       {

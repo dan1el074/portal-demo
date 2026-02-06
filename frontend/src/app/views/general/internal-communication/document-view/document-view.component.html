@@ -1,0 +1,70 @@
+<div class="paper-container">
+  <div class="button-container">
+    <button cButton color="primary" (click)="onSign()">Assinar</button>
+    <button cButton color="info" (click)="onEdit()">Editar</button>
+  </div>
+
+  <div class="paper">
+    <c-container>
+      <c-row>
+        <c-col class="align-center flex">
+          <div class="ci-logo"></div>
+          <span class="small bold">RE 33/02</span>
+        </c-col>
+        <c-col xs="6" class="flex align-center bold">
+          <span>SISTEMA DE GETÃO DA QUALIDADE<br>COMUNICAÇÃO INTERNA</span>
+        </c-col>
+        <c-col class="flex">
+          Ref. PR 01
+        </c-col>
+      </c-row>
+      <c-row>
+        <c-col><strong>Data:</strong> {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}</c-col>
+        <c-col><strong>Nº:</strong> {{ item.number }}</c-col>
+        <c-col><strong>Ano:</strong> {{ item.createAt | date: "yyyy" : '-0300' }}</c-col>
+      </c-row>
+      <c-row>
+        <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
+      </c-row>
+      <c-row>
+        <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
+      </c-row>
+      <c-row>
+        <c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col>
+      </c-row>
+      <c-row>
+        <c-col [innerHtml]="'<strong>Descrição:</strong> ' + item.description"></c-col>
+      </c-row>
+      <c-row>
+        <c-col><strong>Motivo:</strong> {{ item.reason }}</c-col>
+      </c-row>
+      <c-row>
+        <c-col class="flex-col">
+          <strong>Envolvidos:</strong>
+          <div class="departments">
+            @for (position of item.fromDepartments; track position.id) {
+              <c-form-check>
+                <input cFormCheckInput id="1" type="checkbox" class="fix" disabled checked />
+                <label cFormCheckLabel for="1" class="fix">{{ position.name }}</label>
+                <span class="signature">
+                  <span>_____________________________________</span>
+                  <span class="sign">Carlos Fronza</span>
+                </span>
+              </c-form-check>
+            }
+          </div>
+        </c-col>
+      </c-row>
+    </c-container>
+  </div>
+</div>
+
+<div class="logs-container">
+  <ul class="logs">
+    @for (log of item.logs; track log.id) {
+      <li>
+        <span class="time">{{ log.createdAt | date: "dd/MM/yyyy 'às' HH:mm:ss" : '-0300' }}</span> - <strong>{{ log.user != null ? log.user.name : 'Sistema' }}</strong>: {{ log.content }}
+      </li>
+    }
+  </ul>
+</div>

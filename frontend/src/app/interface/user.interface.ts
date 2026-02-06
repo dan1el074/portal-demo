@@ -1,5 +1,7 @@
+import { Picture } from './image.interface';
 import { Role } from './role.interface';
 import { Notification } from './notification.interface';
+import { Position } from './position.interface';
 
 export interface UserTable {
   id: number;
@@ -40,7 +42,7 @@ export interface UserData {
   id: number;
   pictureId: number | null;
   name: string;
-  position: string;
+  positionId: number;
   email: string;
   birthDate: string;
   username: string;
@@ -51,5 +53,6 @@ export interface UserData {
 export interface UserSummary {
   id: number;
   name: string;
-  pictureId: number;
+  position: Position;
+  picture: Picture | null;
 }

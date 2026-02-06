@@ -11,6 +11,8 @@ import { cilPlus, cilX } from '@coreui/icons';
 import { UserFormComponent } from '../../../../components/forms/user-form/user-form.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { UserEditFormComponent } from '../../../../components/forms/user-edit-form/user-edit-form.component';
+import { PostitionService } from '../../../services/position.service';
+import { Position } from '../../../interface/position.interface';
 
 @Component({
   selector: 'app-users',
@@ -34,6 +36,7 @@ export class UsersComponent implements OnInit {
   protected tabs: Array<string> = ['Todos', 'Desativados'];
   protected activeUsers: Array<UserTable> = [];
   protected inactiveUsers: Array<UserTable> = [];
+  protected positions!: Array<Position>;
   protected icons = { cilPlus, cilX };
   protected activeItemKey = 0;
   protected newUserTab = false;
@@ -42,7 +45,7 @@ export class UsersComponent implements OnInit {
     id: 0,
     pictureId: null,
     name: '',
-    position: '',
+    positionId: 1,
     email: '',
     birthDate: '',
     username: '',
@@ -53,6 +56,7 @@ export class UsersComponent implements OnInit {
   constructor(
     private router: Router,
     private userService: UserService,
+    private postitionService: PostitionService,
     private toasterService: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -61,6 +65,7 @@ export class UsersComponent implements OnInit {
     this.userService.findAll().subscribe({
       next: userList => {
         this.updateUsers(userList);
+        this.loadPositions();
       },
       error: error => {
         if (error.status == 401) {
@@ -70,6 +75,16 @@ export class UsersComponent implements OnInit {
           this.toasterService.error('Erro ao carregar usuários!');
         }
       }
+    });
+  }
+
+  private loadPositions(): void {
+    this.postitionService.findAll().subscribe({
+      next: positionsList => {
+        this.positions = positionsList;
+        this.cdr.detectChanges();
+      },
+      error: error => this.toasterService.error('Erro ao carregar nome de setores!')
     });
   }
 
@@ -125,7 +140,7 @@ export class UsersComponent implements OnInit {
       id: 0,
       pictureId: null,
       name: '',
-      position: '',
+      positionId: 1,
       email: '',
       birthDate: '',
       username: '',
