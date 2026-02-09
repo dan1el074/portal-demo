@@ -52,18 +52,17 @@ INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created
 INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('2 Checklist pendentes...', true, 1, null, TIMESTAMP WITH TIME ZONE '2026-01-21T09:00:00Z');
 INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('CI 3921 - Equipamento estruturado com a cor errada.', false, 1, 2, TIMESTAMP WITH TIME ZONE '2026-01-19T15:00:00Z');
 
-INSERT INTO tb_internal_communication (number, request, client, item, title, description, reason, create_at, status, user_id) VALUES (357, 12080, 'KOVALENT DO BRASIL LTDA', '46831 - ME MT-302030 C17 EH GC BAE SANF PE500 F600 P12080', 'RETRABALHAR PLATAFORMA', 'Retrabalhar suporte da mola da pestana.<br><br>Necessário recortar e retrabalhar o suporte da mola a gas de acionamento da pestana.<br><br>Fabricar:<br>40128 - PRF U #6,35 90x80 L70mm - 01 PEÇA<br>11098 - TB A53 #2,00 50x100 L245mm - 01 PEÇA', 'Posicionamento incorreto no projeto', TIMESTAMP WITH TIME ZONE '2025-01-19T15:00:00Z', 'PUBLISH', 2);
-
-INSERT INTO tb_internal_communication_interaction (internal_communication_id, user_id) VALUES (1, 2);
-INSERT INTO tb_internal_communication_interaction (internal_communication_id, user_id) VALUES (1, 1);
-INSERT INTO tb_internal_communication_interaction (internal_communication_id, user_id) VALUES (1, 3);
+INSERT INTO tb_internal_communication (number, request, client, item, title, description, reason, create_at, status, user_id) VALUES (357, 12080, 'KOVALENT DO BRASIL LTDA', '46831 - ME MT-302030 C17 EH GC BAE SANF PE500 F600 P12080', 'RETRABALHAR PLATAFORMA', 'Retrabalhar suporte da mola da pestana.<br><br>Necessário recortar e retrabalhar o suporte da mola a gas de acionamento da pestana.<br><br>Fabricar:<br>40128 - PRF U #6,35 90x80 L70mm - 01 PEÇA<br>11098 - TB A53 #2,00 50x100 L245mm - 01 PEÇA', 'Posicionamento incorreto no projeto', TIMESTAMP WITH TIME ZONE '2025-01-19T15:00:00Z', 'APPROVED', 2);
 
 INSERT INTO tb_internal_communication_departments (internal_communication_id, departments_id) VALUES (1, 2);
 INSERT INTO tb_internal_communication_departments (internal_communication_id, departments_id) VALUES (1, 1);
 
+INSERT INTO tb_interaction (internal_communication_id, user_id, position_signed_id, created_at) VALUES (1, 2, 2, TIMESTAMP WITH TIME ZONE '2026-02-09T09:30:00Z');
+INSERT INTO tb_interaction (internal_communication_id, user_id, position_signed_id, created_at) VALUES (1, 1, 1, TIMESTAMP WITH TIME ZONE '2026-02-09T09:30:00Z');
+
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Criou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:30:32Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Publicou o documento nº 372/2026', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:32:11Z');
-INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Alterou o título de "Acabamento inadequado" para "Pintura inadequado"', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:46:33Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Alterou o título de "Acabamento inadequado" para "Pintura inadequado"', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T16:46:33Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:27Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T17:10:56Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Documento nº 372/2026 aprovado por todas as áreas', null, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:41Z');

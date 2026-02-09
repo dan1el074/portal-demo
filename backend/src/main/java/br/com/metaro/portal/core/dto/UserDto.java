@@ -35,12 +35,15 @@ public class UserDto {
         email = user.getEmail();
         position = user.getPosition().getName();
         birthDate = user.getBirthDate();
-        picture = new PictureDto(user.getPicture());
         activated = user.getActivated();
         username = user.getUsername();
         password = user.getPassword();
         createdAt = user.getCreatedAt();
         updateAt = user.getUpdateAt();
+
+        if (user.getPicture() != null) {
+            picture = new PictureDto(user.getPicture());
+        }
 
         roles = new ArrayList<>();
         for (Role role : user.getRoles()) {

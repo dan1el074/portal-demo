@@ -3,8 +3,9 @@ import { ToastrService } from 'ngx-toastr';
 import { InternalCommunicationService } from './../../../../services/internal-communication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { InternalCommunication } from '../../../../interface/internal-communication.interface';
+import { Interaction, InteractionList, InternalCommunication } from '../../../../interface/internal-communication.interface';
 import { CommonModule } from '@angular/common';
+import { Position } from '../../../../interface/position.interface';
 
 @Component({
   selector: 'app-document-view',
@@ -42,10 +43,12 @@ export class DocumentViewComponent implements OnInit {
       picture: null
     },
     interactions: [],
+    interactionsSummary: [],
     fromDepartments: [],
     status: '',
     logs: []
   };
+  protected interactions: Array<InteractionList> = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -61,9 +64,8 @@ export class DocumentViewComponent implements OnInit {
     this.ciService.findById(id).subscribe({
       next: (data: InternalCommunication) => {
         this.item = data;
+        this.updateInteractions();
         this.cdr.detectChanges();
-
-        console.log(data);
       },
       error: () => {
         this.toasterService.error('Registro não encontrado!');
@@ -71,6 +73,33 @@ export class DocumentViewComponent implements OnInit {
         return;
       }
     });
+  }
+
+  protected updateInteractions(): void {
+    this.item.fromDepartments.forEach((department: Position) =>{
+      let findInteraction = false;
+
+      this.item.interactions.forEach((interaction: Interaction) => {
+        if (department.id == interaction.departmentSigned.id) {
+          findInteraction = true;
+
+          this.interactions.push({
+            check: true,
+            position: department.name,
+            signedBy: interaction.user.name
+          });
+          return;
+        }
+      })
+
+      if (!findInteraction) {
+        this.interactions.push({
+          check: false,
+          position: department.name,
+          signedBy: null
+        });
+      }
+    })
   }
 
   protected onEdit(): void {

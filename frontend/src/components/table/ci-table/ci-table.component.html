@@ -50,9 +50,9 @@
       <th mat-header-cell *matHeaderCellDef>Interações</th>
       <td mat-cell *matCellDef="let internalControl">
         <div class="avatar-fix">
-          @for (item of internalControl.interactions; track item.id) {
+          @for (item of internalControl.interactionsSummary; track item.id) {
             <a [cTooltip]="item.name">
-              <c-avatar [src]="item.pictureId ? apiUrl + '/images/' + item.pictureId : './assets/images/avatars/default.png'" />
+              <c-avatar [src]="item.picture ? apiUrl + '/images/' + item.picture.id : './assets/images/avatars/default.png'" />
             </a>
           }
         </div>

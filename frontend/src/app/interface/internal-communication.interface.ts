@@ -12,7 +12,8 @@ export interface InternalCommunication {
   reason: string;
   createAt: string;
   user: UserSummary;
-  interactions: Array<UserSummary>;
+  interactions: Array<Interaction>;
+  interactionsSummary: Array<UserSummary>;
   fromDepartments: Array<Position>;
   status: string;
   logs: Array<CILog>
@@ -28,10 +29,20 @@ export interface NewInternalCommunication {
   departments: string;
 }
 
-export interface CILog {
-  id: number,
-  content: string,
-  user: UserSummary | null,
-  createdAt: string
+export interface Interaction {
+  departmentSigned: Position;
+  user: UserSummary
 }
 
+export interface InteractionList {
+  check: boolean;
+  position: string;
+  signedBy: string | null;
+}
+
+export interface CILog {
+  id: number;
+  content: string;
+  user: UserSummary | null;
+  createdAt: string;
+}

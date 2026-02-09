@@ -44,8 +44,9 @@ export class CiTableComponent implements AfterViewInit, OnChanges {
   protected icons = { cilSearch, cilPencil, cilX };
 
   ngOnChanges(): void {
-    if (this.data) {
+    if (this.data && this.data.length > 0) {
       this.dataSource.data = this.data;
+      console.log(this.data);
     }
   }
 
@@ -80,7 +81,7 @@ export class CiTableComponent implements AfterViewInit, OnChanges {
 
         default:
           return (item as any)[property];
-      }
+      };
     };
   }
 

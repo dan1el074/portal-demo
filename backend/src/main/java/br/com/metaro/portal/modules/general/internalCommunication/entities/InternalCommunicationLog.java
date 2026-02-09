@@ -1,4 +1,4 @@
-package br.com.metaro.portal.modules.general.internalCommunication;
+package br.com.metaro.portal.modules.general.internalCommunication.entities;
 
 import br.com.metaro.portal.core.entities.User;
 import jakarta.persistence.*;

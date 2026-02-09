@@ -1,6 +1,7 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.internalCommunication.InternalCommunication;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.Interaction;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunication;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,4 +27,7 @@ public class Position {
 
     @ManyToMany(mappedBy = "fromDepartments")
     private Set<InternalCommunication> InternalCommunications = new HashSet<>();
+
+    @OneToMany(mappedBy = "departmentSigned")
+    private List<Interaction> ciInteractions = new ArrayList<>();
 }

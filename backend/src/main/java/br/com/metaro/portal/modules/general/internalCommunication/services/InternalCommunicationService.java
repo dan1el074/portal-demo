@@ -1,4 +1,4 @@
-package br.com.metaro.portal.modules.general.internalCommunication;
+package br.com.metaro.portal.modules.general.internalCommunication.services;
 
 import br.com.metaro.portal.core.entities.Position;
 import br.com.metaro.portal.core.entities.User;
@@ -8,20 +8,25 @@ import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunication;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunicationStatus;
 import br.com.metaro.portal.modules.general.internalCommunication.dots.InternalCommunicationDto;
 import br.com.metaro.portal.modules.general.internalCommunication.dots.InternalCommunicationInsertDto;
+import br.com.metaro.portal.modules.general.internalCommunication.repository.InternalCommunicationRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class InternalCommunicationService {
+
     @Autowired
     private InternalCommunicationRepository internalCommunicationRepository;
     @Autowired
@@ -30,7 +35,10 @@ public class InternalCommunicationService {
     private UserService userService;
     @Autowired
     private ParamService paramService;
+    @Autowired
+    private InternalCommunicationLogService logService;
 
+    // TODO: no formulário do frontend, poder selecionar mais de um item ao mesmo tempo
     // TODO: apenas informar o número se o status for diferente de "CREATED"
     // TODO: posso editar as CIs que tiverem o status "CREATED",
     // TODO: no frontend, trocar o botão de edição por um ícone de olho no painel "Publicados", ou mostrar popup
@@ -39,7 +47,6 @@ public class InternalCommunicationService {
     // TODO: posso apagar CIS que não tiverem números
     // TODO: as CIs só podem ser canceladas se estiverem com status "PUBLISH"
     // TODO: só posso assinar CIs com o status "PUBLISH"
-    // TODO: no formulário do frontend, poder selecionar mais de um item ao mesmo tempo
 
     @Transactional(readOnly = true)
     public List<InternalCommunicationDto> findAll() {
@@ -62,10 +69,17 @@ public class InternalCommunicationService {
 
         applyInsertRules(dto, entity);
         entity.setCreatedBy(me);
-        entity.setInteractions(new ArrayList<>());
-        entity.getInteractions().add(me);
+//        entity.setInteractions(new ArrayList<>());
+//        entity.getInteractions().add(me);
+        entity.setLogs(new ArrayList<>());
 
         entity = internalCommunicationRepository.save(entity);
+        logService.create(entity.getId(), "Criou o documento");
+        if (dto.getStatus().equals(InternalCommunicationStatus.PUBLISH)) {
+            logService.create(entity.getId(), "Publicou o documento nº %d/%d".formatted(entity.getNumber(),
+                    entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
+        }
+
         return new InternalCommunicationDto(entity);
     }
 
@@ -87,9 +101,10 @@ public class InternalCommunicationService {
 
         applyInsertRules(dto, entity);
 
-        if (entity.getInteractions().stream().noneMatch(currentUser -> currentUser.getId().equals(me.getId()))) {
-            entity.getInteractions().add(me);
-        }
+//        if (entity.getInteractions().stream().noneMatch(currentUser -> currentUser.getId().equals(me.getId()))) {
+//            entity.getInteractions().add(me);
+//        }
+
         entity = internalCommunicationRepository.save(entity);
         return new InternalCommunicationDto(entity);
     }

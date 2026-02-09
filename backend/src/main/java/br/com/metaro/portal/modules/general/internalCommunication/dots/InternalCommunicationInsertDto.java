@@ -1,12 +1,9 @@
 package br.com.metaro.portal.modules.general.internalCommunication.dots;
 
-import br.com.metaro.portal.core.dto.PositionDto;
-import br.com.metaro.portal.modules.general.internalCommunication.InternalCommunicationStatus;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunicationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor

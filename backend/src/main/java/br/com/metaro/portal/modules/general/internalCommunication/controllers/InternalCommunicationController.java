@@ -1,7 +1,8 @@
-package br.com.metaro.portal.modules.general.internalCommunication;
+package br.com.metaro.portal.modules.general.internalCommunication.controllers;
 
 import br.com.metaro.portal.modules.general.internalCommunication.dots.InternalCommunicationDto;
 import br.com.metaro.portal.modules.general.internalCommunication.dots.InternalCommunicationInsertDto;
+import br.com.metaro.portal.modules.general.internalCommunication.services.InternalCommunicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

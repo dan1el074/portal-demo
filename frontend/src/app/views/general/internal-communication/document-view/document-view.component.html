@@ -1,7 +1,9 @@
 <div class="paper-container">
   <div class="button-container">
-    <button cButton color="primary" (click)="onSign()">Assinar</button>
-    <button cButton color="info" (click)="onEdit()">Editar</button>
+    @if (item.status != 'APPROVED') {
+      <button cButton color="primary" (click)="onSign()">Assinar</button>
+      <button cButton color="info" (click)="onEdit()">Editar</button>
+    }
   </div>
 
   <div class="paper">
@@ -19,12 +21,34 @@
         </c-col>
       </c-row>
       <c-row>
-        <c-col><strong>Data:</strong> {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}</c-col>
         <c-col><strong>Nº:</strong> {{ item.number }}</c-col>
         <c-col><strong>Ano:</strong> {{ item.createAt | date: "yyyy" : '-0300' }}</c-col>
+        <c-col>
+          <strong>Status: </strong>
+            @switch (item.status) {
+              @case ("CREATED") {
+                Criado
+              }
+              @case ("PUBLISH") {
+                Publicado
+              }
+              @case ("APPROVED") {
+                Aprovado
+              }
+              @case ("CANCELED") {
+                Cancelado
+              }
+            }
+        </c-col>
+      </c-row>
+      <c-row>
+        <c-col><strong>Data:</strong> {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}</c-col>
       </c-row>
       <c-row>
         <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
+      </c-row>
+      <c-row>
+        <c-col><strong>Item:</strong> {{ item.item }}</c-col>
       </c-row>
       <c-row>
         <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
@@ -42,13 +66,15 @@
         <c-col class="flex-col">
           <strong>Envolvidos:</strong>
           <div class="departments">
-            @for (position of item.fromDepartments; track position.id) {
+            @for (interaction of interactions; track interaction.position; let idx = $index) {
               <c-form-check>
-                <input cFormCheckInput id="1" type="checkbox" class="fix" disabled checked />
-                <label cFormCheckLabel for="1" class="fix">{{ position.name }}</label>
+                <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="interaction.check" />
+                <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ interaction.position }}</label>
                 <span class="signature">
                   <span>_____________________________________</span>
-                  <span class="sign">Carlos Fronza</span>
+                  @if (interaction.signedBy) {
+                    <span class="sign">{{ interaction.signedBy }}</span>
+                  }
                 </span>
               </c-form-check>
             }
@@ -57,6 +83,8 @@
       </c-row>
     </c-container>
   </div>
+
+  <div class="label">APROVADO</div>
 </div>
 
 <div class="logs-container">

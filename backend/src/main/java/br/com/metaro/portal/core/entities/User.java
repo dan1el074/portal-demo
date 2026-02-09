@@ -1,7 +1,8 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.internalCommunication.InternalCommunication;
-import br.com.metaro.portal.modules.general.internalCommunication.InternalCommunicationLog;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.Interaction;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunication;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunicationLog;
 import br.com.metaro.portal.modules.general.post.Post;
 import br.com.metaro.portal.util.picture.Picture;
 import jakarta.persistence.*;
@@ -65,8 +66,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "createdBy")
     private Set<InternalCommunication> InternalCommunications = new HashSet<>();
 
-    @ManyToMany(mappedBy = "interactions")
-    private Set<InternalCommunication> CIInteractions = new HashSet<>();
+    @OneToMany(mappedBy = "id.user")
+    private Set<Interaction> interactions = new HashSet<>();
+
+    public List<InternalCommunication> getInteractionsCI() {
+        return interactions.stream().map(Interaction::getCi).toList();
+    }
 
     public void addRole(Role role) {
         roles.add(role);

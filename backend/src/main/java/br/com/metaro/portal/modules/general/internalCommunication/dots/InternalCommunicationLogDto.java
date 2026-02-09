@@ -1,7 +1,7 @@
 package br.com.metaro.portal.modules.general.internalCommunication.dots;
 
 import br.com.metaro.portal.core.dto.UserSummaryDto;
-import br.com.metaro.portal.modules.general.internalCommunication.InternalCommunicationLog;
+import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunicationLog;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package br.com.metaro.portal.modules.general.internalCommunication;
+package br.com.metaro.portal.modules.general.internalCommunication.entities;
 
 import br.com.metaro.portal.core.entities.Position;
 import br.com.metaro.portal.core.entities.User;
@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_internal_communication")
@@ -41,12 +43,13 @@ public class InternalCommunication {
             inverseJoinColumns = @JoinColumn(name = "departments_id"))
     private List<Position> fromDepartments;
 
-    @ManyToMany
-    @JoinTable(name = "tb_internal_communication_interaction",
-            joinColumns = @JoinColumn(name = "internal_communication_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> interactions;
-
     @OneToMany(mappedBy = "internalCommunication")
     private List<InternalCommunicationLog> logs;
+
+    @OneToMany(mappedBy = "id.internalCommunication")
+    private Set<Interaction> interactions = new HashSet<>();
+
+    public List<User> getInteractionsUsers() {
+        return interactions.stream().map(Interaction::getUser).toList();
+    }
 }
