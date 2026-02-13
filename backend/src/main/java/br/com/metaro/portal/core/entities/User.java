@@ -20,10 +20,11 @@ import java.util.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
     private String name;
     private String email;
@@ -66,11 +67,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "createdBy")
     private Set<InternalCommunication> InternalCommunications = new HashSet<>();
 
-    @OneToMany(mappedBy = "id.user")
+    @OneToMany(mappedBy = "user")
     private Set<Interaction> interactions = new HashSet<>();
 
     public List<InternalCommunication> getInteractionsCI() {
-        return interactions.stream().map(Interaction::getCi).toList();
+        return interactions.stream().map(Interaction::getInternalCommunication).toList();
     }
 
     public void addRole(Role role) {

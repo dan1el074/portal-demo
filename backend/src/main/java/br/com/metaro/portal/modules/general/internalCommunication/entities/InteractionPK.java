@@ -1,25 +1,18 @@
 package br.com.metaro.portal.modules.general.internalCommunication.entities;
 
-import br.com.metaro.portal.core.entities.User;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class InteractionPK {
-    @ManyToOne
-    @JoinColumn(name = "internal_communication_id")
-    private InternalCommunication internalCommunication;
+@EqualsAndHashCode
+public class InteractionPK implements Serializable {
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Long internalCommunicationId;
+    private Long userId;
 }

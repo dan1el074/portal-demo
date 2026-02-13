@@ -1,15 +1,15 @@
-import { OrderInfo } from './../../../interface/erp.interface';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { cilPlus, cilX } from '@coreui/icons';
-import { IconDirective } from '@coreui/icons-angular';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
-import { CiTableComponent } from '../../../../components/table/ci-table/ci-table.component';
+import { cilPlus, cilX } from '@coreui/icons';
+import { IconDirective } from '@coreui/icons-angular';
 import { InternalCommunicationService } from './../../../services/internal-communication.service';
-import { InternalCommunication, NewInternalCommunication } from '../../../interface/internal-communication.interface';
-import { NewCiModalComponent } from '../../../../components/modal/new-ci-modal/new-ci-modal.component';
+import { CiTableComponent } from '../../../../components/table/ci-table/ci-table.component';
 import { CiFormComponent } from './../../../../components/forms/ci-form/ci-form.component';
-import { Router } from '@angular/router';
+import { NewCiModalComponent } from '../../../../components/modal/new-ci-modal/new-ci-modal.component';
+import { InternalCommunication, NewInternalCommunication } from '../../../interface/internal-communication.interface';
+import { OrderInfo } from './../../../interface/erp.interface';
 
 @Component({
   selector: 'app-internal-communication',
@@ -30,7 +30,6 @@ import { Router } from '@angular/router';
   styleUrl: './internal-communication.component.scss',
 })
 export class InternalCommunicationComponent implements OnInit {
-  protected tabs: Array<string> = ['Todos', 'Desativados'];
   protected icons = { cilPlus, cilX };
   protected activeItemKey = 0;
   protected newCITab = false;
@@ -45,7 +44,7 @@ export class InternalCommunicationComponent implements OnInit {
     private internalCommunicationService: InternalCommunicationService,
     private toasterService: ToastrService,
     private cdr: ChangeDetectorRef,
-    private route: Router
+    private router: Router
   ) {}
 
   public ngOnInit(): void {
@@ -55,7 +54,14 @@ export class InternalCommunicationComponent implements OnInit {
         this.updateCIs();
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error("Erro ao carregar informações!"),
+      error: error => {
+        if (error.status == 401) {
+          this.router.navigate(['login']);
+          this.toasterService.error('Sessão expirada!');
+          return;
+        }
+        this.toasterService.error("Erro ao carregar informações!");
+      },
     });
   }
 
@@ -88,9 +94,7 @@ export class InternalCommunicationComponent implements OnInit {
         this.toggleNewCITab(true);
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.toasterService.error('Erro ao pesquisar o pedido!');
-      }
+      error: () => this.toasterService.error('Erro ao pesquisar o pedido!')
     });
   }
 
@@ -104,10 +108,9 @@ export class InternalCommunicationComponent implements OnInit {
     this.internalCommunicationService.insert(data).subscribe({
       next: (newCI: InternalCommunication) => {
         this.toasterService.success("CI criada com sucesso!");
-        this.route.navigate(['general/internal-communication/' + newCI.id]);
+        this.router.navigate(['general/internal-communication/' + newCI.id]);
       },
-      error: () => this.toasterService.success("Erro ao criar CI!")
+      error: () => this.toasterService.error("Erro ao criar CI!")
     });
   }
-
 }

@@ -1,0 +1,13 @@
+<c-row>
+  <c-col xs="12">
+    <c-card class="border">
+      <c-card-body>
+        <h4 cCardTitle>Editar Comunicação Interna</h4>
+
+        <div class="header-space">
+          <app-ci-edit-form [data]="editData" [isAdmin]="isAdmin" (editTask)="editTask($event)"></app-ci-edit-form>
+        </div>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

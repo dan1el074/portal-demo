@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, ViewChild } from '@angular/core';
 import { AvatarComponent, BadgeComponent, ButtonDirective, ContainerComponent, TooltipDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { cilSearch, cilPencil, cilX } from '@coreui/icons';
+import { cilSearch, cilPencil, cilX, cilExternalLink } from '@coreui/icons';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -37,16 +37,28 @@ export class CiTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatSort) sort!: MatSort;
   @Input() data!: Array<InternalCommunication>;
   @Input() noMargin: boolean = false;
+  @Input() saveTab: boolean = false;
 
   protected apiUrl = environment.apiUrl;
   protected displayedColumns: string[] = ['ciNumber', 'orderNumber', 'client', 'status', 'interaction', 'createdAt', 'buttons'];
   protected dataSource = new MatTableDataSource<InternalCommunication>([]);
-  protected icons = { cilSearch, cilPencil, cilX };
+  protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
 
   ngOnChanges(): void {
     if (this.data && this.data.length > 0) {
+      this.data = this.data.sort((a, b) => {
+        const aYear = new Date(a.createAt).getFullYear();
+        const aNumberPadded = a.number.toString().padStart(6, '0');
+        const aRes = Number(`${aYear}${aNumberPadded}`);
+
+        const bYear = new Date(b.createAt).getFullYear();
+        const bNumberPadded = b.number.toString().padStart(6, '0');
+        const bRes = Number(`${bYear}${bNumberPadded}`);
+
+        return bRes - aRes;
+      });
+
       this.dataSource.data = this.data;
-      console.log(this.data);
     }
   }
 

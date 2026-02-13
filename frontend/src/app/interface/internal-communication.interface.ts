@@ -27,6 +27,7 @@ export interface NewInternalCommunication {
   description: string;
   reason: string;
   departments: string;
+  status: string;
 }
 
 export interface Interaction {

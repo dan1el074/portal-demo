@@ -41,14 +41,26 @@ public class InternalCommunicationController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<InternalCommunicationDto> update(@PathVariable Long id, @RequestBody InternalCommunicationInsertDto insertDto) {
-        InternalCommunicationDto dto = internalCommunicationService.update(id, insertDto);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<InternalCommunicationDto> update(@PathVariable Long id, @RequestBody InternalCommunicationInsertDto dto) {
+        InternalCommunicationDto newDto = internalCommunicationService.update(id, dto);
+        return ResponseEntity.ok(newDto);
     }
 
     @PutMapping(value = "/disable/{id}")
     public ResponseEntity<InternalCommunicationDto> disable(@PathVariable Long id) {
         InternalCommunicationDto dto = internalCommunicationService.disable(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping(value = "/sign/{id}")
+    public ResponseEntity<InternalCommunicationDto> sign(@PathVariable Long id) {
+        InternalCommunicationDto dto = internalCommunicationService.sign(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        internalCommunicationService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

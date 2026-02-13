@@ -12,7 +12,7 @@
 
   <div [cFormFloating]="true" class="mb-3">
     <select formControlName="item">
-      <option value="0">Selecione</option>
+      <option value="0" disabled>Selecione</option>
       @for (item of items; track item.item) {
         <option [value]="item.item">{{ item.item }}</option>
       }
@@ -46,7 +46,7 @@
   </div>
   <div class="button-container">
     <button cButton color="secondary" (click)="onExit()">Cancelar</button>
-    <button cButton color="info" (click)="onSave()">Salvar</button>
+    <button cButton color="info" class="fix-info" (click)="onSave()">Salvar</button>
     <button cButton color="primary" (click)="onPublish()">Publicar</button>
   </div>
 </form>

@@ -1,90 +1,129 @@
+<div class="button-container">
+  @if (item.status == 'CREATED') {
+    <button cButton color="primary" (click)="togglePublishModal()">Públicar</button>
+    <a [routerLink]="['./edit']" class="edit">
+      <button cButton color="info">Editar</button>
+    </a>
+    <button cButton color="danger" (click)="toggleDeleteModal()">Deletar</button>
+  }
+
+  @if (item.status == 'PUBLISH') {
+    @if (canSign) {
+      <button cButton color="primary" (click)="toggleSignModal()">Assinar</button>
+    }
+    @if (isAdmin) {
+      <a [routerLink]="['./edit']" class="edit">
+        <button cButton color="info">Editar</button>
+      </a>
+      <button cButton color="danger" (click)="toggleCancelModal()">Cancelar</button>
+    }
+  }
+</div>
+
 <div class="paper-container">
-  <div class="button-container">
-    @if (item.status != 'APPROVED') {
-      <button cButton color="primary" (click)="onSign()">Assinar</button>
-      <button cButton color="info" (click)="onEdit()">Editar</button>
+  <div class="paper">
+    <c-row>
+      <c-col class="align-center flex">
+        <div class="ci-logo"></div>
+        <span class="small bold">RE 33/02</span>
+      </c-col>
+      <c-col xs="6" class="flex align-center bold">
+        <span>SISTEMA DE GETÃO DA QUALIDADE<br>COMUNICAÇÃO INTERNA</span>
+      </c-col>
+      <c-col class="flex">
+        Ref. PR 01
+      </c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Nº: </strong>
+        @if (item.number) {
+          {{ item.number }}
+        } @else {
+          --
+        }
+      </c-col>
+      <c-col><strong>Ano: </strong>
+        @if (item.createAt) {
+          {{ item.createAt | date: "yyyy" : '-0300' }}
+        } @else {
+          --
+        }
+      </c-col>
+      <c-col>
+        <strong>Status: </strong>
+          @switch (item.status) {
+            @case ("CREATED") {
+              Salvo
+            }
+            @case ("PUBLISH") {
+              Publicado
+            }
+            @case ("APPROVED") {
+              Aprovado
+            }
+            @case ("CANCELED") {
+              Cancelado
+            }
+          }
+      </c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Data: </strong>
+        @if (item.createAt) {
+          {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}
+        } @else {
+          --
+        }
+      </c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Item:</strong> {{ item.item }}</c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Título:</strong> {{ item.title }}</c-col>
+    </c-row>
+    <c-row>
+      <c-col [innerHtml]="'<strong>Descrição:</strong> ' + item.description"></c-col>
+    </c-row>
+    <c-row>
+      <c-col><strong>Motivo:</strong> {{ item.reason }}</c-col>
+    </c-row>
+    <c-row>
+      <c-col class="flex-col">
+        <strong>Envolvidos:</strong>
+        <div class="departments">
+          @for (interaction of interactions; track interaction.position; let idx = $index) {
+            <c-form-check>
+              <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="interaction.check" />
+              <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ interaction.position }}</label>
+              <span class="signature">
+                <span>_____________________________________</span>
+                @if (interaction.signedBy) {
+                  <span class="sign">{{ interaction.signedBy }}</span>
+                }
+              </span>
+            </c-form-check>
+          }
+        </div>
+      </c-col>
+    </c-row>
+
+    @if (item.status == "APPROVED") {
+      <div class="label approved">APROVADO</div>
+    }
+    @if (item.status == "CANCELED") {
+      <div class="label canceled">CANCELADO</div>
     }
   </div>
-
-  <div class="paper">
-    <c-container>
-      <c-row>
-        <c-col class="align-center flex">
-          <div class="ci-logo"></div>
-          <span class="small bold">RE 33/02</span>
-        </c-col>
-        <c-col xs="6" class="flex align-center bold">
-          <span>SISTEMA DE GETÃO DA QUALIDADE<br>COMUNICAÇÃO INTERNA</span>
-        </c-col>
-        <c-col class="flex">
-          Ref. PR 01
-        </c-col>
-      </c-row>
-      <c-row>
-        <c-col><strong>Nº:</strong> {{ item.number }}</c-col>
-        <c-col><strong>Ano:</strong> {{ item.createAt | date: "yyyy" : '-0300' }}</c-col>
-        <c-col>
-          <strong>Status: </strong>
-            @switch (item.status) {
-              @case ("CREATED") {
-                Criado
-              }
-              @case ("PUBLISH") {
-                Publicado
-              }
-              @case ("APPROVED") {
-                Aprovado
-              }
-              @case ("CANCELED") {
-                Cancelado
-              }
-            }
-        </c-col>
-      </c-row>
-      <c-row>
-        <c-col><strong>Data:</strong> {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}</c-col>
-      </c-row>
-      <c-row>
-        <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
-      </c-row>
-      <c-row>
-        <c-col><strong>Item:</strong> {{ item.item }}</c-col>
-      </c-row>
-      <c-row>
-        <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
-      </c-row>
-      <c-row>
-        <c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col>
-      </c-row>
-      <c-row>
-        <c-col [innerHtml]="'<strong>Descrição:</strong> ' + item.description"></c-col>
-      </c-row>
-      <c-row>
-        <c-col><strong>Motivo:</strong> {{ item.reason }}</c-col>
-      </c-row>
-      <c-row>
-        <c-col class="flex-col">
-          <strong>Envolvidos:</strong>
-          <div class="departments">
-            @for (interaction of interactions; track interaction.position; let idx = $index) {
-              <c-form-check>
-                <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="interaction.check" />
-                <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ interaction.position }}</label>
-                <span class="signature">
-                  <span>_____________________________________</span>
-                  @if (interaction.signedBy) {
-                    <span class="sign">{{ interaction.signedBy }}</span>
-                  }
-                </span>
-              </c-form-check>
-            }
-          </div>
-        </c-col>
-      </c-row>
-    </c-container>
-  </div>
-
-  <div class="label">APROVADO</div>
 </div>
 
 <div class="logs-container">
@@ -96,3 +135,71 @@
     }
   </ul>
 </div>
+
+<c-modal [visible]="showSignModal" (visibleChange)="handleSignModalChange($event)" alignment="center">
+  <c-modal-header>
+    <h5 cModalTitle>Assinar documento</h5>
+    <button (click)="toggleSignModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja assinar o documento nº {{ item.number }}/{{ item.createAt | date: "yyyy" : '-0300' }}?
+    <br>Essa ação ficará registrada no log e não poderá ser desfeita!
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleSignModal()" cButton color="secondary">
+      Cancelar
+    </button>
+    <button cButton color="primary" (click)="onSign()">Assinar</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal [visible]="showPublishModal" (visibleChange)="handlePublishModalChange($event)" alignment="center">
+  <c-modal-header>
+    <h5 cModalTitle>Publicar Comunicação Interna</h5>
+    <button (click)="togglePublishModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja publicar esse documento?
+    <br>Essa ação ficará registrada no log e não poderá ser desfeita!
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="togglePublishModal()" cButton color="secondary">
+      Cancelar
+    </button>
+    <button cButton color="primary" (click)="onPublish()">Publicar</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal [visible]="showCancelModal" (visibleChange)="handleCancelModalChange($event)" alignment="center">
+  <c-modal-header>
+    <h5 cModalTitle>Cancelar Registro de Comunicação Interna</h5>
+    <button (click)="toggleCancelModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja cancelar o documento nº {{ item.number }}/{{ item.createAt | date: "yyyy" : '-0300' }}?
+    <br>Essa ação ficará registrada no log e não poderá ser desfeita!
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleCancelModal()" cButton color="secondary">
+      Desistir
+    </button>
+    <button cButton color="danger" (click)="onCancel()" class="fix-button">Cancelar</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal [visible]="showDeleteModal" (visibleChange)="handleDeleteModalChange($event)" alignment="center">
+  <c-modal-header>
+    <h5 cModalTitle>Deletear Registro de Comunicação Interna</h5>
+    <button (click)="toggleDeleteModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja deletar o registro?
+    <br>Essa ação não poderá ser desfeita!
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleDeleteModal()" cButton color="secondary">
+      Cancelar
+    </button>
+    <button cButton color="danger" (click)="onDelete()" class="fix-button">Deletar</button>
+  </c-modal-footer>
+</c-modal>

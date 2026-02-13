@@ -1,23 +1,31 @@
-import { ButtonDirective, ColComponent, ContainerComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, RowComponent } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { ToastrService } from 'ngx-toastr';
 import { InternalCommunicationService } from './../../../../services/internal-communication.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Interaction, InteractionList, InternalCommunication } from '../../../../interface/internal-communication.interface';
+import { Interaction, InteractionList, InternalCommunication, NewInternalCommunication } from '../../../../interface/internal-communication.interface';
 import { CommonModule } from '@angular/common';
 import { Position } from '../../../../interface/position.interface';
+import { AuthGuard } from '../../../../config/authGuard';
+import { Me } from '../../../../interface/user.interface';
 
 @Component({
   selector: 'app-document-view',
   imports: [
     CommonModule,
-    ContainerComponent,
     RowComponent,
     ColComponent,
     FormCheckComponent,
     FormCheckInputDirective,
     FormCheckLabelDirective,
-    ButtonDirective
+    ButtonDirective,
+    ModalComponent,
+    ModalHeaderComponent,
+    ModalTitleDirective,
+    ButtonCloseDirective,
+    ModalBodyComponent,
+    ModalFooterComponent,
+    RouterLink
   ],
   templateUrl: './document-view.component.html',
   styleUrl: './document-view.component.scss',
@@ -48,34 +56,78 @@ export class DocumentViewComponent implements OnInit {
     status: '',
     logs: []
   };
+  protected user!: Me;
   protected interactions: Array<InteractionList> = [];
+  protected isAdmin: boolean = false;
+  protected canSign: boolean = false;
+  protected showSignModal: boolean = false;
+  protected showPublishModal: boolean = false;
+  protected showCancelModal: boolean = false;
+  protected showDeleteModal: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private ciService: InternalCommunicationService,
     private toasterService: ToastrService,
+    private authGuardService: AuthGuard,
     private cdr: ChangeDetectorRef
   ) { }
 
   public ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.ciService.findById(id).subscribe({
-      next: (data: InternalCommunication) => {
-        this.item = data;
-        this.updateInteractions();
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.toasterService.error('Registro não encontrado!');
-        this.router.navigate(['general/internal-communication']);
-        return;
+    this.authGuardService.getUser().subscribe(user => {
+      if (user.roles.findIndex(role => role.authority == 'ROLE_ADMIN') >= 0) {
+        this.user = user;
+        this.isAdmin = true;
       }
+
+      this.ciService.findById(id).subscribe({
+        next: (data: InternalCommunication) => {
+          this.item = data;
+          this.verifyCanSign(user);
+          this.updateInteractions();
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          if (error.status == 401) {
+            this.router.navigate(['login']);
+            this.toasterService.error('Sessão expirada!');
+            return;
+          }
+
+          this.toasterService.error('Registro não encontrado!');
+          this.router.navigate(['general/internal-communication']);
+          return;
+        }
+      });
     });
   }
 
+  private verifyCanSign(user: Me): void {
+    if (this.item.status == "PUBLISH") {
+      this.item.fromDepartments.forEach(currentDepartment => {
+        if (currentDepartment.name == user.position) {
+          this.canSign = true;
+          return;
+        }
+      });
+
+      if (this.canSign) {
+        this.item.interactions.forEach(interaction => {
+          if (interaction.departmentSigned.name == user.position) {
+            this.canSign = false;
+            return;
+          }
+        });
+      }
+    }
+  }
+
   protected updateInteractions(): void {
+    this.interactions = [];
+
     this.item.fromDepartments.forEach((department: Position) =>{
       let findInteraction = false;
 
@@ -102,10 +154,112 @@ export class DocumentViewComponent implements OnInit {
     })
   }
 
-  protected onEdit(): void {
+  protected toggleSignModal() {
+    this.showSignModal = !this.showSignModal;
+  }
+
+  protected handleSignModalChange(event: any) {
+    this.showSignModal = event;
   }
 
   protected onSign(): void {
+    this.ciService.sign(this.item.id).subscribe({
+      next: (data: InternalCommunication) => {
+        this.item = data;
+        this.canSign = false;
+        this.updateInteractions();
+        this.toasterService.success('CI assinada com sucesso!');
+        this.toggleSignModal();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toasterService.error('Erro ao assinada CI!');
+      }
+    });
   }
 
+  protected togglePublishModal() {
+    this.showPublishModal = !this.showPublishModal;
+  }
+
+  protected handlePublishModalChange(event: any) {
+    this.showPublishModal = event;
+  }
+
+  protected onPublish(): void {
+    let departmentsId = '';
+
+    for (let i=0; i<this.item.fromDepartments.length; i++) {
+      if (i > 0) departmentsId += ', ';
+      departmentsId += this.item.fromDepartments[i].id;
+    }
+
+    const ci: NewInternalCommunication = {
+      request: this.item.request,
+      client: this.item.client,
+      item: this.item.item,
+      title: this.item.title,
+      description: this.item.description,
+      reason: this.item.reason,
+      departments: departmentsId,
+      status: 'PUBLISH'
+    };
+
+    this.ciService.update(this.item.id, ci).subscribe({
+      next: (data: InternalCommunication) => {
+        this.item = data;
+        this.updateInteractions();
+        this.toasterService.success('CI publicada com sucesso!');
+        this.togglePublishModal();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toasterService.error('Erro ao atualizar CI!');
+      }
+    });
+  }
+
+  protected toggleCancelModal() {
+    this.showCancelModal = !this.showCancelModal;
+  }
+
+  protected handleCancelModalChange(event: any) {
+    this.showCancelModal = event;
+  }
+
+  protected onCancel(): void {
+    this.ciService.disable(this.item.id).subscribe({
+      next: (data: InternalCommunication) => {
+        this.item = data;
+        this.toasterService.success('CI cancelada com sucesso!');
+        this.toggleCancelModal();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toasterService.error('Erro ao cancelar CI!');
+      }
+    });
+  }
+
+  protected toggleDeleteModal(status = !this.showDeleteModal) {
+    this.showDeleteModal = status;
+  }
+
+  protected handleDeleteModalChange(event: any) {
+    this.showDeleteModal = event;
+  }
+
+  protected onDelete(): void {
+    this.ciService.delete(this.item.id).subscribe({
+      next: () => {
+        this.toggleDeleteModal(false);
+        this.cdr.detectChanges();
+        this.toasterService.success('CI deletada com sucesso!');
+        this.router.navigateByUrl('general/internal-communication');
+      },
+      error: () => {
+        this.toasterService.error('Erro ao deletar CI!');
+      }
+    });
+  }
 }

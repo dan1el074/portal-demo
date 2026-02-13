@@ -26,6 +26,7 @@ public class InternalCommunication {
     private String client;
     private String item;
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String reason;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
@@ -43,13 +44,19 @@ public class InternalCommunication {
             inverseJoinColumns = @JoinColumn(name = "departments_id"))
     private List<Position> fromDepartments;
 
-    @OneToMany(mappedBy = "internalCommunication")
+    @OneToMany(mappedBy = "internalCommunication",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<InternalCommunicationLog> logs;
 
-    @OneToMany(mappedBy = "id.internalCommunication")
+    @OneToMany(mappedBy = "internalCommunication",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
     private Set<Interaction> interactions = new HashSet<>();
 
     public List<User> getInteractionsUsers() {
         return interactions.stream().map(Interaction::getUser).toList();
     }
+
+    // TODO: no formulário do frontend, poder selecionar mais de um item ao mesmo tempo
 }

@@ -44,19 +44,19 @@ export class CiFormComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (this.items.length > 0) {
-      this.createForm.reset({
-        request: this.items[0].number,
-        client: this.items[0].client,
-        item: this.items[0].item,
-        title: '',
-        description: '',
-        reason: '',
-        departments: ''
-      });
+    if (this.items == null) return;
+    if (this.items.length <= 0) return;
 
-      this.cdr.detectChanges();
-    }
+    this.createForm.reset({
+      request: this.items[0].number,
+      client: this.items[0].client,
+      item: this.items[0].item,
+      title: '',
+      description: '',
+      reason: '',
+      departments: ''
+    });
+    this.cdr.detectChanges();
   }
 
   protected onExit(): void {

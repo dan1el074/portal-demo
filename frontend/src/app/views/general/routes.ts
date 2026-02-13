@@ -33,6 +33,15 @@ export const routes: Routes = [
         }
       },
       {
+        path: 'internal-communication/:id/edit',
+        loadComponent: () => import('./internal-communication/document-view/edit-ci/edit-ci.component').then(m => m.EditCiComponent),
+        canActivate: [AuthGuard],
+        data: {
+          roles: ['ROLE_ADMIN','ROLE_INTERNAL_COMMUNICATION'],
+          title: 'Comunicação Interna'
+        }
+      },
+      {
         path: 'raw-materials',
         loadComponent: () => import('./raw-materials/raw-materials.component').then(m => m.RawMaterialsComponent),
         canActivate: [AuthGuard],

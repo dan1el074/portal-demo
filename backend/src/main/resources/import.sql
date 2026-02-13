@@ -1,5 +1,6 @@
-INSERT INTO tb_param (id, name, content) VALUES (1, 'version', '0.01');
-INSERT INTO tb_param (id, name, content) VALUES (2, 'internalControlCount', '1');
+INSERT INTO tb_param (id, name, content) VALUES (1, 'version', '0.14.1');
+INSERT INTO tb_param (id, name, content) VALUES (2, 'internalControlCount', '357');
+INSERT INTO tb_param (id, name, content) VALUES (3, 'currentYear', '2025');
 
 INSERT INTO tb_picture (name, path, type) VALUES ('1768850938328_1', 'C:\\workspace\\outros\\imagens\\1768850938328_1.png', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1768478289921_2', 'C:\\workspace\\outros\\imagens\\1768478289921_2.jpg', 'PROFILE');
@@ -41,7 +42,6 @@ INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1,2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,4);
-INSERT INTO tb_user_role (user_id, role_id) VALUES (2,5);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,7);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (3,1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (4,1);
@@ -62,7 +62,8 @@ INSERT INTO tb_interaction (internal_communication_id, user_id, position_signed_
 
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Criou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:30:32Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Publicou o documento nº 372/2026', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:32:11Z');
-INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Alterou o título de "Acabamento inadequado" para "Pintura inadequado"', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T16:46:33Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:27Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Alterou o título de "Acabamento inadequado" para "Pintura inadequado"', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T16:46:33Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T17:10:56Z');
+INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:27Z');
 INSERT INTO tb_internal_communication_log (internal_communication_id, content, user_id, created_at) VALUES (1, 'Documento nº 372/2026 aprovado por todas as áreas', null, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:41Z');
