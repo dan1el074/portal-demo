@@ -103,8 +103,8 @@ export class DefaultLayoutComponent implements OnInit {
     const tempNavItems = [...navItems];
     tempNavItems.splice(6, 0, customNav.length > 0 ? {title: true, name: 'Ferramentas'} : {}, ...customNav);
 
-    if (this.user.supportToken) {
-      tempNavItems[tempNavItems.length - 1].url += "autologin.php?token=" + this.user.supportToken;
+    if (this.user.supportToken && this.user.supportToken != "null") {
+      tempNavItems[tempNavItems.length - 1].url = "http://suporte.metaro.com.br/autologin.php?token=" + this.user.supportToken;
       tempNavItems[tempNavItems.length - 1].badge = { color: 'info', text: 'LINK' };
     }
 
