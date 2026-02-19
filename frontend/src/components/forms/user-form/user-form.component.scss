@@ -8,16 +8,17 @@ form {
     text-align: start;
   }
 
-  h3 {
+  .username {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 8px;
 
-    &.username {
-      margin-bottom: 20px;
+    h3 {
+      margin-bottom: 0px;
 
       span {
+        margin-top: 0px;
         color: var(--cui-secondary-color);
         font-size: 19px;
         padding-top: 4px;
@@ -114,11 +115,15 @@ form {
 
   select {
     border-radius: 4px;
-    padding: 16px 12px;
+    padding: 26px 12px 10px;
 
     option:first-child {
       display: none;
     }
+  }
+
+  label.fix-float {
+    transform: scale(1) translateY(0rem) translateX(0rem) !important;
   }
 
   .button-container {

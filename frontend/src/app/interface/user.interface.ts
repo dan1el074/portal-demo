@@ -23,6 +23,7 @@ export interface Me {
   pictureId: number | null;
   activated: boolean;
   username: string;
+  supportToken: string | null;
   roles: Array<Role>;
   notifications: Array<Notification>;
 }
@@ -46,6 +47,7 @@ export interface UserData {
   email: string;
   birthDate: string;
   username: string;
+  supportToken: string | null;
   roles: Array<Role>;
   activated: boolean;
 }

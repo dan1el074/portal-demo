@@ -63,20 +63,27 @@
         </c-modal-footer>
       </c-modal>
 
-      <h3 class="username">
-        {{ createForm.get('name')?.value ? createForm.get('name')?.value : 'Nome Sobrenome' }}
-        <span>{{ createForm.get('position')?.value ? '● ' + createForm.get('position')?.value : '' }}</span>
-      </h3>
+      <div class="username">
+        <h3>{{ createForm.get('name')?.value ? createForm.get('name')?.value : 'Nome Sobrenome' }}</h3>
+        <h3><span>{{ createForm.get('position')?.value != 0 ? getPositionName(createForm.get('position')?.value) : '' }}</span></h3>
+      </div>
     </c-col>
 
     <c-col>
-      <div [cFormFloating]="true" class="mb-3">
+      <div cFormFloating class="mb-3">
         <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: createForm.get('name')?.errors != null ? false : undefined" id="name" type="text" placeholder="Nome" />
         <label cLabel for="name">Nome</label>
       </div>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="position" [valid]="!showErrors ? undefined: createForm.get('position')?.errors != null ? false : undefined" id="position" type="text" placeholder="Setor" />
-        <label cLabel for="position">Setor</label>
+        <select cSelect formControlName="position" id="position" class="form-select">
+          <option disabled></option>
+          @for (item of positions; track item.id) {
+            <option [value]="item.id" >{{ item.name }}</option>
+          } @empty {
+            <option disabled>Lista vazia</option>
+          }
+        </select>
+        <label cLabel for="position" [class.fix-float]="createForm.get('position')?.value == 0">Departamento</label>
       </div>
       <div cFormFloating class="mb-3">
         <input cFormControl formControlName="email" [valid]="!showErrors ? undefined: createForm.get('email')?.errors != null ? false : undefined" id="email" type="email" placeholder="E-mail" />
@@ -94,7 +101,7 @@
         <input cFormControl formControlName="password" [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : undefined" id="nPW" type="password" placeholder="Nova senha" autocomplete="new-password" />
         <label cLabel for="nPW">Senha</label>
       </div>
-      <div cFormFloating>
+      <div cFormFloating class="mb-3">
         <input cFormControl formControlName="repeatPassword" [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : createForm.hasError('passwordMismatch') ? false : undefined" id="repeatPassword" type="password" placeholder="Senha" autocomplete="new-password" />
         <label cLabel for="repeatPassword">Repetir senha</label>
       </div>
@@ -103,9 +110,13 @@
           As senhas não coincidem
         </div>
       }
-      <div cFormFloating class="mb-3 fix-margin">
+      <div cFormFloating class="mb-3">
         <input cFormControl formControlName="roles" id="roles" type="text" placeholder="Acessos" />
         <label cLabel for="roles">Acessos</label>
+      </div>
+      <div cFormFloating class="mb-3 fix-margin">
+        <input cFormControl formControlName="supportToken" id="supportToken" type="text" placeholder="Token" />
+        <label cLabel for="supportToken">Token de suporte</label>
       </div>
       <c-form-check>
         <input cFormCheckInput formControlName="disabled" id="checkOne" type="checkbox" />

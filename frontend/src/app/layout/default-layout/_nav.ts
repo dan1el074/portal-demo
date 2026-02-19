@@ -40,9 +40,5 @@ export const navItems: INavData[] = [
     url: 'http://suporte.metaro.com.br/',
     iconComponent: { name: 'cilCommentBubble' },
     attributes: { target: '_blank' },
-    badge: {
-      color: 'info',
-      text: 'NOVO'
-    }
   }
 ];

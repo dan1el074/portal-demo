@@ -49,6 +49,7 @@ export class UsersComponent implements OnInit {
     email: '',
     birthDate: '',
     username: '',
+    supportToken: null,
     roles: [],
     activated: false
   };
@@ -111,6 +112,7 @@ export class UsersComponent implements OnInit {
       next: (data: Array<UserTable>) => {
         this.updateUsers(data);
         this.toasterService.success('Usuário criado com sucesso!');
+        this.toggleNewUserTab(false)
       },
       error: () => this.toasterService.error('Erro ao criar usuário!')
     });
@@ -144,6 +146,7 @@ export class UsersComponent implements OnInit {
       email: '',
       birthDate: '',
       username: '',
+      supportToken: null,
       roles: [],
       activated: false
     };
@@ -160,9 +163,9 @@ export class UsersComponent implements OnInit {
         this.updateUsers(data);
         this.cdr.detectChanges();
         this.toasterService.success('Usuário editado com sucesso!');
+        this.toggleEditUserTab(false)
       },
-      error: () => this.toasterService.error('Erro ao editar usuário!'),
-      complete: () => this.toggleEditUserTab(false),
+      error: () => this.toasterService.error('Erro ao editar usuário!')
     });
   }
 

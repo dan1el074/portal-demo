@@ -8,19 +8,20 @@ form {
     text-align: start;
   }
 
-  h3 {
+  .username {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 8px;
 
-    &.username {
-      margin-bottom: 20px;
+     h3 {
+      margin-bottom: 0;
 
       span {
         color: var(--cui-secondary-color);
         font-size: 19px;
         padding-top: 4px;
+        margin-top: 0px;
       }
     }
   }

@@ -39,7 +39,7 @@
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!newUserTab">
-              <app-user-form [positions]="positions" (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
+              <app-user-form [positions]="positions" [show]="newUserTab" (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="3" [class.hide]="!editUserTab">

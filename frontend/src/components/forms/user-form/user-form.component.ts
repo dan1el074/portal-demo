@@ -1,6 +1,6 @@
 import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { passwordMatchValidator } from '../../../app/config/validators';
@@ -34,9 +34,10 @@ import { Position } from '../../../app/interface/position.interface';
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
 })
-export class UserFormComponent {
+export class UserFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Input() positions!: Array<Position>;
+  @Input() show: boolean = false;
   @Output() createTask = new EventEmitter<FormData>();
   @Output() exitTask = new EventEmitter<void>();
 
@@ -53,19 +54,31 @@ export class UserFormComponent {
   constructor(private formBuilder: FormBuilder) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
-      position: ['', [Validators.required]],
+      position: [0, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       birthDate: ['', [Validators.required]],
       username: [ '', [Validators.required, Validators.minLength(7), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: ['', [Validators.required]],
-      roles: [[1,3,4,6]],
+      roles: [[1,4,7]],
+      supportToken: [null],
       picture: [null as Blob | null],
       disabled: [false]
     },
     {
       validators: [passwordMatchValidator],
     });
+  }
+
+  ngOnChanges(): void {
+    this.clearFormData();
+  }
+
+  getPositionName(id: number): string {
+    if (!id || id == 0) return '';
+
+    const position = this.positions?.find(x => x.id == id);
+    return position ? position.name : '';
   }
 
   onFileChange(event: Event): void {
@@ -133,6 +146,11 @@ export class UserFormComponent {
   }
 
   onExit(): void {
+    this.clearFormData();
+    this.exitTask.emit();
+  }
+
+  clearFormData(): void {
     this.createForm.reset({
       name: '',
       position: '',
@@ -142,6 +160,7 @@ export class UserFormComponent {
       password: '',
       repeatPassword: '',
       roles: '',
+      supportToken: null,
       picture: null,
       disabled: false
     });
@@ -151,7 +170,6 @@ export class UserFormComponent {
     }
 
     this.file = "";
-    this.exitTask.emit();
   }
 
   onSubmit(): void {
@@ -165,6 +183,7 @@ export class UserFormComponent {
       if (key === 'repeatPassword') return;
       if (key === 'picture') return;
       if (key === 'disabled') return;
+      if (key === 'supportToken' && value == null) return;
       if (typeof value === 'string') formData.append(key, value);
     });
 
@@ -172,6 +191,5 @@ export class UserFormComponent {
     formData.append('activated', (this.createForm.value.disabled ? String("false") : String("true")));
 
     this.createTask.emit(formData);
-    this.onExit();
   }
 }

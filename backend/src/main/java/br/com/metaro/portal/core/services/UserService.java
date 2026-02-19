@@ -7,6 +7,8 @@ import br.com.metaro.portal.core.repositories.PositionRepository;
 import br.com.metaro.portal.core.repositories.RoleRepository;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.repositories.projections.UserDetailsProjection;
+import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
+import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.PictureService;
 import br.com.metaro.portal.util.picture.PictureType;
@@ -89,6 +91,11 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void deactivateUser(Long id) {
+        if (!userRepository.existsById(id)) throw new ResourceNotFoundException();
+
+        User me = authenticate();
+        if (me.getId().equals(id)) throw new UnprocessableEntityException("Um usuário não pode se desativar!");
+
         User user = userRepository.getReferenceById(id);
         user.setActivated(false);
         userRepository.save(user);
@@ -103,6 +110,10 @@ public class UserService implements UserDetailsService {
         entity.setActivated(dto.getActivated().equals("true"));
         entity.setUpdateAt(Instant.now());
         entity.setRoles(new HashSet<>());
+
+        if (dto.getSupportToken() != null) {
+            entity.setSupportToken(dto.getSupportToken());
+        }
 
         if (dto.getPassword() != null) {
             String newPassword = passwordEncoder.encode(dto.getPassword());
@@ -153,6 +164,10 @@ public class UserService implements UserDetailsService {
 
         String newPassword = passwordEncoder.encode(dto.getPassword());
         entity.setPassword(newPassword);
+
+        if (dto.getSupportToken() != null) {
+            entity.setSupportToken(dto.getSupportToken());
+        }
 
         if (dto.getPicture() != null)  {
             List<MultipartFile> fileList = new ArrayList<>();

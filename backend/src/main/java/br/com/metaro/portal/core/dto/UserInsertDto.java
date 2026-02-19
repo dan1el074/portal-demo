@@ -18,4 +18,5 @@ public class UserInsertDto {
     private String password;
     private String roles;
     private String activated;
+    private String supportToken;
 }

@@ -55,10 +55,11 @@ public class UserController {
             @RequestPart("username") String username,
             @RequestPart("password") String password,
             @RequestPart("roles") String roles,
-            @RequestPart("activated") String activated
+            @RequestPart("activated") String activated,
+            @RequestPart(name = "supportToken", required = false) String supportToken
     ) throws IOException {
         UserMinDto userMinDto = userService.insert(new UserInsertDto(picture, name, position, email, birthDate, username,
-                password, roles, activated));
+                password, roles, activated, supportToken));
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
@@ -81,10 +82,11 @@ public class UserController {
             @RequestPart("username") String username,
             @RequestPart(name = "password", required = false) String password,
             @RequestPart("roles") String roles,
-            @RequestPart("activated") String activated
+            @RequestPart("activated") String activated,
+            @RequestPart("supportToken") String supportToken
     ) throws IOException {
         UserMinDto userMinDto = userService.update(id, new UserInsertDto(picture, name, position, email, birthDate,
-                username, password, roles, activated), resetPicture);
+                username, password, roles, activated, supportToken), resetPicture);
         List<UserMinDto> dtos = userService.findAll();
         return ResponseEntity.ok(dtos);
     }
@@ -96,5 +98,4 @@ public class UserController {
         List<UserMinDto> dtos = userService.findAll();
         return ResponseEntity.ok(dtos);
     }
-
 }

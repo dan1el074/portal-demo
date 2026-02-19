@@ -27,6 +27,7 @@ public class UserDto {
     private String password;
     private Instant createdAt;
     private Instant updateAt;
+    private String supportToken;
     private List<RoleDto> roles;
 
     public UserDto(User user) {
@@ -41,9 +42,8 @@ public class UserDto {
         createdAt = user.getCreatedAt();
         updateAt = user.getUpdateAt();
 
-        if (user.getPicture() != null) {
-            picture = new PictureDto(user.getPicture());
-        }
+        if (user.getPicture() != null) picture = new PictureDto(user.getPicture());
+        if (user.getSupportToken() != null) supportToken = user.getSupportToken();
 
         roles = new ArrayList<>();
         for (Role role : user.getRoles()) {

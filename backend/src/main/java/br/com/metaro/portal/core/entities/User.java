@@ -37,6 +37,7 @@ public class User implements UserDetails {
     private Instant createdAt;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updateAt;
+    private String supportToken;
 
     @ManyToOne
     @JoinColumn(name = "position_id")

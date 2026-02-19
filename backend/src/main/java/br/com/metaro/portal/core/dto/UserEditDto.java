@@ -23,6 +23,7 @@ public class UserEditDto {
     private String username;
     private List<Long> roles;
     private Boolean activated;
+    private String supportToken;
 
     public UserEditDto(User user) {
         id = user.getId();
@@ -34,9 +35,8 @@ public class UserEditDto {
         activated = user.getActivated();
         roles = new ArrayList<>();
 
-        if (user.getPicture() != null) {
-            pictureId = user.getPicture().getId();
-        }
+        if (user.getPicture() != null) pictureId = user.getPicture().getId();
+        if (user.getSupportToken() != null) supportToken = user.getSupportToken();
 
         for (Role role : user.getRoles()) {
             roles.add(role.getId());

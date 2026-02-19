@@ -65,6 +65,7 @@ export class UserEditFormComponent implements OnChanges {
       password: ['', [Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: [''],
       roles: [[1,2]],
+      supportToken: [null],
       picture: [null as Blob | null],
       disabled: [false]
     },
@@ -80,10 +81,18 @@ export class UserEditFormComponent implements OnChanges {
     this.editForm.get('birthDate')?.setValue(this.userData.birthDate);
     this.editForm.get('username')?.setValue(this.userData.username);
     this.editForm.get('roles')?.setValue(this.userData.roles);
+    this.editForm.get('supportToken')?.setValue(this.userData.supportToken);
     this.editForm.get('disabled')?.setValue(!this.userData.activated);
 
     if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;
     if (this.userData.positionId > 0) this.editForm.get('position')?.setValue(this.userData.positionId);
+  }
+
+  protected getPositionName(id: number): string {
+    if (!id || id == 0) return '';
+
+    const position = this.positions?.find(x => x.id == id);
+    return position ? position.name : '';
   }
 
   protected onFileChange(event: Event): void {
@@ -166,6 +175,7 @@ export class UserEditFormComponent implements OnChanges {
       password: '',
       repeatPassword: '',
       roles: '',
+      supportToken: null,
       picture: null,
       disabled: false
     });

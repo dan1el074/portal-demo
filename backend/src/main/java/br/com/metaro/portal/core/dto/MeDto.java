@@ -23,6 +23,7 @@ public class MeDto {
     private Long pictureId;
     private Boolean activated;
     private String username;
+    private String supportToken;
 
     private final List<RoleDto> roles = new ArrayList<>();
     private final List<NotificationDto> notifications = new ArrayList<>();
@@ -36,9 +37,8 @@ public class MeDto {
         this.activated = user.getActivated();
         this.username = user.getUsername();
 
-        if (user.getPicture() != null) {
-            this.pictureId = user.getPicture().getId();
-        }
+        if (user.getSupportToken() != null) this.supportToken = user.getSupportToken();
+        if (user.getPicture() != null) this.pictureId = user.getPicture().getId();
 
         for(Role role : user.getRoles()) {
             roles.add(new RoleDto(role));

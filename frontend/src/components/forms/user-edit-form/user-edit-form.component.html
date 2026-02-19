@@ -56,9 +56,10 @@
         </c-modal-footer>
       </c-modal>
 
-      <h3 class="username">
-        {{ editForm.get('name')?.value ? editForm.get('name')?.value : 'Nome Sobrenome' }}
-      </h3>
+      <div class="username">
+        <h3>{{ editForm.get('name')?.value ? editForm.get('name')?.value : 'Nome Sobrenome' }}</h3>
+        <h3><span>{{ editForm.get('position')?.value != 0 ? getPositionName(editForm.get('position')?.value) : '' }}</span></h3>
+      </div>
     </c-col>
     <c-col>
       <div [cFormFloating]="true" class="mb-3">
@@ -92,7 +93,7 @@
         <input cFormControl formControlName="password" [valid]="!showErrors ? undefined: editForm.get('password')?.errors != null ? false : undefined" id="nPW2" type="password" placeholder="Nova senha" autocomplete="new-password" />
         <label cLabel for="nPW2">Nova senha</label>
       </div>
-      <div cFormFloating>
+      <div cFormFloating class="mb-3">
         <input cFormControl formControlName="repeatPassword" [valid]="!showErrors ? undefined: editForm.get('password')?.errors != null ? false : editForm.hasError('passwordMismatch') ? false : undefined" id="repeatPassword2" type="password" placeholder="Senha" autocomplete="new-password" />
         <label cLabel for="repeatPassword2">Repetir senha</label>
       </div>
@@ -101,9 +102,13 @@
           As senhas não coincidem
         </div>
       }
-      <div cFormFloating class="mb-3 fix-margin">
+      <div cFormFloating class="mb-3">
         <input cFormControl formControlName="roles" id="roles2" type="text" placeholder="Acessos" />
         <label cLabel for="roles2">Acessos</label>
+      </div>
+      <div cFormFloating class="mb-3 fix-margin">
+        <input cFormControl formControlName="supportToken" id="supportToken2" type="text" placeholder="Token de suporte" />
+        <label cLabel for="supportToken2">Token de suporte</label>
       </div>
       <c-form-check>
         <input cFormCheckInput formControlName="disabled" id="checkOne2" type="checkbox" />

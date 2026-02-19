@@ -50,6 +50,7 @@ export class DefaultLayoutComponent implements OnInit {
     pictureId: null,
     activated: true,
     username: '',
+    supportToken: null,
     roles: [],
     notifications: []
   };
@@ -101,6 +102,12 @@ export class DefaultLayoutComponent implements OnInit {
 
     const tempNavItems = [...navItems];
     tempNavItems.splice(6, 0, customNav.length > 0 ? {title: true, name: 'Ferramentas'} : {}, ...customNav);
+
+    if (this.user.supportToken) {
+      tempNavItems[tempNavItems.length - 1].url += "autologin.php?token=" + this.user.supportToken;
+      tempNavItems[tempNavItems.length - 1].badge = { color: 'info', text: 'LINK' };
+    }
+
     this.navItems = [...tempNavItems];
     this.cdr.detectChanges();
   }
