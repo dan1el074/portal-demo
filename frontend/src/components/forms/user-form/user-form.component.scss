@@ -13,15 +13,16 @@ form {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-bottom: 20px;
 
     h3 {
       margin-bottom: 0px;
 
       span {
-        margin-top: 0px;
         color: var(--cui-secondary-color);
         font-size: 19px;
         padding-top: 4px;
+        margin-top: 0px;
       }
     }
   }
