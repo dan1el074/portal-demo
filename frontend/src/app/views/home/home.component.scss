@@ -1,5 +1,33 @@
-c-container c-row c-col {
-  .card {
-    margin-bottom: 24px;
+.home-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 24px;
+  padding-bottom: 24px;
+
+  .home {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    &.left {
+      max-width: 400px;
+    }
+
+    &.right {
+      max-width: 650px;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .home-container {
+    flex-direction: column;
+
+    .home {
+      &.left, &.right {
+        max-width: 540px;
+      }
+    }
   }
 }

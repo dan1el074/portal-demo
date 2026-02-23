@@ -30,7 +30,6 @@ export class HomeComponent implements OnInit {
     picture: '.\\assets\\images\\others\\event_03.webp',
     date: '2025-06-21T15:00:00Z',
   };
-
   protected files: Array<FileCard> = [
     {
       id: 1,
@@ -48,7 +47,6 @@ export class HomeComponent implements OnInit {
       path: 'caminho3',
     },
   ];
-
   protected todoItems: Array<TodoTableCard> = [
     {
       priority: 'Urgente',
@@ -86,7 +84,6 @@ export class HomeComponent implements OnInit {
       ],
     },
   ];
-
   protected feed: Array<PostCard> = [
     {
       id: 3,
@@ -135,9 +132,7 @@ export class HomeComponent implements OnInit {
     },
   ];
 
-  constructor(
-    private spinner: NgxSpinnerService,
-  ) {}
+  constructor(private spinner: NgxSpinnerService) {}
 
   ngOnInit(): void {
     setTimeout(() => {
