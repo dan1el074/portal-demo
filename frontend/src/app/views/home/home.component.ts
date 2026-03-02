@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ColComponent, ContainerComponent, RowComponent } from '@coreui/angular';
+import { ContainerComponent } from '@coreui/angular';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { PostComponent } from './../../../components/cards/post/post.component';
 import { TodoComponent } from './../../../components/cards/todo/todo.component';
@@ -14,8 +14,6 @@ import { TodoTableCard } from '../../interface/todo.interface';
   selector: 'app-home',
   imports: [
     ContainerComponent,
-    RowComponent,
-    ColComponent,
     FilesComponent,
     EventComponent,
     TodoComponent,

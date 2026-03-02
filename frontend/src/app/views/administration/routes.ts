@@ -22,6 +22,15 @@ export const routes: Routes = [
           title: 'Usuários'
         }
       },
+      {
+        path: 'departments',
+        loadComponent: () => import('./departments/departments.component').then(m => m.DepartmentsComponent),
+        canActivate: [AuthGuard],
+        data: {
+          roles: ['ROLE_ADMIN','ROLE_ADM_PANEL'],
+          title: 'Usuários'
+        }
+      },
     ]
   }
 ];

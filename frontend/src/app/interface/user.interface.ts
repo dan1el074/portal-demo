@@ -52,6 +52,19 @@ export interface UserData {
   activated: boolean;
 }
 
+export interface UserEditData {
+  id: number;
+  pictureId: number | null;
+  name: string;
+  positionId: number;
+  email: string;
+  birthDate: string;
+  username: string;
+  supportToken: string | null;
+  roles: Array<number>;
+  activated: boolean;
+}
+
 export interface UserSummary {
   id: number;
   name: string;

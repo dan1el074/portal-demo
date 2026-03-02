@@ -1,0 +1,36 @@
+<c-row>
+  <c-col>
+    <c-card class="border">
+      <c-card-body>
+        <h4 cCardTitle>Departamentos</h4>
+
+        <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
+          <c-tabs-list variant="underline-border">
+            <button cTab [itemKey]="0">Todos</button>
+            <button cTab [itemKey]="1" [class.no-select]="inactivePositions.length <= 0" [disabled]="inactivePositions.length <= 0">Desativados</button>
+          </c-tabs-list>
+
+          <c-tabs-content>
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="0">
+              <button cButton color="primary">
+                <svg [cIcon]="icons.cilPlus" size="md"></svg>
+                Novo Setor
+              </button>
+
+              <app-department-table [data]="activePositions"></app-department-table>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="1">
+              <button cButton color="primary">
+                <svg [cIcon]="icons.cilPlus" size="md"></svg>
+                Novo Setor
+              </button>
+
+              <app-department-table [data]="inactivePositions"></app-department-table>
+            </c-tab-panel>
+          </c-tabs-content>
+        </c-tabs>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

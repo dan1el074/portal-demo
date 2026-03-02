@@ -4,9 +4,7 @@
   <c-row class="align-items-start">
     <c-col>
       <div class="avatar-container">
-        <div class="image-container" *ngIf="file; else placeholder"
-        [ngStyle]="{backgroundImage: 'url(' + file + ')'}">
-        </div>
+        <div class="image-container" *ngIf="file; else placeholder" [ngStyle]="{backgroundImage: 'url(' + file + ')'}"></div>
         <ng-template #placeholder>
           <div class="image-container avatar-placeholder"></div>
         </ng-template>
@@ -82,8 +80,8 @@
         <label cLabel for="email2">E-mail</label>
       </div>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="birthDate" [valid]="!showErrors ? undefined: editForm.get('birthDate')?.errors != null ? false : undefined" id="bithDate2" type="date" placeholder="Data de nascimento" />
-        <label cLabel for="bithDate2">Data de nascimento</label>
+        <c-date-picker [calendarDate]="birthDate" placeholder="Selecione" formControlName="birthDate"></c-date-picker>
+        <label cLabel class="fix-floating-label">Nascimento</label>
       </div>
       <div cFormFloating class="mb-3">
         <input cFormControl formControlName="username" [valid]="!showErrors ? undefined: editForm.get('username')?.errors != null ? false : undefined" id="nUN2" type="text" placeholder="Nome de usuário" autocomplete="new-username" />
@@ -102,10 +100,17 @@
           As senhas não coincidem
         </div>
       }
-      <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="roles" id="roles2" type="text" placeholder="Acessos" />
-        <label cLabel for="roles2">Acessos</label>
-      </div>
+      <c-multi-select multiple placeholder="Acessos" [selectAll]="false" formControlName="roles" class="custom-select">
+        @for (role of roles; track role.title) {
+          <c-multi-select-optgroup [label]="role.title">
+            @for (option of role.childrens; track option.id) {
+              <c-multi-select-option [value]="option.id">
+                {{ option.authority }}
+              </c-multi-select-option>
+            }
+          </c-multi-select-optgroup>
+        }
+      </c-multi-select>
       <div cFormFloating class="mb-3 fix-margin">
         <input cFormControl formControlName="supportToken" id="supportToken2" type="text" placeholder="Token de suporte" />
         <label cLabel for="supportToken2">Token de suporte</label>

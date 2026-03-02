@@ -1,7 +1,7 @@
-import { UserData } from './../../../app/interface/user.interface';
-import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { IconDirective } from '@coreui/icons-angular';
+import { DatePickerComponent, MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, FormSelectDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { passwordMatchValidator } from '../../../app/config/validators';
@@ -9,6 +9,7 @@ import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { environment } from '../../../environments/environment';
 import { Position } from '../../../app/interface/position.interface';
+import { UserEditData } from './../../../app/interface/user.interface';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -32,14 +33,18 @@ import { Position } from '../../../app/interface/position.interface';
     ModalTitleDirective,
     ButtonCloseDirective,
     ModalBodyComponent,
-    ModalFooterComponent
+    ModalFooterComponent,
+    MultiSelectComponent,
+    MultiSelectOptionComponent,
+    MultiSelectOptgroupComponent,
+    DatePickerComponent
   ],
   templateUrl: './user-edit-form.component.html',
   styleUrl: './user-edit-form.component.scss',
 })
 export class UserEditFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  @Input() userData!: UserData;
+  @Input() userData!: UserEditData;
   @Input() positions!: Array<Position>;
   @Output() editTask = new EventEmitter<{data: FormData, id: number}>();
   @Output() exitTask = new EventEmitter<void>();
@@ -47,6 +52,49 @@ export class UserEditFormComponent implements OnChanges {
   protected icons = { cilPencil, cilX };
   protected valid: boolean | undefined;
   protected editForm: FormGroup;
+  protected roles = [
+    {
+      title: "Gestão",
+      childrens: [
+        {
+          id: 1,
+          authority: "Departamentos"
+        },
+        {
+          id: 2,
+          authority: "Usuários"
+        }
+      ]
+    },
+    {
+      title: "Geral",
+      childrens: [
+        {
+          id: 3,
+          authority: "Para Fazer"
+        },
+        {
+          id: 4,
+          authority: "Comunicação Interna"
+        },
+        {
+          id: 5,
+          authority: "Matérias primas"
+        }
+      ]
+    },
+    {
+      title: "Qualidade",
+      childrens: [
+        {
+          id: 6,
+          authority: "Checklist"
+        }
+      ]
+    },
+  ];
+
+  // profile image
   protected imageChangedEvent: Event | null = null;
   protected croppedImage: Blob | null = null;
   protected croppedImageUrl?: string;
@@ -55,16 +103,19 @@ export class UserEditFormComponent implements OnChanges {
   protected file: string = '';
   protected modalReady = false;
 
+  // data picker
+  protected birthDate = new Date();
+
   constructor(private formBuilder: FormBuilder) {
     this.editForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
       position: [0, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      birthDate: ['', [Validators.required]],
+      birthDate: [null, [Validators.required]],
       username: [ '', [Validators.required, Validators.minLength(7), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
       password: ['', [Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: [''],
-      roles: [[1,2]],
+      roles: [[]],
       supportToken: [null],
       picture: [null as Blob | null],
       disabled: [false]
@@ -76,16 +127,26 @@ export class UserEditFormComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.clearUserData();
+    this.birthDate = this.parseDate(this.userData.birthDate) ?? null;
+
+    this.editForm.get('birthDate')?.setValue(this.birthDate);
     this.editForm.get('name')?.setValue(this.userData.name);
     this.editForm.get('email')?.setValue(this.userData.email);
-    this.editForm.get('birthDate')?.setValue(this.userData.birthDate);
     this.editForm.get('username')?.setValue(this.userData.username);
-    this.editForm.get('roles')?.setValue(this.userData.roles);
     this.editForm.get('supportToken')?.setValue(this.userData.supportToken);
     this.editForm.get('disabled')?.setValue(!this.userData.activated);
 
     if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;
     if (this.userData.positionId > 0) this.editForm.get('position')?.setValue(this.userData.positionId);
+    if (this.userData.roles[0] == 2) this.editForm.get('roles')?.disable();
+    if (this.userData.roles[0] != 2) this.editForm.get('roles')?.setValue(this.userData.roles);
+  }
+
+  private parseDate(value: string | null): Date {
+    if (!value) return new Date();
+
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 
   protected getPositionName(id: number): string {
@@ -170,11 +231,11 @@ export class UserEditFormComponent implements OnChanges {
       name: '',
       position: '',
       email: '',
-      birthDate: '',
+      birthDate: null,
       username: '',
       password: '',
       repeatPassword: '',
-      roles: '',
+      roles: [],
       supportToken: null,
       picture: null,
       disabled: false
@@ -188,6 +249,9 @@ export class UserEditFormComponent implements OnChanges {
     this.file = '';
     this.editForm.get('picture')?.setValue(null);
     this.resetPicture = false;
+    this.birthDate = new Date();
+
+    this.editForm.get('roles')?.enable();
   }
 
   protected onExit(): void {
@@ -210,20 +274,37 @@ export class UserEditFormComponent implements OnChanges {
     const formData = new FormData();
     Object.entries(this.editForm.value).forEach(([key, value]) => {
       if (key === 'repeatPassword') return;
-      if (key === 'picture') return;
       if (key === 'password' && !value) return;
       if (key === 'disabled') return;
+      if (key === 'picture') return;
+      if (key === 'supportToken' && value == null) return;
+      if (key === 'birthDate') return;
+
       formData.append(key, String(value));
     });
 
-    formData.append('activated', this.editForm.get('disabled')?.value ? 'false' : 'true');
+    // birthDate -> convert Date to string
+    const date: Date | null = this.editForm.value.birthDate;
+    const birthDateString = date ? date.toISOString().split('T')[0] : null;
+    formData.append('birthDate', String(birthDateString));
 
-    if (this.resetPicture) {
-      formData.append('resetPicture', 'true');
-    } else if (this.file && this.croppedImage) {
+    // if user is Admin, add id role
+    if (this.userData.roles.find(role => role == 2)) {
+      formData.append('roles', '2');
+    }
+
+    // if resetPicture = true -> send signal to backend
+    if (this.resetPicture) formData.append('resetPicture', 'true');
+
+    // change picture
+    if (!this.resetPicture && this.file && this.croppedImage) {
       formData.append('picture', this.croppedImage, 'profile.png');
     }
 
+    // if disabled input = false -> activated = true
+    formData.append('activated', this.editForm.value.disabled?.value ? 'false' : 'true');
+
+    // send to the father component
     this.editTask.emit({data: formData, id: this.userData.id});
     this.onExit();
   }

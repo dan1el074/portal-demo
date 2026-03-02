@@ -90,8 +90,8 @@
         <label cLabel for="email">E-mail</label>
       </div>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="birthDate" [valid]="!showErrors ? undefined: createForm.get('birthDate')?.errors != null ? false : undefined" id="bithDate" type="date" placeholder="Data de nascimento" />
-        <label cLabel for="bithDate">Data de nascimento</label>
+        <c-date-picker [calendarDate]="birthDate" placeholder="Selecione" formControlName="birthDate"></c-date-picker>
+        <label cLabel class="fix-floating-label">Nascimento</label>
       </div>
       <div cFormFloating class="mb-3">
         <input cFormControl formControlName="username" [valid]="!showErrors ? undefined: createForm.get('username')?.errors != null ? false : undefined" id="nUN" type="text" placeholder="Nome de usuário" autocomplete="new-username" />
@@ -110,10 +110,17 @@
           As senhas não coincidem
         </div>
       }
-      <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="roles" id="roles" type="text" placeholder="Acessos" />
-        <label cLabel for="roles">Acessos</label>
-      </div>
+      <c-multi-select multiple placeholder="Acessos" [selectAll]="false" formControlName="roles" class="custom-select">
+        @for (role of roles; track role.title) {
+          <c-multi-select-optgroup [label]="role.title">
+            @for (option of role.childrens; track option.id) {
+              <c-multi-select-option [value]="option.id">
+                {{ option.authority }}
+              </c-multi-select-option>
+            }
+          </c-multi-select-optgroup>
+        }
+      </c-multi-select>
       <div cFormFloating class="mb-3 fix-margin">
         <input cFormControl formControlName="supportToken" id="supportToken" type="text" placeholder="Token" />
         <label cLabel for="supportToken">Token de suporte</label>

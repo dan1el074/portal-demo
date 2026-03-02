@@ -1,4 +1,4 @@
-import { UserData } from './../../../interface/user.interface';
+import { UserData, UserEditData } from './../../../interface/user.interface';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
@@ -41,7 +41,7 @@ export class UsersComponent implements OnInit {
   protected activeItemKey = 0;
   protected newUserTab = false;
   protected editUserTab = false;
-  protected editUserData: UserData = {
+  protected editUserData: UserEditData = {
     id: 0,
     pictureId: null,
     name: '',
@@ -125,7 +125,7 @@ export class UsersComponent implements OnInit {
 
   protected updateUserTask(id: number): void {
     this.userService.findById(id).subscribe({
-      next: (data: UserData) => {
+      next: (data: UserEditData) => {
         this.editUserData = data;
         this.toggleEditUserTab(true);
         this.cdr.detectChanges();

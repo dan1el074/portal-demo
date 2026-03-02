@@ -1,5 +1,6 @@
-import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
+import { IconDirective } from '@coreui/icons-angular';
+import { DatePickerComponent, MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
@@ -29,7 +30,11 @@ import { Position } from '../../../app/interface/position.interface';
     ModalTitleDirective,
     ButtonCloseDirective,
     ModalBodyComponent,
-    ModalFooterComponent
+    ModalFooterComponent,
+    MultiSelectComponent,
+    MultiSelectOptionComponent,
+    MultiSelectOptgroupComponent,
+    DatePickerComponent
   ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
@@ -50,13 +55,55 @@ export class UserFormComponent implements OnChanges {
   protected showErrors = false;
   protected file: string = '';
   protected modalReady = false;
+  protected birthDate = new Date();
+  protected roles = [
+    {
+      title: "Gestão",
+      childrens: [
+        {
+          id: 1,
+          authority: "Departamentos"
+        },
+        {
+          id: 2,
+          authority: "Usuários"
+        }
+      ]
+    },
+    {
+      title: "Geral",
+      childrens: [
+        {
+          id: 3,
+          authority: "Para Fazer"
+        },
+        {
+          id: 4,
+          authority: "Comunicação Interna"
+        },
+        {
+          id: 5,
+          authority: "Matérias primas"
+        }
+      ]
+    },
+    {
+      title: "Qualidade",
+      childrens: [
+        {
+          id: 6,
+          authority: "Checklist"
+        }
+      ]
+    },
+  ];
 
   constructor(private formBuilder: FormBuilder) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
       position: [0, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      birthDate: ['', [Validators.required]],
+      birthDate: [null, [Validators.required]],
       username: [ '', [Validators.required, Validators.minLength(7), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: ['', [Validators.required]],
@@ -159,7 +206,7 @@ export class UserFormComponent implements OnChanges {
       username: '',
       password: '',
       repeatPassword: '',
-      roles: '',
+      roles: [],
       supportToken: null,
       picture: null,
       disabled: false
@@ -181,15 +228,25 @@ export class UserFormComponent implements OnChanges {
     const formData = new FormData();
     Object.entries(this.createForm.value).forEach(([key, value]) => {
       if (key === 'repeatPassword') return;
-      if (key === 'picture') return;
       if (key === 'disabled') return;
+      if (key === 'picture') return;
       if (key === 'supportToken' && value == null) return;
-      if (typeof value === 'string') formData.append(key, value);
+      if (key === 'birthDate') return;
+      formData.append(key, String(value));
     });
 
+    // birthDate -> convert Date to string
+    const date: Date | null = this.createForm.value.birthDate;
+    const birthDateString = date ? date.toISOString().split('T')[0] : null;
+    formData.append('birthDate', String(birthDateString));
+
+    // change picture
     if (this.croppedImage) formData.append('picture', this.croppedImage, 'profile.png');
+
+    // if disabled input = false -> activated = true
     formData.append('activated', (this.createForm.value.disabled ? String("false") : String("true")));
 
+    // send to the father component
     this.createTask.emit(formData);
   }
 }
