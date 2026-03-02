@@ -5,6 +5,7 @@ import br.com.metaro.portal.modules.general.internalCommunication.entities.Inter
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,12 +24,20 @@ public class Position {
     @EqualsAndHashCode.Include
     private Long id;
     private String name;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant updatedAt;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "mananger_id")
+    private User mananger;
 
     @OneToMany(mappedBy = "position")
     private List<User> users = new ArrayList<>();
 
     @ManyToMany(mappedBy = "fromDepartments")
-    private Set<InternalCommunication> InternalCommunications = new HashSet<>();
+    private Set<InternalCommunication> ciTarget = new HashSet<>();
 
     @OneToMany(mappedBy = "departmentSigned")
     private List<Interaction> ciInteractions = new ArrayList<>();

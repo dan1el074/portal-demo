@@ -6,23 +6,23 @@ INSERT INTO tb_picture (name, path, type) VALUES ('1768850938328_1', 'C:\\worksp
 INSERT INTO tb_picture (name, path, type) VALUES ('1768478289921_2', 'C:\\workspace\\outros\\imagens\\1768478289921_2.jpg', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1768478302771_3', 'C:\\workspace\\outros\\imagens\\1768478302771_3.jpg', 'PROFILE');
 
-INSERT INTO tb_position (id, name) VALUES (1, 'TI');
-INSERT INTO tb_position (id, name) VALUES (2, 'Compras');
-INSERT INTO tb_position (id, name) VALUES (3, 'Recursos Humanos');
-INSERT INTO tb_position (id, name) VALUES (4, 'Marketing');
-INSERT INTO tb_position (id, name) VALUES (5, 'Pós Vendas');
-INSERT INTO tb_position (id, name) VALUES (6, 'Engenharia');
-INSERT INTO tb_position (id, name) VALUES (7, 'Financeiro');
-INSERT INTO tb_position (id, name) VALUES (8, 'Comercial');
-INSERT INTO tb_position (id, name) VALUES (9, 'Qualidade');
-INSERT INTO tb_position (id, name) VALUES (10, 'Almoxarifado');
-INSERT INTO tb_position (id, name) VALUES (11, 'PCP');
-INSERT INTO tb_position (id, name) VALUES (12, 'Produção');
-INSERT INTO tb_position (id, name) VALUES (13, 'Manutenção');
-INSERT INTO tb_position (id, name) VALUES (14, 'Corte/Dobra');
-INSERT INTO tb_position (id, name) VALUES (15, 'Montagem/Solda');
-INSERT INTO tb_position (id, name) VALUES (16, 'TST');
-INSERT INTO tb_position (id, name) VALUES (17, 'Direção');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (1, 'TI', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (2, 'Compras', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (3, 'Recursos Humanos', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (4, 'Marketing', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (5, 'Pós Vendas', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (6, 'Engenharia', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (7, 'Financeiro', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (8, 'Comercial', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (9, 'Qualidade', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (10, 'Almoxarifado', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (11, 'PCP', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (12, 'Produção', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (13, 'Manutenção', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (14, 'Corte/Dobra', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (15, 'Montagem/Solda', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (16, 'TST', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (id, name, mananger_id, updated_at, created_at) VALUES (17, 'Direção', null, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
 
 INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at, support_token) VALUES ('Daniel Vargas', 'ti@metaro.com.br', 1, '1999-07-08', 1, true, 'daniel-vargas','$2a$10$/38.DeKTEvwu4eCpOAe0GO298DNA7fXWvdPXDPMHe0bu/j53j5bA2', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', null);
 INSERT INTO tb_user (name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at, support_token) VALUES ('Carlos Fronza', 'carlos.fronza@metaro.com.br', 2, '1820-07-13', null, true, 'carlos-fronza','$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', 'uTz4Ch9QFCq120pnAmMAU0eXgEC14MHkY0TnNdIu');
@@ -38,6 +38,7 @@ INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (5, 'ROLE_TODO', 'Para fazer', '/todo', 'Geral', '/general');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (6, 'ROLE_CHECKLIST', 'Checklist', '/checklist', 'Qualidade', '/quality');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (7, 'ROLE_INTERNAL_COMMUNICATION', 'Comunicação Interna', '/internal-communication', 'Geral', '/general');
+INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (8, 'ROLE_POSITION_PANEL', 'Departamentos', '/departments', 'Gestão','/administration');
 
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1,2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,1);

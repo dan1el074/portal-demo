@@ -83,11 +83,10 @@ public class UserController {
             @RequestPart(name = "password", required = false) String password,
             @RequestPart("roles") String roles,
             @RequestPart("activated") String activated,
-            @RequestPart("supportToken") String supportToken
+            @RequestPart(name ="supportToken", required = false) String supportToken
     ) throws IOException {
-        UserMinDto userMinDto = userService.update(id, new UserInsertDto(picture, name, position, email, birthDate,
+        List<UserMinDto> dtos = userService.update(id, new UserInsertDto(picture, name, position, email, birthDate,
                 username, password, roles, activated, supportToken), resetPicture);
-        List<UserMinDto> dtos = userService.findAll();
         return ResponseEntity.ok(dtos);
     }
 

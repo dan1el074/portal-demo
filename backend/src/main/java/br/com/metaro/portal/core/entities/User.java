@@ -71,6 +71,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<Interaction> interactions = new HashSet<>();
 
+    @OneToMany(mappedBy = "mananger")
+    private List<Position> managedPositions = new ArrayList<>();
+
     public List<InternalCommunication> getInteractionsCI() {
         return interactions.stream().map(Interaction::getInternalCommunication).toList();
     }

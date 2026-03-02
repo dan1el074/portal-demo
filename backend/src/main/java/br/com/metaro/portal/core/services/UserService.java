@@ -82,11 +82,11 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserMinDto update(Long id, UserInsertDto dto, String resetPicture) throws IOException {
+    public List<UserMinDto> update(Long id, UserInsertDto dto, String resetPicture) throws IOException {
         User user = userRepository.getReferenceById(id);
         rulesForUpdate(dto, user, resetPicture);
         user = userRepository.save(user);
-        return new UserMinDto(user);
+        return findAll();
     }
 
     @Transactional
@@ -110,8 +110,9 @@ public class UserService implements UserDetailsService {
         entity.setActivated(dto.getActivated().equals("true"));
         entity.setUpdateAt(Instant.now());
         entity.setRoles(new HashSet<>());
+        entity.setSupportToken(null);
 
-        if (dto.getSupportToken() != null) {
+        if (dto.getSupportToken() != null && !dto.getSupportToken().equals("null")) {
             entity.setSupportToken(dto.getSupportToken());
         }
 
