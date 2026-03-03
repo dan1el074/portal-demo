@@ -8,7 +8,7 @@ export interface Position {
 export interface PositionTable {
   id: number;
   name: string;
-  mananger: UserSummary | null;
+  managers: Array<UserSummary> | null;
   updatedAt: string;
   createdAt: string;
 }

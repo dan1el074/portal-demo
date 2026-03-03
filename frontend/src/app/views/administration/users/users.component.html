@@ -39,11 +39,11 @@
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!newUserTab">
-              <app-user-form [positions]="positions" [show]="newUserTab" (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
+              <app-user-form [roles]="allRoles" [positions]="positions" [show]="newUserTab" (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="3" [class.hide]="!editUserTab">
-              <app-user-edit-form [positions]="positions" [userData]="editUserData" (editTask)="onUpdateUser($event)" (exitTask)="toggleEditUserTab(false)"></app-user-edit-form>
+              <app-user-edit-form [roles]="allRoles" [positions]="positions" [userData]="editUserData" (editTask)="onUpdateUser($event)" (exitTask)="toggleEditUserTab(false)"></app-user-edit-form>
             </c-tab-panel>
           </c-tabs-content>
         </c-tabs>

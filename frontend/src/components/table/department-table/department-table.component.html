@@ -10,8 +10,8 @@
   <table mat-table [dataSource]="dataSource" matSort class="table stripe">
 
     <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
-      <td mat-cell *matCellDef="let position">{{ position.id }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="grey">#</th>
+      <td mat-cell *matCellDef="let position" class="grey">{{ position.id | number:'3.0-0' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="name">
@@ -20,15 +20,18 @@
         <span class="edit" (click)="editPosition(position.id)">{{ position.name }}</span></td>
     </ng-container>
 
-    <ng-container matColumnDef="mananger">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Gestor</th>
+    <ng-container matColumnDef="managers">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Gestores</th>
       <td mat-cell *matCellDef="let position">
-        @if(position.mananger) {
-          <c-avatar [src]="position.mananger.pictureId ? apiUrl + '/images/' + position.mananger.pictureId : './assets/images/avatars/default.png'" />
-          {{ position.mananger.name }}
-        } @else {
-          n/a
-        }
+        <div class="avatar-fix">
+          @for (manager of position.managers; track manager.id) {
+            <a [cTooltip]="manager.name">
+              <c-avatar [src]="manager.picture ? apiUrl + '/images/' + manager.picture.id : './assets/images/avatars/default.png'" />
+            </a>
+          } @empty {
+            -
+          }
+        </div>
       </td>
     </ng-container>
 

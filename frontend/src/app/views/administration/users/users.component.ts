@@ -1,18 +1,19 @@
-import { UserData, UserEditData } from './../../../interface/user.interface';
-import { Component, OnInit } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
-import { UserService } from './../../../services/user.service';
-import { UserTable } from '../../../interface/user.interface';
-import { UserTableComponent } from '../../../../components/table/user-table/user-table.component';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilX } from '@coreui/icons';
+import { ToastrService } from 'ngx-toastr';
 import { UserFormComponent } from '../../../../components/forms/user-form/user-form.component';
-import { ChangeDetectorRef } from '@angular/core';
 import { UserEditFormComponent } from '../../../../components/forms/user-edit-form/user-edit-form.component';
+import { UserTableComponent } from '../../../../components/table/user-table/user-table.component';
+import { UserService } from './../../../services/user.service';
 import { PostitionService } from '../../../services/position.service';
+import { RoleService } from './../../../services/role.service';
 import { Position } from '../../../interface/position.interface';
+import { RoleGroup } from './../../../interface/role.interface';
+import { UserEditData } from './../../../interface/user.interface';
+import { UserTable } from '../../../interface/user.interface';
 
 @Component({
   selector: 'app-users',
@@ -39,6 +40,7 @@ export class UsersComponent implements OnInit {
   protected positions!: Array<Position>;
   protected icons = { cilPlus, cilX };
   protected activeItemKey = 0;
+  protected allRoles!: Array<RoleGroup>;
   protected newUserTab = false;
   protected editUserTab = false;
   protected editUserData: UserEditData = {
@@ -58,6 +60,7 @@ export class UsersComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private postitionService: PostitionService,
+    private roleService: RoleService,
     private toasterService: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -76,6 +79,11 @@ export class UsersComponent implements OnInit {
           this.toasterService.error('Erro ao carregar usuários!');
         }
       }
+    });
+
+    this.roleService.findAll().subscribe({
+      next: (roles: Array<RoleGroup>) => this.allRoles = roles,
+      error: () => this.toasterService.error("Erro ao carregar acessos!")
     });
   }
 

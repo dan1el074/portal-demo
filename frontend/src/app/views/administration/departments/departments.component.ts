@@ -26,22 +26,56 @@ export class DepartmentsComponent {
     {
       id: 1,
       name: "TI",
-      mananger: {
-        id: 1,
-        name: "Daniel",
-        position: {
+      managers: [
+        {
           id: 1,
-          name: "TI"
+          name: "Daniel",
+          position: {
+            id: 1,
+            name: "TI"
+          },
+          picture: {
+            id: 1
+          }
         },
-        picture: null
-      },
+        {
+          id: 2,
+          name: "Carlos",
+          position: {
+            id: 2,
+            name: "Compras"
+          },
+          picture: {
+            id: 2
+          }
+        },
+      ],
       updatedAt: "2026-02-04T17:10:56Z",
       createdAt: "2026-02-04T17:10:56Z"
     },
     {
       id: 2,
       name: "Compras",
-      mananger: null,
+      managers: null,
+      updatedAt: "2026-02-04T17:10:56Z",
+      createdAt: "2026-02-04T17:10:56Z"
+    },
+    {
+      id: 4,
+      name: "Corte/Dobra",
+      managers: [
+        {
+          id: 4,
+          name: "Juliano",
+          position: {
+            id: 1,
+            name: "Processos"
+          },
+          picture: {
+            id: 3
+          }
+        }
+      ],
       updatedAt: "2026-02-04T17:10:56Z",
       createdAt: "2026-02-04T17:10:56Z"
     }
@@ -50,15 +84,17 @@ export class DepartmentsComponent {
     {
       id: 2,
       name: "Processos",
-      mananger: {
-        id: 4,
-        name: "Julia",
-        position: {
-          id: 1,
-          name: "Processos"
-        },
-        picture: null
-      },
+      managers: [
+        {
+          id: 4,
+          name: "Julia",
+          position: {
+            id: 1,
+            name: "Processos"
+          },
+          picture: null
+        }
+      ],
       updatedAt: "2026-02-04T17:10:56Z",
       createdAt: "2026-02-04T17:10:56Z"
     }

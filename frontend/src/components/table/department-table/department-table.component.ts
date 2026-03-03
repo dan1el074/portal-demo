@@ -6,7 +6,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective } from '@coreui/angular';
+import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, TooltipDirective } from '@coreui/angular';
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
 import { PositionTable } from '../../../app/interface/position.interface';
 import { environment } from '../../../environments/environment';
@@ -24,6 +24,7 @@ import { environment } from '../../../environments/environment';
     MatInputModule,
     ButtonDirective,
     ModalToggleDirective,
+    TooltipDirective,
     AvatarComponent
   ],
   templateUrl: './department-table.component.html',
@@ -39,7 +40,7 @@ export class DepartmentTableComponent implements AfterViewInit, OnChanges {
   @Output() deactivateTask = new EventEmitter<number>();
 
   protected apiUrl = environment.apiUrl;
-  protected displayedColumns: string[] = ['id', 'name', 'mananger', 'updatedAt', 'createdAt', 'buttons'];
+  protected displayedColumns: string[] = ['id', 'name', 'managers', 'updatedAt', 'createdAt', 'buttons'];
   protected dataSource = new MatTableDataSource<PositionTable>([]);
   protected icons = { cilSearch, cilPencil, cilX };
 

@@ -8,6 +8,7 @@ import { passwordMatchValidator } from '../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { Position } from '../../../app/interface/position.interface';
+import { RoleGroup } from 'src/app/interface/role.interface';
 
 @Component({
   selector: 'app-user-form',
@@ -41,6 +42,7 @@ import { Position } from '../../../app/interface/position.interface';
 })
 export class UserFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @Input() roles!: Array<RoleGroup>;
   @Input() positions!: Array<Position>;
   @Input() show: boolean = false;
   @Output() createTask = new EventEmitter<FormData>();
@@ -56,47 +58,6 @@ export class UserFormComponent implements OnChanges {
   protected file: string = '';
   protected modalReady = false;
   protected birthDate = new Date();
-  protected roles = [
-    {
-      title: "Gestão",
-      childrens: [
-        {
-          id: 1,
-          authority: "Departamentos"
-        },
-        {
-          id: 2,
-          authority: "Usuários"
-        }
-      ]
-    },
-    {
-      title: "Geral",
-      childrens: [
-        {
-          id: 3,
-          authority: "Para Fazer"
-        },
-        {
-          id: 4,
-          authority: "Comunicação Interna"
-        },
-        {
-          id: 5,
-          authority: "Matérias primas"
-        }
-      ]
-    },
-    {
-      title: "Qualidade",
-      childrens: [
-        {
-          id: 6,
-          authority: "Checklist"
-        }
-      ]
-    },
-  ];
 
   constructor(private formBuilder: FormBuilder) {
     this.createForm = this.formBuilder.group({
@@ -244,7 +205,7 @@ export class UserFormComponent implements OnChanges {
     if (this.croppedImage) formData.append('picture', this.croppedImage, 'profile.png');
 
     // if disabled input = false -> activated = true
-    formData.append('activated', (this.createForm.value.disabled ? String("false") : String("true")));
+    formData.append('activated', this.createForm.get('disabled')?.value ? 'false' : 'true');
 
     // send to the father component
     this.createTask.emit(formData);

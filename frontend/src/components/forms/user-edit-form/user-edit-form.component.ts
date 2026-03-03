@@ -10,6 +10,7 @@ import { cilPencil, cilX } from '@coreui/icons';
 import { environment } from '../../../environments/environment';
 import { Position } from '../../../app/interface/position.interface';
 import { UserEditData } from './../../../app/interface/user.interface';
+import { RoleGroup } from 'src/app/interface/role.interface';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -44,6 +45,7 @@ import { UserEditData } from './../../../app/interface/user.interface';
 })
 export class UserEditFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @Input() roles!: Array<RoleGroup>;
   @Input() userData!: UserEditData;
   @Input() positions!: Array<Position>;
   @Output() editTask = new EventEmitter<{data: FormData, id: number}>();
@@ -52,47 +54,6 @@ export class UserEditFormComponent implements OnChanges {
   protected icons = { cilPencil, cilX };
   protected valid: boolean | undefined;
   protected editForm: FormGroup;
-  protected roles = [
-    {
-      title: "Gestão",
-      childrens: [
-        {
-          id: 1,
-          authority: "Departamentos"
-        },
-        {
-          id: 2,
-          authority: "Usuários"
-        }
-      ]
-    },
-    {
-      title: "Geral",
-      childrens: [
-        {
-          id: 3,
-          authority: "Para Fazer"
-        },
-        {
-          id: 4,
-          authority: "Comunicação Interna"
-        },
-        {
-          id: 5,
-          authority: "Matérias primas"
-        }
-      ]
-    },
-    {
-      title: "Qualidade",
-      childrens: [
-        {
-          id: 6,
-          authority: "Checklist"
-        }
-      ]
-    },
-  ];
 
   // profile image
   protected imageChangedEvent: Event | null = null;
@@ -302,7 +263,7 @@ export class UserEditFormComponent implements OnChanges {
     }
 
     // if disabled input = false -> activated = true
-    formData.append('activated', this.editForm.value.disabled?.value ? 'false' : 'true');
+    formData.append('activated', this.editForm.get('disabled')?.value ? 'false' : 'true');
 
     // send to the father component
     this.editTask.emit({data: formData, id: this.userData.id});
