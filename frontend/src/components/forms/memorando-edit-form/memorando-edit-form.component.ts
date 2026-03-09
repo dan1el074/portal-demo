@@ -3,13 +3,13 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, O
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
 import { OrderInfo } from '../../../app/interface/erp.interface';
-import { InternalCommunication, NewInternalCommunication } from '../../../app/interface/internal-communication.interface';
-import { InternalCommunicationService } from '../../../app/services/internal-communication.service';
+import { Memorando, NewMemorando } from '../../../app/interface/memorando.interface';
+import { MemorandoService } from '../../../app/services/memorando.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-ci-edit-form',
+  selector: 'app-memorando-edit-form',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -19,13 +19,13 @@ import { Router, RouterLink } from '@angular/router';
     ButtonDirective,
     RouterLink
   ],
-  templateUrl: './ci-edit-form.component.html',
-  styleUrl: './ci-edit-form.component.scss',
+  templateUrl: './memorando-edit-form.component.html',
+  styleUrl: './memorando-edit-form.component.scss',
 })
-export class CiEditFormComponent implements OnChanges {
-  @Input() data!: InternalCommunication;
+export class MemorandoEditFormComponent implements OnChanges {
+  @Input() data!: Memorando;
   @Input() isAdmin!: boolean;
-  @Output() editTask = new EventEmitter<NewInternalCommunication>();
+  @Output() editTask = new EventEmitter<NewMemorando>();
 
   protected orderInfo: Array<OrderInfo> = [];
   protected valid: boolean | undefined;
@@ -33,7 +33,7 @@ export class CiEditFormComponent implements OnChanges {
   protected showErrors = false;
 
   constructor(
-    private internalCommunicationService: InternalCommunicationService,
+    private MemorandoService: MemorandoService,
     private toasterService: ToastrService,
     private router: Router,
     private formBuilder: FormBuilder,
@@ -54,7 +54,7 @@ export class CiEditFormComponent implements OnChanges {
   public ngOnChanges(): void {
     if (this.data.id == 0) return;
 
-    this.internalCommunicationService.searchOrder(this.data.request).subscribe({
+    this.MemorandoService.searchOrder(this.data.request).subscribe({
       next: (data: Array<OrderInfo>) => {
         if (data.length == 0) {
           this.toasterService.error('Informações do pedido não encontradas!');
@@ -67,7 +67,7 @@ export class CiEditFormComponent implements OnChanges {
         this.cdr.detectChanges();
       },
       error: () => {
-        this.router.navigateByUrl('/general/internal-communication');
+        this.router.navigateByUrl('/general/memorando');
         this.toasterService.error('Erro ao consultar informações do pedido!');
       }
     });
@@ -108,7 +108,7 @@ export class CiEditFormComponent implements OnChanges {
       return;
     }
 
-    const data: NewInternalCommunication = {...this.editForm.value};
+    const data: NewMemorando = {...this.editForm.value};
     data.description = data.description.replace(/\r?\n/g, '<br>');
     this.editTask.emit(data);
   }

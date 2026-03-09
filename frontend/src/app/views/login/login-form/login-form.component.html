@@ -3,9 +3,8 @@
     <input cFormControl [valid]="valid" formControlName="username" id="pmusername" type="username" placeholder="Usuário" autofocus required />
     <label cLabel for="pmusername">Usuário</label>
   </div>
-  <div cFormFloating>
-    <input cFormControl [valid]="valid" formControlName="password" id="password" type="password" placeholder="Senha" autocomplete="off" required />
-    <label cLabel for="password">Senha</label>
+  <div cFormFloating class="fix-eye">
+    <input cFormPassword [valid]="valid" formControlName="password" id="password" type="password" placeholder="Senha" autocomplete="off" floatingLabel="Senha" required />
   </div>
 
   <a href="https://wa.me/555421060260" style="outline: none;" target="_blank">Falar com um administrador</a>

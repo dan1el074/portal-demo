@@ -2,9 +2,7 @@
   "name": "portal-demo",
   "version": "0.2.3",
   "config": {
-    "theme": "default",
-    "coreui_library_short_version": "5.6",
-    "coreui_library_docs_url": "https://coreui.io/angular/docs/"
+    "theme": "default"
   },
   "scripts": {
     "ng": "ng",

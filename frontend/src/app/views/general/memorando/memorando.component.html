@@ -1,0 +1,53 @@
+<c-row>
+  <c-col xs="12">
+    <c-card class="border">
+      <c-card-body>
+        <h4 cCardTitle>Registros - Memorando</h4>
+        <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
+          <c-tabs-list variant="underline-border">
+            <button cTab [itemKey]="0">Publicados</button>
+            <button cTab [itemKey]="1" [class.no-select]="canceledMemorando.length <= 0" [disabled]="canceledMemorando.length <= 0">Cancelados</button>
+            <button cTab [itemKey]="2" [class.no-select]="savedMemorando.length <= 0" [disabled]="savedMemorando.length <= 0">Salvos</button>
+            <button cTab [itemKey]="3" [class.hide]="!newMemorandoTab" class="close-button">
+              Novo registro
+              <div (click)="toggleNewMemorandoTab(false)">
+                <svg [cIcon]="icons.cilX" class="close-icon"></svg>
+              </div>
+            </button>
+          </c-tabs-list>
+          <c-tabs-content>
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="0">
+              <button cButton color="primary" (click)="toggleMemorandoModal(true)">
+                <svg [cIcon]="icons.cilPlus" size="md"></svg>
+                Adicionar
+              </button>
+              <app-memorando-table [data]="publishedMemorando" [noMargin]="true"></app-memorando-table>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="1">
+              <button cButton color="primary" (click)="toggleMemorandoModal(true)">
+                <svg [cIcon]="icons.cilPlus" size="md"></svg>
+                Adicionar
+              </button>
+              <app-memorando-table [data]="canceledMemorando" [noMargin]="true"></app-memorando-table>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="2">
+              <button cButton color="primary" (click)="toggleMemorandoModal(true)">
+                <svg [cIcon]="icons.cilPlus" size="md"></svg>
+                Adicionar
+              </button>
+              <app-memorando-table [data]="savedMemorando" [noMargin]="true" [saveTab]="true"></app-memorando-table>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="3">
+              <app-memorando-form [items]="itemsToCreateMemorando" (exitTask)="toggleNewMemorandoTab(false)" (createTask)="createNewMemorando($event)"></app-memorando-form>
+            </c-tab-panel>
+          </c-tabs-content>
+        </c-tabs>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+
+<app-new-memorando-modal [visible]="showMemorandoModal" (closeModal)="toggleMemorandoModal(false)" (createNewMemorando)="openCreateTab($event)"></app-new-memorando-modal>

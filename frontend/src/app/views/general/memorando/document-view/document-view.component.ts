@@ -1,9 +1,9 @@
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { ToastrService } from 'ngx-toastr';
-import { InternalCommunicationService } from './../../../../services/internal-communication.service';
+import { MemorandoService } from './../../../../services/memorando.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Interaction, InteractionList, InternalCommunication, NewInternalCommunication } from '../../../../interface/internal-communication.interface';
+import { Interaction, InteractionList, Memorando, NewMemorando } from '../../../../interface/memorando.interface';
 import { CommonModule } from '@angular/common';
 import { Position } from '../../../../interface/position.interface';
 import { AuthGuard } from '../../../../config/authGuard';
@@ -31,7 +31,7 @@ import { Me } from '../../../../interface/user.interface';
   styleUrl: './document-view.component.scss',
 })
 export class DocumentViewComponent implements OnInit {
-  protected item: InternalCommunication = {
+  protected item: Memorando = {
     id: 0,
     number: 0,
     request: 0,
@@ -68,7 +68,7 @@ export class DocumentViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private ciService: InternalCommunicationService,
+    private memorandoService: MemorandoService,
     private toasterService: ToastrService,
     private authGuardService: AuthGuard,
     private cdr: ChangeDetectorRef
@@ -83,8 +83,8 @@ export class DocumentViewComponent implements OnInit {
         this.isAdmin = true;
       }
 
-      this.ciService.findById(id).subscribe({
-        next: (data: InternalCommunication) => {
+      this.memorandoService.findById(id).subscribe({
+        next: (data: Memorando) => {
           this.item = data;
           this.verifyCanSign(user);
           this.updateInteractions();
@@ -98,7 +98,7 @@ export class DocumentViewComponent implements OnInit {
           }
 
           this.toasterService.error('Registro não encontrado!');
-          this.router.navigate(['general/internal-communication']);
+          this.router.navigate(['general/memorando']);
           return;
         }
       });
@@ -163,8 +163,8 @@ export class DocumentViewComponent implements OnInit {
   }
 
   protected onSign(): void {
-    this.ciService.sign(this.item.id).subscribe({
-      next: (data: InternalCommunication) => {
+    this.memorandoService.sign(this.item.id).subscribe({
+      next: (data: Memorando) => {
         this.item = data;
         this.canSign = false;
         this.updateInteractions();
@@ -194,7 +194,7 @@ export class DocumentViewComponent implements OnInit {
       departmentsId += this.item.fromDepartments[i].id;
     }
 
-    const ci: NewInternalCommunication = {
+    const memorando: NewMemorando = {
       request: this.item.request,
       client: this.item.client,
       item: this.item.item,
@@ -205,8 +205,8 @@ export class DocumentViewComponent implements OnInit {
       status: 'PUBLISH'
     };
 
-    this.ciService.update(this.item.id, ci).subscribe({
-      next: (data: InternalCommunication) => {
+    this.memorandoService.update(this.item.id, memorando).subscribe({
+      next: (data: Memorando) => {
         this.item = data;
         this.updateInteractions();
         this.toasterService.success('CI publicada com sucesso!');
@@ -228,8 +228,8 @@ export class DocumentViewComponent implements OnInit {
   }
 
   protected onCancel(): void {
-    this.ciService.disable(this.item.id).subscribe({
-      next: (data: InternalCommunication) => {
+    this.memorandoService.disable(this.item.id).subscribe({
+      next: (data: Memorando) => {
         this.item = data;
         this.toasterService.success('CI cancelada com sucesso!');
         this.toggleCancelModal();
@@ -250,12 +250,12 @@ export class DocumentViewComponent implements OnInit {
   }
 
   protected onDelete(): void {
-    this.ciService.delete(this.item.id).subscribe({
+    this.memorandoService.delete(this.item.id).subscribe({
       next: () => {
         this.toggleDeleteModal(false);
         this.cdr.detectChanges();
         this.toasterService.success('CI deletada com sucesso!');
-        this.router.navigateByUrl('general/internal-communication');
+        this.router.navigateByUrl('general/memorando');
       },
       error: () => {
         this.toasterService.error('Erro ao deletar CI!');

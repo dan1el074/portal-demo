@@ -5,7 +5,7 @@ import { cilPencil } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
-  selector: 'app-new-ci-modal',
+  selector: 'app-new-memorando-modal',
   imports: [
     ButtonDirective,
     ModalComponent,
@@ -20,20 +20,20 @@ import { IconDirective } from '@coreui/icons-angular';
     FormLabelDirective,
     FormControlDirective
   ],
-  templateUrl: './new-ci-modal.component.html',
-  styleUrl: './new-ci-modal.component.scss',
+  templateUrl: './new-memorando-modal.component.html',
+  styleUrl: './new-memorando-modal.component.scss',
 })
-export class NewCiModalComponent implements OnChanges {
+export class NewMemorandoModalComponent implements OnChanges {
   @Input() visible!: boolean;
   @Output() closeModal = new EventEmitter<any>();
-  @Output() createNewCI = new EventEmitter<number>();
+  @Output() createNewMemorando = new EventEmitter<number>();
 
-  protected newCIForm: FormGroup;
+  protected newMemorandoForm: FormGroup;
   protected showErrors = false;
   protected icons = { cilPencil };
 
   constructor(private formBuilder: FormBuilder) {
-    this.newCIForm = this.formBuilder.group({
+    this.newMemorandoForm = this.formBuilder.group({
       orderNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
     });
   }
@@ -44,21 +44,21 @@ export class NewCiModalComponent implements OnChanges {
     }
   }
 
-  protected closeCIModal(): void {
+  protected closeMemorandoModal(): void {
     this.closeModal.emit();
     this.resetForm()
   }
 
   protected onSubmit(): void {
-    if (!this.newCIForm.valid) {
+    if (!this.newMemorandoForm.valid) {
       this.showErrors = true;
       return;
     }
 
-    this.createNewCI.emit(this.newCIForm.get('orderNumber')?.value);
+    this.createNewMemorando.emit(this.newMemorandoForm.get('orderNumber')?.value);
   }
 
   private resetForm(): void {
-    this.newCIForm.reset({ orderNumber: '' });
+    this.newMemorandoForm.reset({ orderNumber: '' });
   }
 }

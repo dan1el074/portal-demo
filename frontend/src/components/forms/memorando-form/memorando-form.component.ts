@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
-import { OrderInfo } from './../../../app/interface/erp.interface';
-import { NewInternalCommunication } from './../../../app/interface/internal-communication.interface';
+import { OrderInfo } from '../../../app/interface/erp.interface';
+import { NewMemorando } from './../../../app/interface/memorando.interface';
 
 @Component({
-  selector: 'app-ci-form',
+  selector: 'app-memorando-form',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -15,12 +15,12 @@ import { NewInternalCommunication } from './../../../app/interface/internal-comm
     FormControlDirective,
     ButtonDirective
   ],
-  templateUrl: './ci-form.component.html',
-  styleUrl: './ci-form.component.scss',
+  templateUrl: './memorando-form.component.html',
+  styleUrl: './memorando-form.component.scss',
 })
-export class CiFormComponent implements OnChanges {
+export class MemorandoFormComponent implements OnChanges {
   @Input() items!: Array<OrderInfo>;
-  @Output() createTask = new EventEmitter<NewInternalCommunication>();
+  @Output() createTask = new EventEmitter<NewMemorando>();
   @Output() exitTask = new EventEmitter<void>();
 
   protected valid: boolean | undefined;

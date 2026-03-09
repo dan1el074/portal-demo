@@ -9,11 +9,11 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { environment } from '../../../environments/environment';
-import { InternalCommunication } from '../../../app/interface/internal-communication.interface';
+import { Memorando } from '../../../app/interface/memorando.interface';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-ci-table',
+  selector: 'app-memorando-table',
   imports: [
     CommonModule,
     BadgeComponent,
@@ -29,19 +29,19 @@ import { RouterLink } from '@angular/router';
     ButtonDirective,
     RouterLink
   ],
-  templateUrl: './ci-table.component.html',
-  styleUrl: './ci-table.component.scss',
+  templateUrl: './memorando-table.component.html',
+  styleUrl: './memorando-table.component.scss',
 })
-export class CiTableComponent implements AfterViewInit, OnChanges {
+export class MemorandoTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @Input() data!: Array<InternalCommunication>;
+  @Input() data!: Array<Memorando>;
   @Input() noMargin: boolean = false;
   @Input() saveTab: boolean = false;
 
   protected apiUrl = environment.apiUrl;
-  protected displayedColumns: string[] = ['ciNumber', 'orderNumber', 'client', 'status', 'interaction', 'createdAt', 'buttons'];
-  protected dataSource = new MatTableDataSource<InternalCommunication>([]);
+  protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'interaction', 'createdAt', 'buttons'];
+  protected dataSource = new MatTableDataSource<Memorando>([]);
   protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
 
   ngOnChanges(): void {
@@ -71,9 +71,9 @@ export class CiTableComponent implements AfterViewInit, OnChanges {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    this.dataSource.sortingDataAccessor = (item: InternalCommunication, property: string) => {
+    this.dataSource.sortingDataAccessor = (item: Memorando, property: string) => {
       switch (property) {
-        case 'ciNumber': {
+        case 'memorandoNumber': {
           const year = new Date(item.createAt).getFullYear();
           const numberPadded = item.number.toString().padStart(6, '0');
           return Number(`${year}${numberPadded}`);

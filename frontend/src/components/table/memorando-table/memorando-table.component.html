@@ -8,10 +8,10 @@
 
 <c-container class="scroll-x" fluid>
   <table mat-table [dataSource]="dataSource" matSort class="table stripe">
-    <ng-container matColumnDef="ciNumber">
+    <ng-container matColumnDef="memorandoNumber">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
         @if (!saveTab) {
-          Nº CI
+          Número
         } @else {
           Ação
         }
@@ -27,7 +27,7 @@
       </td>
     </ng-container>
     <ng-container matColumnDef="orderNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nº pedido</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Pedido</th>
       <td mat-cell *matCellDef="let internalControl">{{ internalControl.request }}</td>
     </ng-container>
     <ng-container matColumnDef="client">

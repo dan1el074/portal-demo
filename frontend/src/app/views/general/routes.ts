@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../../config/authGuard';
-import { DocumentViewComponent } from './internal-communication/document-view/document-view.component';
+import { DocumentViewComponent } from './memorando/document-view/document-view.component';
 
 export const routes: Routes = [
   {
@@ -15,30 +15,30 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
-        path: 'internal-communication',
-        loadComponent: () => import('./internal-communication/internal-communication.component').then(m => m.InternalCommunicationComponent),
+        path: 'memorando',
+        loadComponent: () => import('./memorando/memorando.component').then(m => m.MemorandoComponent),
         canActivate: [AuthGuard],
         data: {
-          roles: ['ROLE_ADMIN','ROLE_INTERNAL_COMMUNICATION'],
-          title: 'Comunicação Interna'
+          roles: ['ROLE_ADMIN','ROLE_MEMORANDO'],
+          title: 'Memorando'
         }
       },
       {
-        path: 'internal-communication/:id',
-        loadComponent: () => import('./internal-communication/document-view/document-view.component').then(m => m.DocumentViewComponent),
+        path: 'memorando/:id',
+        loadComponent: () => import('./memorando/document-view/document-view.component').then(m => m.DocumentViewComponent),
         canActivate: [AuthGuard],
         data: {
-          roles: ['ROLE_ADMIN','ROLE_INTERNAL_COMMUNICATION'],
-          title: 'Comunicação Interna'
+          roles: ['ROLE_ADMIN','ROLE_MEMORANDO'],
+          title: 'Memorando'
         }
       },
       {
-        path: 'internal-communication/:id/edit',
-        loadComponent: () => import('./internal-communication/document-view/edit-ci/edit-ci.component').then(m => m.EditCiComponent),
+        path: 'memorando/:id/edit',
+        loadComponent: () => import('./memorando/document-view/edit-memorando/edit-memorando.component').then(m => m.EditMemorandoComponent),
         canActivate: [AuthGuard],
         data: {
-          roles: ['ROLE_ADMIN','ROLE_INTERNAL_COMMUNICATION'],
-          title: 'Comunicação Interna'
+          roles: ['ROLE_ADMIN','ROLE_MEMORANDO'],
+          title: 'Memorando'
         }
       },
       {

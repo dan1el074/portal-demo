@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Position } from '../interface/position.interface';
 import { environment } from '../../environments/environment';
-import { InternalCommunication, NewInternalCommunication } from '../interface/internal-communication.interface';
+import { Memorando, NewMemorando } from '../interface/memorando.interface';
 import { OrderInfo } from '../interface/erp.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-export class InternalCommunicationService {
+export class MemorandoService {
   private api = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
@@ -20,7 +19,7 @@ export class InternalCommunicationService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.get<Array<InternalCommunication>>(this.api + '/api/ci', { headers });
+    return this.http.get<Array<Memorando>>(this.api + '/api/memorando', { headers });
   }
 
   public findById(id: number): Observable<any> {
@@ -29,7 +28,7 @@ export class InternalCommunicationService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.get<InternalCommunication>(this.api + '/api/ci/' + id, { headers });
+    return this.http.get<Memorando>(this.api + '/api/memorando/' + id, { headers });
   }
 
   public searchOrder(order: number): Observable<any> {
@@ -41,22 +40,22 @@ export class InternalCommunicationService {
     return this.http.get<Array<OrderInfo>>(this.api + '/api/erp/order/' + order, { headers });
   }
 
-  public insert(data: NewInternalCommunication): Observable<any> {
+  public insert(data: NewMemorando): Observable<any> {
     const token = sessionStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.post<InternalCommunication>(this.api + '/api/ci', data, { headers });
+    return this.http.post<Memorando>(this.api + '/api/memorando', data, { headers });
   }
 
-  public update(id: number, data: NewInternalCommunication): Observable<any> {
+  public update(id: number, data: NewMemorando): Observable<any> {
     const token = sessionStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.put<InternalCommunication>(this.api + '/api/ci/' + id, data, { headers });
+    return this.http.put<Memorando>(this.api + '/api/memorando/' + id, data, { headers });
   }
 
   public sign(id: number): Observable<any> {
@@ -65,7 +64,7 @@ export class InternalCommunicationService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.put<InternalCommunication>(this.api + '/api/ci/sign/' + id, null, { headers });
+    return this.http.put<Memorando>(this.api + '/api/memorando/sign/' + id, null, { headers });
   }
 
   public disable(id: number): Observable<any> {
@@ -74,7 +73,7 @@ export class InternalCommunicationService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.put<InternalCommunication>(this.api + '/api/ci/disable/' + id, null, { headers });
+    return this.http.put<Memorando>(this.api + '/api/memorando/disable/' + id, null, { headers });
   }
 
   public delete(id: number): Observable<any> {
@@ -83,7 +82,7 @@ export class InternalCommunicationService {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.delete<void>(this.api + '/api/ci/' + id, { headers });
+    return this.http.delete<void>(this.api + '/api/memorando/' + id, { headers });
   }
 
 }

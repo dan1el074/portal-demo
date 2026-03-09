@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CiEditFormComponent } from './ci-edit-form.component';
+import { CiTableComponent } from './memorando-table.component';
 
-describe('CiEditFormComponent', () => {
-  let component: CiEditFormComponent;
-  let fixture: ComponentFixture<CiEditFormComponent>;
+describe('CiTableComponent', () => {
+  let component: CiTableComponent;
+  let fixture: ComponentFixture<CiTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CiEditFormComponent]
+      imports: [CiTableComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CiEditFormComponent);
+    fixture = TestBed.createComponent(CiTableComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

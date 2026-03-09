@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormControlDirective, FormFloatingDirective } from '@coreui/angular';
+import { FormPasswordDirective } from '@coreui/angular-pro';
 
 export interface Credential {
   username: string;
@@ -12,6 +13,7 @@ export interface Credential {
   imports: [
     FormFloatingDirective,
     FormControlDirective,
+    FormPasswordDirective,
     ReactiveFormsModule
   ],
   templateUrl: './login-form.component.html',

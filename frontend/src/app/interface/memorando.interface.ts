@@ -1,7 +1,7 @@
 import { Position } from './position.interface';
 import { UserSummary } from './user.interface';
 
-export interface InternalCommunication {
+export interface Memorando {
   id: number;
   number: number;
   request: number;
@@ -19,7 +19,7 @@ export interface InternalCommunication {
   logs: Array<CILog>
 }
 
-export interface NewInternalCommunication {
+export interface NewMemorando {
   request: number;
   client: string;
   item: string;

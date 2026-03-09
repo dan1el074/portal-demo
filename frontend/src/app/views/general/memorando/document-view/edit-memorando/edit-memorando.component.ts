@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthGuard } from '../../../../../config/authGuard';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
 import { ToastrService } from 'ngx-toastr';
-import { InternalCommunicationService } from '../../../../../services/internal-communication.service';
-import { InternalCommunication, NewInternalCommunication } from '../../../../../interface/internal-communication.interface';
-import { CiEditFormComponent } from './../../../../../../components/forms/ci-edit-form/ci-edit-form.component';
+import { MemorandoService } from '../../../../../services/memorando.service';
+import { Memorando, NewMemorando } from '../../../../../interface/memorando.interface';
+import { MemorandoEditFormComponent } from '../../../../../../components/forms/memorando-edit-form/memorando-edit-form.component';
 
 @Component({
-  selector: 'app-edit-ci',
+  selector: 'app-edit-memorando',
   imports: [
     CommonModule,
     RowComponent,
@@ -17,14 +17,14 @@ import { CiEditFormComponent } from './../../../../../../components/forms/ci-edi
     CardComponent,
     CardBodyComponent,
     CardTitleDirective,
-    CiEditFormComponent
+    MemorandoEditFormComponent
   ],
-  templateUrl: './edit-ci.component.html',
-  styleUrl: './edit-ci.component.scss',
+  templateUrl: './edit-memorando.component.html',
+  styleUrl: './edit-memorando.component.scss',
 })
-export class EditCiComponent implements OnInit {
+export class EditMemorandoComponent implements OnInit {
   protected isAdmin: boolean = false;
-  protected editData: InternalCommunication = {
+  protected editData: Memorando = {
     id: 0,
     number: 0,
     request: 0,
@@ -53,7 +53,7 @@ export class EditCiComponent implements OnInit {
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private ciService: InternalCommunicationService,
+    private memorandoService: MemorandoService,
     private toasterService: ToastrService,
     private authGuardService: AuthGuard,
     private cdr: ChangeDetectorRef
@@ -66,18 +66,18 @@ export class EditCiComponent implements OnInit {
       next: user => {
         if (user.roles.findIndex(role => role.authority == 'ROLE_ADMIN') >= 0) this.isAdmin = true;
 
-        this.ciService.findById(id).subscribe({
-          next: (data: InternalCommunication) => {
+        this.memorandoService.findById(id).subscribe({
+          next: (data: Memorando) => {
             this.editData = data;
             this.cdr.detectChanges();
 
             if (this.editData.status == 'CANCELED' || this.editData.status == 'APPROVED') {
               this.toasterService.error('Não é possível editar CIs aprovadas ou cancelas!');
-              this.router.navigateByUrl('/general/internal-communication');
+              this.router.navigateByUrl('/general/memorando');
             }
             if (this.editData.status == 'PUBLISH' && !this.isAdmin) {
               this.toasterService.error('Apenas administradores podem alterar CIs já publicadas!');
-              this.router.navigateByUrl('/general/internal-communication');
+              this.router.navigateByUrl('/general/memorando');
               return;
             }
           },
@@ -89,7 +89,7 @@ export class EditCiComponent implements OnInit {
             }
 
             this.toasterService.error('Registro não encontrado!');
-            this.router.navigateByUrl('/general/internal-communication');
+            this.router.navigateByUrl('/general/memorando');
             return;
           }
         });
@@ -98,11 +98,11 @@ export class EditCiComponent implements OnInit {
     });
   }
 
-  protected editTask(data: NewInternalCommunication): void {
-    this.ciService.update(this.editData.id, data).subscribe({
+  protected editTask(data: NewMemorando): void {
+    this.memorandoService.update(this.editData.id, data).subscribe({
       next: () => {
         this.toasterService.success('CI atualizada com sucesso!');
-        this.router.navigateByUrl('general/internal-communication/' + this.editData.id);
+        this.router.navigateByUrl('general/memorando/' + this.editData.id);
       },
       error: () => {
         this.toasterService.error('Erro ao atualizar CI!');
