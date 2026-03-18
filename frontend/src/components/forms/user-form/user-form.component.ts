@@ -7,8 +7,8 @@ import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent
 import { passwordMatchValidator } from '../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
-import { Position } from '../../../app/interface/position.interface';
-import { RoleGroup } from 'src/app/interface/role.interface';
+import { PositionMin } from '../../../app/interface/position.interface';
+import { RoleGroup } from '../../../app/interface/role.interface';
 
 @Component({
   selector: 'app-user-form',
@@ -43,7 +43,7 @@ import { RoleGroup } from 'src/app/interface/role.interface';
 export class UserFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Input() roles!: Array<RoleGroup>;
-  @Input() positions!: Array<Position>;
+  @Input() positions!: Array<PositionMin>;
   @Input() show: boolean = false;
   @Output() createTask = new EventEmitter<FormData>();
   @Output() exitTask = new EventEmitter<void>();
@@ -178,6 +178,7 @@ export class UserFormComponent implements OnChanges {
     }
 
     this.file = "";
+    this.showErrors = false;
   }
 
   onSubmit(): void {

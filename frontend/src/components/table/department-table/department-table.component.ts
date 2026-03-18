@@ -8,8 +8,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, TooltipDirective } from '@coreui/angular';
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
-import { PositionTable } from '../../../app/interface/position.interface';
+import { Position } from '../../../app/interface/position.interface';
 import { environment } from '../../../environments/environment';
+import { NewMemorandoModalComponent } from '../../modal/new-memorando-modal/new-memorando-modal.component';
+import { PositionDeleteModalComponent } from '../../modal/position-delete-modal/position-delete-modal.component';
 
 @Component({
   selector: 'app-department-table',
@@ -25,7 +27,9 @@ import { environment } from '../../../environments/environment';
     ButtonDirective,
     ModalToggleDirective,
     TooltipDirective,
-    AvatarComponent
+    AvatarComponent,
+    NewMemorandoModalComponent,
+    PositionDeleteModalComponent
   ],
   templateUrl: './department-table.component.html',
   styleUrl: './department-table.component.scss',
@@ -33,15 +37,15 @@ import { environment } from '../../../environments/environment';
 export class DepartmentTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @Input() data: Array<PositionTable> = [];
+  @Input() data: Array<Position> = [];
   @Input() noMargin: boolean = true;
   @Input() hideDeactiveButton: boolean = false;
   @Output() updatePosition = new EventEmitter<number>();
-  @Output() deactivateTask = new EventEmitter<number>();
+  @Output() deactivePosition = new EventEmitter<number>();
 
   protected apiUrl = environment.apiUrl;
-  protected displayedColumns: string[] = ['id', 'name', 'managers', 'updatedAt', 'createdAt', 'buttons'];
-  protected dataSource = new MatTableDataSource<PositionTable>([]);
+  protected displayedColumns: string[] = ['id', 'name', 'manangers', 'updatedAt', 'createdAt', 'buttons'];
+  protected dataSource = new MatTableDataSource<Position>([]);
   protected icons = { cilSearch, cilPencil, cilX };
 
   ngOnChanges(): void {
@@ -61,12 +65,10 @@ export class DepartmentTableComponent implements AfterViewInit, OnChanges {
   }
 
   editPosition(id: number): void {
-    // this.updatePosition.emit(id);
-    alert('Editar!');
+    this.updatePosition.emit(id);
   }
 
   deactivatePosition(id: number) {
-    // this.deactivateTask.emit(id);
-    alert('Desativar!');
+    this.deactivePosition.emit(id);
   }
 }

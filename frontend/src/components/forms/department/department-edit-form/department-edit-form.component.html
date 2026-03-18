@@ -1,0 +1,30 @@
+<form [formGroup]="editForm" (ngSubmit)="onSubmit()" autocomplete="off">
+  <h4 class="mb-4">Editar departamento</h4>
+
+  <div [cFormFloating]="true" class="mb-3">
+    <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: editForm.get('name')?.errors != null ? false : undefined" id="name2" type="text" placeholder="Nome" />
+    <label cLabel for="name2">Nome</label>
+  </div>
+
+  <c-multi-select multiple selectionType="text" placeholder="Gestores" [selectAll]="false" formControlName="manangers" class="custom-select mb-3">
+    @for (userGroup of users; track userGroup.title) {
+      <c-multi-select-optgroup [label]="userGroup.title">
+        @for (user of userGroup.childrens; track user.id) {
+          <c-multi-select-option [value]="user.id">
+            {{ user.name }}
+          </c-multi-select-option>
+        }
+      </c-multi-select-optgroup>
+    }
+  </c-multi-select>
+
+  <c-form-check>
+    <input cFormCheckInput formControlName="disabled" id="checkOne2" type="checkbox" />
+    <label cFormCheckLabel for="checkOne2">Desativar departamento</label>
+  </c-form-check>
+
+  <div class="button-container">
+    <button cButton (click)="onExit()" color="secondary">Cancelar</button>
+    <button cButton type="submit" color="primary">Salvar</button>
+  </div>
+</form>

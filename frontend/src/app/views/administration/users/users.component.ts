@@ -10,7 +10,7 @@ import { UserTableComponent } from '../../../../components/table/user-table/user
 import { UserService } from './../../../services/user.service';
 import { PostitionService } from '../../../services/position.service';
 import { RoleService } from './../../../services/role.service';
-import { Position } from '../../../interface/position.interface';
+import { Position, PositionMin } from '../../../interface/position.interface';
 import { RoleGroup } from './../../../interface/role.interface';
 import { UserEditData } from './../../../interface/user.interface';
 import { UserTable } from '../../../interface/user.interface';
@@ -37,7 +37,7 @@ export class UsersComponent implements OnInit {
   protected tabs: Array<string> = ['Todos', 'Desativados'];
   protected activeUsers: Array<UserTable> = [];
   protected inactiveUsers: Array<UserTable> = [];
-  protected positions!: Array<Position>;
+  protected positions!: Array<PositionMin>;
   protected icons = { cilPlus, cilX };
   protected activeItemKey = 0;
   protected allRoles!: Array<RoleGroup>;
@@ -88,12 +88,12 @@ export class UsersComponent implements OnInit {
   }
 
   private loadPositions(): void {
-    this.postitionService.findAll().subscribe({
+    this.postitionService.list().subscribe({
       next: positionsList => {
         this.positions = positionsList;
         this.cdr.detectChanges();
       },
-      error: error => this.toasterService.error('Erro ao carregar nome de setores!')
+      error: () => this.toasterService.error('Erro ao carregar nome de setores!')
     });
   }
 

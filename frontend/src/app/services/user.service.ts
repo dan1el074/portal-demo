@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Me, UserData, UserMinData } from './../interface/user.interface';
+import { Me, UserData, UserGroup, UserMinData } from './../interface/user.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +28,15 @@ export class UserService {
     });
 
     return this.http.get<Array<UserMinData>>(this.api, { headers });
+  }
+
+  public listByPositionName(): Observable<any> {
+    const token = sessionStorage.getItem('auth-token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.get<Array<UserGroup>>(this.api + '/group', { headers });
   }
 
   public findById(id: number): Observable<any> {

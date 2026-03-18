@@ -139,6 +139,10 @@ form {
 
 }
 
+c-multi-select-tag button {
+  display: none;
+}
+
 @media (max-width: 720px) {
   form {
     padding: 20px 0 0;

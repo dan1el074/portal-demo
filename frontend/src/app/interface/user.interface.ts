@@ -1,7 +1,7 @@
 import { Picture } from './image.interface';
 import { Role } from './role.interface';
 import { Notification } from './notification.interface';
-import { Position } from './position.interface';
+import { PositionMin } from './position.interface';
 
 export interface UserTable {
   id: number;
@@ -68,6 +68,16 @@ export interface UserEditData {
 export interface UserSummary {
   id: number;
   name: string;
-  position: Position;
+  position: PositionMin;
   picture: Picture | null;
+}
+
+export interface UserMinSummary {
+  id: number;
+  name: string;
+}
+
+export interface UserGroup {
+  title: string;
+  childrens: Array<UserMinSummary>;
 }

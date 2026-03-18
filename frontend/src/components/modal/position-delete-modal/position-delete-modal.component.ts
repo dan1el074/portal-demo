@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, ModalToggleDirective } from '@coreui/angular';
-import { cilPencil } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
-import { UserTable } from '../../../app/interface/user.interface';
+import { cilPencil } from '@coreui/icons';
+import { Position } from '../../../app/interface/position.interface';
 
 @Component({
-  selector: 'app-user-delete-modal',
+  selector: 'app-position-delete-modal',
   imports: [
     ButtonDirective,
     ModalToggleDirective,
@@ -17,15 +17,15 @@ import { UserTable } from '../../../app/interface/user.interface';
     ModalFooterComponent,
     IconDirective
   ],
-  templateUrl: './user-delete-modal.component.html',
-  styleUrl: './user-delete-modal.component.scss',
+  templateUrl: './position-delete-modal.component.html',
+  styleUrl: './position-delete-modal.component.scss',
 })
-export class UserDeleteModalComponent {
-  @Input() user!: UserTable;
+export class PositionDeleteModalComponent {
+  @Input() position!: Position;
   @Output() deactivateTask = new EventEmitter<number>();
   protected icons = { cilPencil };
 
   deactivateUser(): void {
-    this.deactivateTask.emit(this.user.id);
+    this.deactivateTask.emit(this.position.id);
   }
 }

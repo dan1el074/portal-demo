@@ -1,0 +1,18 @@
+<c-modal id="position-delete-modal-{{ position.id }}" backdrop="static" alignment="center">
+  <c-modal-header>
+    <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
+    <h5 cModalTitle>Desativar - {{ position.name }}</h5>
+    <button cModalToggle="position-delete-modal-{{ position.id }}" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja desativar esse departamento?
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" cModalToggle="position-delete-modal-{{ position.id }}">
+      Cancelar
+    </button>
+    <button cButton color="primary" cModalToggle="position-delete-modal-{{ position.id }}" (click)="deactivateUser()" class="delete">
+      Desativar
+    </button>
+  </c-modal-footer>
+</c-modal>

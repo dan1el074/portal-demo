@@ -8,9 +8,9 @@ import { passwordMatchValidator } from '../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { environment } from '../../../environments/environment';
-import { Position } from '../../../app/interface/position.interface';
+import { PositionMin } from '../../../app/interface/position.interface';
 import { UserEditData } from './../../../app/interface/user.interface';
-import { RoleGroup } from 'src/app/interface/role.interface';
+import { RoleGroup } from './../../../app/interface/role.interface';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -47,7 +47,7 @@ export class UserEditFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Input() roles!: Array<RoleGroup>;
   @Input() userData!: UserEditData;
-  @Input() positions!: Array<Position>;
+  @Input() positions!: Array<PositionMin>;
   @Output() editTask = new EventEmitter<{data: FormData, id: number}>();
   @Output() exitTask = new EventEmitter<void>();
 
@@ -232,41 +232,41 @@ export class UserEditFormComponent implements OnChanges {
       return;
     }
 
-    const formData = new FormData();
-    Object.entries(this.editForm.value).forEach(([key, value]) => {
-      if (key === 'repeatPassword') return;
-      if (key === 'password' && !value) return;
-      if (key === 'disabled') return;
-      if (key === 'picture') return;
-      if (key === 'supportToken' && value == null) return;
-      if (key === 'birthDate') return;
+    // const formData = new FormData();
+    // Object.entries(this.editForm.value).forEach(([key, value]) => {
+    //   if (key === 'repeatPassword') return;
+    //   if (key === 'password' && !value) return;
+    //   if (key === 'disabled') return;
+    //   if (key === 'picture') return;
+    //   if (key === 'supportToken' && value == null) return;
+    //   if (key === 'birthDate') return;
 
-      formData.append(key, String(value));
-    });
+    //   formData.append(key, String(value));
+    // });
 
-    // birthDate -> convert Date to string
-    const date: Date | null = this.editForm.value.birthDate;
-    const birthDateString = date ? date.toISOString().split('T')[0] : null;
-    formData.append('birthDate', String(birthDateString));
+    // // birthDate -> convert Date to string
+    // const date: Date | null = this.editForm.value.birthDate;
+    // const birthDateString = date ? date.toISOString().split('T')[0] : null;
+    // formData.append('birthDate', String(birthDateString));
 
-    // if user is Admin, add id role
-    if (this.userData.roles.find(role => role == 2)) {
-      formData.append('roles', '2');
-    }
+    // // if user is Admin, add id role
+    // if (this.userData.roles.find(role => role == 2)) {
+    //   formData.append('roles', '2');
+    // }
 
-    // if resetPicture = true -> send signal to backend
-    if (this.resetPicture) formData.append('resetPicture', 'true');
+    // // if resetPicture = true -> send signal to backend
+    // if (this.resetPicture) formData.append('resetPicture', 'true');
 
-    // change picture
-    if (!this.resetPicture && this.file && this.croppedImage) {
-      formData.append('picture', this.croppedImage, 'profile.png');
-    }
+    // // change picture
+    // if (!this.resetPicture && this.file && this.croppedImage) {
+    //   formData.append('picture', this.croppedImage, 'profile.png');
+    // }
 
-    // if disabled input = false -> activated = true
-    formData.append('activated', this.editForm.get('disabled')?.value ? 'false' : 'true');
+    // // if disabled input = false -> activated = true
+    // formData.append('activated', this.editForm.get('disabled')?.value ? 'false' : 'true');
 
-    // send to the father component
-    this.editTask.emit({data: formData, id: this.userData.id});
-    this.onExit();
+    // // send to the father component
+    // this.editTask.emit({data: formData, id: this.userData.id});
+    // this.onExit();
   }
 }

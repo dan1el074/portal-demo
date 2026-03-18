@@ -76,7 +76,7 @@ export class DefaultLayoutComponent implements OnInit {
       const toolList = {
         name: role.parent,
         url: role.parentUrl,
-        iconComponent: { name: role.parent == 'Gestão' ? 'cilCursor' : 'cilFork' },
+        iconComponent: { name: role.parent == 'Administração' ? 'cilCursor' : 'cilFork' },
         children: []
       }
 

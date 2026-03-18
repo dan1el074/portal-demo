@@ -7,27 +7,65 @@
         <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
           <c-tabs-list variant="underline-border">
             <button cTab [itemKey]="0">Todos</button>
-            <button cTab [itemKey]="1" [class.no-select]="inactivePositions.length <= 0" [disabled]="inactivePositions.length <= 0">Desativados</button>
+            <button cTab [itemKey]="1" [class.no-select]="inactiveDepartments == null || inactiveDepartments.length == 0" [disabled]="inactiveDepartments == null || inactiveDepartments.length == 0">Desativados</button> <button cTab [itemKey]="2" [class.hide]="!createDepartmentTab" class="close-button">
+              Novo
+              <div (click)="toggleCreateDepartmentTab(false)">
+                <svg [cIcon]="icons.cilX" class="close-icon"></svg>
+              </div>
+            </button>
+
+            <button cTab [itemKey]="3" [class.hide]="!editDepartmentTab" class="close-button">
+              {{ editDepartmentData.name }}
+              <div (click)="toggleEditDepartmentTab(false)">
+                <svg [cIcon]="icons.cilX" class="close-icon"></svg>
+              </div>
+            </button>
+
           </c-tabs-list>
 
           <c-tabs-content>
             <c-tab-panel class="p-3 remove-outline" [itemKey]="0">
-              <button cButton color="primary">
+              <button cButton color="primary" (click)="toggleCreateDepartmentTab(true)">
                 <svg [cIcon]="icons.cilPlus" size="md"></svg>
                 Novo Setor
               </button>
 
-              <app-department-table [data]="activePositions"></app-department-table>
+              <app-department-table
+                [data]="activeDepartments"
+                (updatePosition)="openUpdateTab($event)"
+                (deactivePosition)="onDeactive($event)"
+              ></app-department-table>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="1">
-              <button cButton color="primary">
+              <button cButton color="primary" (click)="toggleCreateDepartmentTab(true)">
                 <svg [cIcon]="icons.cilPlus" size="md"></svg>
                 Novo Setor
               </button>
 
-              <app-department-table [data]="inactivePositions"></app-department-table>
+              <app-department-table
+                [data]="inactiveDepartments"
+                [hideDeactiveButton]="true"
+                (updatePosition)="openUpdateTab($event)"
+                (deactivePosition)="onDeactive($event)"
+              ></app-department-table>
             </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!createDepartmentTab">
+              <app-department-form
+                (createTask)="onCreate($event)"
+                (exitTask)="toggleCreateDepartmentTab(false)"
+              ></app-department-form>
+            </c-tab-panel>
+
+            <c-tab-panel class="p-3 remove-outline" [itemKey]="3" [class.hide]="!editDepartmentTab">
+              <app-department-edit-form
+                [departmentData]="editDepartmentData"
+                (editTask)="onUpdate($event)"
+                (exitTask)="toggleEditDepartmentTab(false)"
+              ></app-department-edit-form>
+            </c-tab-panel>
+
           </c-tabs-content>
         </c-tabs>
       </c-card-body>
