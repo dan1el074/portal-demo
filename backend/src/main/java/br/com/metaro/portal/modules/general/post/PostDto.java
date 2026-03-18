@@ -1,6 +1,6 @@
 package br.com.metaro.portal.modules.general.post;
 
-import br.com.metaro.portal.core.dto.UserSummaryDto;
+import br.com.metaro.portal.core.dto.user.UserSummaryDto;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.dto.PictureDto;
 import lombok.AllArgsConstructor;

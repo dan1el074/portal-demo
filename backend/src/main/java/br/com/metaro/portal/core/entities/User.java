@@ -1,8 +1,8 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.internalCommunication.entities.Interaction;
-import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunication;
-import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunicationLog;
+import br.com.metaro.portal.modules.general.memorando.entities.Interaction;
+import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
+import br.com.metaro.portal.modules.general.memorando.entities.MemorandoLog;
 import br.com.metaro.portal.modules.general.post.Post;
 import br.com.metaro.portal.util.picture.Picture;
 import jakarta.persistence.*;
@@ -59,23 +59,23 @@ public class User implements UserDetails {
     private Notification notificationsCreated;
 
     @OneToMany(mappedBy = "user")
-    private Set<InternalCommunicationLog> ciLog = new HashSet<>();
+    private Set<MemorandoLog> ciLog = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "picture_id", unique = true)
     private Picture picture;
 
     @OneToMany(mappedBy = "createdBy")
-    private Set<InternalCommunication> InternalCommunications = new HashSet<>();
+    private Set<Memorando> memorandos = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<Interaction> interactions = new HashSet<>();
 
-    @OneToMany(mappedBy = "mananger")
-    private List<Position> managedPositions = new ArrayList<>();
+    @ManyToMany(mappedBy = "manangers")
+    private Set<Position> managedPositions = new HashSet<>();
 
-    public List<InternalCommunication> getInteractionsCI() {
-        return interactions.stream().map(Interaction::getInternalCommunication).toList();
+    public List<Memorando> getInteractionsCI() {
+        return interactions.stream().map(Interaction::getMemorando).toList();
     }
 
     public void addRole(Role role) {

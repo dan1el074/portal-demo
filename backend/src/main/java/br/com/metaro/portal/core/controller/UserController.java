@@ -1,10 +1,8 @@
 package br.com.metaro.portal.core.controller;
 
-import br.com.metaro.portal.core.dto.*;
+import br.com.metaro.portal.core.dto.user.*;
 import br.com.metaro.portal.core.services.UserService;
-import br.com.metaro.portal.modules.general.post.PostDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +11,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,6 +23,13 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserMinDto>> findAll() {
         List<UserMinDto> dtos = userService.findAll();
+        return ResponseEntity.ok(dtos);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
+    @GetMapping(value = "/group")
+    public ResponseEntity<List<UserGroupDto>> listByPositionName() {
+        List<UserGroupDto> dtos = userService.listByPositionName();
         return ResponseEntity.ok(dtos);
     }
 

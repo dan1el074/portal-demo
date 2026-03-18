@@ -1,6 +1,6 @@
 package br.com.metaro.portal.core.controller;
 
-import br.com.metaro.portal.core.dto.RoleGroupDto;
+import br.com.metaro.portal.core.dto.role.RoleGroupDto;
 import br.com.metaro.portal.core.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

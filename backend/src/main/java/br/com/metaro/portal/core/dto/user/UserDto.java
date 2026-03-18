@@ -1,0 +1,55 @@
+package br.com.metaro.portal.core.dto.user;
+
+import br.com.metaro.portal.core.dto.role.RoleDto;
+import br.com.metaro.portal.core.entities.Role;
+import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.util.picture.dto.PictureDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class UserDto {
+    private Long id;
+    private String name;
+    private String email;
+    private String position;
+    private LocalDate birthDate;
+    private PictureDto picture;
+    private Boolean activated;
+    private String username;
+    private String password;
+    private Instant createdAt;
+    private Instant updateAt;
+    private String supportToken;
+    private List<RoleDto> roles;
+
+    public UserDto(User user) {
+        id = user.getId();
+        name = user.getName();
+        email = user.getEmail();
+        position = user.getPosition().getName();
+        birthDate = user.getBirthDate();
+        activated = user.getActivated();
+        username = user.getUsername();
+        password = user.getPassword();
+        createdAt = user.getCreatedAt();
+        updateAt = user.getUpdateAt();
+
+        if (user.getPicture() != null) picture = new PictureDto(user.getPicture());
+        if (user.getSupportToken() != null) supportToken = user.getSupportToken();
+
+        roles = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            RoleDto roleDto = new RoleDto(role);
+            roles.add(roleDto);
+        }
+    }
+}

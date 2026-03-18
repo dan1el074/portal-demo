@@ -1,6 +1,6 @@
 package br.com.metaro.portal.core.services;
 
-import br.com.metaro.portal.core.dto.*;
+import br.com.metaro.portal.core.dto.user.*;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.PositionRepository;
@@ -13,6 +13,7 @@ import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.PictureService;
 import br.com.metaro.portal.util.picture.PictureType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,8 +45,39 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public List<UserMinDto> findAll() {
-        List<User> users = userRepository.findAll();
+        Sort sort = Sort.by("name");
+        List<User> users = userRepository.findAll(sort);
         return users.stream().map(UserMinDto::new).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserGroupDto> listByPositionName() {
+        List<User> users = userRepository.findAll();
+        List<UserGroupDto> dtos = new ArrayList<>();
+
+        for (User user : users) {
+            if (!user.getActivated()) continue;
+
+            Boolean find = false;
+
+            if (!dtos.isEmpty()) {
+                for (UserGroupDto groupDto : dtos) {
+                    if (groupDto.getTitle().equals(user.getPosition().getName())) {
+                        groupDto.getChildrens().add(new UserSummaryMinDto(user));
+                        find = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!find) {
+                List<UserSummaryMinDto> summaryMinDtoList = new ArrayList<>();
+                summaryMinDtoList.add(new UserSummaryMinDto(user));
+                dtos.add(new UserGroupDto(user.getPosition().getName(), summaryMinDtoList));
+            }
+        }
+
+        return dtos;
     }
 
     @Transactional(readOnly = true)

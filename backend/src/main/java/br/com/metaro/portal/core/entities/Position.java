@@ -1,7 +1,7 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.internalCommunication.entities.Interaction;
-import br.com.metaro.portal.modules.general.internalCommunication.entities.InternalCommunication;
+import br.com.metaro.portal.modules.general.memorando.entities.Interaction;
+import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,21 +24,24 @@ public class Position {
     @EqualsAndHashCode.Include
     private Long id;
     private String name;
+    private Boolean activated;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updatedAt;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "mananger_id")
-    private User mananger;
+    @ManyToMany
+    @JoinTable(name = "tb_position_manangers",
+            joinColumns = @JoinColumn(name = "position_id"),
+            inverseJoinColumns = @JoinColumn(name = "mananger_id"))
+    private Set<User> manangers = new HashSet<>();
 
     @OneToMany(mappedBy = "position")
     private List<User> users = new ArrayList<>();
 
     @ManyToMany(mappedBy = "fromDepartments")
-    private Set<InternalCommunication> ciTarget = new HashSet<>();
+    private Set<Memorando> memorandoTarget = new HashSet<>();
 
     @OneToMany(mappedBy = "departmentSigned")
-    private List<Interaction> ciInteractions = new ArrayList<>();
+    private List<Interaction> memorandoInteractions = new ArrayList<>();
 }
