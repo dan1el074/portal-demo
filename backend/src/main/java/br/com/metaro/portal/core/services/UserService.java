@@ -212,6 +212,8 @@ public class UserService implements UserDetailsService {
                 .map(String::trim)
                 .map(Long::valueOf)
                 .toList();
+        rolesList.add(1L);
+
         for (Long roleId : rolesList) {
             Role role = roleRepository.getReferenceById(roleId);
             entity.addRole(role);
