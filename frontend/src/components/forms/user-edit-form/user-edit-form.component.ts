@@ -232,41 +232,40 @@ export class UserEditFormComponent implements OnChanges {
       return;
     }
 
-    // const formData = new FormData();
-    // Object.entries(this.editForm.value).forEach(([key, value]) => {
-    //   if (key === 'repeatPassword') return;
-    //   if (key === 'password' && !value) return;
-    //   if (key === 'disabled') return;
-    //   if (key === 'picture') return;
-    //   if (key === 'supportToken' && value == null) return;
-    //   if (key === 'birthDate') return;
+    const formData = new FormData();
+    Object.entries(this.editForm.value).forEach(([key, value]) => {
+      if (key === 'repeatPassword') return;
+      if (key === 'password' && !value) return;
+      if (key === 'disabled') return;
+      if (key === 'picture') return;
+      if (key === 'supportToken' && value == null) return;
+      if (key === 'birthDate') return;
+      formData.append(key, String(value));
+    });
 
-    //   formData.append(key, String(value));
-    // });
+    // birthDate -> convert Date to string
+    const date: Date | null = this.editForm.value.birthDate;
+    const birthDateString = date ? date.toISOString().split('T')[0] : null;
+    formData.append('birthDate', String(birthDateString));
 
-    // // birthDate -> convert Date to string
-    // const date: Date | null = this.editForm.value.birthDate;
-    // const birthDateString = date ? date.toISOString().split('T')[0] : null;
-    // formData.append('birthDate', String(birthDateString));
+    // if user is Admin, add id role
+    if (this.userData.roles.find(role => role == 2)) {
+      formData.append('roles', '2');
+    }
 
-    // // if user is Admin, add id role
-    // if (this.userData.roles.find(role => role == 2)) {
-    //   formData.append('roles', '2');
-    // }
+    // if resetPicture = true -> send signal to backend
+    if (this.resetPicture) formData.append('resetPicture', 'true');
 
-    // // if resetPicture = true -> send signal to backend
-    // if (this.resetPicture) formData.append('resetPicture', 'true');
+    // change picture
+    if (!this.resetPicture && this.file && this.croppedImage) {
+      formData.append('picture', this.croppedImage, 'profile.png');
+    }
 
-    // // change picture
-    // if (!this.resetPicture && this.file && this.croppedImage) {
-    //   formData.append('picture', this.croppedImage, 'profile.png');
-    // }
-
-    // // if disabled input = false -> activated = true
-    // formData.append('activated', this.editForm.get('disabled')?.value ? 'false' : 'true');
+    // if disabled input = false -> activated = true
+    formData.append('activated', this.editForm.get('disabled')?.value ? 'false' : 'true');
 
     // // send to the father component
-    // this.editTask.emit({data: formData, id: this.userData.id});
-    // this.onExit();
+    this.editTask.emit({data: formData, id: this.userData.id});
+    this.onExit();
   }
 }

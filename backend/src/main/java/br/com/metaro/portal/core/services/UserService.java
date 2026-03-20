@@ -153,10 +153,17 @@ public class UserService implements UserDetailsService {
             entity.setPassword(newPassword);
         }
 
-        List<Long> rolesList = Arrays.stream(dto.getRoles().split(","))
-                .map(String::trim)
-                .map(Long::valueOf)
-                .toList();
+        List<Long> rolesList = new ArrayList<>();
+        if (dto.getRoles() != null && !dto.getRoles().isBlank()) {
+            rolesList.addAll(
+                    Arrays.stream(dto.getRoles().split(","))
+                            .map(String::trim)
+                            .map(Long::valueOf)
+                            .toList()
+            );
+        }
+        rolesList.add(1L);
+
         for (Long roleId : rolesList) {
             Role role = roleRepository.getReferenceById(roleId);
             entity.addRole(role);
