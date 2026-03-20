@@ -4,13 +4,13 @@ import { DatePickerComponent, MultiSelectComponent, MultiSelectOptgroupComponent
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, FormSelectDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
-import { passwordMatchValidator } from '../../../app/config/validators';
+import { passwordMatchValidator } from '../../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
-import { environment } from '../../../environments/environment';
-import { PositionMin } from '../../../app/interface/position.interface';
-import { UserEditData } from './../../../app/interface/user.interface';
-import { RoleGroup } from './../../../app/interface/role.interface';
+import { environment } from '../../../../environments/environment';
+import { PositionMin } from '../../../../app/interface/position.interface';
+import { UserEditData } from '../../../../app/interface/user.interface';
+import { RoleGroup } from '../../../../app/interface/role.interface';
 
 @Component({
   selector: 'app-user-edit-form',

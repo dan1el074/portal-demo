@@ -1,26 +1,23 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
-import { ButtonDirective, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, FormSelectDirective } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
+import { ButtonDirective, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
 import { cilPencil, cilX } from '@coreui/icons';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from './../../../../app/services/user.service';
-import { Position, PositionFormImput } from '../../../../app/interface/position.interface';
+import { PositionFormImput } from '../../../../app/interface/position.interface';
 import { UserGroup } from '../../../../app/interface/user.interface';
 
 @Component({
   selector: 'app-department-form',
   imports: [
     ReactiveFormsModule,
-    IconDirective,
     FormFloatingDirective,
     FormLabelDirective,
     FormControlDirective,
     FormCheckComponent,
     FormCheckInputDirective,
     FormCheckLabelDirective,
-    FormSelectDirective,
     ButtonDirective,
     MultiSelectComponent,
     MultiSelectOptionComponent,

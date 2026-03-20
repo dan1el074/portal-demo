@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
-import { OrderInfo } from '../../../app/interface/erp.interface';
-import { Memorando, NewMemorando } from '../../../app/interface/memorando.interface';
-import { MemorandoService } from '../../../app/services/memorando.service';
+import { OrderInfo } from '../../../../app/interface/erp.interface';
+import { Memorando, NewMemorando } from '../../../../app/interface/memorando.interface';
+import { MemorandoService } from '../../../../app/services/memorando.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router, RouterLink } from '@angular/router';
 

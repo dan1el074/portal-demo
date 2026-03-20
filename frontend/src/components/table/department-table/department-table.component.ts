@@ -10,7 +10,6 @@ import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirect
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
 import { Position } from '../../../app/interface/position.interface';
 import { environment } from '../../../environments/environment';
-import { NewMemorandoModalComponent } from '../../modal/new-memorando-modal/new-memorando-modal.component';
 import { PositionDeleteModalComponent } from '../../modal/position-delete-modal/position-delete-modal.component';
 
 @Component({
@@ -28,7 +27,6 @@ import { PositionDeleteModalComponent } from '../../modal/position-delete-modal/
     ModalToggleDirective,
     TooltipDirective,
     AvatarComponent,
-    NewMemorandoModalComponent,
     PositionDeleteModalComponent
   ],
   templateUrl: './department-table.component.html',

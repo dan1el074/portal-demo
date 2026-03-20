@@ -16,7 +16,7 @@ form {
     margin-bottom: 20px;
 
     h3 {
-      margin-bottom: 0;
+      margin-bottom: 0px;
 
       span {
         color: var(--cui-secondary-color);
@@ -43,7 +43,7 @@ form {
       box-shadow: 0 10px 20px 20px #00000015;
 
       &.avatar-placeholder{
-        background-image: url('../../../assets/images/avatars/default.png');
+        background-image: url('../../../../assets/images/avatars/default.png');
       }
     }
 
@@ -116,11 +116,15 @@ form {
 
   select {
     border-radius: 4px;
-    padding: 16px 12px;
+    padding: 26px 12px 10px;
 
     option:first-child {
       display: none;
     }
+  }
+
+  label.fix-float {
+    transform: scale(1) translateY(0rem) translateX(0rem) !important;
   }
 
   .button-container {
@@ -133,6 +137,10 @@ form {
     margin-top: 16px;
   }
 
+}
+
+c-multi-select-tag button {
+  display: none;
 }
 
 @media (max-width: 720px) {

@@ -6,7 +6,7 @@ import { cilPlus, cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { MemorandoService } from './../../../services/memorando.service';
 import { MemorandoTableComponent } from '../../../../components/table/memorando-table/memorando-table.component';
-import { MemorandoFormComponent } from './../../../../components/forms/memorando-form/memorando-form.component';
+import { MemorandoFormComponent } from './../../../../components/forms/memorando/memorando-form/memorando-form.component';
 import { NewMemorandoModalComponent } from '../../../../components/modal/new-memorando-modal/new-memorando-modal.component';
 import { Memorando, NewMemorando } from '../../../interface/memorando.interface';
 import { OrderInfo } from './../../../interface/erp.interface';

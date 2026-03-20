@@ -6,7 +6,7 @@ import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, Row
 import { ToastrService } from 'ngx-toastr';
 import { MemorandoService } from '../../../../../services/memorando.service';
 import { Memorando, NewMemorando } from '../../../../../interface/memorando.interface';
-import { MemorandoEditFormComponent } from '../../../../../../components/forms/memorando-edit-form/memorando-edit-form.component';
+import { MemorandoEditFormComponent } from '../../../../../../components/forms/memorando/memorando-edit-form/memorando-edit-form.component';
 
 @Component({
   selector: 'app-edit-memorando',

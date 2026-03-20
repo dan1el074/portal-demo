@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormControlDirective, FormFloatingDirective } from '@coreui/angular';
 import { FormPasswordDirective } from '@coreui/angular-pro';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 export interface Credential {
   username: string;

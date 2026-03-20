@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
-import { OrderInfo } from '../../../app/interface/erp.interface';
-import { NewMemorando } from './../../../app/interface/memorando.interface';
+import { OrderInfo } from '../../../../app/interface/erp.interface';
+import { NewMemorando } from '../../../../app/interface/memorando.interface';
 
 @Component({
   selector: 'app-memorando-form',
