@@ -1,11 +1,11 @@
-import { AuthGuard } from '../..//config/authGuard';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
-import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective } from '@coreui/angular';
+import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
 import { DefaultFooterComponent, DefaultHeaderComponent } from './';
 import { navItems } from './_nav';
 import { Me } from '../../interface/user.interface';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +30,7 @@ import { Me } from '../../interface/user.interface';
 })
 export class DefaultLayoutComponent implements OnInit {
   public navItems!: Array<INavData>;
+
   protected user: Me = {
     id: 0,
     name: '',
@@ -45,15 +46,21 @@ export class DefaultLayoutComponent implements OnInit {
   };
 
   constructor(
-    private authGuardService: AuthGuard,
+    private userService: UserService,
     private cdr: ChangeDetectorRef
   ) {}
 
   public ngOnInit() {
-    this.authGuardService.getUser().subscribe(user => {
+    this.userService.user$.subscribe(user => {
+      if (!user) return;
+
       this.user = user;
       this.updateTools();
     });
+
+    if (!this.userService.getCurrentUser()) {
+      this.userService.refreshUser().subscribe();
+    }
   }
 
   private updateTools(): void {
@@ -62,12 +69,12 @@ export class DefaultLayoutComponent implements OnInit {
     this.user.roles.forEach(role => {
       if (role.authority == 'ROLE_USER' || role.authority == 'ROLE_ADMIN') return;
 
-      const toolList = {
+      const toolList: INavData = {
         name: role.parent,
         url: role.parentUrl,
         iconComponent: { name: role.parent == 'Administração' ? 'cilCursor' : 'cilFork' },
         children: []
-      }
+      };
 
       let index = customNav.findIndex(tool => tool.name == role.parent);
 
@@ -81,19 +88,19 @@ export class DefaultLayoutComponent implements OnInit {
         url: role.parentUrl + role.titleUrl,
         icon: 'nav-icon-bullet'
       });
-    })
+    });
 
     customNav.sort((a, b) => {
-      if ((a.name ?? "") === "Gestão" && (b.name ?? "") !== "Gestão") return -1;
-      if ((a.name ?? "") !== "Gestão" && (b.name ?? "") === "Gestão") return 1;
-      return (a.name ?? "").localeCompare((b.name ?? ""), "pt-BR", { sensitivity: "base" });
+      if ((a.name ?? '') === 'Gestão' && (b.name ?? '') !== 'Gestão') return -1;
+      if ((a.name ?? '') !== 'Gestão' && (b.name ?? '') === 'Gestão') return 1;
+      return (a.name ?? '').localeCompare((b.name ?? ''), 'pt-BR', { sensitivity: 'base' });
     });
 
     const tempNavItems = [...navItems];
-    tempNavItems.splice(6, 0, customNav.length > 0 ? {title: true, name: 'Ferramentas'} : {}, ...customNav);
+    tempNavItems.splice(-2, 0, customNav.length > 0 ? { title: true, name: 'Ferramentas' } : {}, ...customNav);
 
-    if (this.user.supportToken && this.user.supportToken != "null") {
-      tempNavItems[tempNavItems.length - 1].url = "http://suporte.metaro.com.br/autologin.php?token=" + this.user.supportToken;
+    if (this.user.supportToken && this.user.supportToken != 'null') {
+      tempNavItems[tempNavItems.length - 1].url = 'http://suporte.metaro.com.br/autologin.php?token=' + this.user.supportToken;
       tempNavItems[tempNavItems.length - 1].badge = { color: 'info', text: 'LINK' };
     }
 

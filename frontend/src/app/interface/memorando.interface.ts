@@ -6,7 +6,7 @@ export interface Memorando {
   number: number;
   request: number;
   client: string;
-  item: string;
+  items: Array<string>;
   title: string;
   description: string;
   reason: string;
@@ -22,11 +22,11 @@ export interface Memorando {
 export interface NewMemorando {
   request: number;
   client: string;
-  item: string;
+  items: Array<string>;
   title: string;
   description: string;
   reason: string;
-  departments: string;
+  departments: Array<number>;
   status: string;
 }
 

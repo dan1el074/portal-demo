@@ -3,25 +3,34 @@
     <input cFormControl readOnly formControlName="request" id="request" type="text" placeholder="Número do pedido" />
     <label cLabel for="name">Número do pedido</label>
   </div>
+
   <div [cFormFloating]="true" class="mb-3">
     <input cFormControl readOnly formControlName="client" id="client" type="text" placeholder="Cliente" />
     <label cLabel for="name">Cliente</label>
   </div>
 
-  <div [cFormFloating]="true" class="mb-3">
-    <select formControlName="item">
-      <option value="0" disabled>Selecione</option>
-      @for (item of orderInfo; track item.item) {
-        <option [value]="item.item">{{ item.item }}</option>
-      }
-    </select>
-    <label cLabel for="name" class="custon-label">Item</label>
-  </div>
+  <c-multi-select
+    multiple
+    selectionType="text"
+    searchNoResultsLabel="Não encontrado"
+    placeholder="Itens"
+    [selectAll]="false"
+    [valid]="!showErrors ? undefined : editForm.get('items')?.errors != null ? false : undefined"
+    formControlName="items"
+    class="custom-select mb-3"
+  >
+    @for (orderInfo of orderInfoList; track orderInfo.item) {
+      <c-multi-select-option [value]="orderInfo.item">
+        {{ orderInfo.item }}
+      </c-multi-select-option>
+    }
+  </c-multi-select>
 
   <div [cFormFloating]="true" class="mb-3">
     <input cFormControl formControlName="title" [valid]="!showErrors ? undefined: editForm.get('title')?.errors != null ? false : undefined" id="title" type="text" placeholder="Título" />
     <label cLabel for="name">Título</label>
   </div>
+
   <div [cFormFloating]="true" class="mb-3">
     <textarea
       cFormControl
@@ -34,14 +43,29 @@
     </textarea>
     <label cLabel for="name">Descrição</label>
   </div>
+
   <div [cFormFloating]="true" class="mb-3">
     <input cFormControl formControlName="reason" [valid]="!showErrors ? undefined: editForm.get('reason')?.errors != null ? false : undefined" id="reason" type="text" placeholder="Motivo" />
     <label cLabel for="name">Motivo</label>
   </div>
-  <div [cFormFloating]="true" class="mb-3">
-    <input cFormControl formControlName="departments" [valid]="!showErrors ? undefined: editForm.get('departments')?.errors != null ? false : undefined" id="departments" type="text" placeholder="Departamentos" />
-    <label cLabel for="name">Departamentos</label>
-  </div>
+
+  <c-multi-select
+    multiple
+    selectionType="text"
+    searchNoResultsLabel="Não encontrado"
+    placeholder="Departamentos"
+    [selectAll]="false"
+    [valid]="!showErrors ? undefined : editForm.get('departments')?.errors != null ? false : undefined"
+    formControlName="departments"
+    class="custom-select mb-3"
+  >
+    @for (department of departments; track department.id) {
+      <c-multi-select-option [value]="department.id">
+        {{ department.name }}
+      </c-multi-select-option>
+    }
+  </c-multi-select>
+
   <div class="button-container">
     <a [routerLink]="['/general/internal-communication/', data.id]"><button cButton color="secondary">Cancelar</button></a>
     @if (data.status == "CREATED") {

@@ -9,31 +9,28 @@
 <c-container class="scroll-x" fluid>
   <table mat-table [dataSource]="dataSource" matSort class="table stripe">
     <ng-container matColumnDef="memorandoNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        @if (!saveTab) {
-          Número
-        } @else {
-          Ação
-        }
-      </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Número</th>
       <td mat-cell *matCellDef="let internalControl">
         <a [routerLink]="['./', internalControl.id]" class="edit">
-          @if (!saveTab) {
+          @if (internalControl.number) {
             {{ internalControl.number }}/{{ internalControl.createAt | date: "yyyy" : '-0300' }}
           } @else {
-            Abrir
+            n/a
           }
         </a>
       </td>
     </ng-container>
+
     <ng-container matColumnDef="orderNumber">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Pedido</th>
       <td mat-cell *matCellDef="let internalControl">{{ internalControl.request }}</td>
     </ng-container>
+
     <ng-container matColumnDef="client">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
       <td mat-cell *matCellDef="let internalControl">{{ internalControl.client }}</td>
     </ng-container>
+
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
       <td mat-cell *matCellDef="let internalControl">
@@ -56,6 +53,7 @@
         }
       </td>
     </ng-container>
+
     <ng-container matColumnDef="interaction">
       <th mat-header-cell *matHeaderCellDef>Interações</th>
       <td mat-cell *matCellDef="let internalControl">
@@ -70,16 +68,18 @@
         </div>
       </td>
     </ng-container>
+
     <ng-container matColumnDef="createdAt">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado</th>
       <td mat-cell *matCellDef="let internalControl">
-        @if (!saveTab) {
+        @if (internalControl.createAt) {
           {{ internalControl.createAt | date: "dd/MM/yyyy" : '-0300' }}
         } @else {
           n/a
         }
       </td>
     </ng-container>
+
     <ng-container matColumnDef="buttons">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let internalControl" class="btn-container multiple">

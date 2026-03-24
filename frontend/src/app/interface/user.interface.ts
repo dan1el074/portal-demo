@@ -52,6 +52,14 @@ export interface UserData {
   activated: boolean;
 }
 
+export interface UserConfigData {
+  pictureId: number | null;
+  position: string;
+  name: string;
+  email: string;
+  birthDate: string;
+}
+
 export interface UserEditData {
   id: number;
   pictureId: number | null;

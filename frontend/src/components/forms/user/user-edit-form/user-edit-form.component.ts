@@ -133,6 +133,16 @@ export class UserEditFormComponent implements OnChanges {
       return;
     }
 
+    if (
+      input.files[0].name.split('.').pop() == 'heic' ||
+      input.files[0].name.split('.').pop() == 'enc'
+    ) {
+      this.editForm.get('picture')?.setErrors({ invalidFormat: true });
+      this.resetImageCropper();
+      input.value = '';
+      return;
+    }
+
     this.editForm.get('picture')?.setErrors({ imageTooLarge: false });
     this.imageChangedEvent = event;
     this.toggleModal();

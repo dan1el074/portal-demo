@@ -21,8 +21,6 @@
         </button>
         @if (user.notifications.length) {
           <div cDropdownMenu class="no-padding-top notification">
-            <h6 class="dropdown-header notify">Notificações</h6>
-            <div cDropdownDivider class="no-margin-divider"></div>
             @for (item of user.notifications; track item.id) {
               <div class="notification-container" [class.is-new]="item.isNew">
 
@@ -77,11 +75,18 @@
     </button>
     <ul cDropdownMenu class="fix-width">
       <li>
-        <a cDropdownItem routerLink="/general/todo">
-          <svg [cIcon]="icons.cilTask" class="me-2"></svg>
-          Tarefas
-          <c-badge class="ms-2 float-end" color="info">3</c-badge>
-        </a>
+        @if (user.supportToken) {
+          <a cDropdownItem [href]="'http://suporte.metaro.com.br/autologin.php?token=' + user.supportToken" target="_blank">
+            <svg [cIcon]="icons.cilCommentBubble" class="me-2"></svg>
+            Suporte
+            <c-badge class="ms-2 float-end" color="info">link</c-badge>
+          </a>
+        } @else {
+          <a cDropdownItem href="http://suporte.metaro.com.br" target="_blank">
+            <svg [cIcon]="icons.cilCommentBubble" class="me-2"></svg>
+            Suporte
+          </a>
+        }
       </li>
       <li>
         <a cDropdownItem routerLink="/config">

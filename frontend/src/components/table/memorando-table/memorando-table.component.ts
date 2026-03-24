@@ -37,7 +37,6 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatSort) sort!: MatSort;
   @Input() data!: Array<Memorando>;
   @Input() noMargin: boolean = false;
-  @Input() saveTab: boolean = false;
 
   protected apiUrl = environment.apiUrl;
   protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'interaction', 'createdAt', 'buttons'];

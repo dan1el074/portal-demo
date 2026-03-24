@@ -24,7 +24,7 @@ public class Memorando {
     private Long number;
     private Long request;
     private String client;
-    private String item;
+    private List<String> items;
     private String title;
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -57,6 +57,4 @@ public class Memorando {
     public List<User> getInteractionsUsers() {
         return interactions.stream().map(Interaction::getUser).toList();
     }
-
-    // TODO: no formulário do frontend, poder selecionar mais de um item ao mesmo tempo
 }

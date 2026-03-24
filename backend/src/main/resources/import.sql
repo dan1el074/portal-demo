@@ -53,8 +53,8 @@ INSERT INTO tb_role (id, authority) VALUES (1, 'ROLE_USER');
 INSERT INTO tb_role (id, authority) VALUES (2, 'ROLE_ADMIN');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (3, 'ROLE_ADM_PANEL', 'Usuários', '/users', 'Administração','/administration');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (4, 'ROLE_RAW_MATERIALS', 'Matérias primas', '/raw-materials', 'Geral','/general');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (5, 'ROLE_TODO', 'Para fazer', '/todo', 'Geral', '/general');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (6, 'ROLE_CHECKLIST', 'Checklist', '/checklist', 'Qualidade', '/quality');
+--INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (5, 'ROLE_TODO', 'Para fazer', '/todo', 'Geral', '/general');
+--INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (6, 'ROLE_CHECKLIST', 'Checklist', '/checklist', 'Qualidade', '/quality');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (7, 'ROLE_MEMORANDO', 'Memorando', '/memorando', 'Geral', '/general');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (8, 'ROLE_POSITION_PANEL', 'Departamentos', '/departments', 'Administração','/administration');
 
@@ -69,19 +69,3 @@ INSERT INTO tb_user_role (user_id, role_id) VALUES (6,1);
 INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('Novo evento!!', true, 1, 3, TIMESTAMP WITH TIME ZONE '2026-01-21T11:00:00Z');
 INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('2 Checklist pendentes...', true, 1, null, TIMESTAMP WITH TIME ZONE '2026-01-21T09:00:00Z');
 INSERT INTO tb_notification (title, is_new, user_id, created_by_user_id, created_at) VALUES ('CI 3921 - Equipamento estruturado com a cor errada.', false, 1, 2, TIMESTAMP WITH TIME ZONE '2026-01-19T15:00:00Z');
-
-INSERT INTO tb_memorando (number, request, client, item, title, description, reason, create_at, status, user_id) VALUES (357, 12080, 'KOVALENT DO BRASIL LTDA', '46831 - ME MT-302030 C17 EH GC BAE SANF PE500 F600 P12080', 'RETRABALHAR PLATAFORMA', 'Retrabalhar suporte da mola da pestana.<br><br>Necessário recortar e retrabalhar o suporte da mola a gas de acionamento da pestana.<br><br>Fabricar:<br>40128 - PRF U #6,35 90x80 L70mm - 01 PEÇA<br>11098 - TB A53 #2,00 50x100 L245mm - 01 PEÇA', 'Posicionamento incorreto no projeto', TIMESTAMP WITH TIME ZONE '2025-01-19T15:00:00Z', 'APPROVED', 2);
-
-INSERT INTO tb_memorando_departments (memorando_id, departments_id) VALUES (1, 2);
-INSERT INTO tb_memorando_departments (memorando_id, departments_id) VALUES (1, 1);
-
-INSERT INTO tb_interaction (memorando_id, user_id, position_signed_id, created_at) VALUES (1, 2, 2, TIMESTAMP WITH TIME ZONE '2026-02-09T09:30:00Z');
-INSERT INTO tb_interaction (memorando_id, user_id, position_signed_id, created_at) VALUES (1, 1, 1, TIMESTAMP WITH TIME ZONE '2026-02-09T09:30:00Z');
-
-INSERT INTO tb_memorando_log (memorando_id, content, user_id, created_at) VALUES (1, 'Criou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:30:32Z');
-INSERT INTO tb_memorando_log (memorando_id, content, user_id, created_at) VALUES (1, 'Publicou o documento nº 372/2026', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T16:32:11Z');
-INSERT INTO tb_memorando_log (memorando_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:27Z');
-INSERT INTO tb_memorando_log (memorando_id, content, user_id, created_at) VALUES (1, 'Alterou o título de "Acabamento inadequado" para "Pintura inadequado"', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T16:46:33Z');
-INSERT INTO tb_memorando_log (memorando_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 1, TIMESTAMP WITH TIME ZONE '2026-02-04T17:10:56Z');
-INSERT INTO tb_memorando_log (memorando_id, content, user_id, created_at) VALUES (1, 'Assinou o documento', 2, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:27Z');
-INSERT INTO tb_memorando_log (memorando_id, content, user_id, created_at) VALUES (1, 'Documento nº 372/2026 aprovado por todas as áreas', null, TIMESTAMP WITH TIME ZONE '2026-02-04T17:11:41Z');

@@ -36,7 +36,7 @@ export class DocumentViewComponent implements OnInit {
     number: 0,
     request: 0,
     client: '',
-    item: '',
+    items: [],
     title: '',
     description: '',
     reason: '',
@@ -106,6 +106,8 @@ export class DocumentViewComponent implements OnInit {
   }
 
   private verifyCanSign(user: Me): void {
+    // TODO: validar quem pode ou não assinar, somente gestores?
+
     if (this.item.status == "PUBLISH") {
       this.item.fromDepartments.forEach(currentDepartment => {
         if (currentDepartment.name == user.position) {
@@ -187,17 +189,13 @@ export class DocumentViewComponent implements OnInit {
   }
 
   protected onPublish(): void {
-    let departmentsId = '';
-
-    for (let i=0; i<this.item.fromDepartments.length; i++) {
-      if (i > 0) departmentsId += ', ';
-      departmentsId += this.item.fromDepartments[i].id;
-    }
+    let departmentsId: Array<number> = [];
+    this.item.fromDepartments.forEach(department => departmentsId.push(department.id));
 
     const memorando: NewMemorando = {
       request: this.item.request,
       client: this.item.client,
-      item: this.item.item,
+      items: this.item.items,
       title: this.item.title,
       description: this.item.description,
       reason: this.item.reason,

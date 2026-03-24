@@ -105,6 +105,12 @@ public class UserService implements UserDetailsService {
         return new MeDto(user);
     }
 
+    @Transactional(readOnly = true)
+    public UserConfigDto getConfig() {
+        User user = authenticate();
+        return new UserConfigDto(user);
+    }
+
     @Transactional
     public UserMinDto insert(UserInsertDto dto) throws IOException {
         User user = new User();
@@ -119,6 +125,14 @@ public class UserService implements UserDetailsService {
         rulesForUpdate(dto, user, resetPicture);
         user = userRepository.save(user);
         return findAll();
+    }
+
+    @Transactional
+    public UserConfigDto updateConfig(UserConfigInsertDto dto, String resetPicture) throws IOException {
+        User user = authenticate();
+        rulesForUpdateConfig(dto, user, resetPicture);
+        user = userRepository.save(user);
+        return new UserConfigDto(user);
     }
 
     @Transactional
@@ -162,11 +176,45 @@ public class UserService implements UserDetailsService {
                             .toList()
             );
         }
-        rolesList.add(1L);
+
+        if (!rolesList.contains(2L)) rolesList.add(1L);
 
         for (Long roleId : rolesList) {
             Role role = roleRepository.getReferenceById(roleId);
             entity.addRole(role);
+        }
+
+        if (resetPicture != null && resetPicture.equals("true")) {
+            if (entity.getPicture() != null) {
+                pictureService.delete(entity.getPicture().getId());
+            }
+
+            entity.setPicture(null);
+            return;
+        }
+
+        if (dto.getPicture() != null)  {
+            List<MultipartFile> fileList = new ArrayList<>();
+            fileList.add(dto.getPicture());
+            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE).get(0);
+
+            if (entity.getPicture() != null) {
+                pictureService.delete(entity.getPicture().getId());
+            }
+
+            entity.setPicture(picture);
+        }
+    }
+
+    private void rulesForUpdateConfig(UserConfigInsertDto dto, User entity, String resetPicture) throws IOException {
+        entity.setName(dto.getName());
+        entity.setEmail(dto.getEmail());
+        entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
+        entity.setUpdateAt(Instant.now());
+
+        if (dto.getPassword() != null) {
+            String newPassword = passwordEncoder.encode(dto.getPassword());
+            entity.setPassword(newPassword);
         }
 
         if (resetPicture != null && resetPicture.equals("true")) {

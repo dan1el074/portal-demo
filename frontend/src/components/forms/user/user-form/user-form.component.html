@@ -4,7 +4,7 @@
   <c-row class="align-items-start">
     <c-col>
       <div class="avatar-container">
-        <div class="image-container" *ngIf="file; else placeholder"
+        <div class="image-container" [class.shadow]="file" *ngIf="file; else placeholder"
         [ngStyle]="{backgroundImage: 'url(' + file + ')'}">
         </div>
 
@@ -34,6 +34,11 @@
       @if (createForm.get('picture')?.errors?.['imageTooLarge']) {
         <div class="text-danger">
           A imagem deve ter no máximo 2MB
+        </div>
+      }
+      @if (createForm.get('picture')?.errors?.['invalidFormat']) {
+        <div class="text-danger">
+          Formato inválido
         </div>
       }
 

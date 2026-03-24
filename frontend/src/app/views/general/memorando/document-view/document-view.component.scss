@@ -30,6 +30,12 @@
       padding-bottom: .75rem;
       padding-top: .75rem;
       margin: 0 0 -1px -1px;
+
+      .tab {
+        display: flex;
+        flex-direction: column;
+        margin: 4px 0 0 30px;
+      }
     }
 
     .align-center {

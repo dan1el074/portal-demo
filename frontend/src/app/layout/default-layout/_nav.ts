@@ -10,21 +10,21 @@ export const navItems: INavData[] = [
     url: '/home',
     iconComponent: { name: 'cilHome' }
   },
-  {
-    name: 'Dashboard',
-    url: '/dashboard',
-    iconComponent: { name: 'cilChartPie' },
-  },
-  {
-    name: 'Jornal Digital',
-    url: '/newspaper',
-    iconComponent: { name: 'cilNewspaper' }
-  },
-  {
-    name: 'Eventos',
-    url: '/events',
-    iconComponent: { name: 'cilCalendar' }
-  },
+  // {
+  //   name: 'Dashboard',
+  //   url: '/dashboard',
+  //   iconComponent: { name: 'cilChartPie' },
+  // },
+  // {
+  //   name: 'Jornal Digital',
+  //   url: '/newspaper',
+  //   iconComponent: { name: 'cilNewspaper' }
+  // },
+  // {
+  //   name: 'Eventos',
+  //   url: '/events',
+  //   iconComponent: { name: 'cilCalendar' }
+  // },
   {
     name: 'Configurações',
     url: '/config',

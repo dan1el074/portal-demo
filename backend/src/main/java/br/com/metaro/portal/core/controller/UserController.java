@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -44,6 +45,25 @@ public class UserController {
     public ResponseEntity<MeDto> getMe() {
         MeDto dto = userService.getMe();
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping(value = "/config")
+    public ResponseEntity<UserConfigDto> getMeConfig() {
+        UserConfigDto dto = userService.getConfig();
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping(value = "/config")
+    public ResponseEntity<UserConfigDto> updateConfig(
+            @RequestPart(name = "picture", required = false) MultipartFile picture,
+            @RequestPart(name = "resetPicture", required = false) String resetPicture,
+            @RequestPart("name") String name,
+            @RequestPart("email") String email,
+            @RequestPart("birthDate") String birthDate,
+            @RequestPart(name = "password", required = false) String password
+    ) throws IOException {
+        userService.updateConfig(new UserConfigInsertDto(picture, name, email, birthDate, password), resetPicture);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL')")

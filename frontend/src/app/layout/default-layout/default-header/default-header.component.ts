@@ -1,8 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownDividerDirective, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
-import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast, cilPaperclip } from '@coreui/icons';
+import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
+import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast, cilPaperclip, cilCommentBubble } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { Me } from '../../../interface/user.interface';
 import { environment } from '../../../../environments/environment';
@@ -25,7 +25,6 @@ import { TimeAgoPipe } from './../../../pipes/time-ago.pipe';
     AvatarComponent,
     DropdownMenuDirective,
     DropdownItemDirective,
-    DropdownDividerDirective,
     BadgeComponent,
     TimeAgoPipe
   ]
@@ -33,7 +32,7 @@ import { TimeAgoPipe } from './../../../pipes/time-ago.pipe';
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   @Input() user!: Me;
   protected apiUrl = environment.apiUrl;
-  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilPaperclip };
+  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilPaperclip, cilCommentBubble };
   readonly sidebarId = input('sidebar1');
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;

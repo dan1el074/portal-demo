@@ -172,6 +172,10 @@ export class UsersComponent implements OnInit {
         this.cdr.detectChanges();
         this.toasterService.success('Usuário editado com sucesso!');
         this.toggleEditUserTab(false)
+
+        if (form.id == this.userService.getCurrentUser()?.id) {
+          this.userService.refreshUser().subscribe();
+        }
       },
       error: () => this.toasterService.error('Erro ao editar usuário!')
     });

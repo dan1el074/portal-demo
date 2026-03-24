@@ -34,6 +34,7 @@
         Ref. PR 01
       </c-col>
     </c-row>
+
     <c-row>
       <c-col><strong>Nº: </strong>
         @if (item.number) {
@@ -67,6 +68,7 @@
           }
       </c-col>
     </c-row>
+
     <c-row>
       <c-col><strong>Data: </strong>
         @if (item.createAt) {
@@ -76,27 +78,47 @@
         }
       </c-col>
     </c-row>
+
     <c-row>
       <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
     </c-row>
+
     <c-row>
-      <c-col><strong>Item:</strong> {{ item.item }}</c-col>
+      <c-col>
+        @if(item.items.length > 1) {
+          <strong>Itens:</strong>
+          <div class="tab">
+            @for(currentItem of item.items; track currentItem) {
+              <div>{{ currentItem }}</div>
+            }
+          </div>
+        } @else {
+          <strong>Item:</strong>
+          {{ item.items[0] }}
+        }
+      </c-col>
     </c-row>
+
     <c-row>
       <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
     </c-row>
+
     <c-row>
       <c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col>
     </c-row>
+
     <c-row>
       <c-col><strong>Título:</strong> {{ item.title }}</c-col>
     </c-row>
+
     <c-row>
       <c-col [innerHtml]="'<strong>Descrição:</strong> ' + item.description"></c-col>
     </c-row>
+
     <c-row>
       <c-col><strong>Motivo:</strong> {{ item.reason }}</c-col>
     </c-row>
+
     <c-row>
       <c-col class="flex-col">
         <strong>Envolvidos:</strong>

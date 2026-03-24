@@ -23,7 +23,7 @@ public class MemorandoDto {
     private Long number;
     private Long request;
     private String client;
-    private String item;
+    private List<String> items;
     private String title;
     private String description;
     private String reason;
@@ -40,13 +40,14 @@ public class MemorandoDto {
         number = entity.getNumber();
         request = entity.getRequest();
         client = entity.getClient();
-        item = entity.getItem();
         title = entity.getTitle();
         description = entity.getDescription();
         reason = entity.getReason();
         createAt = entity.getCreateAt();
         status = entity.getStatus();
         user = new UserSummaryDto(entity.getCreatedBy());
+        items = new ArrayList<>();
+        items.addAll(entity.getItems());
         fromDepartments = new ArrayList<>();
         interactions = new ArrayList<>();
         interactionsSummary = new ArrayList<>();

@@ -37,11 +37,11 @@
                 <svg [cIcon]="icons.cilPlus" size="md"></svg>
                 Adicionar
               </button>
-              <app-memorando-table [data]="savedMemorando" [noMargin]="true" [saveTab]="true"></app-memorando-table>
+              <app-memorando-table [data]="savedMemorando" [noMargin]="true"></app-memorando-table>
             </c-tab-panel>
 
             <c-tab-panel class="p-3 remove-outline" [itemKey]="3">
-              <app-memorando-form [items]="itemsToCreateMemorando" (exitTask)="toggleNewMemorandoTab(false)" (createTask)="createNewMemorando($event)"></app-memorando-form>
+              <app-memorando-form [orderInfoList]="itemsToCreateMemorando" (exitTask)="toggleNewMemorandoTab(false)" (createTask)="createNewMemorando($event)"></app-memorando-form>
             </c-tab-panel>
           </c-tabs-content>
         </c-tabs>

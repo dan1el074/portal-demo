@@ -30,6 +30,11 @@
           A imagem deve ter no máximo 2MB
         </div>
       }
+      @if (editForm.get('picture')?.errors?.['invalidFormat']) {
+        <div class="text-danger">
+          Formato inválido
+        </div>
+      }
       <c-modal id="modal2" [visible]="modalReady" (visibleChange)="handleModalChange($event)" backdrop="static" alignment="center">
         <c-modal-header>
           <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>

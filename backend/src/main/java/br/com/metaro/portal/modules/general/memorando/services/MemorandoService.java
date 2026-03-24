@@ -85,6 +85,7 @@ public class MemorandoService {
             logService.create(entity.getId(), "Assinou o documento");
         }
 
+        // TODO: criar notificação para os envolvidos
         return new MemorandoDto(entity);
     }
 
@@ -112,7 +113,7 @@ public class MemorandoService {
             }
         }
 
-        if (dto.getDepartments().split(",").length < 2) {
+        if (dto.getDepartments().size() < 2) {
             throw new UnprocessableEntityException("É necessário ao menos 2 departamentos para assinaturas");
         }
 
@@ -256,10 +257,6 @@ public class MemorandoService {
     }
 
     private void checkChanges(MemorandoInsertDto dto, @NotNull Memorando entity) {
-        if (!dto.getItem().equals(entity.getItem())) {
-            logService.create(entity.getId(), "Alterou o item de \"%s\" para \"%s\""
-                    .formatted(entity.getItem(), dto.getItem()));
-        }
         if (!dto.getTitle().equals(entity.getTitle())) {
             logService.create(entity.getId(), "Alterou o título de \"%s\" para \"%s\""
                     .formatted(entity.getTitle(), dto.getTitle()));
@@ -275,16 +272,13 @@ public class MemorandoService {
         }
 
         diffPositions(dto, entity);
+        diffItems(dto, entity);
     }
 
     private void diffPositions(@NotNull MemorandoInsertDto dto, @NotNull Memorando entity) {
         List<Position> dtoDepartments = new ArrayList<>();
-        List<Long> dtoDepartmentsId = Arrays.stream(dto.getDepartments().split(","))
-                .map(String::trim)
-                .map(Long::valueOf)
-                .toList();
 
-        for (Long departmentId : dtoDepartmentsId) {
+        for (Long departmentId : dto.getDepartments()) {
             Position position = positionRepository.findById(departmentId).orElseThrow(ResourceNotFoundException::new);
             dtoDepartments.add(position);
         }
@@ -319,22 +313,48 @@ public class MemorandoService {
         }
     }
 
+    private void diffItems(@NotNull MemorandoInsertDto dto, @NotNull Memorando entity) {
+        List<String> addItems = dto.getItems().stream().filter(currentItem ->
+                !entity.getItems().contains(currentItem)).toList();
+
+        List<String> leftItems = entity.getItems().stream().filter(currentItem ->
+                !dto.getItems().contains(currentItem)).toList();
+
+        if (!addItems.isEmpty()) {
+            String itemsChanged = "";
+
+            for (int i=0; i<addItems.size(); i++) {
+                if (i > 0) itemsChanged = itemsChanged.concat(", ");
+                itemsChanged = itemsChanged.concat(addItems.get(i));
+            }
+
+            logService.create(entity.getId(), "Adicionou o(s) item(s) \"%s\"".formatted(itemsChanged));
+        }
+
+        if (!leftItems.isEmpty()) {
+            String itemsChanged = "";
+
+            for (int i=0; i<leftItems.size(); i++) {
+                if (i > 0) itemsChanged = itemsChanged.concat(", ");
+                itemsChanged = itemsChanged.concat(leftItems.get(i));
+            }
+
+            logService.create(entity.getId(), "Removeu o(s) item(s) \"%s\"".formatted(itemsChanged));
+        }
+    }
+
     private void dtoToEntity(@NotNull MemorandoInsertDto dto, @NotNull Memorando entity) {
         entity.setRequest(dto.getRequest());
         entity.setClient(dto.getClient());
-        entity.setItem(dto.getItem());
+        entity.setItems(new ArrayList<>());
+        entity.getItems().addAll(dto.getItems());
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
         entity.setReason(dto.getReason());
         entity.setStatus(dto.getStatus());
         entity.setFromDepartments(new ArrayList<>());
 
-        List<Long> positionList = Arrays.stream(dto.getDepartments().split(","))
-                .map(String::trim)
-                .map(Long::valueOf)
-                .toList();
-
-        for (Long positionId : positionList) {
+        for (Long positionId : dto.getDepartments()) {
             Position position = positionRepository.findById(positionId).orElseThrow(ResourceNotFoundException::new);
             entity.getFromDepartments().add(position);
         }

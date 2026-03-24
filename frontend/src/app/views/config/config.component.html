@@ -1,1 +1,10 @@
-<p>config works!</p>
+<c-row>
+  <c-col xs="12">
+    <c-card class="border">
+      <c-card-body>
+        <h4 cCardTitle>Configurações</h4>
+        <app-user-config-form [userData]="userData" (editTask)="updateConfig($event)"></app-user-config-form>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

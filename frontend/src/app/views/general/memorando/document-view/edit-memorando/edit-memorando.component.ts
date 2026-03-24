@@ -29,7 +29,7 @@ export class EditMemorandoComponent implements OnInit {
     number: 0,
     request: 0,
     client: '',
-    item: '',
+    items: [],
     title: '',
     description: '',
     reason: '',
