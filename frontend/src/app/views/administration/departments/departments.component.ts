@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
@@ -48,7 +47,6 @@ export class DepartmentsComponent implements OnInit {
   constructor(
     private departmentService: PostitionService,
     private toasterService: ToastrService,
-    private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -58,15 +56,7 @@ export class DepartmentsComponent implements OnInit {
         this.updateDepartments(departments)
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        if (error.status == 401) {
-          this.router.navigate(['login']);
-          this.toasterService.error('Sessão expirada!');
-          return;
-        }
-
-        this.toasterService.error('Erro ao obter departamentos!', error)
-      }
+      error: () => this.toasterService.error('Erro ao obter departamentos!')
     });
   }
 
@@ -106,9 +96,7 @@ export class DepartmentsComponent implements OnInit {
         this.toggleEditDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: error => {
-        this.toasterService.error('Erro ao editar departamento!')
-      }
+      error: () => this.toasterService.error('Erro ao editar departamento!')
     });
   }
 
@@ -130,9 +118,7 @@ export class DepartmentsComponent implements OnInit {
         this.toggleCreateDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: error => {
-        this.toasterService.error('Erro ao criar departamento!')
-      }
+      error: () => this.toasterService.error('Erro ao criar departamento!')
     });
   }
 

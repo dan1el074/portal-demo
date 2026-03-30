@@ -1,6 +1,6 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.memorando.entities.Interaction;
+import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,5 +43,5 @@ public class Position {
     private Set<Memorando> memorandoTarget = new HashSet<>();
 
     @OneToMany(mappedBy = "departmentSigned")
-    private List<Interaction> memorandoInteractions = new ArrayList<>();
+    private List<Signature> memorandoSignatures = new ArrayList<>();
 }

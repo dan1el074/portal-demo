@@ -15,7 +15,7 @@ export class AuthGuard {
     private toaster: ToastrService
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
+  public canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     if (!this.isAuthenticated()) {
       this.clearUser();
       this.router.navigate(['/login']);
@@ -48,11 +48,11 @@ export class AuthGuard {
     );
   }
 
-  isAuthenticated(): boolean {
+  public isAuthenticated(): boolean {
     return !!sessionStorage.getItem('auth-token');
   }
 
-  getUser(): Observable<Me> {
+  public getUser(): Observable<Me> {
     const currentUser = this.userService.getCurrentUser();
 
     if (currentUser) {
@@ -70,7 +70,12 @@ export class AuthGuard {
     );
   }
 
-  showError(status: number) {
+  public clearUser() {
+    this.userService.clearUser();
+    sessionStorage.clear();
+  }
+
+  private showError(status: number) {
     switch (status) {
       case 401:
         this.toaster.error('Sessão expirada!');
@@ -87,10 +92,5 @@ export class AuthGuard {
         this.router.navigate(['/login']);
         break;
     }
-  }
-
-  clearUser() {
-    this.userService.clearUser();
-    sessionStorage.clear();
   }
 }

@@ -3,7 +3,7 @@ package br.com.metaro.portal.modules.general.memorando.dots;
 import br.com.metaro.portal.core.dto.position.PositionDto;
 import br.com.metaro.portal.core.dto.user.UserSummaryDto;
 import br.com.metaro.portal.core.entities.Position;
-import br.com.metaro.portal.modules.general.memorando.entities.Interaction;
+import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoLog;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
@@ -30,8 +30,8 @@ public class MemorandoDto {
     private Instant createAt;
     private UserSummaryDto user;
     private List<PositionDto> fromDepartments;
-    private List<InteractionDto> interactions;
-    private List<UserSummaryDto> interactionsSummary;
+    private List<SignatureDto> signature;
+    private List<UserSummaryDto> signatureSummary;
     private MemorandoStatus status;
     private List<MemorandoLogDto> logs;
 
@@ -49,17 +49,17 @@ public class MemorandoDto {
         items = new ArrayList<>();
         items.addAll(entity.getItems());
         fromDepartments = new ArrayList<>();
-        interactions = new ArrayList<>();
-        interactionsSummary = new ArrayList<>();
+        signature = new ArrayList<>();
+        signatureSummary = new ArrayList<>();
         logs = new ArrayList<>();
 
         for (Position department : entity.getFromDepartments()) {
             fromDepartments.add(new PositionDto(department));
         }
 
-        for (Interaction currentInteraction : entity.getInteractions()) {
-            interactions.add(new InteractionDto(currentInteraction));
-            interactionsSummary.add(new UserSummaryDto(currentInteraction.getUser()));
+        for (Signature currentSignature : entity.getSignatures()) {
+            signature.add(new SignatureDto(currentSignature));
+            signatureSummary.add(new UserSummaryDto(currentSignature.getUser()));
         }
 
         for (MemorandoLog log : entity.getLogs()) {

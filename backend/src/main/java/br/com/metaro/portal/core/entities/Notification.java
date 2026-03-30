@@ -17,8 +17,15 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
-    private String title;
-    private Boolean isNew;
+    private String message;
+    private String actionUrl;
+    @Column(nullable = false)
+    private Boolean viewed = false;
+    @Column(nullable = false)
+    private Boolean autoDelete = false;
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
+    private Long referenceId;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
 
@@ -26,7 +33,7 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "created_by_user_id", unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id")
     private User createdBy;
 }

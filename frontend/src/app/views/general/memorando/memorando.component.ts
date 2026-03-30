@@ -54,14 +54,7 @@ export class MemorandoComponent implements OnInit {
         this.updateMemorando();
         this.cdr.detectChanges();
       },
-      error: error => {
-        if (error.status == 401) {
-          this.router.navigate(['login']);
-          this.toasterService.error('Sessão expirada!');
-          return;
-        }
-        this.toasterService.error("Erro ao carregar informações!");
-      },
+      error: () => this.toasterService.error("Erro ao carregar informações!")
     });
   }
 

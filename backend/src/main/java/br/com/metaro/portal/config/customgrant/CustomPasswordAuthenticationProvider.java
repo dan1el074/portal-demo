@@ -95,7 +95,7 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 
         //-----------Create a new Security Context Holder Context----------
         OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        br.com.metaro.portal.config.customgrant.CustomUserAuthorities customPasswordUser = new br.com.metaro.portal.config.customgrant.CustomUserAuthorities(username, user.getAuthorities());
+        br.com.metaro.portal.config.customgrant.CustomUserAuthorities customPasswordUser = new br.com.metaro.portal.config.customgrant.CustomUserAuthorities(currentUser.get().getId(), username, user.getAuthorities());
         oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
 
         var newcontext = SecurityContextHolder.createEmptyContext();

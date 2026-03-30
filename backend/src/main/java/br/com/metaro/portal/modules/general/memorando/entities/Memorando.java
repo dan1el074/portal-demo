@@ -52,9 +52,9 @@ public class Memorando {
     @OneToMany(mappedBy = "memorando",
         cascade = CascadeType.ALL,
         orphanRemoval = true)
-    private Set<Interaction> interactions = new HashSet<>();
+    private Set<Signature> Signatures = new HashSet<>();
 
     public List<User> getInteractionsUsers() {
-        return interactions.stream().map(Interaction::getUser).toList();
+        return Signatures.stream().map(Signature::getUser).toList();
     }
 }

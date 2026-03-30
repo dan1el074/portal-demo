@@ -16,11 +16,10 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Interaction {
-
+public class Signature {
     @EmbeddedId
     @EqualsAndHashCode.Include
-    private InteractionPK id = new InteractionPK();
+    private SignaturePK id = new SignaturePK();
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
 
@@ -38,12 +37,12 @@ public class Interaction {
     @JoinColumn(name = "position_signed_id")
     private Position departmentSigned;
 
-    public Interaction(Memorando memorando, User user, Position departmentSigned) {
+    public Signature(Memorando memorando, User user, Position departmentSigned) {
         this.memorando = memorando;
         this.user = user;
         this.departmentSigned = departmentSigned;
         this.createdAt = Instant.now();
 
-        this.id = new InteractionPK(memorando.getId(), user.getId());
+        this.id = new SignaturePK(memorando.getId(), user.getId());
     }
 }

@@ -1,6 +1,6 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.memorando.entities.Interaction;
+import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoLog;
 import br.com.metaro.portal.modules.general.post.Post;
@@ -55,8 +55,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications = new ArrayList<>();
 
-    @OneToOne(mappedBy = "createdBy")
-    private Notification notificationsCreated;
+    @OneToMany(mappedBy = "createdBy")
+    private Set<Notification> notificationsCreated = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<MemorandoLog> ciLog = new HashSet<>();
@@ -69,13 +69,13 @@ public class User implements UserDetails {
     private Set<Memorando> memorandos = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<Interaction> interactions = new HashSet<>();
+    private Set<Signature> Signatures = new HashSet<>();
 
     @ManyToMany(mappedBy = "manangers")
     private Set<Position> managedPositions = new HashSet<>();
 
     public List<Memorando> getInteractionsCI() {
-        return interactions.stream().map(Interaction::getMemorando).toList();
+        return Signatures.stream().map(Signature::getMemorando).toList();
     }
 
     public void addRole(Role role) {

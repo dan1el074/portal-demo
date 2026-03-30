@@ -1,14 +1,16 @@
 package br.com.metaro.portal.modules.general.memorando.services;
 
+import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.Position;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.PositionRepository;
+import br.com.metaro.portal.core.services.NotificationService;
 import br.com.metaro.portal.core.services.ParamService;
 import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
-import br.com.metaro.portal.modules.general.memorando.entities.Interaction;
+import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoDto;
@@ -23,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -40,6 +41,8 @@ public class MemorandoService {
     private ParamService paramService;
     @Autowired
     private MemorandoLogService logService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public List<MemorandoDto> findAll() {
@@ -63,7 +66,7 @@ public class MemorandoService {
 
         dtoToEntity(dto, entity);
         entity.setCreatedBy(me);
-        entity.setInteractions(new HashSet<>());
+        entity.setSignatures(new HashSet<>());
         entity.setLogs(new ArrayList<>());
 
         if (entity.getFromDepartments().stream().noneMatch(x -> x.getId().equals(me.getPosition().getId()))) {
@@ -73,10 +76,24 @@ public class MemorandoService {
         if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
             entity.setCreateAt(Instant.now());
             entity.setNumber(paramService.newInternalControl());
-            entity.getInteractions().add(new Interaction(entity, me, me.getPosition()));
+            entity.getSignatures().add(new Signature(entity, me, me.getPosition()));
+
+            // TODO: verificar se sou gestor de algum setor, e se sim, assinar tanto pelo meu departamento quanto dos outros
         }
 
         entity = memorandoRepository.save(entity);
+
+        if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
+            for (Position department : entity.getFromDepartments()) {
+                for (User mananger : department.getManangers()) {
+                    if (mananger.equals(me)) continue;
+
+                    notificationService.create("Memorando nº %d - %s".formatted(entity.getNumber(),entity.getTitle()),
+                            "/general/memorando/%d".formatted(entity.getId()),false, NotificationType.MEMORANDO,
+                            entity.getId(), me, mananger);
+                }
+            }
+        }
 
         logService.create(entity.getId(), "Criou o documento");
         if (dto.getStatus().equals(MemorandoStatus.PUBLISH)) {
@@ -85,15 +102,12 @@ public class MemorandoService {
             logService.create(entity.getId(), "Assinou o documento");
         }
 
-        // TODO: criar notificação para os envolvidos
         return new MemorandoDto(entity);
     }
 
     @Transactional
     public MemorandoDto update(Long id, MemorandoInsertDto dto) {
-        Memorando entity = memorandoRepository
-                .findById(id).orElseThrow(ResourceNotFoundException::new);
-
+        Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         boolean wasCreated = entity.getStatus().equals(MemorandoStatus.CREATED);
 
         if (
@@ -125,13 +139,32 @@ public class MemorandoService {
 
         /// verificar se o status mudou de CREATED para PUBLISH
         if (entity.getStatus().equals(MemorandoStatus.PUBLISH) && wasCreated) {
-            entity.setCreateAt(Instant.now());
-            entity.setNumber(paramService.newInternalControl());
+            if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
+            if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
+
             logService.create(entity.getId(), "Publicou o documento nº %d/%d".formatted(entity.getNumber(),
                     entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
+
+            /// manda as notificações
+            for (Position department : entity.getFromDepartments()) {
+                for (User mananger : department.getManangers()) {
+                    if (mananger.equals(me)) continue;
+
+                    notificationService.create("Memorando nº %d - %s".formatted(entity.getNumber(),entity.getTitle()),
+                            "/general/memorando/%d".formatted(entity.getId()),false, NotificationType.MEMORANDO,
+                            entity.getId(), me, mananger);
+                }
+            }
         }
 
-        /// verificar se o departamento de origem está listado (se não, adicioná-lo no início)
+        /// verificar se o status mudou de PUBLISH para CREATED
+        if (entity.getStatus().equals(MemorandoStatus.CREATED) && !wasCreated) {
+            // TODO: fazer um endpoint exclusivo para isso, PUT rollback
+            // TODO: remover todas as notificações
+            // TODO: log informando que o documento voltou para a primeira etapa
+        }
+
+        /// verificar se o departamento de origem está listado (se não, adiciona no início)
         Memorando finalNewEntity = entity;
         if (entity.getFromDepartments().stream().noneMatch(x ->
                 x.getId().equals(finalNewEntity.getCreatedBy().getPosition().getId()))) {
@@ -139,7 +172,7 @@ public class MemorandoService {
         }
 
         /// remover todas as assinaturas
-        entity.getInteractions().clear();
+        entity.getSignatures().clear();
         memorandoRepository.flush();
 
         /// se for o dono do post, assina como no insert()
@@ -147,7 +180,7 @@ public class MemorandoService {
             entity.getStatus().equals(MemorandoStatus.PUBLISH)
             && me.getId().equals(entity.getCreatedBy().getId())
         ) {
-            entity.getInteractions().add(new Interaction(entity, me, me.getPosition()));
+            entity.getSignatures().add(new Signature(entity, me, me.getPosition()));
             logService.create(entity.getId(), "Assinou o documento");
         }
 
@@ -156,7 +189,7 @@ public class MemorandoService {
             !me.getId().equals(entity.getCreatedBy().getId())
             && entity.getFromDepartments().stream().anyMatch(x -> x.getId().equals(me.getPosition().getId()))
         ) {
-            entity.getInteractions().add(new Interaction(entity, me, me.getPosition()));
+            entity.getSignatures().add(new Signature(entity, me, me.getPosition()));
             logService.create(entity.getId(), "Assinou o documento");
         }
 
@@ -200,15 +233,15 @@ public class MemorandoService {
                 department.getId().equals(me.getPosition().getId()))) {
             throw new UnprocessableEntityException("Seu departamento não está listado!");
         }
-        if (entity.getInteractions().stream().anyMatch(interaction ->
+        if (entity.getSignatures().stream().anyMatch(interaction ->
                 interaction.getDepartmentSigned().getId().equals(me.getPosition().getId()))) {
             throw new UnprocessableEntityException("Seu departamento já assinou essa CI!");
         }
 
-        entity.getInteractions().add(new Interaction(entity, me, me.getPosition()));
+        entity.getSignatures().add(new Signature(entity, me, me.getPosition()));
         logService.create(entity.getId(), "Assinou o documento");
 
-        if (entity.getFromDepartments().size() == entity.getInteractions().size()) {
+        if (entity.getFromDepartments().size() == entity.getSignatures().size()) {
             entity.setStatus(MemorandoStatus.APPROVED);
             logService.system(entity.getId(), "Documento nº %d/%d aprovado por todas as áreas\n"
                     .formatted(entity.getNumber(), entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));

@@ -1,7 +1,10 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { AuthGuard } from '../config/authGuard';
+import { NotificationWebSocketService } from './websocket.service';
 
 type LoginResponse = {
   access_token: string
@@ -15,9 +18,14 @@ export class LoginService {
   private clientId = environment.clientId;
   private clientSecret = environment.clientSecret;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authGuardService: AuthGuard,
+    private websocket: NotificationWebSocketService,
+    private router: Router,
+  ) {}
 
-  login(username: string, password: string): Observable<LoginResponse> {
+  public login(username: string, password: string): Observable<LoginResponse> {
     const body = new HttpParams()
       .set('username', username)
       .set('password', password)
@@ -36,5 +44,16 @@ export class LoginService {
             sessionStorage.setItem('auth-token', value.access_token);
           })
       );
+  }
+
+  public logout(): void {
+    sessionStorage.removeItem('auth-token');
+    this.authGuardService.clearUser();
+    this.websocket.disconnect();
+  }
+
+  public logoutAndRedirect(): void {
+    this.logout();
+    this.router.navigateByUrl('/login');
   }
 }

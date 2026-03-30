@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilX } from '@coreui/icons';
@@ -10,7 +9,7 @@ import { UserTableComponent } from '../../../../components/table/user-table/user
 import { UserService } from './../../../services/user.service';
 import { PostitionService } from '../../../services/position.service';
 import { RoleService } from './../../../services/role.service';
-import { Position, PositionMin } from '../../../interface/position.interface';
+import { PositionMin } from '../../../interface/position.interface';
 import { RoleGroup } from './../../../interface/role.interface';
 import { UserEditData } from './../../../interface/user.interface';
 import { UserTable } from '../../../interface/user.interface';
@@ -57,7 +56,6 @@ export class UsersComponent implements OnInit {
   };
 
   constructor(
-    private router: Router,
     private userService: UserService,
     private postitionService: PostitionService,
     private roleService: RoleService,
@@ -71,14 +69,7 @@ export class UsersComponent implements OnInit {
         this.updateUsers(userList);
         this.loadPositions();
       },
-      error: error => {
-        if (error.status == 401) {
-          this.router.navigate(['login']);
-          this.toasterService.error('Sessão expirada!');
-        } else{
-          this.toasterService.error('Erro ao carregar usuários!');
-        }
-      }
+      error: () => this.toasterService.error('Erro ao carregar usuários!')
     });
 
     this.roleService.findAll().subscribe({
@@ -187,8 +178,8 @@ export class UsersComponent implements OnInit {
         this.updateUsers(data);
         this.toasterService.success("Usuário editado com sucesso!");
       },
-      error: (e: any) => {
-        this.toasterService.error('Erro ao editar usuário!', e);
+      error: (error) => {
+        this.toasterService.error('Erro ao editar usuário!', error.message);
       }
     })
   }

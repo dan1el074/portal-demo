@@ -3,7 +3,6 @@ import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, Row
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
 import { UserConfigData } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -24,21 +23,13 @@ export class ConfigComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private router: Router,
     private toasterService: ToastrService
   ) {}
 
   public ngOnInit(): void {
     this.userService.getUserConfig().subscribe({
       next: data => this.userData = data,
-      error: error => {
-        if (error.status == 401) {
-          this.router.navigate(['login']);
-          this.toasterService.error('Sessão expirada!');
-        } else{
-          this.toasterService.error('Erro ao carregar dados do usuário!');
-        }
-      }
+      error: () => this.toasterService.error('Erro ao carregar dados do usuário!')
     });
   }
 

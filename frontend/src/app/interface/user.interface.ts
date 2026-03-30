@@ -3,6 +3,11 @@ import { Role } from './role.interface';
 import { Notification } from './notification.interface';
 import { PositionMin } from './position.interface';
 
+export interface Credential {
+  username: string;
+  password: string;
+}
+
 export interface UserTable {
   id: number;
   pictureId: string | null;

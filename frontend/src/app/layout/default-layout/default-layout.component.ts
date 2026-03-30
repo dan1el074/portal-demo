@@ -6,6 +6,9 @@ import { DefaultFooterComponent, DefaultHeaderComponent } from './';
 import { navItems } from './_nav';
 import { Me } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
+import { NotificationService } from '../../services/notification.service';
+import { NotificationWebSocketService } from '../../services/websocket.service';
+import { AuthGuard } from '../../config/authGuard';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,7 +50,10 @@ export class DefaultLayoutComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private notificationService: NotificationService,
+    private wsService: NotificationWebSocketService,
+    private authGuard: AuthGuard
   ) {}
 
   public ngOnInit() {
@@ -56,6 +62,7 @@ export class DefaultLayoutComponent implements OnInit {
 
       this.user = user;
       this.updateTools();
+      this.connectWebsocket();
     });
 
     if (!this.userService.getCurrentUser()) {
@@ -106,5 +113,20 @@ export class DefaultLayoutComponent implements OnInit {
 
     this.navItems = [...tempNavItems];
     this.cdr.detectChanges();
+  }
+
+  private connectWebsocket(): void {
+    const token = sessionStorage.getItem('auth-token');
+    if (!token) return;
+
+    this.notificationService.getMyNotifications().subscribe(list => {
+      this.wsService.setInitialNotifications(list);
+    });
+
+    this.notificationService.getUnreadCount().subscribe(res => {
+      this.wsService.setInitialUnreadCount(res.unreadCount);
+    });
+
+    this.wsService.connect(token);
   }
 }

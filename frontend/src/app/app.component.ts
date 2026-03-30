@@ -31,16 +31,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.#router.events.pipe(
-        takeUntilDestroyed(this.#destroyRef)
-      ).subscribe((evt) => {
+    this.#router.events.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) {
         return;
       }
     });
 
-    this.#activatedRoute.queryParams
-      .pipe(
+    this.#activatedRoute.queryParams.pipe(
         delay(1),
         map(params => <string>params['theme']?.match(/^[A-Za-z0-9\s]+/)?.[0]),
         filter(theme => ['dark', 'light', 'auto'].includes(theme)),
@@ -48,7 +45,6 @@ export class AppComponent implements OnInit {
           this.#colorModeService.colorMode.set(theme);
         }),
         takeUntilDestroyed(this.#destroyRef)
-      )
-      .subscribe();
+    ).subscribe();
   }
 }

@@ -12,29 +12,29 @@
     </button>
 
     <c-header-nav class="d-none d-md-flex ms-auto ">
-      <c-dropdown alignment="end" [autoClose]="'outside'">
-        <button cButton cDropdownToggle color="link" class="position-relative icon-notify bell" [class.fix]="!user.notifications.length">
+      <c-dropdown alignment="end">
+        <button cButton cDropdownToggle color="link" class="position-relative icon-notify bell" [class.fix]="!websocket.unreadCount()">
           <svg [cIcon]="icons.cilBell" class="my-1" size="lg"></svg>
-          @if (user.notifications.length) {
-            <c-badge color="danger" position="bottom-end" shape="rounded-pill" class="custom-badge">{{ user.notifications.length }}</c-badge>
+          @if (websocket.unreadCount()) {
+            <c-badge color="danger" position="bottom-end" shape="rounded-pill" class="custom-badge">{{ websocket.unreadCount() }}</c-badge>
           }
         </button>
-        @if (user.notifications.length) {
+        @if (websocket.notifications().length) {
           <div cDropdownMenu class="no-padding-top notification">
-            @for (item of user.notifications; track item.id) {
-              <div class="notification-container" [class.is-new]="item.isNew">
+            @for (notification of websocket.notifications(); track notification.id) {
+              <div class="notification-container" [class.is-new]="!notification.viewed" (click)="openNotification(notification)">
 
-                @if (item.createdBy) {
-                  <c-avatar class="fix-avatar-width" [src]="item.createdBy.picture ? apiUrl + '/images/' + item.createdBy.picture.id : './assets/images/avatars/default.png'" />
+                @if (notification.createdBy) {
+                  <c-avatar class="fix-avatar-width" [src]="notification.createdBy.picture ? apiUrl + '/images/' + notification.createdBy.picture.id : './assets/images/avatars/default.png'" />
                 }
-                @if (!item.createdBy) {
+                @if (!notification.createdBy) {
                   <svg [cIcon]="icons.cilPaperclip" class="custom-icon" title="List Icon"></svg>
                 }
 
                 <div class="text">
-                  <span [class.bold]="item.isNew" class="created-by">{{ item.createdBy ? item.createdBy.name : '' }}</span>
-                  <small>{{ item.createdAt | timeAgo }}</small>
-                  <span [class.bold]="item.isNew" class="title">{{ item.title }}</span>
+                  <span [class.bold]="!notification.viewed" class="created-by">{{ notification.createdBy ? notification.createdBy.name : '' }}</span>
+                  <small>{{ notification.createdAt | timeAgo }}</small>
+                  <span [class.bold]="!notification.viewed" class="title">{{ notification.message }}</span>
                 </div>
               </div>
             }

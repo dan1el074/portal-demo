@@ -11,8 +11,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class InteractionPK implements Serializable {
-
+public class SignaturePK implements Serializable {
     private Long memorandoId;
     private Long userId;
 }

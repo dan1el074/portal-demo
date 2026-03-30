@@ -3,7 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MemorandoService } from './../../../../services/memorando.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Interaction, InteractionList, Memorando, NewMemorando } from '../../../../interface/memorando.interface';
+import { Signature, SignatureList, Memorando, NewMemorando } from '../../../../interface/memorando.interface';
 import { CommonModule } from '@angular/common';
 import { Position } from '../../../../interface/position.interface';
 import { AuthGuard } from '../../../../config/authGuard';
@@ -50,14 +50,14 @@ export class DocumentViewComponent implements OnInit {
       },
       picture: null
     },
-    interactions: [],
-    interactionsSummary: [],
+    signature: [],
+    signatureSummary: [],
     fromDepartments: [],
     status: '',
     logs: []
   };
   protected user!: Me;
-  protected interactions: Array<InteractionList> = [];
+  protected signatures: Array<SignatureList> = [];
   protected isAdmin: boolean = false;
   protected canSign: boolean = false;
   protected showSignModal: boolean = false;
@@ -87,16 +87,10 @@ export class DocumentViewComponent implements OnInit {
         next: (data: Memorando) => {
           this.item = data;
           this.verifyCanSign(user);
-          this.updateInteractions();
+          this.updateSignatures();
           this.cdr.detectChanges();
         },
-        error: (error) => {
-          if (error.status == 401) {
-            this.router.navigate(['login']);
-            this.toasterService.error('Sessão expirada!');
-            return;
-          }
-
+        error: () => {
           this.toasterService.error('Registro não encontrado!');
           this.router.navigate(['general/memorando']);
           return;
@@ -106,7 +100,7 @@ export class DocumentViewComponent implements OnInit {
   }
 
   private verifyCanSign(user: Me): void {
-    // TODO: validar quem pode ou não assinar, somente gestores?
+    // TODO: validar quem pode ou não assinar, somente os gestores da área!
 
     if (this.item.status == "PUBLISH") {
       this.item.fromDepartments.forEach(currentDepartment => {
@@ -117,8 +111,8 @@ export class DocumentViewComponent implements OnInit {
       });
 
       if (this.canSign) {
-        this.item.interactions.forEach(interaction => {
-          if (interaction.departmentSigned.name == user.position) {
+        this.item.signature.forEach(signature => {
+          if (signature.departmentSigned.name == user.position) {
             this.canSign = false;
             return;
           }
@@ -127,27 +121,27 @@ export class DocumentViewComponent implements OnInit {
     }
   }
 
-  protected updateInteractions(): void {
-    this.interactions = [];
+  protected updateSignatures(): void {
+    this.signatures = [];
 
     this.item.fromDepartments.forEach((department: Position) =>{
-      let findInteraction = false;
+      let findSignature = false;
 
-      this.item.interactions.forEach((interaction: Interaction) => {
-        if (department.id == interaction.departmentSigned.id) {
-          findInteraction = true;
+      this.item.signature.forEach((signature: Signature) => {
+        if (department.id == signature.departmentSigned.id) {
+          findSignature = true;
 
-          this.interactions.push({
+          this.signatures.push({
             check: true,
             position: department.name,
-            signedBy: interaction.user.name
+            signedBy: signature.user.name
           });
           return;
         }
       })
 
-      if (!findInteraction) {
-        this.interactions.push({
+      if (!findSignature) {
+        this.signatures.push({
           check: false,
           position: department.name,
           signedBy: null
@@ -169,7 +163,7 @@ export class DocumentViewComponent implements OnInit {
       next: (data: Memorando) => {
         this.item = data;
         this.canSign = false;
-        this.updateInteractions();
+        this.updateSignatures();
         this.toasterService.success('CI assinada com sucesso!');
         this.toggleSignModal();
         this.cdr.detectChanges();
@@ -206,14 +200,12 @@ export class DocumentViewComponent implements OnInit {
     this.memorandoService.update(this.item.id, memorando).subscribe({
       next: (data: Memorando) => {
         this.item = data;
-        this.updateInteractions();
+        this.updateSignatures();
         this.toasterService.success('CI publicada com sucesso!');
         this.togglePublishModal();
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.toasterService.error('Erro ao atualizar CI!');
-      }
+      error: () => this.toasterService.error('Erro ao atualizar CI!')
     });
   }
 
@@ -233,9 +225,7 @@ export class DocumentViewComponent implements OnInit {
         this.toggleCancelModal();
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.toasterService.error('Erro ao cancelar CI!');
-      }
+      error: () => this.toasterService.error('Erro ao cancelar CI!')
     });
   }
 
@@ -255,9 +245,7 @@ export class DocumentViewComponent implements OnInit {
         this.toasterService.success('CI deletada com sucesso!');
         this.router.navigateByUrl('general/memorando');
       },
-      error: () => {
-        this.toasterService.error('Erro ao deletar CI!');
-      }
+      error: () => this.toasterService.error('Erro ao deletar CI!')
     });
   }
 }

@@ -12,8 +12,8 @@ export interface Memorando {
   reason: string;
   createAt: string;
   user: UserSummary;
-  interactions: Array<Interaction>;
-  interactionsSummary: Array<UserSummary>;
+  signature: Array<Signature>;
+  signatureSummary: Array<UserSummary>;
   fromDepartments: Array<Position>;
   status: string;
   logs: Array<CILog>
@@ -30,12 +30,12 @@ export interface NewMemorando {
   status: string;
 }
 
-export interface Interaction {
+export interface Signature {
   departmentSigned: Position;
   user: UserSummary
 }
 
-export interface InteractionList {
+export interface SignatureList {
   check: boolean;
   position: string;
   signedBy: string | null;

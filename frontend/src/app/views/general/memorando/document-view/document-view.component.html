@@ -123,14 +123,14 @@
       <c-col class="flex-col">
         <strong>Envolvidos:</strong>
         <div class="departments">
-          @for (interaction of interactions; track interaction.position; let idx = $index) {
+          @for (signature of signatures; track signature.position; let idx = $index) {
             <c-form-check>
-              <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="interaction.check" />
-              <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ interaction.position }}</label>
+              <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="signature.check" />
+              <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ signature.position }}</label>
               <span class="signature">
                 <span>_____________________________________</span>
-                @if (interaction.signedBy) {
-                  <span class="sign">{{ interaction.signedBy }}</span>
+                @if (signature.signedBy) {
+                  <span class="sign">{{ signature.signedBy }}</span>
                 }
               </span>
             </c-form-check>
