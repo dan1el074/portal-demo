@@ -8,7 +8,7 @@ import { cilPencil, cilX } from '@coreui/icons';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { passwordMatchValidator } from '../../../../app/config/validators';
 import { UserConfigData } from '../../../../app/interface/user.interface';
-import { environment } from './../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-user-config-form',
