@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,9 +53,9 @@ public class Memorando {
     @OneToMany(mappedBy = "memorando",
         cascade = CascadeType.ALL,
         orphanRemoval = true)
-    private Set<Signature> Signatures = new HashSet<>();
+    private List<Signature> signatures = new ArrayList<>();
 
-    public List<User> getInteractionsUsers() {
-        return Signatures.stream().map(Signature::getUser).toList();
+    public List<User> getSignaturesUsers() {
+        return signatures.stream().map(Signature::getUser).toList();
     }
 }

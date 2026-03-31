@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, NgZone, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ToastrService } from 'ngx-toastr';
@@ -18,7 +18,8 @@ export class NotificationWebSocketService {
 
   constructor(
     private toasterService: ToastrService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) {}
 
   public connect(token: string) {
@@ -48,18 +49,39 @@ export class NotificationWebSocketService {
     this.socket = new WebSocket(wsUrl);
 
     this.socket.onmessage = (event) => {
-      const data: NotificationSocketMessage = JSON.parse(event.data);
+      this.ngZone.run(() => {
+        const data: NotificationSocketMessage = JSON.parse(event.data);
 
-      if (data.type === 'NEW_NOTIFICATION' && data.notification) {
-        this.notifications.update(current => [data.notification!, ...current]);
-        this.unreadCount.set(data.unreadCount);
+        if (data.type === 'NEW_NOTIFICATION' && data.notification) {
+          this.notifications.update(current => [data.notification!, ...current]);
+          this.unreadCount.set(data.unreadCount);
+          this.toasterService.info(data.notification.message, 'Nova notificação');
+          return;
+        }
 
-        this.toasterService.info(data.notification.message, 'Nova notificação');
-      }
+        if (data.type === 'UNREAD_COUNT_UPDATED') {
+          this.unreadCount.set(data.unreadCount);
+          return;
+        }
 
-      if (data.type === 'UNREAD_COUNT_UPDATED') {
-        this.unreadCount.set(data.unreadCount);
-      }
+        if (data.type === 'NOTIFICATION_VIEWED' && data.notificationId != null) {
+          this.markAsViewedLocal(data.notificationId);
+          this.unreadCount.set(data.unreadCount);
+          return;
+        }
+
+        if (data.type === 'NOTIFICATION_REMOVED' && data.notificationId != null) {
+          this.removeLocal(data.notificationId);
+          this.unreadCount.set(data.unreadCount);
+          return;
+        }
+
+        if (data.type === 'NOTIFICATION_REFERENCE_REMOVED' && data.referenceId != null) {
+          this.removeByReference(data.referenceId);
+          this.unreadCount.set(data.unreadCount);
+          return;
+        }
+      });
     };
 
     this.socket.onclose = () => {
@@ -115,6 +137,11 @@ export class NotificationWebSocketService {
 
   public removeLocal(notificationId: number) {
     this.notifications.update(list => list.filter(n => n.id !== notificationId));
+    this.recalculateNotificationCount();
+  }
+
+  public removeByReference(referenceId: number) {
+    this.notifications.update(list => list.filter(n => n.referenceId !== referenceId));
     this.recalculateNotificationCount();
   }
 

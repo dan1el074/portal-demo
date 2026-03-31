@@ -463,6 +463,34 @@ c-tabs-list {
   min-height: calc(3rem + 1px);
 }
 
+@media print {
+  body {
+    color: rgba(37, 42.92, 54.02, 0.95) !important;
+  }
+
+  .paper-container .paper c-col:not(.created-by-container) {
+    border: 1px solid rgba(8, 10, 12, 0.175) !important;
+
+    .form-check-input {
+      background-color: #fff !important;
+      border: 1px solid #dbdfe6;
+    }
+
+    .form-check-input:checked {
+      background-color: #3069b3 !important;
+      border-color: #3069b3 !important;
+    }
+  }
+
+  .logs-container .logs .time {
+    color: rgba(37, 42.92, 54.02, 0.681) !important;
+  }
+
+  .footer {
+    border: none !important;
+  }
+}
+
 @media (min-width: 576px) {
   c-modal.img-modal .modal-dialog {
     max-width: initial;

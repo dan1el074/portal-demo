@@ -66,8 +66,10 @@ public class PositionService {
     public List<PositionDto> update(Long id, PositionFormImputDto dto) {
         Position position = positionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         copyDtoToEntity(dto, position);
-        position.getManangers().clear();
 
+        // TODO: verificar se não existe um memorando aberto esperando a assinatura desse departamento, caso contrário,
+        //      jogar uma exceção 422 - "Existem memorandos pendentes!"
+        position.getManangers().clear();
         for (Long manangerId : dto.getManangers()) {
             User user = userRepository.getReferenceById(manangerId);
             position.getManangers().add(user);

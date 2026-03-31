@@ -14,4 +14,5 @@ import java.io.Serializable;
 public class SignaturePK implements Serializable {
     private Long memorandoId;
     private Long userId;
+    private Long positionSignedId;
 }

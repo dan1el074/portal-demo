@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,7 +33,7 @@ public class MemorandoDto {
     private UserSummaryDto user;
     private List<PositionDto> fromDepartments;
     private List<SignatureDto> signature;
-    private List<UserSummaryDto> signatureSummary;
+    private Set<UserSummaryDto> signatureSummary;
     private MemorandoStatus status;
     private List<MemorandoLogDto> logs;
 
@@ -50,7 +52,7 @@ public class MemorandoDto {
         items.addAll(entity.getItems());
         fromDepartments = new ArrayList<>();
         signature = new ArrayList<>();
-        signatureSummary = new ArrayList<>();
+        signatureSummary = new HashSet<>();
         logs = new ArrayList<>();
 
         for (Position department : entity.getFromDepartments()) {
@@ -59,7 +61,9 @@ public class MemorandoDto {
 
         for (Signature currentSignature : entity.getSignatures()) {
             signature.add(new SignatureDto(currentSignature));
-            signatureSummary.add(new UserSummaryDto(currentSignature.getUser()));
+            if (signatureSummary.stream().noneMatch(s -> s.getName().equals(currentSignature.getUser().getName()))) {
+                signatureSummary.add(new UserSummaryDto(currentSignature.getUser()));
+            }
         }
 
         for (MemorandoLog log : entity.getLogs()) {

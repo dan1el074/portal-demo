@@ -76,25 +76,44 @@
 
       c-form-check {
         margin-bottom: 12px;
+        display: flex;
+        gap: 12px;
+      }
+    }
 
-        .signature {
-          margin-left: 10px;
-          position: relative;
-          user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
+    .created-by-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 100px;
+      border: none;
 
-          .sign {
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%);
-            font-family: "Bad Script", cursive;
-            font-size: 17px;
-            font-weight: 400;
-            font-style: normal;
-          }
-        }
+      .created-by {
+        max-width: 300px;
+        text-align: center;
+      }
+    }
+
+    .signature {
+      border-bottom: 1px solid var(--cui-form-check-label-color, );
+      min-width: 300px;
+      max-width: 100%;
+      padding: 0 20px;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+
+      .sign {
+        text-align: center;
+        text-wrap: none;
+
+        font-family: "Bad Script", cursive;
+        font-size: 17px;
+        font-weight: 400;
+        font-style: normal;
       }
     }
   }
@@ -161,5 +180,53 @@
   .logs-container {
     text-wrap: nowrap;
     overflow-x: scroll;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+  }
+
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .print-area .paper {
+    min-height: 1200px !important;
+  }
+
+  .print-area .paper .memorando-logo {
+    width: 120px !important;
+    height: 25px !important;
+    display: block !important;
+    background-image: url('/assets/images/brand/default-logo.svg') !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .logs-container {
+    page-break-before: auto;
+  }
+
+  .logs-container,
+  .logs li {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 }

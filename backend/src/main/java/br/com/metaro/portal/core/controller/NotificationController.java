@@ -40,7 +40,7 @@ public class NotificationController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id, Authentication authentication) {
         Long userId = extractUserId(authentication);
-        notificationService.deleteNotification(id, userId);
+        notificationService.delete(id, userId);
     }
 
     private Long extractUserId(Authentication authentication) {

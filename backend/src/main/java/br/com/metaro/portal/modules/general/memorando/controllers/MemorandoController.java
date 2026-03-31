@@ -58,6 +58,12 @@ public class MemorandoController {
         return ResponseEntity.ok(dto);
     }
 
+    @PutMapping(value = "/rollback/{id}")
+    public ResponseEntity<MemorandoDto> rollback(@PathVariable Long id) {
+        MemorandoDto dto = memorandoService.rollback(id);
+        return ResponseEntity.ok(dto);
+    }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         memorandoService.delete(id);

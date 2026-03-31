@@ -11,4 +11,6 @@ public class NotificationSocketMessageDto {
     String type;
     NotificationDto notification;
     Long unreadCount;
+    private Long notificationId;
+    private Long referenceId;
 }

@@ -10,10 +10,10 @@
   <table mat-table [dataSource]="dataSource" matSort class="table stripe">
     <ng-container matColumnDef="memorandoNumber">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Número</th>
-      <td mat-cell *matCellDef="let internalControl">
-        <a [routerLink]="['./', internalControl.id]" class="edit">
-          @if (internalControl.number) {
-            {{ internalControl.number }}/{{ internalControl.createAt | date: "yyyy" : '-0300' }}
+      <td mat-cell *matCellDef="let memorando">
+        <a [routerLink]="['./', memorando.id]" class="edit">
+          @if (memorando.number) {
+            {{ memorando.number }}/{{ memorando.createAt | date: "yyyy" : '-0300' }}
           } @else {
             n/a
           }
@@ -23,18 +23,18 @@
 
     <ng-container matColumnDef="orderNumber">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Pedido</th>
-      <td mat-cell *matCellDef="let internalControl">{{ internalControl.request }}</td>
+      <td mat-cell *matCellDef="let memorando">{{ memorando.request }}</td>
     </ng-container>
 
     <ng-container matColumnDef="client">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
-      <td mat-cell *matCellDef="let internalControl">{{ internalControl.client }}</td>
+      <td mat-cell *matCellDef="let memorando">{{ memorando.client }}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-      <td mat-cell *matCellDef="let internalControl">
-        @switch (internalControl.status) {
+      <td mat-cell *matCellDef="let memorando">
+        @switch (memorando.status) {
           @case ('CREATED') {
             <c-badge color="info">salvo</c-badge>
           }
@@ -54,11 +54,11 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="interaction">
-      <th mat-header-cell *matHeaderCellDef>Interações</th>
-      <td mat-cell *matCellDef="let internalControl">
+    <ng-container matColumnDef="signature">
+      <th mat-header-cell *matHeaderCellDef>Assinaturas</th>
+      <td mat-cell *matCellDef="let memorando">
         <div class="avatar-fix">
-          @for (item of internalControl.interactionsSummary; track item.id) {
+          @for (item of memorando.signatureSummary; track item.id) {
             <a [cTooltip]="item.name">
               <c-avatar [src]="item.picture ? apiUrl + '/images/' + item.picture.id : './assets/images/avatars/default.png'" />
             </a>
@@ -71,9 +71,9 @@
 
     <ng-container matColumnDef="createdAt">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado</th>
-      <td mat-cell *matCellDef="let internalControl">
-        @if (internalControl.createAt) {
-          {{ internalControl.createAt | date: "dd/MM/yyyy" : '-0300' }}
+      <td mat-cell *matCellDef="let memorando">
+        @if (memorando.createAt) {
+          {{ memorando.createAt | date: "dd/MM/yyyy" : '-0300' }}
         } @else {
           n/a
         }
@@ -82,8 +82,8 @@
 
     <ng-container matColumnDef="buttons">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let internalControl" class="btn-container multiple">
-        <a [routerLink]="['./', internalControl.id]" class="edit">
+      <td mat-cell *matCellDef="let memorando" class="btn-container multiple">
+        <a [routerLink]="['./', memorando.id]" class="edit">
           <button cButton color="secondary" class="custom-btn">
             <svg [cIcon]="icons.cilExternalLink" size="sm"></svg>
           </button>
@@ -92,7 +92,7 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let internalControl; columns: displayedColumns"></tr>
+    <tr mat-row *matRowDef="let memorando; columns: displayedColumns"></tr>
   </table>
 </c-container>
 

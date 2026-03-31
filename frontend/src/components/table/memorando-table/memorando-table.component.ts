@@ -39,7 +39,7 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
   @Input() noMargin: boolean = false;
 
   protected apiUrl = environment.apiUrl;
-  protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'interaction', 'createdAt', 'buttons'];
+  protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'signature', 'createdAt', 'buttons'];
   protected dataSource = new MatTableDataSource<Memorando>([]);
   protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
 
@@ -51,7 +51,7 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
         const aRes = Number(`${aYear}${aNumberPadded}`);
 
         const bYear = new Date(b.createAt).getFullYear();
-        const bNumberPadded = b.number.toString().padStart(6, '0');
+        const bNumberPadded = b.number ? b.number.toString().padStart(6, '0') : "";
         const bRes = Number(`${bYear}${bNumberPadded}`);
 
         return bRes - aRes;

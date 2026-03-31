@@ -64,18 +64,18 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? cilSun;
   }
 
-  public async openNotification(notification: Notification) {
+  public openNotification(notification: Notification) {
     if (notification.actionUrl) this.router.navigateByUrl(notification.actionUrl);
 
     if (notification.autoDelete) {
-      await this.notificationService.delete(notification.id).subscribe(() => {
+      this.notificationService.delete(notification.id).subscribe(() => {
         this.websocket.removeLocal(notification.id);
       });
       return;
     }
 
     if (!notification.viewed) {
-      await this.notificationService.markAsViewed(notification.id).subscribe(() => {
+      this.notificationService.markAsViewed(notification.id).subscribe(() => {
         this.websocket.markAsViewedLocal(notification.id);
       });
     }

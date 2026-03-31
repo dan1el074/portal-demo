@@ -103,34 +103,6 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    @Order(3)
-    public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/**")
-                .cors(cors -> {
-                    CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowCredentials(true);
-                    configuration.addAllowedOriginPattern("*");
-                    configuration.addAllowedHeader("*");
-                    configuration.addAllowedMethod("*");
-
-                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                    source.registerCorsConfiguration("/**", configuration);
-
-                    cors.configurationSource(source);
-                })
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ws/**").permitAll()                  // libera handshake do websocket
-                        .requestMatchers("/api/notifications/**").authenticated()   // REST de notificações protegido
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
-
-        return http.build();
-    }
-
-    @Bean
     public OAuth2AuthorizationService authorizationService() {
         return new InMemoryOAuth2AuthorizationService();
     }

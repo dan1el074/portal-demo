@@ -11,7 +11,7 @@ import lombok.Setter;
 import java.time.Instant;
 
 @Entity
-@Table(name = "tb_interaction")
+@Table(name = "tb_signature")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,6 +34,7 @@ public class Signature {
     private User user;
 
     @ManyToOne
+    @MapsId("positionSignedId")
     @JoinColumn(name = "position_signed_id")
     private Position departmentSigned;
 
@@ -43,6 +44,6 @@ public class Signature {
         this.departmentSigned = departmentSigned;
         this.createdAt = Instant.now();
 
-        this.id = new SignaturePK(memorando.getId(), user.getId());
+        this.id = new SignaturePK(memorando.getId(), user.getId(), departmentSigned.getId());
     }
 }

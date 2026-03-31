@@ -69,13 +69,13 @@ public class User implements UserDetails {
     private Set<Memorando> memorandos = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<Signature> Signatures = new HashSet<>();
+    private Set<Signature> signatures = new HashSet<>();
 
     @ManyToMany(mappedBy = "manangers")
     private Set<Position> managedPositions = new HashSet<>();
 
     public List<Memorando> getInteractionsCI() {
-        return Signatures.stream().map(Signature::getMemorando).toList();
+        return signatures.stream().map(Signature::getMemorando).toList();
     }
 
     public void addRole(Role role) {

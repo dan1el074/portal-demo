@@ -67,7 +67,7 @@
   </c-multi-select>
 
   <div class="button-container">
-    <a [routerLink]="['/general/internal-communication/', data.id]"><button cButton color="secondary">Cancelar</button></a>
+    <a [routerLink]="['/general/memorando/', data.id]"><button cButton color="secondary">Cancelar</button></a>
     @if (data.status == "CREATED") {
       <button cButton color="info" class="fix-info" (click)="onSave()">Salvar</button>
     }

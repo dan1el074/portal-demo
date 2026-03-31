@@ -76,6 +76,15 @@ export class MemorandoService {
     return this.http.put<Memorando>(this.api + '/api/memorando/disable/' + id, null, { headers });
   }
 
+  public rollback(id: number): Observable<any> {
+    const token = sessionStorage.getItem('auth-token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.put<Memorando>(this.api + '/api/memorando/rollback/' + id, null, { headers });
+  }
+
   public delete(id: number): Observable<any> {
     const token = sessionStorage.getItem('auth-token');
     const headers = new HttpHeaders({

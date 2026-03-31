@@ -1,10 +1,15 @@
-<div class="button-container">
+<div class="button-container no-print">
   @if (item.status == 'CREATED') {
     <button cButton color="primary" (click)="togglePublishModal()">Públicar</button>
     <a [routerLink]="['./edit']" class="edit">
       <button cButton color="info">Editar</button>
     </a>
-    <button cButton color="danger" (click)="toggleDeleteModal()">Deletar</button>
+    @if (!item.number) {
+      <button cButton color="danger" (click)="toggleDeleteModal()">Deletar</button>
+    }
+    @if (isAdmin && item.number != null) {
+      <button cButton color="danger" (click)="toggleCancelModal()">Cancelar</button>
+    }
   }
 
   @if (item.status == 'PUBLISH') {
@@ -12,150 +17,164 @@
       <button cButton color="primary" (click)="toggleSignModal()">Assinar</button>
     }
     @if (isAdmin) {
-      <a [routerLink]="['./edit']" class="edit">
-        <button cButton color="info">Editar</button>
-      </a>
+      <button cButton color="info" (click)="toggleRollbackModal()">Reiniciar</button>
       <button cButton color="danger" (click)="toggleCancelModal()">Cancelar</button>
     }
   }
+
+  <button cButton color="secondary" (click)="printPage()">
+    <svg [cIcon]="icons.cilPrint"></svg>
+  </button>
 </div>
 
-<div class="paper-container">
-  <div class="paper">
-    <c-row>
-      <c-col class="align-center flex">
-        <div class="memorando-logo"></div>
-        <span class="small bold">RE 33/02</span>
-      </c-col>
-      <c-col xs="6" class="flex align-center bold">
-        <span>SISTEMA DE GETÃO DA QUALIDADE<br>MEMORANDO</span>
-      </c-col>
-      <c-col class="flex">
-        Ref. PR 01
-      </c-col>
-    </c-row>
+<div class="print-area">
+  <div class="paper-container">
+    <div class="paper">
+      <c-row>
+        <c-col class="align-center flex">
+          <div class="memorando-logo"></div>
+          <span class="small bold">RE 33/02</span>
+        </c-col>
+        <c-col xs="6" class="flex align-center bold">
+          <span>SISTEMA DE GETÃO DA QUALIDADE<br>MEMORANDO</span>
+        </c-col>
+        <c-col class="flex">
+          Ref. PR 01
+        </c-col>
+      </c-row>
 
-    <c-row>
-      <c-col><strong>Nº: </strong>
-        @if (item.number) {
-          {{ item.number }}
-        } @else {
-          --
-        }
-      </c-col>
-      <c-col><strong>Ano: </strong>
-        @if (item.createAt) {
-          {{ item.createAt | date: "yyyy" : '-0300' }}
-        } @else {
-          --
-        }
-      </c-col>
-      <c-col>
-        <strong>Status: </strong>
-          @switch (item.status) {
-            @case ("CREATED") {
-              Salvo
-            }
-            @case ("PUBLISH") {
-              Publicado
-            }
-            @case ("APPROVED") {
-              Aprovado
-            }
-            @case ("CANCELED") {
-              Cancelado
-            }
+      <c-row>
+        <c-col><strong>Nº: </strong>
+          @if (item.number) {
+            {{ item.number }}
+          } @else {
+            --
           }
-      </c-col>
-    </c-row>
+        </c-col>
+        <c-col><strong>Ano: </strong>
+          @if (item.createAt) {
+            {{ item.createAt | date: "yyyy" : '-0300' }}
+          } @else {
+            --
+          }
+        </c-col>
+        <c-col>
+          <strong>Status: </strong>
+            @switch (item.status) {
+              @case ("CREATED") {
+                Salvo
+              }
+              @case ("PUBLISH") {
+                Publicado
+              }
+              @case ("APPROVED") {
+                Aprovado
+              }
+              @case ("CANCELED") {
+                Cancelado
+              }
+            }
+        </c-col>
+      </c-row>
 
-    <c-row>
-      <c-col><strong>Data: </strong>
-        @if (item.createAt) {
-          {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}
-        } @else {
-          --
-        }
-      </c-col>
-    </c-row>
+      <c-row>
+        <c-col><strong>Data: </strong>
+          @if (item.createAt) {
+            {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}
+          } @else {
+            --
+          }
+        </c-col>
+      </c-row>
 
-    <c-row>
-      <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
-    </c-row>
+      <c-row>
+        <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
+      </c-row>
 
-    <c-row>
-      <c-col>
-        @if(item.items.length > 1) {
-          <strong>Itens:</strong>
-          <div class="tab">
-            @for(currentItem of item.items; track currentItem) {
-              <div>{{ currentItem }}</div>
+      <c-row>
+        <c-col>
+          @if(item.items.length > 1) {
+            <strong>Itens:</strong>
+            <div class="tab">
+              @for(currentItem of item.items; track currentItem) {
+                <div>{{ currentItem }}</div>
+              }
+            </div>
+          } @else {
+            <strong>Item:</strong>
+            {{ item.items[0] }}
+          }
+        </c-col>
+      </c-row>
+
+      <c-row>
+        <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
+      </c-row>
+
+      <c-row>
+        <c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col>
+      </c-row>
+
+      <c-row>
+        <c-col><strong>Título:</strong> {{ item.title }}</c-col>
+      </c-row>
+
+      <c-row>
+        <c-col [innerHtml]="'<strong>Descrição:</strong> ' + item.description"></c-col>
+      </c-row>
+
+      <c-row>
+        <c-col><strong>Motivo:</strong> {{ item.reason }}</c-col>
+      </c-row>
+
+      <c-row>
+        <c-col class="flex-col">
+          <strong>Departamentos envolvidos:</strong>
+          <div class="departments">
+            @for (signature of signatures; track signature.position; let idx = $index) {
+              <c-form-check>
+                <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="signature.check" />
+                <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ signature.position }}</label>
+                <div class="signature">
+                  @if (signature.signedBy) {
+                    <span class="sign">{{ signature.signedBy }}</span>
+                  }
+                </div>
+              </c-form-check>
             }
           </div>
-        } @else {
-          <strong>Item:</strong>
-          {{ item.items[0] }}
-        }
-      </c-col>
-    </c-row>
+        </c-col>
+      </c-row>
 
-    <c-row>
-      <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
-    </c-row>
+      <c-row>
+        <c-col class="created-by-container">
+          <div class="created-by">
+            <div class="signature">
+              <span class="sign">{{ item.user.name }}</span>
+            </div>
+          </div>
+          <strong>Relator</strong>
+        </c-col>
+      </c-row>
 
-    <c-row>
-      <c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col>
-    </c-row>
-
-    <c-row>
-      <c-col><strong>Título:</strong> {{ item.title }}</c-col>
-    </c-row>
-
-    <c-row>
-      <c-col [innerHtml]="'<strong>Descrição:</strong> ' + item.description"></c-col>
-    </c-row>
-
-    <c-row>
-      <c-col><strong>Motivo:</strong> {{ item.reason }}</c-col>
-    </c-row>
-
-    <c-row>
-      <c-col class="flex-col">
-        <strong>Envolvidos:</strong>
-        <div class="departments">
-          @for (signature of signatures; track signature.position; let idx = $index) {
-            <c-form-check>
-              <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="signature.check" />
-              <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ signature.position }}</label>
-              <span class="signature">
-                <span>_____________________________________</span>
-                @if (signature.signedBy) {
-                  <span class="sign">{{ signature.signedBy }}</span>
-                }
-              </span>
-            </c-form-check>
-          }
-        </div>
-      </c-col>
-    </c-row>
-
-    @if (item.status == "APPROVED") {
-      <div class="label approved">APROVADO</div>
-    }
-    @if (item.status == "CANCELED") {
-      <div class="label canceled">CANCELADO</div>
-    }
+      @if (item.status == "APPROVED") {
+        <div class="label approved">APROVADO</div>
+      }
+      @if (item.status == "CANCELED") {
+        <div class="label canceled">CANCELADO</div>
+      }
+    </div>
   </div>
-</div>
 
-<div class="logs-container">
-  <ul class="logs">
-    @for (log of item.logs; track log.id) {
-      <li>
-        <span class="time">{{ log.createdAt | date: "dd/MM/yyyy 'às' HH:mm:ss" : '-0300' }}</span> - <strong>{{ log.user != null ? log.user.name : 'Sistema' }}</strong>: {{ log.content }}
-      </li>
-    }
-  </ul>
+  <div class="logs-container">
+    <ul class="logs">
+      @for (log of item.logs; track log.id) {
+        <li>
+          <span class="time">{{ log.createdAt | date: "dd/MM/yyyy 'às' HH:mm:ss" : '-0300' }}</span> - <strong>{{ log.user != null ? log.user.name : 'Sistema' }}</strong>: {{ log.content }}
+        </li>
+      }
+    </ul>
+  </div>
 </div>
 
 <c-modal [visible]="showSignModal" (visibleChange)="handleSignModalChange($event)" alignment="center">
@@ -206,6 +225,21 @@
       Desistir
     </button>
     <button cButton color="danger" (click)="onCancel()" class="fix-button">Cancelar</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal [visible]="showRollbackModal" (visibleChange)="handleRollbackModalChange($event)" alignment="center">
+  <c-modal-header>
+    <h5 cModalTitle>Reiniciar Registro - Memorando</h5>
+    <button (click)="toggleRollbackModal()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja reiniciar o documento nº {{ item.number }}/{{ item.createAt | date: "yyyy" : '-0300' }}?
+    <br>Essa ação ficará registrada no log e não poderá ser desfeita!
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleRollbackModal()" cButton color="secondary">Cancelar</button>
+    <button cButton color="danger" (click)="onRollback()" class="fix-button">Reiniciar</button>
   </c-modal-footer>
 </c-modal>
 
