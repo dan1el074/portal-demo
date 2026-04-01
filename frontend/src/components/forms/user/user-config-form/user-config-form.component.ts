@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
@@ -9,6 +9,7 @@ import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { passwordMatchValidator } from '../../../../app/config/validators';
 import { UserConfigData } from '../../../../app/interface/user.interface';
 import { environment } from '../../../../environments/environment';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-user-config-form',
@@ -43,6 +44,7 @@ export class UserConfigFormComponent implements OnChanges {
   protected valid: boolean | undefined;
   protected configForm: FormGroup;
   protected showErrors = false;
+  private countChanges = 0;
 
   // profile image
   protected file: string = '';
@@ -55,7 +57,10 @@ export class UserConfigFormComponent implements OnChanges {
   // data picker
   protected birthDate = new Date();
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {
     this.configForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
       email: ['', [Validators.required, Validators.email]],
@@ -70,14 +75,22 @@ export class UserConfigFormComponent implements OnChanges {
   }
 
   public ngOnChanges(): void {
-    if (!this.userData) return;
+    console.log("atualizou");
+    if (this.userData) this.updateForm()
+  }
+
+  private updateForm(): void {
+    if (this.countChanges > 0) return;
+    if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;
 
     this.birthDate = this.parseDate(this.userData.birthDate) ?? null;
     this.configForm.get('birthDate')?.setValue(this.birthDate);
     this.configForm.get('name')?.setValue(this.userData.name);
     this.configForm.get('email')?.setValue(this.userData.email);
+    this.cdr.detectChanges();
 
-    if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;
+    console.log("carregou usuário", this.userData);
+    this.countChanges++;
   }
 
   private parseDate(value: string | null): Date {
