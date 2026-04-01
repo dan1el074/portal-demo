@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
@@ -34,7 +34,7 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './user-config-form.component.html',
   styleUrl: './user-config-form.component.scss',
 })
-export class UserConfigFormComponent {
+export class UserConfigFormComponent implements OnChanges {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Output() editTask = new EventEmitter<FormData>();
   @Input() userData!: UserConfigData;

@@ -2,7 +2,7 @@ INSERT INTO tb_param (id, name, content) VALUES (1, 'version', '0.14.1');
 INSERT INTO tb_param (id, name, content) VALUES (2, 'internalControlCount', '357');
 INSERT INTO tb_param (id, name, content) VALUES (3, 'currentYear', '2025');
 
-INSERT INTO tb_position (id, name, activated, updated_at, created_at) VALUES (1, 'TI', true, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
+INSERT INTO tb_position (name, activated, updated_at, created_at) VALUES (1, 'TI', true, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
 
 INSERT INTO tb_user (id, name, email, position_id, birth_date, picture_id, activated, username, password, created_at, update_at, support_token) VALUES (1, 'Master', 'ti@metaro.com.br', 1, '1999-07-08', NULL, true, 'master','$2a$10$/38.DeKTEvwu4eCpOAe0GO298DNA7fXWvdPXDPMHe0bu/j53j5bA2', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', TIMESTAMP WITH TIME ZONE '2022-07-25T15:00:00Z', null);
 
