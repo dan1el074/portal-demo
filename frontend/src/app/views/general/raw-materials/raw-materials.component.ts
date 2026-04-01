@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, CardBodyComponent, CardComponent, CardTitleDirective, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
+import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, AlertComponent, CardBodyComponent, CardComponent, CardTitleDirective, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
 import { RawMaterialsTableComponent } from '../../../../components/table/raw-materials-table/raw-materials-table.component';
 import { cilXCircle, cilCheckCircle, cilWarning } from '@coreui/icons';
 import { RawMaterialsTable } from '../../../interface/raw-materials.interface';
@@ -10,6 +10,7 @@ import { IconDirective } from '@coreui/icons-angular';
   selector: 'app-raw-materials',
   imports: [
     CommonModule,
+    AlertComponent,
     CardComponent,
     CardBodyComponent,
     CardTitleDirective,

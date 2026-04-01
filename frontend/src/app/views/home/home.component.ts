@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ContainerComponent } from '@coreui/angular';
+import { AlertComponent, ContainerComponent } from '@coreui/angular';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { PostComponent } from './../../../components/cards/post/post.component';
 import { TodoComponent } from './../../../components/cards/todo/todo.component';
@@ -14,6 +14,7 @@ import { TodoTableCard } from '../../interface/todo.interface';
   selector: 'app-home',
   imports: [
     ContainerComponent,
+    AlertComponent,
     FilesComponent,
     EventComponent,
     TodoComponent,
@@ -86,7 +87,7 @@ export class HomeComponent implements OnInit {
     {
       id: 3,
       author: 'Aline Moterle',
-      authorPictureId: 2,
+      authorPictureId: 3,
       position: 'Recursos Humanos',
       instant: '6 horas atrás',
       content:
@@ -102,7 +103,7 @@ export class HomeComponent implements OnInit {
     {
       id: 1,
       author: 'Aline Moterle',
-      authorPictureId: 2,
+      authorPictureId: 3,
       position: 'Recursos Humanos',
       instant: '2 horas atrás',
       content: '',
@@ -111,7 +112,7 @@ export class HomeComponent implements OnInit {
     {
       id: 2,
       author: 'Juliano Bortoletti',
-      authorPictureId: 3,
+      authorPictureId: 5,
       position: 'Marketing',
       instant: '2 horas atrás',
       content:
@@ -121,7 +122,7 @@ export class HomeComponent implements OnInit {
     {
       id: 4,
       author: 'Aline Moterle',
-      authorPictureId: 2,
+      authorPictureId: 3,
       position: 'Recursos Humanos',
       instant: '2 horas atrás',
       content:

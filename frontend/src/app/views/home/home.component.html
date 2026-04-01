@@ -1,4 +1,10 @@
 <c-container>
+  <div class="alert-container">
+    <c-alert color="info">
+      Essa tela de apresentação ainda está em processo de desenvolvimento, informações meramente ilustrativas.
+    </c-alert>
+  </div>
+
   <div class="home-container">
     <div class="home left">
       <app-files [files]="files" class="card"></app-files>
@@ -11,7 +17,6 @@
       @for (post of feed; track post) {
         <app-post [post]="post" class="card"></app-post>
       }
-
     </div>
   </div>
 </c-container>
