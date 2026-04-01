@@ -77,7 +77,6 @@ export class UserConfigFormComponent implements OnChanges {
   public ngOnChanges(changes: SimpleChanges): void {
     if(!changes['userData']?.currentValue) return;
 
-    this.spinner.hide("userConfigSpinner");
     this.file = this.userData.pictureId? `${environment.apiUrl}/images/${this.userData.pictureId}` : '';
     this.birthDate = this.parseDate(this.userData.birthDate);
 
@@ -92,6 +91,7 @@ export class UserConfigFormComponent implements OnChanges {
 
     this.configForm.markAsPristine();
     this.configForm.markAsUntouched();
+    this.spinner.hide("userConfigSpinner");
   }
 
   private parseDate(value: string | null): Date {

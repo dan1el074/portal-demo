@@ -38,9 +38,12 @@ export class ConfigComponent implements OnInit {
 
     this.userService.getUserConfig().subscribe({
       next: data =>  {
-        this.loaded = true;
         this.userData = data;
-        this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.loaded = true
+          this.cdr.detectChanges();
+        }, 400);
       },
       error: () => this.toasterService.error('Erro ao carregar dados do usuário!')
     });
