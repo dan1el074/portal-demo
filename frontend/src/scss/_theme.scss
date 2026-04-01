@@ -441,8 +441,11 @@ c-tabs-list {
   box-shadow: 0 0 0 0.25rem rgba(86, 120, 214, 0.25);
 }
 
-.fix-eye .form-password {
+.form-password .form-password-action {
+  inset-inline-end: 0.6rem;
+}
 
+.fix-eye .form-password {
   .form-password-action {
     top: 60%;
   }

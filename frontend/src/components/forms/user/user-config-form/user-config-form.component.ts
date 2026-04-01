@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChange
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
-import { DatePickerComponent } from '@coreui/angular-pro';
+import { DatePickerComponent, FormPasswordDirective } from '@coreui/angular-pro';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPencil, cilX } from '@coreui/icons';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
@@ -30,7 +30,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
     ButtonCloseDirective,
     ModalBodyComponent,
     ModalFooterComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    FormPasswordDirective
   ],
   templateUrl: './user-config-form.component.html',
   styleUrl: './user-config-form.component.scss',

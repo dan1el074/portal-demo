@@ -77,13 +77,27 @@
       </div>
 
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="password" [valid]="!showErrors ? undefined: configForm.get('password')?.errors != null ? false : undefined" id="nPW2" type="password" placeholder="Nova senha" autocomplete="new-password" />
-        <label cLabel for="nPW2">Nova senha</label>
+        <input
+          cFormPassword
+          formControlName="password"
+          [valid]="!showErrors ? undefined : configForm.get('password')?.errors != null ? false : undefined"
+          type="password"
+          placeholder="Nova senha"
+          autocomplete="new-password"
+          floatingLabel="Nova senha"
+        />
       </div>
 
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="repeatPassword" [valid]="!showErrors ? undefined: configForm.get('password')?.errors != null ? false : configForm.hasError('passwordMismatch') ? false : undefined" id="repeatPassword2" type="password" placeholder="Senha" autocomplete="new-password" />
-        <label cLabel for="repeatPassword2">Repetir senha</label>
+        <input
+          cFormPassword
+          formControlName="repeatPassword"
+          [valid]="!showErrors ? undefined : configForm.get('password')?.errors != null ? false : configForm.hasError('passwordMismatch') ? false : undefined"
+          type="password"
+          placeholder="Repetir senha"
+          autocomplete="new-password"
+          floatingLabel="Repetir senha"
+        />
       </div>
 
       @if (configForm.hasError('passwordMismatch') && configForm.touched) {

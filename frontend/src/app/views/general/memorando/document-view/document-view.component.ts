@@ -189,7 +189,7 @@ export class DocumentViewComponent implements OnInit {
         this.websocket.removeByReference(this.item.id);
         this.canSign = false;
         this.updateSignatures();
-        this.toasterService.success('Memorando assinada com sucesso!');
+        this.toasterService.success('Memorando assinado com sucesso!');
         this.toggleSignModal();
         this.cdr.detectChanges();
       },

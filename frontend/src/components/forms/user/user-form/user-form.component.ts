@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular';
-import { DatePickerComponent, MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
+import { DatePickerComponent, MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent, FormPasswordDirective } from '@coreui/angular-pro';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
@@ -35,7 +35,8 @@ import { RoleGroup } from '../../../../app/interface/role.interface';
     MultiSelectComponent,
     MultiSelectOptionComponent,
     MultiSelectOptgroupComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    FormPasswordDirective
   ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',

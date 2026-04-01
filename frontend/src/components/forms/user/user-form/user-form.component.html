@@ -103,12 +103,27 @@
         <label cLabel for="nUN">Nome de usuário</label>
       </div>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="password" [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : undefined" id="nPW" type="password" placeholder="Nova senha" autocomplete="new-password" />
-        <label cLabel for="nPW">Senha</label>
+        <input
+          cFormPassword
+          formControlName="password"
+          [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : undefined"
+          type="password"
+          placeholder="Senha"
+          autocomplete="new-password"
+          floatingLabel="Senha"
+        />
       </div>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="repeatPassword" [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : createForm.hasError('passwordMismatch') ? false : undefined" id="repeatPassword" type="password" placeholder="Senha" autocomplete="new-password" />
-        <label cLabel for="repeatPassword">Repetir senha</label>
+        <input
+          cFormPassword
+          formControlName="repeatPassword"
+          [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : createForm.hasError('passwordMismatch') ? false : undefined"
+          id="repeatPassword"
+          type="password"
+          placeholder="Repetir senha"
+          autocomplete="new-password"
+          floatingLabel="Repetir senha"
+        />
       </div>
       @if (createForm.hasError('passwordMismatch') && createForm.touched) {
         <div class="text-danger">
