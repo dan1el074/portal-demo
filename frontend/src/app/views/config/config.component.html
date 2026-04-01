@@ -3,7 +3,15 @@
     <c-card class="border">
       <c-card-body>
         <h4 cCardTitle>Configurações</h4>
-          <app-user-config-form [userData]="userData" (editTask)="updateConfig($event)"></app-user-config-form>
+        <div>
+          <ngx-spinner name="userConfigSpinner" bdColor="#fff" size="default" color="#0053b0" type="ball-clip-rotate" [fullScreen]="false"></ngx-spinner>
+          @if (loaded && userData) {
+            <app-user-config-form
+              [userData]="userData"
+              (editTask)="updateConfig($event)">
+            </app-user-config-form>
+          }
+        </div>
       </c-card-body>
     </c-card>
   </c-col>

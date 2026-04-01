@@ -9,7 +9,7 @@ import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { passwordMatchValidator } from '../../../../app/config/validators';
 import { UserConfigData } from '../../../../app/interface/user.interface';
 import { environment } from '../../../../environments/environment';
-import { timeout } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-user-config-form',
@@ -59,7 +59,7 @@ export class UserConfigFormComponent implements OnChanges {
 
   constructor(
     private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private spinner: NgxSpinnerService
   ) {
     this.configForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
@@ -74,23 +74,24 @@ export class UserConfigFormComponent implements OnChanges {
     });
   }
 
-  public ngOnChanges(): void {
-    console.log("atualizou");
-    if (this.userData) this.updateForm()
-  }
+  public ngOnChanges(changes: SimpleChanges): void {
+    if(!changes['userData']?.currentValue) return;
 
-  private updateForm(): void {
-    if (this.countChanges > 0) return;
-    if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;
+    this.spinner.hide("userConfigSpinner");
+    this.file = this.userData.pictureId? `${environment.apiUrl}/images/${this.userData.pictureId}` : '';
+    this.birthDate = this.parseDate(this.userData.birthDate);
 
-    this.birthDate = this.parseDate(this.userData.birthDate) ?? null;
-    this.configForm.get('birthDate')?.setValue(this.birthDate);
-    this.configForm.get('name')?.setValue(this.userData.name);
-    this.configForm.get('email')?.setValue(this.userData.email);
-    this.cdr.detectChanges();
+    this.configForm.patchValue(
+      {
+        name: this.userData.name,
+        email: this.userData.email,
+        birthDate: this.birthDate,
+      },
+      { emitEvent: false }
+    );
 
-    console.log("carregou usuário", this.userData);
-    this.countChanges++;
+    this.configForm.markAsPristine();
+    this.configForm.markAsUntouched();
   }
 
   private parseDate(value: string | null): Date {
