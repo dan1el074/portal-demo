@@ -44,7 +44,7 @@ export class DepartmentFormComponent implements OnInit{
   ) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      manangers: [[]],
+      manangers: [[], [Validators.required]],
       disabled: [false]
     })
   }

@@ -8,6 +8,7 @@ import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.PositionRepository;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
+import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -53,6 +54,10 @@ public class PositionService {
         position.setCreatedAt(Instant.now());
         copyDtoToEntity(dto, position);
 
+        if (dto.getManangers().isEmpty()) {
+            throw new UnprocessableEntityException("É necessário ao menos um gestor para a área.");
+        }
+
         for (Long manangerId : dto.getManangers()) {
             User user = userRepository.getReferenceById(manangerId);
             position.getManangers().add(user);
@@ -67,8 +72,10 @@ public class PositionService {
         Position position = positionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         copyDtoToEntity(dto, position);
 
-        // TODO: verificar se não existe um memorando aberto esperando a assinatura desse departamento, caso contrário,
-        //      jogar uma exceção 422 - "Existem memorandos pendentes!"
+        if (dto.getManangers().isEmpty()) {
+            throw new UnprocessableEntityException("É necessário ao menos um gestor para a área.");
+        }
+
         position.getManangers().clear();
         for (Long manangerId : dto.getManangers()) {
             User user = userRepository.getReferenceById(manangerId);

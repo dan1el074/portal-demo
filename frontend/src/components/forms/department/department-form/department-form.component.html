@@ -6,7 +6,7 @@
     <label cLabel for="name2">Nome</label>
   </div>
 
-  <c-multi-select multiple selectionType="text" placeholder="Gestores" [selectAll]="false" formControlName="manangers" class="custom-select mb-3">
+  <c-multi-select multiple selectionType="text" [valid]="!showErrors ? undefined: createForm.get('manangers')?.errors != null ? false : undefined" placeholder="Gestores" [selectAll]="false" formControlName="manangers" class="custom-select mb-3">
     @for (userGroup of users; track userGroup.title) {
       <c-multi-select-optgroup [label]="userGroup.title">
         @for (user of userGroup.childrens; track user.id) {

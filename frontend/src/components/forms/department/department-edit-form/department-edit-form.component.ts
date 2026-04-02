@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
+import { FormFeedbackComponent, MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
 import { ButtonDirective, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
 import { cilPencil, cilX } from '@coreui/icons';
 import { ToastrService } from 'ngx-toastr';
@@ -45,7 +45,7 @@ export class DepartmentEditFormComponent implements OnInit, OnChanges {
   ) {
     this.editForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      manangers: [[]],
+      manangers: [[], [Validators.required]],
       disabled: [false]
     })
   }
