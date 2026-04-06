@@ -110,6 +110,26 @@ public class MemorandoService {
             }
         }
 
+        /// verifica se todos já assinaram
+        boolean leftSign = false;
+
+        for (Position departments : entity.getFromDepartments()) {
+            for (User mananger : departments.getManangers()) {
+                if (entity.getSignaturesUsers().stream().noneMatch(x -> x.getId().equals(mananger.getId()))) {
+                    leftSign = true;
+                    break;
+                }
+            }
+
+            if (leftSign) break;
+        }
+
+        if (!leftSign) {
+            entity.setStatus(MemorandoStatus.APPROVED);
+            logService.system(entity.getId(), "Documento nº %d/%d aprovado por todas as áreas\n"
+                    .formatted(entity.getNumber(), entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
+        }
+
         return new MemorandoDto(entity);
     }
 
