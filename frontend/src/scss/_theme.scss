@@ -423,6 +423,14 @@ mat-paginator.pagination {
   padding: 10px 0;
 }
 
+.form-multi-select-cleaner {
+  display: none !important;
+}
+
+.form-multi-select.show .form-multi-select-cleaner {
+  display: initial !important;
+}
+
 c-tabs-list {
   overflow-y: hidden;
   padding-bottom: 2px;

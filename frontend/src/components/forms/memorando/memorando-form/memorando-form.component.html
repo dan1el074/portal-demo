@@ -19,7 +19,7 @@
     [selectAll]="false"
     [valid]="!showErrors ? undefined : createForm.get('items')?.errors != null ? false : undefined"
     formControlName="items"
-    class="custom-select mb-3"
+    class="custom-select none-cleaner mb-3"
   >
     @for (orderInfo of orderInfoList; track orderInfo.item) {
       <c-multi-select-option [value]="orderInfo.item">
@@ -59,7 +59,7 @@
     [selectAll]="false"
     [valid]="!showErrors ? undefined : createForm.get('departments')?.errors != null ? false : undefined"
     formControlName="departments"
-    class="custom-select mb-3"
+    class="custom-select none-cleaner mb-3"
   >
     @for (department of departments; track department.id) {
       <c-multi-select-option [value]="department.id">
