@@ -156,12 +156,6 @@ public class MemorandoService {
 
         dtoToEntity(dto, entity);
 
-        /// verificar se o status mudou para PUBLISH
-        if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
-            if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
-            if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
-        }
-
         /// verificar se o departamento de origem está listado (se não, adiciona no início)
         Memorando finalmemorando = entity;
         if (entity.getFromDepartments().stream().noneMatch(x ->
@@ -169,7 +163,11 @@ public class MemorandoService {
             entity.getFromDepartments().addFirst(finalmemorando.getCreatedBy().getPosition());
         }
 
+        /// verificar se o status mudou para PUBLISH
         if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
+            if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
+            if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
+
             logService.create(entity.getId(), "Publicou o documento nº %d/%d".formatted(entity.getNumber(),
                     entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
 
@@ -188,6 +186,26 @@ public class MemorandoService {
                             entity.getId(), me, mananger);
                 }
             }
+        }
+
+        /// verifica se todos já assinaram
+        boolean leftSign = false;
+
+        for (Position departments : entity.getFromDepartments()) {
+            for (User mananger : departments.getManangers()) {
+                if (entity.getSignaturesUsers().stream().noneMatch(x -> x.getId().equals(mananger.getId()))) {
+                    leftSign = true;
+                    break;
+                }
+            }
+
+            if (leftSign) break;
+        }
+
+        if (!leftSign) {
+            entity.setStatus(MemorandoStatus.APPROVED);
+            logService.system(entity.getId(), "Documento nº %d/%d aprovado por todas as áreas\n"
+                    .formatted(entity.getNumber(), entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
         }
 
         entity = memorandoRepository.save(entity);
