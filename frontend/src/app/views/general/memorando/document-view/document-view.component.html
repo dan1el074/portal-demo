@@ -133,7 +133,7 @@
           <div class="departments">
             @for (signature of signatures; track signature.position; let idx = $index) {
               <c-form-check>
-                <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="signature.check" />
+                <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="signature.check || item.status == 'APPROVED'" />
                 <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ signature.position }}</label>
                 <div class="signature">
                   @if (signature.signedBy) {
