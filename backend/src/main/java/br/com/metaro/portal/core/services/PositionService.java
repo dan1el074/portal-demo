@@ -91,7 +91,7 @@ public class PositionService {
         Position position = positionRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         /// verifica se o departamento está em uso por algum usuário, se sim, jogar uma exceção
-        if (position.getUsers().isEmpty()) {
+        if (!position.getUsers().isEmpty()) {
             throw new UnprocessableEntityException("Existem usuários vinculados a esse departamento!");
         }
 

@@ -205,8 +205,8 @@ export class DocumentViewComponent implements OnInit {
         this.toggleSignModal();
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.toasterService.error('Erro ao assinar Memorando!');
+      error: (error) => {
+        this.toasterService.error(error.error.error);
       }
     });
   }
@@ -242,7 +242,9 @@ export class DocumentViewComponent implements OnInit {
         this.togglePublishModal();
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao atualizar Memorando!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -262,7 +264,9 @@ export class DocumentViewComponent implements OnInit {
         this.toggleCancelModal();
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao cancelar Memorando!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -284,7 +288,9 @@ export class DocumentViewComponent implements OnInit {
         this.toggleRollbackModal();
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao reiniciar Memorando!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -304,7 +310,9 @@ export class DocumentViewComponent implements OnInit {
         this.toasterService.success('Memorando deletado com sucesso!');
         this.router.navigateByUrl('general/memorando');
       },
-      error: () => this.toasterService.error('Erro ao deletar Memorando!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -332,8 +340,8 @@ export class DocumentViewComponent implements OnInit {
         this.cdr.detectChanges();
         this.toasterService.success('Memorando atualizado com sucesso!');
       },
-      error: () => {
-        this.toasterService.error('Erro ao atualizado Memorando!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
       }
     });
   }

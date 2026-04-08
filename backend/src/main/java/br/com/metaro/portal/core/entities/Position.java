@@ -45,3 +45,5 @@ public class Position {
     @OneToMany(mappedBy = "departmentSigned")
     private List<Signature> memorandoSignatures = new ArrayList<>();
 }
+
+// TODO: adicioar beans validation
