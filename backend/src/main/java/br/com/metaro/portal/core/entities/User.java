@@ -74,10 +74,6 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "manangers")
     private Set<Position> managedPositions = new HashSet<>();
 
-    public List<Memorando> getInteractionsCI() {
-        return signatures.stream().map(Signature::getMemorando).toList();
-    }
-
     public void addRole(Role role) {
         roles.add(role);
     }

@@ -29,6 +29,19 @@
 
 <div class="print-area">
   <div class="paper-container">
+    @if (manangerAlert && item.status == 'PUBLISH') {
+      <c-alert color="warning" class="no-print">
+        Alerta: Foi verificado que <strong>{{ manangerAlert.user.name }}</strong> não participa mais da gestão do departamento de <strong>{{ manangerAlert.department.name }}</strong>.
+
+        @if (isAdmin) {
+          <br>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end alert-buttons">
+            <button cButton color="warning" variant="outline" (click)="toggleUpdateDepartmentModal()">Atualizar assinaturas do setor</button>
+          </div>
+        }
+      </c-alert>
+    }
+
     <div class="paper">
       <c-row>
         <c-col class="align-center flex">
@@ -131,10 +144,10 @@
         <c-col class="flex-col">
           <strong>Departamentos envolvidos:</strong>
           <div class="departments">
-            @for (signature of signatures; track signature.position; let idx = $index) {
+            @for (signature of signatures; track signature.position; let index = $index) {
               <c-form-check>
-                <input cFormCheckInput [id]="'check' + idx" type="checkbox" class="fix" disabled [checked]="signature.check || item.status == 'APPROVED'" />
-                <label cFormCheckLabel [for]="'check' + idx" class="fix">{{ signature.position }}</label>
+                <input cFormCheckInput [id]="'check' + index" type="checkbox" class="fix" disabled [checked]="signature.check || item.status == 'APPROVED'" />
+                <label cFormCheckLabel [for]="'check' + index" class="fix">{{ signature.position }}</label>
                 <div class="signature">
                   @if (signature.signedBy) {
                     <span class="sign">{{ signature.signedBy }}</span>
@@ -143,6 +156,18 @@
               </c-form-check>
             }
           </div>
+          @if (signaturesMissing.length && item.status == 'PUBLISH') {
+            <div class="missing-signatures">
+              <strong>Faltam:</strong>
+              @for (user of signaturesMissing; track user.id; let index = $index) {
+                @if (index == 0) {
+                  {{ user.name }}
+                } @else {
+                  , {{ user.name }}
+                }
+              }
+            </div>
+          }
         </c-col>
       </c-row>
 
@@ -259,3 +284,22 @@
     <button cButton color="danger" (click)="onDelete()" class="fix-button">Deletar</button>
   </c-modal-footer>
 </c-modal>
+
+@if (manangerAlert) {
+  <c-modal [visible]="showUpdateDepartmentModal" (visibleChange)="handleUpdateDepartmentModalChange($event)" alignment="center">
+    <c-modal-header>
+      <h5 cModalTitle>Atualizar Assinaturas - {{ manangerAlert.department.name }}</h5>
+      <button (click)="toggleUpdateDepartmentModal()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+      Ao fazer isso, não só a assinatura de <strong>{{ manangerAlert.user.name }}</strong>
+      será apagada, mas dos outros gestores desse mesmo setor.
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleUpdateDepartmentModal()" cButton color="secondary">
+        Cancelar
+      </button>
+      <button cButton color="danger" (click)="onUpdateDepartment()" class="fix-button">Avançar</button>
+    </c-modal-footer>
+  </c-modal>
+}

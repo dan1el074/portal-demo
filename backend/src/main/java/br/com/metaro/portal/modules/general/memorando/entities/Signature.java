@@ -20,6 +20,7 @@ public class Signature {
     @EmbeddedId
     @EqualsAndHashCode.Include
     private SignaturePK id = new SignaturePK();
+    private Boolean isSign;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
 
@@ -38,8 +39,9 @@ public class Signature {
     @JoinColumn(name = "position_signed_id")
     private Position departmentSigned;
 
-    public Signature(Memorando memorando, User user, Position departmentSigned) {
+    public Signature(Memorando memorando, Boolean isSign, User user, Position departmentSigned) {
         this.memorando = memorando;
+        this.isSign = isSign;
         this.user = user;
         this.departmentSigned = departmentSigned;
         this.createdAt = Instant.now();

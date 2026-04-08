@@ -14,6 +14,19 @@
   margin-bottom: 30px;
   overflow: hidden;
 
+  .alert-buttons {
+    margin-top: 8px;
+
+    button {
+      color: #764705;
+      border: 1px solid #966a2c;
+
+      &:hover {
+        background-color: #ebdab7 !important;
+      }
+    }
+  }
+
   .paper {
     position: relative;
     width: 900px;
@@ -72,13 +85,17 @@
     }
 
     .departments {
-      padding: 20px 20px 20px 30px;
+      padding: 20px 20px 14px 30px;
 
       c-form-check {
         margin-bottom: 12px;
         display: flex;
         gap: 12px;
       }
+    }
+
+    .missing-signatures {
+      padding: 0 0 20px 30px;
     }
 
     .created-by-container {

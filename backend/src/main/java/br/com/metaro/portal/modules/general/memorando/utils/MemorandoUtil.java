@@ -1,5 +1,6 @@
 package br.com.metaro.portal.modules.general.memorando.utils;
 
+import br.com.metaro.portal.core.dto.notification.NotificationDto;
 import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.Position;
@@ -14,6 +15,7 @@ import br.com.metaro.portal.modules.general.memorando.dots.MemorandoInsertDto;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.entities.Signature;
+import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
 import br.com.metaro.portal.modules.general.memorando.services.MemorandoLogService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class MemorandoUtil {
     private MemorandoLogService logService;
     @Autowired
     private ParamService paramService;
+    @Autowired
+    private MemorandoRepository memorandoRepository;
     @Autowired
     private PositionRepository positionRepository;
 
@@ -69,61 +73,62 @@ public class MemorandoUtil {
         return entities;
     }
 
-    public void checkIfAllDepartmentsAreActive(@NotNull Memorando entity) {
-        /// verifica se algum departamento está desativado
-        if (entity.getFromDepartments().stream().anyMatch(p -> p.getActivated().equals(false))) {
-            throw new UnprocessableEntityException("Um ou mais departamentos estão desativados!");
-        }
-    }
+    public void addAllSignatures(@NotNull Memorando entity) {
+        entity.getSignatures().clear();
+        memorandoRepository.flush();
 
-    public void checkIfEveryoneHasSigned(@NotNull Memorando entity) {
-        boolean leftSign = false;
-
-        for (Position departments : entity.getFromDepartments()) {
-            for (User mananger : departments.getManangers()) {
-                if (entity.getSignaturesUsers().stream().noneMatch(x -> x.getId().equals(mananger.getId()))) {
-                    leftSign = true;
-                    break;
-                }
+        for (Position department : entity.getFromDepartments()) {
+            for (User mananger : department.getManangers()) {
+                entity.getSignatures().addLast(new Signature(entity, false, mananger, department));
             }
-
-            if (leftSign) break;
-        }
-
-        if (!leftSign) {
-            entity.setStatus(MemorandoStatus.APPROVED);
-            logService.system(entity.getId(), "Documento nº %d/%d aprovado por todas as áreas\n"
-                    .formatted(entity.getNumber(), entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
         }
     }
 
     public void publishPipeline(@NotNull Memorando entity) {
-        User me = userService.authenticate();
+        if (entity.getSignatures().isEmpty()) {
+            throw new UnprocessableEntityException("Não foram encontradas assinaturas pendentes!");
+        }
 
         logService.create(entity.getId(), "Publicou o documento nº %d/%d".formatted(entity.getNumber(),
                 entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
 
-        for (Position department : entity.getFromDepartments()) {
-            for (User mananger : department.getManangers()) {
-                /// assina se eu for gestor de alguma área
-                if (mananger.getId().equals(me.getId())) {
-                    entity.getSignatures().add(new Signature(entity, me, department));
-                    logService.create(entity.getId(), "Assinou o documento (%s)".formatted(department.getName()));
-                    continue;
-                }
+        sign(entity);
+        notify(entity);
+    }
 
-                /// manda as notificações para os gestores
-                notificationService.create("Memorando nº %d - %s".formatted(entity.getNumber(), entity.getTitle()),
-                        "/general/memorando/%d".formatted(entity.getId()), false, NotificationType.MEMORANDO,
-                        entity.getId(), me, mananger);
+    public void sign (@NotNull Memorando entity) {
+        for (Signature signature : entity.getSignatures()) {
+            User me = userService.authenticate();
+
+            if (signature.getUser().equals(me)) {
+                if (signature.getIsSign()) continue;
+
+                signature.setIsSign(true);
+                logService.create(entity.getId(), "Assinou o documento (%s)"
+                        .formatted(signature.getDepartmentSigned().getName()));
             }
         }
     }
 
-    public void addNumberAndCreatedAt(@NotNull Memorando entity) {
-        if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
-            if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
-            if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
+    public void notify (@NotNull Memorando entity) {
+        for (Signature signature : entity.getSignatures()) {
+            User me = userService.authenticate();
+
+            /// manda as notificações para os gestores
+            if (!signature.getUser().equals(me)) {
+                notificationService.create("Memorando nº %d - %s".formatted(entity.getNumber(), entity.getTitle()),
+                        "/general/memorando/%d".formatted(entity.getId()), false, NotificationType.MEMORANDO,
+                        entity.getId(), me, signature.getUser());
+            }
+        }
+    }
+
+    public void checkIfEveryoneHasSigned(@NotNull Memorando entity) {
+        if (entity.getSignatures().stream().noneMatch(s -> s.getIsSign().equals(false))) {
+            entity.setStatus(MemorandoStatus.APPROVED);
+
+            logService.system(entity.getId(), "Documento nº %d/%d aprovado por todas as áreas\n"
+                    .formatted(entity.getNumber(), entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
         }
     }
 
@@ -135,10 +140,35 @@ public class MemorandoUtil {
         }
     }
 
+    public void checkIfAllDepartmentsAreActive(@NotNull Memorando entity) {
+        /// verifica se algum departamento está desativado
+        if (entity.getFromDepartments().stream().anyMatch(p -> p.getActivated().equals(false))) {
+            throw new UnprocessableEntityException("Um ou mais departamentos estão desativados!");
+        }
+    }
+
+    public void addNumberAndCreatedAt(@NotNull Memorando entity) {
+        if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
+            if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
+            if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
+        }
+    }
+
     public void removeNotifications(@NotNull Memorando entity) {
         List<Notification> notifications = notificationService.findByReferenceIdAndType(entity.getId(), NotificationType.MEMORANDO);
         for (Notification notification : notifications) {
             notificationService.delete(notification.getId(), notification.getUser().getId());
+        }
+    }
+
+    public void removeUserNotification(@NotNull Long memorandoId, @NotNull Long userId) {
+        for (NotificationDto notification : notificationService.listByUser(userId)) {
+            if (
+                notification.getType().equals(NotificationType.MEMORANDO.name())
+                && notification.getReferenceId().equals(memorandoId)
+            ) {
+                notificationService.delete(notification.getId(), userId);
+            }
         }
     }
 

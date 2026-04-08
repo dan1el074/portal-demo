@@ -1,6 +1,7 @@
 package br.com.metaro.portal.modules.general.memorando.controllers;
 
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoDto;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoIgnoreDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoInsertDto;
 import br.com.metaro.portal.modules.general.memorando.services.MemorandoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,12 @@ public class MemorandoController {
     public ResponseEntity<MemorandoDto> rollback(@PathVariable Long id) {
         MemorandoDto dto = memorandoService.rollback(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping(value = "/updateSignatures/{id}")
+    public ResponseEntity<MemorandoDto> updateSignatures(@PathVariable Long id, @RequestBody MemorandoIgnoreDto dto) {
+        MemorandoDto memorandoDto = memorandoService.updateSignatures(id, dto);
+        return ResponseEntity.ok(memorandoDto);
     }
 
     @DeleteMapping(value = "/{id}")
