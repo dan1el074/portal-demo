@@ -4,11 +4,14 @@ import br.com.metaro.portal.core.dto.notification.NotificationDto;
 import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.Position;
 import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.core.repositories.PositionRepository;
+import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.services.NotificationService;
 import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoIgnoreDto;
 import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
@@ -23,21 +26,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 public class MemorandoService {
-
+    @Autowired
+    private MemorandoUtil util;
     @Autowired
     private MemorandoRepository memorandoRepository;
     @Autowired
-    private UserService userService;
-    @Autowired
     private MemorandoLogService logService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private MemorandoUtil util;
+    private PositionRepository positionRepository;
 
     @Transactional(readOnly = true)
     public List<MemorandoDto> findAll() {
@@ -75,6 +80,7 @@ public class MemorandoService {
 
         util.addMyDepartment(entity);
         util.addNumberAndCreatedAt(entity);
+        util.addAllSignatures(entity);
 
         entity = memorandoRepository.save(entity);
         logService.create(entity.getId(), "Criou o documento");
@@ -82,6 +88,7 @@ public class MemorandoService {
         if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
             util.publishPipeline(entity);
             util.checkIfEveryoneHasSigned(entity);
+            entity = memorandoRepository.save(entity);
         }
 
         return new MemorandoDto(entity);
@@ -114,10 +121,11 @@ public class MemorandoService {
         util.addNumberAndCreatedAt(entity);
 
         if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
+            util.addAllSignatures(entity);
             util.publishPipeline(entity);
+            util.checkIfEveryoneHasSigned(entity);
         }
 
-        util.checkIfEveryoneHasSigned(entity);
         entity = memorandoRepository.save(entity);
         return new MemorandoDto(entity);
     }
@@ -132,35 +140,8 @@ public class MemorandoService {
 
         User me = userService.authenticate();
 
-        /// verifica se eu já assinei
-        if (entity.getSignatures().stream().anyMatch(x -> x.getUser().getId().equals(me.getId()))) {
-            throw new UnprocessableEntityException("Você já assinou esse documento!");
-        }
-
-        /// assina somente se eu for um dos gestores
-        boolean signed = false;
-
-        for (Position department : entity.getFromDepartments()) {
-            for (User mananger : department.getManangers()) {
-                if (!mananger.getId().equals(me.getId())) continue;
-
-                entity.getSignatures().add(new Signature(entity, me, department));
-                logService.create(entity.getId(), "Assinou o documento (%s)".formatted(department.getName()));
-                signed = true;
-            }
-        }
-
-        if (!signed) throw new UnprocessableEntityException("Somente gestores podem assinar o Memorando!");
-
-        /// remove minha notificação
-        for (NotificationDto notification : notificationService.listByUser(me.getId())) {
-            if (
-                notification.getType().equals(NotificationType.MEMORANDO.name())
-                && notification.getReferenceId().equals(entity.getId())
-            ) {
-                notificationService.delete(notification.getId(), me.getId());
-            }
-        }
+        util.sign(entity);
+        util.removeUserNotification(entity.getId(), me.getId());
 
         util.checkIfEveryoneHasSigned(entity);
         entity = memorandoRepository.save(entity);
@@ -205,17 +186,50 @@ public class MemorandoService {
         User me = userService.authenticate();
 
         if (me.getAuthorities().stream().noneMatch(x -> x.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new UnprocessableEntityException("Somente administradores podem usar a opção \"rollback\"");
+            throw new UnprocessableEntityException("Somente administradores podem usar a opção rollback");
         }
 
         entity.setStatus(MemorandoStatus.CREATED);
         logService.create(entity.getId(), "Voltou o documento para status inicial");
         util.removeNotifications(entity);
+        util.addAllSignatures(entity);
 
-        /// remove todas as assinaturas
-        entity.getSignatures().clear();
+        entity = memorandoRepository.save(entity);
+        return new MemorandoDto(entity);
+    }
+
+    @Transactional
+    public MemorandoDto updateSignatures(Long id, MemorandoIgnoreDto dto) {
+        Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+
+        if (!entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
+            throw new UnprocessableEntityException("Somente registros com status publicado podem ser atualizados!");
+        }
+
+        User me = userService.authenticate();
+        if (me.getAuthorities().stream().noneMatch(x -> x.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new UnprocessableEntityException("Somente administradores podem atualizar documentos!");
+        }
+
+        util.removeUserNotification(entity.getId(), dto.getUserId());
+
+        /// atualizar assinaturas e notificações
+        Position department = positionRepository.findById(dto.getDepartmentId()).orElseThrow(ResourceNotFoundException::new);
+        entity.getSignatures().removeIf(s -> s.getDepartmentSigned().getId().equals(department.getId()));
         memorandoRepository.flush();
 
+        for (User mananger : department.getManangers()) {
+            entity.getSignatures().addLast(new Signature(entity, false, mananger, department));
+
+            notificationService.create("Memorando nº %d - %s".formatted(entity.getNumber(), entity.getTitle()),
+                    "/general/memorando/%d".formatted(entity.getId()), false, NotificationType.MEMORANDO,
+                    entity.getId(), entity.getCreatedBy(), mananger);
+        }
+
+        /// log de atualização
+        logService.create(entity.getId(), "Assinaturas de %s atualizadas".formatted(department.getName()));
+
+        util.checkIfEveryoneHasSigned(entity);
         entity = memorandoRepository.save(entity);
         return new MemorandoDto(entity);
     }
@@ -225,7 +239,7 @@ public class MemorandoService {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (!entity.getStatus().equals(MemorandoStatus.CREATED)) {
-            throw new UnprocessableEntityException("Apenas registros com o status \"Salvo\" podem ser deletados!");
+            throw new UnprocessableEntityException("Apenas registros com o status CREATED podem ser deletados!");
         }
 
         if (entity.getNumber() != null) {

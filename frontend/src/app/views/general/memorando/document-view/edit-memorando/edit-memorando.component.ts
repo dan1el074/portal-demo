@@ -43,7 +43,7 @@ export class EditMemorandoComponent implements OnInit {
       },
       picture: null
     },
-    signature: [],
+    signatures: [],
     signatureSummary: [],
     fromDepartments: [],
     status: '',

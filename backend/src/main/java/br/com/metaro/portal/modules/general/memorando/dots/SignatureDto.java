@@ -13,9 +13,11 @@ import lombok.NoArgsConstructor;
 public class SignatureDto {
     private UserSummaryDto user;
     private PositionDto departmentSigned;
+    private Boolean isSign;
 
     public SignatureDto(Signature entity) {
         user = new UserSummaryDto(entity.getUser());
         departmentSigned = new PositionDto(entity.getDepartmentSigned());
+        isSign = entity.getIsSign();
     }
 }
