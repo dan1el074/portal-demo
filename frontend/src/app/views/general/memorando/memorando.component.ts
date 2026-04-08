@@ -103,7 +103,9 @@ export class MemorandoComponent implements OnInit {
         this.toasterService.success("Memorando criada com sucesso!");
         this.router.navigate(['general/memorando/' + newMemorando.id]);
       },
-      error: () => this.toasterService.error("Erro ao criar CI!")
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 }

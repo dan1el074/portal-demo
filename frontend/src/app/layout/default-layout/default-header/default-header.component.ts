@@ -80,5 +80,4 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       });
     }
   }
-
 }

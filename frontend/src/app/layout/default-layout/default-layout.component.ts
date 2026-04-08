@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
@@ -8,7 +8,6 @@ import { Me } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/websocket.service';
-import { AuthGuard } from '../../config/authGuard';
 
 @Component({
   selector: 'app-dashboard',
@@ -50,10 +49,8 @@ export class DefaultLayoutComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private cdr: ChangeDetectorRef,
     private notificationService: NotificationService,
     private wsService: NotificationWebSocketService,
-    private authGuard: AuthGuard
   ) {}
 
   public ngOnInit() {
@@ -112,7 +109,6 @@ export class DefaultLayoutComponent implements OnInit {
     }
 
     this.navItems = [...tempNavItems];
-    this.cdr.detectChanges();
   }
 
   private connectWebsocket(): void {

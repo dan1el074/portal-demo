@@ -113,7 +113,9 @@ export class UsersComponent implements OnInit {
         this.toasterService.success('Usuário criado com sucesso!');
         this.toggleNewUserTab(false)
       },
-      error: () => this.toasterService.error('Erro ao criar usuário!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -168,7 +170,9 @@ export class UsersComponent implements OnInit {
           this.userService.refreshUser().subscribe();
         }
       },
-      error: () => this.toasterService.error('Erro ao editar usuário!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -179,7 +183,7 @@ export class UsersComponent implements OnInit {
         this.toasterService.success("Usuário editado com sucesso!");
       },
       error: (error) => {
-        this.toasterService.error('Erro ao editar usuário!', error.message);
+        this.toasterService.error(error.error.error);
       }
     })
   }

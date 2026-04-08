@@ -96,7 +96,9 @@ export class DepartmentsComponent implements OnInit {
         this.toggleEditDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao editar departamento!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -118,7 +120,9 @@ export class DepartmentsComponent implements OnInit {
         this.toggleCreateDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao criar departamento!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 
@@ -130,7 +134,9 @@ export class DepartmentsComponent implements OnInit {
         this.toggleCreateDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao desativar departamento!')
+      error: (error) => {
+        this.toasterService.error(error.error.error);
+      }
     });
   }
 }

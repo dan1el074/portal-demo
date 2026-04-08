@@ -39,11 +39,8 @@ export class ConfigComponent implements OnInit {
     this.userService.getUserConfig().subscribe({
       next: data =>  {
         this.userData = data;
-
-        setTimeout(() => {
-          this.loaded = true
-          this.cdr.detectChanges();
-        }, 400);
+        this.loaded = true
+        this.cdr.detectChanges();
       },
       error: () => this.toasterService.error('Erro ao carregar dados do usuário!')
     });
@@ -54,10 +51,10 @@ export class ConfigComponent implements OnInit {
       next: () => {
         this.userService.refreshUser().subscribe({
           next: () => this.toasterService.success('Configurações salvas com sucesso!'),
-          error: () => this.toasterService.error('Erro inesperado, contate um administrador!')
+          error: (error) => this.toasterService.error(error.error.error)
         });
       },
-      error: () => this.toasterService.error('Erro ao atualizar dados do usuário!')
+      error: (error) => this.toasterService.error(error.error.error)
     });
   }
 }

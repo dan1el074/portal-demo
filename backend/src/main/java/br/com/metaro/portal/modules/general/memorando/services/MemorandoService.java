@@ -80,7 +80,8 @@ public class MemorandoService {
 
         util.addMyDepartment(entity);
         util.addNumberAndCreatedAt(entity);
-        util.addAllSignatures(entity);
+
+        if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) util.addAllSignatures(entity);
 
         entity = memorandoRepository.save(entity);
         logService.create(entity.getId(), "Criou o documento");
@@ -227,7 +228,7 @@ public class MemorandoService {
         }
 
         /// log de atualização
-        logService.create(entity.getId(), "Assinaturas de %s atualizadas".formatted(department.getName()));
+        logService.create(entity.getId(), "Removeu e atualizou as assinaturas de %s".formatted(department.getName()));
 
         util.checkIfEveryoneHasSigned(entity);
         entity = memorandoRepository.save(entity);
@@ -243,7 +244,7 @@ public class MemorandoService {
         }
 
         if (entity.getNumber() != null) {
-            throw new UnprocessableEntityException("Apenas registros sem número registrado porem ser deletados!");
+            throw new UnprocessableEntityException("Apenas documentos sem número registrado porem ser deletados!");
         }
 
         memorandoRepository.deleteById(id);

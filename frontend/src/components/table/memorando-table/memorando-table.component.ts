@@ -44,8 +44,10 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
   protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
 
   ngOnChanges(): void {
-    if (this.data && this.data.length > 0) {
+    if (this.data && this.data.length) {
       this.data = this.data.sort((a, b) => {
+        if (!a.number || !b.number || !a.createAt || !b.createAt) return 0;
+
         const aYear = new Date(a.createAt).getFullYear();
         const aNumberPadded = a.number.toString().padStart(6, '0');
         const aRes = Number(`${aYear}${aNumberPadded}`);
@@ -95,5 +97,4 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
       };
     };
   }
-
 }

@@ -52,8 +52,6 @@ public class Memorando {
         cascade = CascadeType.ALL,
         orphanRemoval = true)
     private List<Signature> signatures = new ArrayList<>();
-
-    public List<User> getSignaturesUsers() {
-        return signatures.stream().map(Signature::getUser).toList();
-    }
 }
+
+// TODO: adicioar beans validation

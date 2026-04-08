@@ -102,6 +102,9 @@ public class MemorandoUtil {
 
             if (signature.getUser().equals(me)) {
                 if (signature.getIsSign()) continue;
+                if (signature.getDepartmentSigned().getManangers().stream().noneMatch(u -> u.equals(me))) {
+                    throw new UnprocessableEntityException("Somente gestores podem assinar um Memorando!");
+                }
 
                 signature.setIsSign(true);
                 logService.create(entity.getId(), "Assinou o documento (%s)"
@@ -141,9 +144,27 @@ public class MemorandoUtil {
     }
 
     public void checkIfAllDepartmentsAreActive(@NotNull Memorando entity) {
-        /// verifica se algum departamento está desativado
-        if (entity.getFromDepartments().stream().anyMatch(p -> p.getActivated().equals(false))) {
-            throw new UnprocessableEntityException("Um ou mais departamentos estão desativados!");
+        int count = 0;
+        String departments = "";
+
+        for (Position position : entity.getFromDepartments()) {
+            if (position.getActivated().equals(false)) {
+                count++;
+
+                if (count == 1) {
+                    departments = position.getName();
+                    continue;
+                }
+
+                departments = departments.concat(", %s".formatted(position.getName()));
+            }
+        }
+
+        if (count == 1) {
+            throw new UnprocessableEntityException("O departamento de %s está desativado!".formatted(departments));
+        }
+        if (count > 1) {
+            throw new UnprocessableEntityException("Os seguintes departamentos estão desativados: %s".formatted(departments));
         }
     }
 
