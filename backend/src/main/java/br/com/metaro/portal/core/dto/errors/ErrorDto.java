@@ -5,14 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class CustomErrorDto {
+public class ErrorDto {
     private Instant timestamp;
     private Integer status;
-    private List<FieldMessageDto> errors;
+    private String error;
     private String path;
 }

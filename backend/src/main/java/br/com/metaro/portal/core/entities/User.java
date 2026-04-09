@@ -117,5 +117,3 @@ public class User implements UserDetails {
         return this.activated;
     }
 }
-
-// TODO: adicioar beans validation

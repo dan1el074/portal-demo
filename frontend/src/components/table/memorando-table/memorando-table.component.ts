@@ -9,7 +9,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { environment } from '../../../environments/environment';
-import { Memorando } from '../../../app/interface/memorando.interface';
+import { Memorando, MemorandoList } from '../../../app/interface/memorando.interface';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -35,12 +35,12 @@ import { RouterLink } from '@angular/router';
 export class MemorandoTableComponent implements AfterViewInit, OnChanges {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @Input() data!: Array<Memorando>;
+  @Input() data!: Array<MemorandoList>;
   @Input() noMargin: boolean = false;
 
   protected apiUrl = environment.apiUrl;
   protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'signature', 'createdAt', 'buttons'];
-  protected dataSource = new MatTableDataSource<Memorando>([]);
+  protected dataSource = new MatTableDataSource<MemorandoList>([]);
   protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
 
   ngOnChanges(): void {
@@ -72,7 +72,7 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    this.dataSource.sortingDataAccessor = (item: Memorando, property: string) => {
+    this.dataSource.sortingDataAccessor = (item: MemorandoList, property: string) => {
       switch (property) {
         case 'memorandoNumber': {
           const year = new Date(item.createAt).getFullYear();

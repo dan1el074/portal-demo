@@ -1,10 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthGuard } from '../../../../../config/authGuard';
+import { CommonModule } from '@angular/common';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
 import { ToastrService } from 'ngx-toastr';
+import { AuthGuard } from '../../../../../config/authGuard';
 import { MemorandoService } from '../../../../../services/memorando.service';
+import { ErrorService } from '../../../../../services/error.service';
 import { Memorando, NewMemorando } from '../../../../../interface/memorando.interface';
 import { MemorandoEditFormComponent } from '../../../../../../components/forms/memorando/memorando-edit-form/memorando-edit-form.component';
 
@@ -44,7 +45,6 @@ export class EditMemorandoComponent implements OnInit {
       picture: null
     },
     signatures: [],
-    signatureSummary: [],
     fromDepartments: [],
     status: '',
     logs: []
@@ -55,6 +55,7 @@ export class EditMemorandoComponent implements OnInit {
     private router: Router,
     private memorandoService: MemorandoService,
     private toasterService: ToastrService,
+    private errorService: ErrorService,
     private authGuardService: AuthGuard,
     private cdr: ChangeDetectorRef
   ) { }
@@ -101,12 +102,10 @@ export class EditMemorandoComponent implements OnInit {
   protected editTask(data: NewMemorando): void {
     this.memorandoService.update(this.editData.id, data).subscribe({
       next: () => {
-        this.toasterService.success('CI atualizada com sucesso!');
+        this.toasterService.success('Memorando atualizada com sucesso!');
         this.router.navigateByUrl('general/memorando/' + this.editData.id);
       },
-      error: () => {
-        this.toasterService.error('Erro ao atualizar CI!');
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 }

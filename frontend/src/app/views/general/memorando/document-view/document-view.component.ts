@@ -1,16 +1,17 @@
-import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
-import { ToastrService } from 'ngx-toastr';
-import { MemorandoService } from './../../../../services/memorando.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } from '../../../../interface/memorando.interface';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { cilPrint } from '@coreui/icons';
-import { AuthGuard } from '../../../../config/authGuard';
-import { Me, UserSummary } from '../../../../interface/user.interface';
-import { NotificationWebSocketService } from '../../../../services/websocket.service';
+import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
+import { cilPrint } from '@coreui/icons';
+import { ToastrService } from 'ngx-toastr';
+import { AuthGuard } from '../../../../config/authGuard';
+import { MemorandoService } from './../../../../services/memorando.service';
+import { NotificationWebSocketService } from '../../../../services/websocket.service';
+import { ErrorService } from '../../../../services/error.service';
 import { Position } from '../../../../interface/position.interface';
+import { Me, UserSummary } from '../../../../interface/user.interface';
+import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } from '../../../../interface/memorando.interface';
 
 @Component({
   selector: 'app-document-view',
@@ -70,7 +71,6 @@ export class DocumentViewComponent implements OnInit {
       picture: null
     },
     signatures: [],
-    signatureSummary: [],
     fromDepartments: [],
     status: '',
     logs: []
@@ -82,6 +82,7 @@ export class DocumentViewComponent implements OnInit {
     private websocket: NotificationWebSocketService,
     private memorandoService: MemorandoService,
     private toasterService: ToastrService,
+    private errorService: ErrorService,
     private authGuardService: AuthGuard,
     private cdr: ChangeDetectorRef
   ) { }
@@ -205,9 +206,7 @@ export class DocumentViewComponent implements OnInit {
         this.toggleSignModal();
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -242,9 +241,7 @@ export class DocumentViewComponent implements OnInit {
         this.togglePublishModal();
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -264,9 +261,7 @@ export class DocumentViewComponent implements OnInit {
         this.toggleCancelModal();
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -288,9 +283,7 @@ export class DocumentViewComponent implements OnInit {
         this.toggleRollbackModal();
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -310,9 +303,7 @@ export class DocumentViewComponent implements OnInit {
         this.toasterService.success('Memorando deletado com sucesso!');
         this.router.navigateByUrl('general/memorando');
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -340,9 +331,7 @@ export class DocumentViewComponent implements OnInit {
         this.cdr.detectChanges();
         this.toasterService.success('Memorando atualizado com sucesso!');
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 }

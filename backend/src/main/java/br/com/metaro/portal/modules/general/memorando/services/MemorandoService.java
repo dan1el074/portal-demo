@@ -69,6 +69,14 @@ public class MemorandoService {
     @Transactional
     public MemorandoDto insert(MemorandoInsertDto dto) {
         User me = userService.authenticate();
+
+        if (
+            dto.getDepartments().size() < 2 &&
+            dto.getDepartments().getFirst().equals(me.getPosition().getId())
+        ) {
+            throw new UnprocessableEntityException("É necessário ao menos 2 departamentos para continuar!");
+        }
+
         Memorando entity = new Memorando();
 
         util.dtoToEntity(dto, entity);
@@ -108,7 +116,10 @@ public class MemorandoService {
             throw new ForbiddenException("Você só pode editar um Memorando que criou!");
         }
 
-        if (dto.getDepartments().size() < 2) {
+        if (
+            dto.getDepartments().size() < 2 &&
+            dto.getDepartments().getFirst().equals(me.getPosition().getId())
+        ) {
             throw new UnprocessableEntityException("É necessário ao menos 2 departamentos para continuar!");
         }
 

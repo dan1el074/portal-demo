@@ -150,7 +150,7 @@ public class UserService implements UserDetailsService {
     private void rulesForUpdate(UserInsertDto dto, User entity, String resetPicture) throws IOException {
         entity.setName(dto.getName());
         entity.setPosition(positionRepository.getReferenceById(Long.valueOf(dto.getPosition())));
-        entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
+        entity.setBirthDate(dto.getBirthDate());
         entity.setEmail(dto.getEmail());
         entity.setUsername(dto.getUsername());
         entity.setActivated(dto.getActivated().equals("true"));
@@ -209,7 +209,7 @@ public class UserService implements UserDetailsService {
     private void rulesForUpdateConfig(UserConfigInsertDto dto, User entity, String resetPicture) throws IOException {
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
-        entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
+        entity.setBirthDate(dto.getBirthDate());
         entity.setUpdateAt(Instant.now());
 
         if (dto.getPassword() != null) {
@@ -242,7 +242,7 @@ public class UserService implements UserDetailsService {
     private void rulesForInsert(UserInsertDto dto, User entity) throws IOException {
         entity.setName(dto.getName());
         entity.setPosition(positionRepository.getReferenceById(Long.valueOf(dto.getPosition())));
-        entity.setBirthDate(LocalDate.parse(dto.getBirthDate()));
+        entity.setBirthDate(dto.getBirthDate());
         entity.setEmail(dto.getEmail());
         entity.setUsername(dto.getUsername());
         entity.setActivated(dto.getActivated().equals("true"));

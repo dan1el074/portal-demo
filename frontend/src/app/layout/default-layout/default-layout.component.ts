@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
@@ -51,6 +51,7 @@ export class DefaultLayoutComponent implements OnInit {
     private userService: UserService,
     private notificationService: NotificationService,
     private wsService: NotificationWebSocketService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   public ngOnInit() {
@@ -109,6 +110,7 @@ export class DefaultLayoutComponent implements OnInit {
     }
 
     this.navItems = [...tempNavItems];
+    this.cdr.detectChanges();
   }
 
   private connectWebsocket(): void {
