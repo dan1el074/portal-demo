@@ -3,6 +3,7 @@ package br.com.metaro.portal.modules.general.memorando.controllers;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoIgnoreDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoInsertDto;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoListDto;
 import br.com.metaro.portal.modules.general.memorando.services.MemorandoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ public class MemorandoController {
     private MemorandoService memorandoService;
 
     @GetMapping
-    public ResponseEntity<List<MemorandoDto>> findAll() {
-        List<MemorandoDto> dtos = memorandoService.findAll();
+    public ResponseEntity<List<MemorandoListDto>> findAll() {
+        List<MemorandoListDto> dtos = memorandoService.findAll();
         return ResponseEntity.ok(dtos);
     }
 
