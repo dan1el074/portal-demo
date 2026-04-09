@@ -121,6 +121,5 @@ export class MemorandoFormComponent implements OnInit, OnChanges {
     }
 
     this.createTask.emit(this.createForm.value);
-    this.onExit();
   }
 }

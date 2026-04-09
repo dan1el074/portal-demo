@@ -53,5 +53,3 @@ public class Memorando {
         orphanRemoval = true)
     private List<Signature> signatures = new ArrayList<>();
 }
-
-// TODO: adicioar beans validation

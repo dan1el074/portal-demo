@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UserFormComponent } from '../../../../components/forms/user/user-form/user-form.component';
 import { UserEditFormComponent } from '../../../../components/forms/user/user-edit-form/user-edit-form.component';
 import { UserTableComponent } from '../../../../components/table/user-table/user-table.component';
+import { ErrorService } from './../../../services/error.service';
 import { UserService } from './../../../services/user.service';
 import { PostitionService } from '../../../services/position.service';
 import { RoleService } from './../../../services/role.service';
@@ -59,6 +60,7 @@ export class UsersComponent implements OnInit {
     private userService: UserService,
     private postitionService: PostitionService,
     private roleService: RoleService,
+    private errorService: ErrorService,
     private toasterService: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -113,9 +115,7 @@ export class UsersComponent implements OnInit {
         this.toasterService.success('Usuário criado com sucesso!');
         this.toggleNewUserTab(false)
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -170,9 +170,7 @@ export class UsersComponent implements OnInit {
           this.userService.refreshUser().subscribe();
         }
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -182,9 +180,7 @@ export class UsersComponent implements OnInit {
         this.updateUsers(data);
         this.toasterService.success("Usuário editado com sucesso!");
       },
-      error: (error) => {
-        this.toasterService.error(error.error.error);
-      }
+      error: (error) => this.errorService.showError(error)
     })
   }
 }

@@ -277,6 +277,5 @@ export class UserEditFormComponent implements OnChanges {
 
     // // send to the father component
     this.editTask.emit({data: formData, id: this.userData.id});
-    this.onExit();
   }
 }

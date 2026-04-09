@@ -2,7 +2,9 @@ package br.com.metaro.portal.core.controller;
 
 import br.com.metaro.portal.core.dto.user.*;
 import br.com.metaro.portal.core.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -53,35 +55,19 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
 
-    @PutMapping(value = "/config")
+    @PutMapping(value = "/config", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserConfigDto> updateConfig(
-            @RequestPart(name = "picture", required = false) MultipartFile picture,
-            @RequestPart(name = "resetPicture", required = false) String resetPicture,
-            @RequestPart("name") String name,
-            @RequestPart("email") String email,
-            @RequestPart("birthDate") String birthDate,
-            @RequestPart(name = "password", required = false) String password
+            @RequestParam(name = "resetPicture", required = false) String resetPicture,
+            @Valid @ModelAttribute UserConfigInsertDto dto
     ) throws IOException {
-        userService.updateConfig(new UserConfigInsertDto(picture, name, email, birthDate, password), resetPicture);
+        userService.updateConfig(dto, resetPicture);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL')")
-    @PostMapping
-    public ResponseEntity<List<UserMinDto>> insert(
-            @RequestPart(name = "picture", required = false) MultipartFile picture,
-            @RequestPart("name") String name,
-            @RequestPart("position") String position,
-            @RequestPart("email") String email,
-            @RequestPart("birthDate") String birthDate,
-            @RequestPart("username") String username,
-            @RequestPart("password") String password,
-            @RequestPart("roles") String roles,
-            @RequestPart("activated") String activated,
-            @RequestPart(name = "supportToken", required = false) String supportToken
-    ) throws IOException {
-        UserMinDto userMinDto = userService.insert(new UserInsertDto(picture, name, position, email, birthDate, username,
-                password, roles, activated, supportToken));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<UserMinDto>> insert(@Valid @ModelAttribute UserInsertDto dto) throws IOException {
+        UserMinDto userMinDto = userService.insert(dto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
@@ -92,23 +78,13 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL')")
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<UserMinDto>> update(
             @PathVariable Long id,
-            @RequestPart(name = "picture", required = false) MultipartFile picture,
-            @RequestPart(name = "resetPicture", required = false) String resetPicture,
-            @RequestPart("name") String name,
-            @RequestPart("position") String position,
-            @RequestPart("email") String email,
-            @RequestPart("birthDate") String birthDate,
-            @RequestPart("username") String username,
-            @RequestPart(name = "password", required = false) String password,
-            @RequestPart("roles") String roles,
-            @RequestPart("activated") String activated,
-            @RequestPart(name ="supportToken", required = false) String supportToken
+            @RequestParam(name = "resetPicture", required = false) String resetPicture,
+            @Valid @ModelAttribute UserInsertDto dto
     ) throws IOException {
-        List<UserMinDto> dtos = userService.update(id, new UserInsertDto(picture, name, position, email, birthDate,
-                username, password, roles, activated, supportToken), resetPicture);
+        List<UserMinDto> dtos = userService.update(id, dto, resetPicture);
         return ResponseEntity.ok(dtos);
     }
 

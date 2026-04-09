@@ -4,6 +4,7 @@ import br.com.metaro.portal.modules.general.memorando.dots.MemorandoDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoIgnoreDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoInsertDto;
 import br.com.metaro.portal.modules.general.memorando.services.MemorandoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class MemorandoController {
     }
 
     @PostMapping
-    public ResponseEntity<MemorandoDto> insert(@RequestBody MemorandoInsertDto insertDto) {
+    public ResponseEntity<MemorandoDto> insert(@Valid @RequestBody MemorandoInsertDto insertDto) {
         MemorandoDto dto = memorandoService.insert(insertDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
@@ -42,7 +43,7 @@ public class MemorandoController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<MemorandoDto> update(@PathVariable Long id, @RequestBody MemorandoInsertDto dto) {
+    public ResponseEntity<MemorandoDto> update(@PathVariable Long id, @Valid @RequestBody MemorandoInsertDto dto) {
         MemorandoDto newDto = memorandoService.update(id, dto);
         return ResponseEntity.ok(newDto);
     }

@@ -30,6 +30,7 @@ export class LoginComponent implements OnInit {
   public ngOnInit(): void {
     document.documentElement.setAttribute('data-coreui-theme', 'light');
     this.loginService.logout();
+    setTimeout(() => console.clear(), 200);
   }
 
   protected async onLogin(credentials: Credential): Promise<void> {

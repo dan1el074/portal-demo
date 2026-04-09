@@ -1,3 +1,4 @@
+import { CustomError, FieldMessage } from './../../interface/error.interface';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
@@ -6,6 +7,7 @@ import { UserService } from '../../services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-config',
@@ -29,6 +31,7 @@ export class ConfigComponent implements OnInit {
   constructor(
     private userService: UserService,
     private toasterService: ToastrService,
+    private errorService: ErrorService,
     private spinner: NgxSpinnerService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -54,7 +57,7 @@ export class ConfigComponent implements OnInit {
           error: (error) => this.toasterService.error(error.error.error)
         });
       },
-      error: (error) => this.toasterService.error(error.error.error)
+      error: (error) => this.errorService.showError(error)
     });
   }
 }

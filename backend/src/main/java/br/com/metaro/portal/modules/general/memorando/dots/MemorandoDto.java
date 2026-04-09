@@ -36,9 +36,6 @@ public class MemorandoDto {
     private MemorandoStatus status;
     private List<MemorandoLogDto> logs;
 
-    // TODO: extrair isso para um outro DTO, usado somente para listar os itens na tabela do frontend
-    private Set<UserSummaryDto> signatureSummary;
-
     public MemorandoDto(Memorando entity) {
         id = entity.getId();
         number = entity.getNumber();
@@ -54,7 +51,6 @@ public class MemorandoDto {
         items.addAll(entity.getItems());
         fromDepartments = new ArrayList<>();
         signatures = new ArrayList<>();
-        signatureSummary = new HashSet<>();
         logs = new ArrayList<>();
 
         for (Position department : entity.getFromDepartments()) {
@@ -63,12 +59,6 @@ public class MemorandoDto {
 
         for (Signature sign : entity.getSignatures()) {
             signatures.addLast(new SignatureDto(sign));
-            if (
-                sign.getIsSign() &&
-                signatureSummary.stream().noneMatch(s -> s.getName().equals(sign.getUser().getName()))
-            ) {
-                signatureSummary.add(new UserSummaryDto(sign.getUser()));
-            }
         }
 
         for (MemorandoLog log : entity.getLogs()) {

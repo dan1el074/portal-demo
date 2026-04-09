@@ -16,7 +16,16 @@ export interface Memorando {
   signatures: Array<Signature>;
   status: string;
   logs: Array<CILog>
+}
+
+export interface MemorandoList {
+  id: number;
+  number: number;
+  request: number;
+  client: string;
+  status: string;
   signatureSummary: Array<UserSummary>;
+  createAt: string;
 }
 
 export interface NewMemorando {
