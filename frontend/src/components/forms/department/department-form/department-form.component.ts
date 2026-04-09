@@ -85,6 +85,5 @@ export class DepartmentFormComponent implements OnInit{
     }
 
     this.createTask.emit(formImput);
-    this.onExit();
   }
 }

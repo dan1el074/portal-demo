@@ -12,11 +12,20 @@ export interface Memorando {
   reason: string;
   createAt: string;
   user: UserSummary;
-  signature: Array<Signature>;
-  signatureSummary: Array<UserSummary>;
   fromDepartments: Array<Position>;
+  signatures: Array<Signature>;
   status: string;
   logs: Array<CILog>
+}
+
+export interface MemorandoList {
+  id: number;
+  number: number;
+  request: number;
+  client: string;
+  status: string;
+  signatureSummary: Array<UserSummary>;
+  createAt: string;
 }
 
 export interface NewMemorando {
@@ -32,7 +41,8 @@ export interface NewMemorando {
 
 export interface Signature {
   departmentSigned: Position;
-  user: UserSummary
+  user: UserSummary;
+  isSign: boolean;
 }
 
 export interface SignatureList {
@@ -46,4 +56,9 @@ export interface CILog {
   content: string;
   user: UserSummary | null;
   createdAt: string;
+}
+
+export interface UpdateDepartmentMemorando {
+  userId: number;
+  departmentId: number;
 }

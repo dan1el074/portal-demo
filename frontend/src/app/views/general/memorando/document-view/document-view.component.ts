@@ -1,16 +1,17 @@
-import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
-import { ToastrService } from 'ngx-toastr';
-import { MemorandoService } from './../../../../services/memorando.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Signature, SignatureList, Memorando, NewMemorando } from '../../../../interface/memorando.interface';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { cilPrint } from '@coreui/icons';
-import { Position } from '../../../../interface/position.interface';
-import { AuthGuard } from '../../../../config/authGuard';
-import { Me } from '../../../../interface/user.interface';
-import { NotificationWebSocketService } from '../../../../services/websocket.service';
+import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
+import { cilPrint } from '@coreui/icons';
+import { ToastrService } from 'ngx-toastr';
+import { AuthGuard } from '../../../../config/authGuard';
+import { MemorandoService } from './../../../../services/memorando.service';
+import { NotificationWebSocketService } from '../../../../services/websocket.service';
+import { ErrorService } from '../../../../services/error.service';
+import { Position } from '../../../../interface/position.interface';
+import { Me, UserSummary } from '../../../../interface/user.interface';
+import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } from '../../../../interface/memorando.interface';
 
 @Component({
   selector: 'app-document-view',
@@ -29,7 +30,8 @@ import { IconDirective } from '@coreui/icons-angular';
     ButtonCloseDirective,
     ModalBodyComponent,
     ModalFooterComponent,
-    RouterLink
+    RouterLink,
+    AlertComponent
   ],
   templateUrl: './document-view.component.html',
   styleUrl: './document-view.component.scss',
@@ -39,6 +41,7 @@ export class DocumentViewComponent implements OnInit {
   protected user!: Me;
   protected icons = { cilPrint };
   protected signatures: Array<SignatureList> = [];
+  protected signaturesMissing: Array<UserSummary> = [];
   protected isAdmin: boolean = false;
   protected canSign: boolean = false;
   protected showSignModal: boolean = false;
@@ -46,6 +49,8 @@ export class DocumentViewComponent implements OnInit {
   protected showPublishModal: boolean = false;
   protected showCancelModal: boolean = false;
   protected showDeleteModal: boolean = false;
+  protected showUpdateDepartmentModal: boolean = false;
+  protected manangerAlert!: { user: UserSummary, department: Position } | null;
   protected item: Memorando = {
     id: 0,
     number: 0,
@@ -65,8 +70,7 @@ export class DocumentViewComponent implements OnInit {
       },
       picture: null
     },
-    signature: [],
-    signatureSummary: [],
+    signatures: [],
     fromDepartments: [],
     status: '',
     logs: []
@@ -78,6 +82,7 @@ export class DocumentViewComponent implements OnInit {
     private websocket: NotificationWebSocketService,
     private memorandoService: MemorandoService,
     private toasterService: ToastrService,
+    private errorService: ErrorService,
     private authGuardService: AuthGuard,
     private cdr: ChangeDetectorRef
   ) { }
@@ -94,8 +99,8 @@ export class DocumentViewComponent implements OnInit {
       this.memorandoService.findById(id).subscribe({
         next: (data: Memorando) => {
           this.item = data;
-          this.verifyCanSign(user);
           this.updateSignatures();
+          this.verifyCanSign(user);
           this.cdr.detectChanges();
         },
         error: () => {
@@ -111,67 +116,75 @@ export class DocumentViewComponent implements OnInit {
     window.print();
   }
 
+  protected updateSignatures(): void {
+    this.signatures = [];
+    this.signaturesMissing = [];
+
+    // adiciona departamentos
+    this.item.fromDepartments.forEach(department => {
+      this.signatures.push({
+        check: false,
+        position: department.name,
+        signedBy: "",
+      });
+    })
+
+    // adiciona assinaturas
+    this.item.signatures.forEach(signature => {
+      if (!signature.isSign) return;
+
+      let index = this.signatures.findIndex(s => s.position == signature.departmentSigned.name);
+      this.signatures[index].signedBy += this.signatures[index].signedBy ? '; ' + signature.user.name : signature.user.name;
+    })
+
+    // verificar assinaturas
+    this.item.fromDepartments.forEach(department => {
+      let allSignatures = this.item.signatures.filter(s => s.departmentSigned.name == department.name);
+      let okSignatures = allSignatures.filter(s => s.isSign)
+
+      if (allSignatures.length == okSignatures.length) {
+        this.signatures[this.signatures.findIndex(s => s.position == department.name)].check = true;
+        return;
+      }
+
+      allSignatures.filter(s => !s.isSign).forEach(missing => {
+        if (this.signaturesMissing.findIndex(s => s.id == missing.user.id) == -1) {
+          this.signaturesMissing.push(missing.user);
+        }
+      })
+    })
+
+    // verifica se alguém do "signaturesMissing" não é o gestor da área
+    this.signaturesMissing.forEach(userMissing => {
+      let find = false;
+
+      for (let i=0; i<this.item.fromDepartments.length; i++) {
+        for (let j=0; j<this.item.fromDepartments[i].manangers.length; j++) {
+          if (this.item.fromDepartments[i].manangers[j].id == userMissing.id) {
+            find = true;
+            break;
+          }
+        }
+
+        if (find) break;
+      }
+
+      if (!find) {
+        let position = this.item.signatures.find(s => s.user.id == userMissing.id)?.departmentSigned;
+        this.manangerAlert = { user: userMissing, department: position as Position };
+      }
+    })
+  }
+
   private verifyCanSign(user: Me): void {
     if (this.item.status != "PUBLISH") return;
 
-    this.item.fromDepartments.forEach(currentDepartment => {
-      currentDepartment.manangers.forEach(mananger => {
-        if (mananger.id == user.id) {
-          this.canSign = true;
-          return;
-        }
-     })
-    });
-
-    if (this.canSign) {
-      this.item.signature.forEach(signature => {
-        if (signature.user.id == user.id) {
-          this.canSign = false;
-          return;
-        }
-      });
+    if (
+      this.signaturesMissing.find(u => u.id == user.id)
+      && this.manangerAlert?.user.id != user.id
+    ) {
+      this.canSign = true;
     }
-  }
-
-  protected updateSignatures(): void {
-    this.signatures = [];
-
-    this.item.fromDepartments.forEach((department: Position) =>{
-      let findSignature = false;
-      let countSignatures = 0;
-
-      this.item.signature.forEach((signature: Signature) => {
-        if (department.id == signature.departmentSigned.id) {
-          findSignature = true;
-          countSignatures++;
-
-          let index = this.signatures.findIndex(s => s.position == department.name);
-          if (index != -1) {
-            this.signatures[index].signedBy += "; " + signature.user.name;
-            return;
-          }
-
-          this.signatures.push({
-            check: false,
-            position: department.name,
-            signedBy: signature.user.name
-          });
-          return;
-        }
-      })
-
-      if (department.manangers.length == countSignatures) {
-        this.signatures[this.signatures.findIndex(s => s.position == department.name)].check = true;
-      }
-
-      if (!findSignature) {
-        this.signatures.push({
-          check: false,
-          position: department.name,
-          signedBy: null
-        });
-      }
-    })
   }
 
   protected toggleSignModal() {
@@ -193,9 +206,7 @@ export class DocumentViewComponent implements OnInit {
         this.toggleSignModal();
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.toasterService.error('Erro ao assinar Memorando!');
-      }
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -230,7 +241,7 @@ export class DocumentViewComponent implements OnInit {
         this.togglePublishModal();
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao atualizar Memorando!')
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -250,7 +261,7 @@ export class DocumentViewComponent implements OnInit {
         this.toggleCancelModal();
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao cancelar Memorando!')
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -266,12 +277,13 @@ export class DocumentViewComponent implements OnInit {
     this.memorandoService.rollback(this.item.id).subscribe({
       next: (data: Memorando) => {
         this.item = data;
+        this.manangerAlert = null;
         this.updateSignatures();
         this.toasterService.success('Memorando reiniciado com sucesso!');
         this.toggleRollbackModal();
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao reiniciar Memorando!')
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -291,7 +303,35 @@ export class DocumentViewComponent implements OnInit {
         this.toasterService.success('Memorando deletado com sucesso!');
         this.router.navigateByUrl('general/memorando');
       },
-      error: () => this.toasterService.error('Erro ao deletar Memorando!')
+      error: (error) => this.errorService.showError(error)
+    });
+  }
+
+  protected toggleUpdateDepartmentModal(status = !this.showUpdateDepartmentModal) {
+    this.showUpdateDepartmentModal = status;
+  }
+
+  protected handleUpdateDepartmentModalChange(event: any) {
+    this.showUpdateDepartmentModal = event;
+  }
+
+  protected onUpdateDepartment(): void {
+    let data: UpdateDepartmentMemorando = {
+      userId: this.manangerAlert?.user.id as number,
+      departmentId: this.manangerAlert?.department.id as number
+    }
+
+    this.memorandoService.updateSignatures(this.item.id, data).subscribe({
+      next: (data: Memorando) => {
+        this.item = data;
+        this.manangerAlert = null;
+        this.updateSignatures();
+        this.verifyCanSign(this.user);
+        this.toggleUpdateDepartmentModal(false);
+        this.cdr.detectChanges();
+        this.toasterService.success('Memorando atualizado com sucesso!');
+      },
+      error: (error) => this.errorService.showError(error)
     });
   }
 }

@@ -8,7 +8,6 @@ import { Me } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/websocket.service';
-import { AuthGuard } from '../../config/authGuard';
 
 @Component({
   selector: 'app-dashboard',
@@ -50,10 +49,9 @@ export class DefaultLayoutComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private cdr: ChangeDetectorRef,
     private notificationService: NotificationService,
     private wsService: NotificationWebSocketService,
-    private authGuard: AuthGuard
+    private cdr: ChangeDetectorRef
   ) {}
 
   public ngOnInit() {

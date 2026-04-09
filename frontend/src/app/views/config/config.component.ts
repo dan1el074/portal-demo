@@ -1,3 +1,4 @@
+import { CustomError, FieldMessage } from './../../interface/error.interface';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
@@ -6,6 +7,7 @@ import { UserService } from '../../services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-config',
@@ -29,6 +31,7 @@ export class ConfigComponent implements OnInit {
   constructor(
     private userService: UserService,
     private toasterService: ToastrService,
+    private errorService: ErrorService,
     private spinner: NgxSpinnerService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -39,11 +42,8 @@ export class ConfigComponent implements OnInit {
     this.userService.getUserConfig().subscribe({
       next: data =>  {
         this.userData = data;
-
-        setTimeout(() => {
-          this.loaded = true
-          this.cdr.detectChanges();
-        }, 400);
+        this.loaded = true
+        this.cdr.detectChanges();
       },
       error: () => this.toasterService.error('Erro ao carregar dados do usuário!')
     });
@@ -54,10 +54,10 @@ export class ConfigComponent implements OnInit {
       next: () => {
         this.userService.refreshUser().subscribe({
           next: () => this.toasterService.success('Configurações salvas com sucesso!'),
-          error: () => this.toasterService.error('Erro inesperado, contate um administrador!')
+          error: (error) => this.toasterService.error(error.error.error)
         });
       },
-      error: () => this.toasterService.error('Erro ao atualizar dados do usuário!')
+      error: (error) => this.errorService.showError(error)
     });
   }
 }

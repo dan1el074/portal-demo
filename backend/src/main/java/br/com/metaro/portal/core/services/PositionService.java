@@ -89,7 +89,12 @@ public class PositionService {
     @Transactional
     public List<PositionDto> deactive(Long id) {
         Position position = positionRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-        // TODO: verificar se o departamento está em uso por algum usuário, se sim, jogar uma exceção
+
+        /// verifica se o departamento está em uso por algum usuário, se sim, jogar uma exceção
+        if (!position.getUsers().isEmpty()) {
+            throw new UnprocessableEntityException("Existem usuários vinculados a esse departamento!");
+        }
+
         position.setActivated(false);
         positionRepository.save(position);
         return findAll();

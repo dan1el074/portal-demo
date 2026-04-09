@@ -8,6 +8,7 @@ import { DepartmentTableComponent } from '../../../../components/table/departmen
 import { DepartmentFormComponent } from '../../../../components/forms/department/department-form/department-form.component';
 import { DepartmentEditFormComponent } from '../../../../components/forms/department/department-edit-form/department-edit-form.component';
 import { Position, PositionFormImput } from '../../../interface/position.interface';
+import { ErrorService } from '../../../services/error.service';
 
 @Component({
   selector: 'app-departments',
@@ -46,6 +47,7 @@ export class DepartmentsComponent implements OnInit {
 
   constructor(
     private departmentService: PostitionService,
+    private errorService: ErrorService,
     private toasterService: ToastrService,
     private cdr: ChangeDetectorRef
   ) { }
@@ -96,7 +98,7 @@ export class DepartmentsComponent implements OnInit {
         this.toggleEditDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao editar departamento!')
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -118,7 +120,7 @@ export class DepartmentsComponent implements OnInit {
         this.toggleCreateDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao criar departamento!')
+      error: (error) => this.errorService.showError(error)
     });
   }
 
@@ -130,7 +132,7 @@ export class DepartmentsComponent implements OnInit {
         this.toggleCreateDepartmentTab(false);
         this.cdr.detectChanges();
       },
-      error: () => this.toasterService.error('Erro ao desativar departamento!')
+      error: (error) => this.errorService.showError(error)
     });
   }
 }

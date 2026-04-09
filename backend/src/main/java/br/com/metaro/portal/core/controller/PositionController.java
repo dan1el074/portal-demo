@@ -4,6 +4,7 @@ import br.com.metaro.portal.core.dto.position.PositionDto;
 import br.com.metaro.portal.core.dto.position.PositionFormImputDto;
 import br.com.metaro.portal.core.dto.position.PositionMinDto;
 import br.com.metaro.portal.core.services.PositionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,14 +41,14 @@ public class PositionController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
     @PostMapping
-    public ResponseEntity<List<PositionDto>> insert(@RequestBody PositionFormImputDto dto) {
+    public ResponseEntity<List<PositionDto>> insert(@Valid @RequestBody PositionFormImputDto dto) {
         List<PositionDto> dtos = positionService.insert(dto);
         return ResponseEntity.ok(dtos);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<List<PositionDto>> update(@PathVariable Long id, @RequestBody PositionFormImputDto dto) {
+    public ResponseEntity<List<PositionDto>> update(@PathVariable Long id, @Valid @RequestBody PositionFormImputDto dto) {
         List<PositionDto> dtos = positionService.update(id, dto);
         return ResponseEntity.ok(dtos);
     }

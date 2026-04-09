@@ -7,9 +7,7 @@ import lombok.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "tb_memorando")
@@ -54,8 +52,4 @@ public class Memorando {
         cascade = CascadeType.ALL,
         orphanRemoval = true)
     private List<Signature> signatures = new ArrayList<>();
-
-    public List<User> getSignaturesUsers() {
-        return signatures.stream().map(Signature::getUser).toList();
-    }
 }

@@ -29,6 +29,12 @@ public class PictureService {
         List<Picture> archives = new ArrayList<>();
 
         for (MultipartFile file : files) {
+            // TODO: fazer uma compressão no arquivo se for muito grande.
+            // TODO: a compressão precisa ter um perfil diferente para cada tipo:
+            //      - fotos não precisam ser grandes, quadrado e tamanho fixo.
+            //      - imagens de posts podem ser grandes em tamanho, mas não em armazenamento.
+
+            /// salva arquivo no servidor
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(serverPath, fileName);
             Files.write(filePath, file.getBytes());
@@ -41,6 +47,7 @@ public class PictureService {
             archives.add(archive);
         }
 
+        /// salva no banco
         return pictureRepository.saveAll(archives);
     }
 
@@ -57,6 +64,7 @@ public class PictureService {
             newPictures.add(picture);
         }
 
+        /// salva no banco
         pictureRepository.saveAll(newPictures);
     }
 

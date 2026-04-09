@@ -32,8 +32,7 @@ public class MemorandoDto {
     private Instant createAt;
     private UserSummaryDto user;
     private List<PositionDto> fromDepartments;
-    private List<SignatureDto> signature;
-    private Set<UserSummaryDto> signatureSummary;
+    private List<SignatureDto> signatures;
     private MemorandoStatus status;
     private List<MemorandoLogDto> logs;
 
@@ -51,23 +50,19 @@ public class MemorandoDto {
         items = new ArrayList<>();
         items.addAll(entity.getItems());
         fromDepartments = new ArrayList<>();
-        signature = new ArrayList<>();
-        signatureSummary = new HashSet<>();
+        signatures = new ArrayList<>();
         logs = new ArrayList<>();
 
         for (Position department : entity.getFromDepartments()) {
-            fromDepartments.add(new PositionDto(department));
+            fromDepartments.addLast(new PositionDto(department));
         }
 
-        for (Signature currentSignature : entity.getSignatures()) {
-            signature.add(new SignatureDto(currentSignature));
-            if (signatureSummary.stream().noneMatch(s -> s.getName().equals(currentSignature.getUser().getName()))) {
-                signatureSummary.add(new UserSummaryDto(currentSignature.getUser()));
-            }
+        for (Signature sign : entity.getSignatures()) {
+            signatures.addLast(new SignatureDto(sign));
         }
 
         for (MemorandoLog log : entity.getLogs()) {
-            logs.add(new MemorandoLogDto(log));
+            logs.addLast(new MemorandoLogDto(log));
         }
     }
 }

@@ -1,8 +1,11 @@
 package br.com.metaro.portal.modules.general.memorando.controllers;
 
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoDto;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoIgnoreDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoInsertDto;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoListDto;
 import br.com.metaro.portal.modules.general.memorando.services.MemorandoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +21,8 @@ public class MemorandoController {
     private MemorandoService memorandoService;
 
     @GetMapping
-    public ResponseEntity<List<MemorandoDto>> findAll() {
-        List<MemorandoDto> dtos = memorandoService.findAll();
+    public ResponseEntity<List<MemorandoListDto>> findAll() {
+        List<MemorandoListDto> dtos = memorandoService.findAll();
         return ResponseEntity.ok(dtos);
     }
 
@@ -30,7 +33,7 @@ public class MemorandoController {
     }
 
     @PostMapping
-    public ResponseEntity<MemorandoDto> insert(@RequestBody MemorandoInsertDto insertDto) {
+    public ResponseEntity<MemorandoDto> insert(@Valid @RequestBody MemorandoInsertDto insertDto) {
         MemorandoDto dto = memorandoService.insert(insertDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
@@ -41,7 +44,7 @@ public class MemorandoController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<MemorandoDto> update(@PathVariable Long id, @RequestBody MemorandoInsertDto dto) {
+    public ResponseEntity<MemorandoDto> update(@PathVariable Long id, @Valid @RequestBody MemorandoInsertDto dto) {
         MemorandoDto newDto = memorandoService.update(id, dto);
         return ResponseEntity.ok(newDto);
     }
@@ -62,6 +65,12 @@ public class MemorandoController {
     public ResponseEntity<MemorandoDto> rollback(@PathVariable Long id) {
         MemorandoDto dto = memorandoService.rollback(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping(value = "/updateSignatures/{id}")
+    public ResponseEntity<MemorandoDto> updateSignatures(@PathVariable Long id, @RequestBody MemorandoIgnoreDto dto) {
+        MemorandoDto memorandoDto = memorandoService.updateSignatures(id, dto);
+        return ResponseEntity.ok(memorandoDto);
     }
 
     @DeleteMapping(value = "/{id}")
