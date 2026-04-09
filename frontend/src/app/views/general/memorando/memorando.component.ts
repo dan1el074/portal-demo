@@ -52,6 +52,7 @@ export class MemorandoComponent implements OnInit {
   public ngOnInit(): void {
     this.memorandoService.findAll().subscribe({
       next: (data: Array<MemorandoList>) => {
+        console.log(data);
         this.allMemorandos = data;
         this.updateMemorando();
         this.cdr.detectChanges();

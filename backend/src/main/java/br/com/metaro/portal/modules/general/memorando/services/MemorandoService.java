@@ -12,6 +12,7 @@ import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoIgnoreDto;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoListDto;
 import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
@@ -45,11 +46,11 @@ public class MemorandoService {
     private PositionRepository positionRepository;
 
     @Transactional(readOnly = true)
-    public List<MemorandoDto> findAll() {
+    public List<MemorandoListDto> findAll() {
         Sort sort = Sort.by("id").descending();
         List<Memorando> entities = memorandoRepository.findAll(sort);
         entities = util.filterByAccess(entities);
-        return entities.stream().map(MemorandoDto::new).toList();
+        return entities.stream().map(MemorandoListDto::new).toList();
     }
 
     @Transactional(readOnly = true)
