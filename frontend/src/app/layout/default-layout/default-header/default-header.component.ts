@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, inject, Input, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, input, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
 import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast, cilPaperclip, cilCommentBubble } from '@coreui/icons';
@@ -30,7 +30,8 @@ import { environment } from '../../../../environments/environment';
     DropdownItemDirective,
     BadgeComponent,
     TimeAgoPipe
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   @Input() user!: Me;

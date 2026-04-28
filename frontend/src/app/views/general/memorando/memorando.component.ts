@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
@@ -29,6 +29,7 @@ import { OrderInfo } from './../../../interface/erp.interface';
   ],
   templateUrl: './memorando.component.html',
   styleUrl: './memorando.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemorandoComponent implements OnInit {
   protected icons = { cilPlus, cilX };
@@ -52,7 +53,6 @@ export class MemorandoComponent implements OnInit {
   public ngOnInit(): void {
     this.memorandoService.findAll().subscribe({
       next: (data: Array<MemorandoList>) => {
-        console.log(data);
         this.allMemorandos = data;
         this.updateMemorando();
         this.cdr.detectChanges();

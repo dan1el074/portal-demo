@@ -44,18 +44,18 @@ public class MemorandoUtil {
     public void dtoToEntity(@NotNull MemorandoInsertDto dto, @NotNull Memorando entity) {
         entity.setRequest(dto.getRequest());
         entity.setClient(dto.getClient());
-        entity.setItems(new ArrayList<>());
-        entity.getItems().addAll(dto.getItems());
+        entity.setItems(new ArrayList<>(dto.getItems()));
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
         entity.setReason(dto.getReason());
         entity.setStatus(dto.getStatus());
-        entity.setFromDepartments(new ArrayList<>());
 
-        for (Long positionId : dto.getDepartments()) {
-            Position position = positionRepository.findById(positionId).orElseThrow(ResourceNotFoundException::new);
-            entity.getFromDepartments().add(position);
+        List<Position> positions = positionRepository.findAllById(dto.getDepartments());
+        if (positions.size() != dto.getDepartments().size()) {
+            throw new UnprocessableEntityException("Um ou mais departamentos não foram encontrados!");
         }
+
+        entity.setFromDepartments(new ArrayList<>(positions));
     }
 
     public List<Memorando> filterByAccess(List<Memorando> entities) {
@@ -92,37 +92,36 @@ public class MemorandoUtil {
         logService.create(entity.getId(), "Publicou o documento nº %d/%d".formatted(entity.getNumber(),
                 entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
 
-        sign(entity);
-        notify(entity);
+        signAll(entity);
+        notifyAllManangers(entity);
     }
 
-    public void sign (@NotNull Memorando entity) {
+    public void signAll(@NotNull Memorando entity) {
+        User me = userService.authenticate();
+
         for (Signature signature : entity.getSignatures()) {
-            User me = userService.authenticate();
+            if (!signature.getUser().equals(me)) continue;
+            if (signature.getIsSign()) continue;
 
-            if (signature.getUser().equals(me)) {
-                if (signature.getIsSign()) continue;
-                if (signature.getDepartmentSigned().getManangers().stream().noneMatch(u -> u.equals(me))) {
-                    throw new UnprocessableEntityException("Somente gestores podem assinar um Memorando!");
-                }
-
-                signature.setIsSign(true);
-                logService.create(entity.getId(), "Assinou o documento (%s)"
-                        .formatted(signature.getDepartmentSigned().getName()));
+            if (signature.getDepartmentSigned().getManangers().stream().noneMatch(u -> u.equals(me))) {
+                throw new UnprocessableEntityException("Somente gestores podem assinar um Memorando!");
             }
+
+            signature.setIsSign(true);
+            logService.create(entity.getId(), "Assinou o documento (%s)"
+                    .formatted(signature.getDepartmentSigned().getName()));
         }
     }
 
-    public void notify (@NotNull Memorando entity) {
-        for (Signature signature : entity.getSignatures()) {
-            User me = userService.authenticate();
+    public void notifyAllManangers(@NotNull Memorando entity) {
+        User me = userService.authenticate();
 
-            /// manda as notificações para os gestores
-            if (!signature.getUser().equals(me)) {
-                notificationService.create("Memorando nº %d - %s".formatted(entity.getNumber(), entity.getTitle()),
-                        "/general/memorando/%d".formatted(entity.getId()), false, NotificationType.MEMORANDO,
-                        entity.getId(), me, signature.getUser());
-            }
+        for (Signature signature : entity.getSignatures()) {
+            if (signature.getUser().equals(me)) continue;
+
+            notificationService.create("Memorando nº %d - %s".formatted(entity.getNumber(), entity.getTitle()),
+                    "/general/memorando/%d".formatted(entity.getId()), false, NotificationType.MEMORANDO,
+                    entity.getId(), me, signature.getUser());
         }
     }
 
@@ -161,7 +160,7 @@ public class MemorandoUtil {
         }
 
         if (count == 1) {
-            throw new UnprocessableEntityException("O departamento de %s está desativado!".formatted(departments));
+            throw new UnprocessableEntityException("O departamento %s está desativado!".formatted(departments));
         }
         if (count > 1) {
             throw new UnprocessableEntityException("Os seguintes departamentos estão desativados: %s".formatted(departments));
@@ -176,6 +175,7 @@ public class MemorandoUtil {
     }
 
     public void removeNotifications(@NotNull Memorando entity) {
+        // TODO: N + 1
         List<Notification> notifications = notificationService.findByReferenceIdAndType(entity.getId(), NotificationType.MEMORANDO);
         for (Notification notification : notifications) {
             notificationService.delete(notification.getId(), notification.getUser().getId());
@@ -183,6 +183,8 @@ public class MemorandoUtil {
     }
 
     public void removeUserNotification(@NotNull Long memorandoId, @NotNull Long userId) {
+        // TODO: N + 1
+
         for (NotificationDto notification : notificationService.listByUser(userId)) {
             if (
                 notification.getType().equals(NotificationType.MEMORANDO.name())
@@ -213,18 +215,17 @@ public class MemorandoUtil {
     }
 
     private void diffPositions(@NotNull MemorandoInsertDto dto, @NotNull Memorando entity) {
-        List<Position> dtoDepartments = new ArrayList<>();
+        List<Position> positions = positionRepository.findAllById(dto.getDepartments());
 
-        for (Long departmentId : dto.getDepartments()) {
-            Position position = positionRepository.findById(departmentId).orElseThrow(ResourceNotFoundException::new);
-            dtoDepartments.add(position);
+        if (positions.size() != dto.getDepartments().size()) {
+            throw new ResourceNotFoundException();
         }
 
-        List<Position> addPositions = dtoDepartments.stream().filter(currentPosition ->
+        List<Position> addPositions = positions.stream().filter(currentPosition ->
                 !entity.getFromDepartments().contains(currentPosition)).toList();
 
         List<Position> leftPositions = entity.getFromDepartments().stream().filter(currentPosition ->
-                !dtoDepartments.contains(currentPosition)).toList();
+                !positions.contains(currentPosition)).toList();
 
         if (!leftPositions.isEmpty()) {
             String nameOfDepartments = "";

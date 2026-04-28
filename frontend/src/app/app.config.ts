@@ -11,13 +11,9 @@ import { authInterceptor } from './interceptor/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    IconSetService,
     provideRouter(
       routes,
       withRouterConfig({ onSameUrlNavigation: 'reload' }),
-      withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' }),
-      withEnabledBlockingInitialNavigation(),
-      withViewTransitions(),
       withHashLocation()
     ),
     { provide: MatPaginatorIntl, useFactory: CustomPaginator },

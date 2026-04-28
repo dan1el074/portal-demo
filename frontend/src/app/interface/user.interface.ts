@@ -8,6 +8,11 @@ export interface Credential {
   password: string;
 }
 
+export interface RequestAccess {
+  name: string;
+  email: string;
+}
+
 export interface UserTable {
   id: number;
   pictureId: string | null;

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
@@ -22,6 +22,7 @@ import { MemorandoEditFormComponent } from '../../../../../../components/forms/m
   ],
   templateUrl: './edit-memorando.component.html',
   styleUrl: './edit-memorando.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditMemorandoComponent implements OnInit {
   protected isAdmin: boolean = false;

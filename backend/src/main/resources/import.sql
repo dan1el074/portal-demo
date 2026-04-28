@@ -1,6 +1,6 @@
-INSERT INTO tb_param (id, name, content) VALUES (1, 'version', '0.14.1');
-INSERT INTO tb_param (id, name, content) VALUES (2, 'internalControlCount', '357');
-INSERT INTO tb_param (id, name, content) VALUES (3, 'currentYear', '2025');
+INSERT INTO tb_param (id, name, content) VALUES (1, 'version', '0.7.1');
+INSERT INTO tb_param (id, name, content) VALUES (2, 'memorandoCount', '357');
+INSERT INTO tb_param (id, name, content) VALUES (3, 'memorandoYear', '2025');
 
 INSERT INTO tb_picture (name, path, type) VALUES ('1768850938328_1', 'C:\\workspace\\outros\\imagens\\1768850938328_1.png', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1774469447392_2', 'C:\\workspace\\outros\\imagens\\1774469447392_2.png', 'PROFILE');

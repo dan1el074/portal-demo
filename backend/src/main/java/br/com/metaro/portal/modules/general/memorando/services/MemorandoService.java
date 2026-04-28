@@ -1,23 +1,21 @@
 package br.com.metaro.portal.modules.general.memorando.services;
 
-import br.com.metaro.portal.core.dto.notification.NotificationDto;
 import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.Position;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.PositionRepository;
-import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.services.NotificationService;
 import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoIgnoreDto;
+import br.com.metaro.portal.modules.general.memorando.dots.MemorandoInsertDto;
 import br.com.metaro.portal.modules.general.memorando.dots.MemorandoListDto;
-import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
-import br.com.metaro.portal.modules.general.memorando.dots.MemorandoDto;
-import br.com.metaro.portal.modules.general.memorando.dots.MemorandoInsertDto;
+import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
 import br.com.metaro.portal.modules.general.memorando.utils.MemorandoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -153,7 +150,7 @@ public class MemorandoService {
 
         User me = userService.authenticate();
 
-        util.sign(entity);
+        util.signAll(entity);
         util.removeUserNotification(entity.getId(), me.getId());
 
         util.checkIfEveryoneHasSigned(entity);
@@ -256,7 +253,7 @@ public class MemorandoService {
         }
 
         if (entity.getNumber() != null) {
-            throw new UnprocessableEntityException("Apenas documentos sem número registrado porem ser deletados!");
+            throw new UnprocessableEntityException("Apenas documentos sem número registrado podem ser deletados!");
         }
 
         memorandoRepository.deleteById(id);
