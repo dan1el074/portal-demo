@@ -5,6 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthGuard } from '../config/authGuard';
 import { NotificationWebSocketService } from './websocket.service';
+import { RequestAccess } from '../interface/user.interface';
 
 type LoginResponse = {
   access_token: string
@@ -55,5 +56,9 @@ export class LoginService {
   public logoutAndRedirect(): void {
     this.logout();
     this.router.navigateByUrl('/login');
+  }
+
+  public requestAccess(data: RequestAccess): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "/api/request-access", data);
   }
 }

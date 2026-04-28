@@ -45,7 +45,6 @@ export class UserConfigFormComponent implements OnChanges {
   protected valid: boolean | undefined;
   protected configForm: FormGroup;
   protected showErrors = false;
-  private countChanges = 0;
 
   // profile image
   protected file: string = '';
@@ -93,6 +92,16 @@ export class UserConfigFormComponent implements OnChanges {
     this.configForm.markAsPristine();
     this.configForm.markAsUntouched();
     this.spinner.hide("userConfigSpinner");
+  }
+
+  public clearPasswordInput(): void {
+    this.configForm.patchValue(
+      {
+        password: "",
+        repeatPassword: ""
+      },
+      { emitEvent: false }
+    );
   }
 
   private parseDate(value: string | null): Date {

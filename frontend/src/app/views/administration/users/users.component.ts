@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilX } from '@coreui/icons';
@@ -32,6 +32,7 @@ import { UserTable } from '../../../interface/user.interface';
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsersComponent implements OnInit {
   protected tabs: Array<string> = ['Todos', 'Desativados'];

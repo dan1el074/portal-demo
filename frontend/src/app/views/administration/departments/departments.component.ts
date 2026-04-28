@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
@@ -27,6 +27,7 @@ import { ErrorService } from '../../../services/error.service';
   ],
   templateUrl: './departments.component.html',
   styleUrl: './departments.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepartmentsComponent implements OnInit {
   protected activeDepartments!: Array<Position>;

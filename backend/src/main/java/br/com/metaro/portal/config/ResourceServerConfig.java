@@ -48,6 +48,7 @@ public class ResourceServerConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                .requestMatchers("/api/request-access").permitAll()
                 .requestMatchers("/api/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
