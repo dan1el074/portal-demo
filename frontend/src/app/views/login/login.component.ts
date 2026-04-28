@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -12,6 +12,7 @@ import { Credential } from './../../interface/user.interface';
   imports: [LoginFormComponent, SignupFormComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent implements OnInit {
   @ViewChild('loginFormComp') loginFormComp!: LoginFormComponent;

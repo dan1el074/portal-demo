@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, AlertComponent, CardBodyComponent, CardComponent, CardTitleDirective, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
 import { RawMaterialsTableComponent } from '../../../../components/table/raw-materials-table/raw-materials-table.component';
 import { cilXCircle, cilCheckCircle, cilWarning } from '@coreui/icons';
@@ -24,6 +24,7 @@ import { IconDirective } from '@coreui/icons-angular';
   ],
   templateUrl: './raw-materials.component.html',
   styleUrl: './raw-materials.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RawMaterialsComponent implements OnInit {
   protected icons = { cilXCircle, cilCheckCircle, cilWarning };

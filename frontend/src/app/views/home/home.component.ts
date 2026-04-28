@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AlertComponent, ContainerComponent } from '@coreui/angular';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { PostComponent } from './../../../components/cards/post/post.component';
@@ -22,6 +22,7 @@ import { TodoTableCard } from '../../interface/todo.interface';
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
   protected event: EventCard = {

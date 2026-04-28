@@ -1,5 +1,5 @@
 import { CustomError, FieldMessage } from './../../interface/error.interface';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
 import { UserConfigData } from '../../interface/user.interface';
@@ -23,6 +23,7 @@ import { ErrorService } from '../../services/error.service';
   ],
   templateUrl: './config.component.html',
   styleUrl: './config.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfigComponent implements OnInit {
   protected userData: UserConfigData | null = null;
