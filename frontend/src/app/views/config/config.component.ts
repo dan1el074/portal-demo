@@ -1,5 +1,5 @@
 import { CustomError, FieldMessage } from './../../interface/error.interface';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
 import { UserConfigData } from '../../interface/user.interface';
@@ -26,6 +26,8 @@ import { ErrorService } from '../../services/error.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfigComponent implements OnInit {
+  @ViewChild(UserConfigFormComponent)
+  protected userConfigForm!: UserConfigFormComponent;
   protected userData: UserConfigData | null = null;
   protected loaded = false;
 
@@ -54,7 +56,10 @@ export class ConfigComponent implements OnInit {
     this.userService.updateConfig(data).subscribe({
       next: () => {
         this.userService.refreshUser().subscribe({
-          next: () => this.toasterService.success('Configurações salvas com sucesso!'),
+          next: () => {
+            this.userConfigForm.clearPasswordInput();
+            this.toasterService.success('Configurações salvas com sucesso!');
+          },
           error: (error) => this.toasterService.error(error.error.error)
         });
       },
