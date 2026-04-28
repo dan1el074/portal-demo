@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LoginService } from '../../services/login.service';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { SignupFormComponent } from './signup-form/signup-form.component';
-import { Credential } from './../../interface/user.interface';
+import { Credential, RequestAccess } from './../../interface/user.interface';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ import { Credential } from './../../interface/user.interface';
 })
 export class LoginComponent implements OnInit {
   @ViewChild('loginFormComp') loginFormComp!: LoginFormComponent;
-  @ViewChild('signFormComp') signFormComp!: LoginFormComponent;
+  @ViewChild('signFormComp') signFormComp!: SignupFormComponent;
   togglePage = false;
 
   constructor(
@@ -47,6 +47,20 @@ export class LoginComponent implements OnInit {
         this.showError(error.error.error == "user_disabled" ? 422 : error.status);
         this.cdr.detectChanges();
       }
+    });
+  }
+
+  protected onRequestAccess(data: RequestAccess): void {
+    this.loginService.requestAccess(data).subscribe({
+      next: () => {
+        this.signFormComp.clearForm();
+        this.signFormComp.liberate();
+        this.toasterService.success("Requisição enviada com sucesso!");
+      },
+      error: () => {
+        this.signFormComp.liberate();
+        this.toasterService.error("Erro ao enviar requisição!");
+      },
     });
   }
 

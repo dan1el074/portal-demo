@@ -2,7 +2,6 @@ package br.com.metaro.portal.core.repositories;
 
 import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.NotificationType;
-import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

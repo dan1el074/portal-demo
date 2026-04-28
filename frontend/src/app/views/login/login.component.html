@@ -18,7 +18,7 @@
       </div>
       <span>ou nos envie seu nome e e-mail:</span>
 
-      <app-signup-form #signFormComp></app-signup-form>
+      <app-signup-form #signFormComp (requestAccess)="onRequestAccess($event)"></app-signup-form>
     </div>
 
     <div class="form-container sign-in-container">
