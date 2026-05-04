@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, Input, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, input, OnInit, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
 import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast, cilPaperclip, cilCommentBubble } from '@coreui/icons';
@@ -10,6 +10,7 @@ import { NotificationWebSocketService } from './../../../services/websocket.serv
 import { NotificationService } from './../../../services/notification.service';
 import { Notification } from '../../../interface/notification.interface';
 import { environment } from '../../../../environments/environment';
+import { LayoutButtonSearchComponent } from './layout-button-search/layout-button-search.component';
 
 @Component({
   selector: 'app-default-header',
@@ -29,12 +30,16 @@ import { environment } from '../../../../environments/environment';
     DropdownMenuDirective,
     DropdownItemDirective,
     BadgeComponent,
-    TimeAgoPipe
+    TimeAgoPipe,
+    LayoutButtonSearchComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
-  @Input() user!: Me;
+  @Input()
+  public user!: Me;
+  @Output()
+  protected openModal = new EventEmitter<any>();
   protected apiUrl = environment.apiUrl;
   readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilPaperclip, cilCommentBubble };
   readonly sidebarId = input('sidebar1');
@@ -80,5 +85,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
         this.websocket.markAsViewedLocal(notification.id);
       });
     }
+  }
+
+  public openProjectSearchModal(): void {
+    this.openModal.emit();
   }
 }

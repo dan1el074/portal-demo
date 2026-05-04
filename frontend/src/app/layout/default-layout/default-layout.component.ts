@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
@@ -8,6 +8,7 @@ import { Me } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/websocket.service';
+import { LayoutSearchModalComponent } from '../../../components/modal/layout-search-modal/layout-search-modal.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,11 +28,13 @@ import { NotificationWebSocketService } from '../../services/websocket.service';
     NgScrollbar,
     RouterOutlet,
     RouterLink,
-    ShadowOnScrollDirective
+    ShadowOnScrollDirective,
+    LayoutSearchModalComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultLayoutComponent implements OnInit {
+  protected showModal = false;
   public navItems!: Array<INavData>;
 
   protected user: Me = {
@@ -127,5 +130,10 @@ export class DefaultLayoutComponent implements OnInit {
     });
 
     this.wsService.connect(token);
+  }
+
+  protected toggleSearchModal(status: boolean): void {
+    this.showModal = status;
+    this.cdr.detectChanges();
   }
 }
