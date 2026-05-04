@@ -14,7 +14,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     imports: [RouterOutlet, NgxSpinnerModule]
 })
 export class AppComponent implements OnInit {
-  title = 'Portal Demo';
+  title = 'Portal Metaro';
 
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #activatedRoute: ActivatedRoute = inject(ActivatedRoute);
