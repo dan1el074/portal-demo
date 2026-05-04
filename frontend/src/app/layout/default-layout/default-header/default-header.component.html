@@ -11,8 +11,10 @@
       <svg [cIcon]="icons.cilMenu" size="lg"></svg>
     </button>
 
-    <c-header-nav class="d-none d-md-flex ms-auto ">
-      <c-dropdown alignment="end">
+    <app-layout-button-search (openModal)="openProjectSearchModal()"></app-layout-button-search>
+
+    <c-header-nav class="d-none d-md-flex ms-auto">
+      <c-dropdown alignment="end" class="fix">
         <button cButton cDropdownToggle color="link" class="position-relative icon-notify bell" [class.fix]="!websocket.unreadCount()">
           <svg [cIcon]="icons.cilBell" class="my-1" size="lg"></svg>
           @if (websocket.unreadCount()) {
@@ -103,7 +105,7 @@
 </ng-template>
 
 <ng-template #themeDropdown>
-  <c-dropdown alignment="end" variant="nav-item">
+  <c-dropdown alignment="end" variant="nav-item" class="fix">
     <button [caret]="false" cDropdownToggle aria-label="Open theme picker">
       <svg [cIcon]="getIcon()" size="lg"></svg>
     </button>
