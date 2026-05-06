@@ -152,7 +152,7 @@ public class UserService implements UserDetailsService {
         entity.setPosition(positionRepository.getReferenceById(Long.valueOf(dto.getPosition())));
         entity.setBirthDate(dto.getBirthDate());
         entity.setEmail(dto.getEmail());
-        entity.setUsername(dto.getUsername());
+        entity.setUsername(dto.getUsername().toLowerCase().trim());
         entity.setActivated(dto.getActivated().equals("true"));
         entity.setUpdateAt(Instant.now());
         entity.setRoles(new HashSet<>());
@@ -244,7 +244,7 @@ public class UserService implements UserDetailsService {
         entity.setPosition(positionRepository.getReferenceById(Long.valueOf(dto.getPosition())));
         entity.setBirthDate(dto.getBirthDate());
         entity.setEmail(dto.getEmail());
-        entity.setUsername(dto.getUsername());
+        entity.setUsername(dto.getUsername().toLowerCase().trim());
         entity.setActivated(dto.getActivated().equals("true"));
         entity.setCreatedAt(Instant.now());
         entity.setUpdateAt(Instant.now());
