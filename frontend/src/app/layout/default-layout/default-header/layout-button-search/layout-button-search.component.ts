@@ -1,9 +1,8 @@
 import { Component, EventEmitter, HostListener, Output } from '@angular/core';
-import { LayoutSearchModalComponent } from '../../../../../components/modal/layout-search-modal/layout-search-modal.component';
 
 @Component({
   selector: 'app-layout-button-search',
-  imports: [LayoutSearchModalComponent],
+  imports: [],
   templateUrl: './layout-button-search.component.html',
   styleUrl: './layout-button-search.component.scss',
 })
