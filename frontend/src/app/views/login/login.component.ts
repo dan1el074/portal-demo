@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
     this.spinner.show("loginSpinner");
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    this.loginService.login(credentials.username, credentials.password).subscribe({
+    this.loginService.login(credentials.username.trim().toLowerCase(), credentials.password.trim()).subscribe({
       next: () => {
         this.router.navigate(['home']);
       },

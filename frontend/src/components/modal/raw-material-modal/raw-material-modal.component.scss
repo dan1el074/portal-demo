@@ -9,6 +9,10 @@
 
   &.text {
     background-color: rgba(var(--cui-emphasis-color-rgb), 0.06);
+
+    .blue {
+      color: rgb(var(--cui-link-color-rgb));
+    }
   }
 
   .flex-container {
