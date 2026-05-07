@@ -46,6 +46,7 @@ public class Memorando {
     @OneToMany(mappedBy = "memorando",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+    @OrderBy("createdAt ASC")
     private List<MemorandoLog> logs;
 
     @OneToMany(mappedBy = "memorando",
