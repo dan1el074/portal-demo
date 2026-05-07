@@ -89,6 +89,8 @@ public class MemorandoUtil {
             throw new UnprocessableEntityException("Não foram encontradas assinaturas pendentes!");
         }
 
+        addNumberAndCreatedAt(entity);
+
         logService.create(entity.getId(), "Publicou o documento nº %d/%d".formatted(entity.getNumber(),
                 entity.getCreateAt().atZone(ZoneId.systemDefault()).getYear()));
 
@@ -168,10 +170,8 @@ public class MemorandoUtil {
     }
 
     public void addNumberAndCreatedAt(@NotNull Memorando entity) {
-        if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
-            if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
-            if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
-        }
+        if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
+        if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
     }
 
     public void removeNotifications(@NotNull Memorando entity) {
