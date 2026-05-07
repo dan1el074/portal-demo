@@ -69,7 +69,7 @@ public class MemorandoService {
         User me = userService.authenticate();
 
         if (
-            dto.getDepartments().size() < 2 &&
+            dto.getDepartments().size() == 1 &&
             dto.getDepartments().getFirst().equals(me.getPosition().getId())
         ) {
             throw new UnprocessableEntityException("É necessário ao menos 2 departamentos para continuar!");
@@ -85,7 +85,6 @@ public class MemorandoService {
         entity.setLogs(new ArrayList<>());
 
         util.addMyDepartment(entity);
-        util.addNumberAndCreatedAt(entity);
 
         if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) util.addAllSignatures(entity);
 
@@ -115,7 +114,7 @@ public class MemorandoService {
         }
 
         if (
-            dto.getDepartments().size() < 2 &&
+            dto.getDepartments().size() == 1 &&
             dto.getDepartments().getFirst().equals(me.getPosition().getId())
         ) {
             throw new UnprocessableEntityException("É necessário ao menos 2 departamentos para continuar!");
@@ -128,7 +127,6 @@ public class MemorandoService {
         util.dtoToEntity(dto, entity);
         util.addMyDepartment(entity);
         util.checkIfAllDepartmentsAreActive(entity);
-        util.addNumberAndCreatedAt(entity);
 
         if (entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
             util.addAllSignatures(entity);
