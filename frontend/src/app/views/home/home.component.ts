@@ -33,18 +33,18 @@ export class HomeComponent implements OnInit {
   protected files: Array<FileCard> = [
     {
       id: 1,
+      name: 'Manifesto',
+      path: 'caminho3',
+    },
+    {
+      id: 2,
       name: 'Lista de ramais',
       path: 'caminho1',
     },
     {
-      id: 2,
+      id: 3,
       name: 'Dados cadastrais',
       path: 'caminho2',
-    },
-    {
-      id: 3,
-      name: 'Solicitação de compras',
-      path: 'caminho3',
     },
   ];
   protected todoItems: Array<TodoTableCard> = [
@@ -52,17 +52,17 @@ export class HomeComponent implements OnInit {
       priority: 'Urgente',
       items: [
         {
-          title: 'Validar coisas',
+          title: 'Tarefa 1',
           date: '2025-06-21T15:00:00Z',
           late: false,
         },
         {
-          title: 'Fazer coisas',
+          title: 'Tarefa 2',
           date: '2025-06-21T15:00:00Z',
           late: false,
         },
         {
-          title: 'Reunião com a engenharia',
+          title: 'Tarefa 3',
           date: '2025-06-21T15:00:00Z',
           late: true,
         },
@@ -72,12 +72,12 @@ export class HomeComponent implements OnInit {
       priority: 'Outros',
       items: [
         {
-          title: 'Tomar café',
+          title: 'Tarefa 4',
           date: '2025-06-21T15:00:00Z',
           late: false,
         },
         {
-          title: 'Acessar servidor',
+          title: 'Tarefa 5',
           date: '2025-06-21T15:00:00Z',
           late: true,
         },
