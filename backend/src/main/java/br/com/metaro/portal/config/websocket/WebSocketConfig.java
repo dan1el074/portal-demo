@@ -1,4 +1,4 @@
-package br.com.metaro.portal.websocket;
+package br.com.metaro.portal.config.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

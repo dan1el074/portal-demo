@@ -1,4 +1,4 @@
-package br.com.metaro.portal.websocket;
+package br.com.metaro.portal.config.websocket;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;

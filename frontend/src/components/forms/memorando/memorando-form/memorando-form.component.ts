@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
+import { AlertComponent, ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
 import { MultiSelectComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
 import { ToastrService } from 'ngx-toastr';
 import { OrderInfo } from '../../../../app/interface/erp.interface';
@@ -20,6 +20,7 @@ import { PostitionService } from '../../../../app/services/position.service';
     ButtonDirective,
     MultiSelectComponent,
     MultiSelectOptionComponent,
+    AlertComponent
   ],
   templateUrl: './memorando-form.component.html',
   styleUrl: './memorando-form.component.scss',

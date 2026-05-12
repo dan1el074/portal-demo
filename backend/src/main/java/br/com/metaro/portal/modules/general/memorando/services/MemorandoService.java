@@ -65,7 +65,7 @@ public class MemorandoService {
     }
 
     @Transactional
-    public MemorandoDto insert(MemorandoInsertDto dto) {
+    public MemorandoDto insert(MemorandoInsertDto dto) throws Exception {
         User me = userService.authenticate();
 
         if (
@@ -101,7 +101,7 @@ public class MemorandoService {
     }
 
     @Transactional
-    public MemorandoDto update(Long id, MemorandoInsertDto dto) {
+    public MemorandoDto update(Long id, MemorandoInsertDto dto) throws Exception {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (!entity.getStatus().equals(MemorandoStatus.CREATED)) {
@@ -139,7 +139,7 @@ public class MemorandoService {
     }
 
     @Transactional
-    public MemorandoDto sign(Long id) {
+    public MemorandoDto sign(Long id) throws Exception {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (!entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
@@ -207,7 +207,7 @@ public class MemorandoService {
     }
 
     @Transactional
-    public MemorandoDto updateSignatures(Long id, MemorandoIgnoreDto dto) {
+    public MemorandoDto updateSignatures(Long id, MemorandoIgnoreDto dto) throws Exception {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (!entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
