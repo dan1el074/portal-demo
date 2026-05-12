@@ -18,7 +18,7 @@ public class ExternalCustomerRepository {
         return jdbcTemplate.query("""
                 SELECT DISTINCT
                     m.NR_DOCTO AS ORDER_NUMBER,
-                    pes.FANTASIA AS CLIENT,
+                    pes.CODIGO || ' - ' || pes.NOME AS CLIENT,
                     mi.COD_ITEM || ' - ' || TRIM(mi.DESCRICAO)  AS ITEM
                 FROM Wonder.Cml_MovItens mi
                 LEFT JOIN Wonder.Cml_Movimento m ON mi.Id_Transacao = m.Id_Transacao

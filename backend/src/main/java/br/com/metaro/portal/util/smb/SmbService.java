@@ -111,9 +111,8 @@ public class SmbService {
     }
 
     private String getProjectFolder(String projectName) {
-        String baseProject = projectName.split("[-_.,]")[0];
+        String baseProject = projectName.split("[-_., ]")[0].trim();
 
-        if (baseProject == null || baseProject.isEmpty()) return "";
         if (!baseProject.matches("\\d+")) return "";
 
         baseProject = String.valueOf(Integer.parseInt(baseProject));

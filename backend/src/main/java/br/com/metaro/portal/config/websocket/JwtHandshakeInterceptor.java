@@ -1,4 +1,4 @@
-package br.com.metaro.portal.websocket;
+package br.com.metaro.portal.config.websocket;
 
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.UserRepository;

@@ -33,7 +33,7 @@ public class MemorandoController {
     }
 
     @PostMapping
-    public ResponseEntity<MemorandoDto> insert(@Valid @RequestBody MemorandoInsertDto insertDto) {
+    public ResponseEntity<MemorandoDto> insert(@Valid @RequestBody MemorandoInsertDto insertDto) throws Exception {
         MemorandoDto dto = memorandoService.insert(insertDto);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
@@ -44,7 +44,7 @@ public class MemorandoController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<MemorandoDto> update(@PathVariable Long id, @Valid @RequestBody MemorandoInsertDto dto) {
+    public ResponseEntity<MemorandoDto> update(@PathVariable Long id, @Valid @RequestBody MemorandoInsertDto dto) throws Exception {
         MemorandoDto newDto = memorandoService.update(id, dto);
         return ResponseEntity.ok(newDto);
     }
@@ -56,7 +56,7 @@ public class MemorandoController {
     }
 
     @PutMapping(value = "/sign/{id}")
-    public ResponseEntity<MemorandoDto> sign(@PathVariable Long id) {
+    public ResponseEntity<MemorandoDto> sign(@PathVariable Long id) throws Exception {
         MemorandoDto dto = memorandoService.sign(id);
         return ResponseEntity.ok(dto);
     }
@@ -68,7 +68,7 @@ public class MemorandoController {
     }
 
     @PutMapping(value = "/updateSignatures/{id}")
-    public ResponseEntity<MemorandoDto> updateSignatures(@PathVariable Long id, @RequestBody MemorandoIgnoreDto dto) {
+    public ResponseEntity<MemorandoDto> updateSignatures(@PathVariable Long id, @RequestBody MemorandoIgnoreDto dto) throws Exception {
         MemorandoDto memorandoDto = memorandoService.updateSignatures(id, dto);
         return ResponseEntity.ok(memorandoDto);
     }

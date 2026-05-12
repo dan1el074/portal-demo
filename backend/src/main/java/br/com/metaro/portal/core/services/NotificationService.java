@@ -6,7 +6,7 @@ import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.NotificationRepository;
-import br.com.metaro.portal.websocket.NotificationSessionManager;
+import br.com.metaro.portal.config.websocket.NotificationSessionManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
