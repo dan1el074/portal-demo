@@ -49,7 +49,7 @@ export class AuthGuard {
   }
 
   public isAuthenticated(): boolean {
-    return !!sessionStorage.getItem('auth-token');
+    return !!localStorage.getItem('auth-token');
   }
 
   public getUser(): Observable<Me> {
@@ -72,7 +72,7 @@ export class AuthGuard {
 
   public clearUser() {
     this.userService.clearUser();
-    sessionStorage.clear();
+    localStorage.removeItem('auth-token');
   }
 
   private showError(status: number) {

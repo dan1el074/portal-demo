@@ -168,7 +168,7 @@ export class NotificationWebSocketService {
 
   private handleUnauthorized(): void {
     this.disconnect();
-    sessionStorage.removeItem('auth-token');
+    localStorage.removeItem('auth-token');
     this.router.navigateByUrl('/login');
   }
 }

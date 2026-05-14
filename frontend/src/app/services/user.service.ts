@@ -18,13 +18,13 @@ export class UserService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
   }
 
-  /*
+  /**
   *  Controle de usuário
   */
 
@@ -48,12 +48,12 @@ export class UserService {
     );
   }
 
-  /*
+  /**
   *  Requisições da API
   */
 
   public getUserData(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -62,7 +62,7 @@ export class UserService {
   }
 
   public getUserConfig(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -71,7 +71,7 @@ export class UserService {
   }
 
   public findAll(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -80,7 +80,7 @@ export class UserService {
   }
 
   public listByPositionName(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -89,7 +89,7 @@ export class UserService {
   }
 
   public findById(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -98,7 +98,7 @@ export class UserService {
   }
 
   public insert(data: FormData): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -107,7 +107,7 @@ export class UserService {
   }
 
   public update(id: number, data: FormData): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -116,7 +116,7 @@ export class UserService {
   }
 
   public updateConfig(data: FormData): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -125,7 +125,7 @@ export class UserService {
   }
 
   public deactivateUser(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
