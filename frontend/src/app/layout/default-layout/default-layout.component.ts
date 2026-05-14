@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
-import { DefaultFooterComponent, DefaultHeaderComponent } from './';
-import { navItems } from './_nav';
-import { Me } from '../../interface/user.interface';
+import { Me, PendingIssues } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/websocket.service';
+import { DefaultFooterComponent, DefaultHeaderComponent } from './';
+import { LayoutAlertModalComponent } from './../../../components/modal/layout-alert-modal/layout-alert-modal.component';
 import { LayoutSearchModalComponent } from '../../../components/modal/layout-search-modal/layout-search-modal.component';
+import { navItems } from './_nav';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,13 +30,36 @@ import { LayoutSearchModalComponent } from '../../../components/modal/layout-sea
     RouterOutlet,
     RouterLink,
     ShadowOnScrollDirective,
-    LayoutSearchModalComponent
+    LayoutSearchModalComponent,
+    LayoutAlertModalComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultLayoutComponent implements OnInit {
-  protected showModal = false;
+  protected showSearchModal = false;
+  protected showAlertModal = false;
   public navItems!: Array<INavData>;
+
+  protected pendingIssues: Array<PendingIssues> = [
+    {
+      id: 0,
+      title: "Memorando 178/2026",
+      action: "Falta sua assinatura",
+      urgency: "urgent",
+    },
+    {
+      id: 1,
+      title: "Memorando 179/2026",
+      action: "Falta sua assinatura",
+      urgency: "pending",
+    },
+    {
+      id: 2,
+      title: "Memorando 180/2026",
+      action: "Falta sua assinatura",
+      urgency: "pending",
+    }
+  ]
 
   protected user: Me = {
     id: 0,
@@ -69,6 +93,15 @@ export class DefaultLayoutComponent implements OnInit {
 
     if (!this.userService.getCurrentUser()) {
       this.userService.refreshUser().subscribe();
+    }
+
+    this.checkFirstAccess();
+  }
+
+  private checkFirstAccess(): void {
+    if (sessionStorage.getItem('first-access') == 'true') {
+      this.showAlertModal = true;
+      this.cdr.detectChanges();
     }
   }
 
@@ -118,7 +151,7 @@ export class DefaultLayoutComponent implements OnInit {
   }
 
   private connectWebsocket(): void {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     if (!token) return;
 
     this.notificationService.getMyNotifications().subscribe(list => {
@@ -132,8 +165,18 @@ export class DefaultLayoutComponent implements OnInit {
     this.wsService.connect(token);
   }
 
+  protected toggleAlertModal(status: boolean): void {
+    this.showAlertModal = status;
+
+    if (!status) {
+      sessionStorage.removeItem('first-access');
+    }
+
+    this.cdr.detectChanges();
+  }
+
   protected toggleSearchModal(status: boolean): void {
-    this.showModal = status;
+    this.showSearchModal = status;
     this.cdr.detectChanges();
   }
 }

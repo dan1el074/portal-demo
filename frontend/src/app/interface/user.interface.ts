@@ -99,3 +99,10 @@ export interface UserGroup {
   title: string;
   childrens: Array<UserMinSummary>;
 }
+
+export interface PendingIssues {
+  id: number,
+  title: string;
+  action: string;
+  urgency: 'urgent' | 'pending';
+}
