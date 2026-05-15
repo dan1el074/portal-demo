@@ -1,3 +1,4 @@
+import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, Input, OnChanges, ViewChild } from '@angular/core';
 import { AvatarComponent, BadgeComponent, ButtonDirective, ContainerComponent, TooltipDirective } from '@coreui/angular';
@@ -27,7 +28,8 @@ import { RouterLink } from '@angular/router';
     MatFormFieldModule,
     MatInputModule,
     ButtonDirective,
-    RouterLink
+    RouterLink,
+    TruncatePipe
   ],
   templateUrl: './memorando-table.component.html',
   styleUrl: './memorando-table.component.scss',
