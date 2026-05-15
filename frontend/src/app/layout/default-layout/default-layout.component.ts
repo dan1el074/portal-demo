@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
-import { Me, PendingIssues } from '../../interface/user.interface';
+import { Me } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/websocket.service';
@@ -40,27 +40,6 @@ export class DefaultLayoutComponent implements OnInit {
   protected showAlertModal = false;
   public navItems!: Array<INavData>;
 
-  protected pendingIssues: Array<PendingIssues> = [
-    {
-      id: 0,
-      title: "Memorando 178/2026",
-      action: "Falta sua assinatura",
-      urgency: "urgent",
-    },
-    {
-      id: 1,
-      title: "Memorando 179/2026",
-      action: "Falta sua assinatura",
-      urgency: "pending",
-    },
-    {
-      id: 2,
-      title: "Memorando 180/2026",
-      action: "Falta sua assinatura",
-      urgency: "pending",
-    }
-  ]
-
   protected user: Me = {
     id: 0,
     name: '',
@@ -72,7 +51,8 @@ export class DefaultLayoutComponent implements OnInit {
     username: '',
     supportToken: null,
     roles: [],
-    notifications: []
+    notifications: [],
+    pendingIssues: []
   };
 
   constructor(
@@ -89,20 +69,13 @@ export class DefaultLayoutComponent implements OnInit {
       this.user = user;
       this.updateTools();
       this.connectWebsocket();
+      this.checkFirstAccess();
     });
 
     if (!this.userService.getCurrentUser()) {
       this.userService.refreshUser().subscribe();
     }
 
-    this.checkFirstAccess();
-  }
-
-  private checkFirstAccess(): void {
-    if (sessionStorage.getItem('first-access') == 'true') {
-      this.showAlertModal = true;
-      this.cdr.detectChanges();
-    }
   }
 
   private updateTools(): void {
@@ -163,6 +136,18 @@ export class DefaultLayoutComponent implements OnInit {
     });
 
     this.wsService.connect(token);
+  }
+
+  private checkFirstAccess(): void {
+    if (sessionStorage.getItem('first-access') == 'true') {
+      if (!this.user.pendingIssues || this.user.pendingIssues.length == 0) {
+        sessionStorage.removeItem('first-access')
+        return;
+      }
+
+      this.showAlertModal = true;
+      this.cdr.detectChanges();
+    }
   }
 
   protected toggleAlertModal(status: boolean): void {
