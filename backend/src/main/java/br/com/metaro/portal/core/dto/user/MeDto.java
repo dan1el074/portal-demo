@@ -1,6 +1,7 @@
 package br.com.metaro.portal.core.dto.user;
 
 import br.com.metaro.portal.core.dto.notification.NotificationDto;
+import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
 import br.com.metaro.portal.core.dto.role.RoleDto;
 import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.Role;
@@ -29,6 +30,7 @@ public class MeDto {
 
     private final List<RoleDto> roles = new ArrayList<>();
     private final List<NotificationDto> notifications = new ArrayList<>();
+    private final List<PendingIssuesDto> pendingIssues = new ArrayList<>();
 
     public MeDto(User user) {
         this.id = user.getId();
