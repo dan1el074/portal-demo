@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { ContainerComponent, INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
-import { DefaultFooterComponent, DefaultHeaderComponent } from './';
-import { navItems } from './_nav';
 import { Me } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/websocket.service';
+import { DefaultFooterComponent, DefaultHeaderComponent } from './';
+import { LayoutAlertModalComponent } from './../../../components/modal/layout-alert-modal/layout-alert-modal.component';
 import { LayoutSearchModalComponent } from '../../../components/modal/layout-search-modal/layout-search-modal.component';
+import { navItems } from './_nav';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,12 +30,14 @@ import { LayoutSearchModalComponent } from '../../../components/modal/layout-sea
     RouterOutlet,
     RouterLink,
     ShadowOnScrollDirective,
-    LayoutSearchModalComponent
+    LayoutSearchModalComponent,
+    LayoutAlertModalComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultLayoutComponent implements OnInit {
-  protected showModal = false;
+  protected showSearchModal = false;
+  protected showAlertModal = false;
   public navItems!: Array<INavData>;
 
   protected user: Me = {
@@ -48,7 +51,8 @@ export class DefaultLayoutComponent implements OnInit {
     username: '',
     supportToken: null,
     roles: [],
-    notifications: []
+    notifications: [],
+    pendingIssues: []
   };
 
   constructor(
@@ -65,11 +69,13 @@ export class DefaultLayoutComponent implements OnInit {
       this.user = user;
       this.updateTools();
       this.connectWebsocket();
+      this.checkFirstAccess();
     });
 
     if (!this.userService.getCurrentUser()) {
       this.userService.refreshUser().subscribe();
     }
+
   }
 
   private updateTools(): void {
@@ -118,7 +124,7 @@ export class DefaultLayoutComponent implements OnInit {
   }
 
   private connectWebsocket(): void {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     if (!token) return;
 
     this.notificationService.getMyNotifications().subscribe(list => {
@@ -132,8 +138,30 @@ export class DefaultLayoutComponent implements OnInit {
     this.wsService.connect(token);
   }
 
+  private checkFirstAccess(): void {
+    if (sessionStorage.getItem('first-access') == 'true') {
+      if (!this.user.pendingIssues || this.user.pendingIssues.length == 0) {
+        sessionStorage.removeItem('first-access')
+        return;
+      }
+
+      this.showAlertModal = true;
+      this.cdr.detectChanges();
+    }
+  }
+
+  protected toggleAlertModal(status: boolean): void {
+    this.showAlertModal = status;
+
+    if (!status) {
+      sessionStorage.removeItem('first-access');
+    }
+
+    this.cdr.detectChanges();
+  }
+
   protected toggleSearchModal(status: boolean): void {
-    this.showModal = status;
+    this.showSearchModal = status;
     this.cdr.detectChanges();
   }
 }

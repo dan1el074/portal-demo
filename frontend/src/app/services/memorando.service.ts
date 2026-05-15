@@ -14,7 +14,7 @@ export class MemorandoService {
   constructor(private http: HttpClient) {}
 
   public findAll(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -23,7 +23,7 @@ export class MemorandoService {
   }
 
   public findById(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -32,7 +32,7 @@ export class MemorandoService {
   }
 
   public searchOrder(order: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -41,7 +41,7 @@ export class MemorandoService {
   }
 
   public insert(data: NewMemorando): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -50,7 +50,7 @@ export class MemorandoService {
   }
 
   public update(id: number, data: NewMemorando): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -59,7 +59,7 @@ export class MemorandoService {
   }
 
   public sign(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -68,7 +68,7 @@ export class MemorandoService {
   }
 
   public disable(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -77,7 +77,7 @@ export class MemorandoService {
   }
 
   public rollback(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -86,7 +86,7 @@ export class MemorandoService {
   }
 
   public delete(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -95,7 +95,7 @@ export class MemorandoService {
   }
 
   public updateSignatures(id: number, data: UpdateDepartmentMemorando): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });

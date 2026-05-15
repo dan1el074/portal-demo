@@ -1,6 +1,9 @@
 package br.com.metaro.portal.core.services;
 
+import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
 import br.com.metaro.portal.core.dto.user.*;
+import br.com.metaro.portal.core.entities.Notification;
+import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.PositionRepository;
@@ -9,6 +12,8 @@ import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.repositories.projections.UserDetailsProjection;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
+import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
+import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.PictureService;
 import br.com.metaro.portal.util.picture.PictureType;
@@ -26,9 +31,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.util.*;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -42,6 +52,8 @@ public class UserService implements UserDetailsService {
     private PictureService pictureService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MemorandoRepository memorandoRepository;
 
     @Transactional(readOnly = true)
     public List<UserMinDto> findAll() {
@@ -102,7 +114,28 @@ public class UserService implements UserDetailsService {
             }
         }
 
-        return new MeDto(user);
+        MeDto dto = new MeDto(user);
+        Long count = 1L;
+
+        for (Notification notification : user.getNotifications()) {
+            if (notification.getType().equals(NotificationType.MEMORANDO)) {
+                Memorando memorando = memorandoRepository.findById(notification.getReferenceId())
+                        .orElseThrow(ResourceNotFoundException::new);
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy").withZone(ZoneId.systemDefault());
+                String year = formatter.format(memorando.getCreateAt());
+
+                String urgency = "pending";
+                if (Duration.between(memorando.getCreateAt(), Instant.now()).toHours() >= 24) {
+                    urgency = "urgent";
+                }
+
+                dto.getPendingIssues().add(new PendingIssuesDto(count, "Memorando %d/%s".formatted(memorando.getNumber(), year),
+                        "Falta sua assiantura!", urgency));
+            }
+        }
+
+        return dto;
     }
 
     @Transactional(readOnly = true)

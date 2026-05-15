@@ -12,7 +12,7 @@ export class SearchService {
   constructor(private http: HttpClient) {}
 
   public searchProject(projectNumber: string): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -22,7 +22,7 @@ export class SearchService {
 
   public openProject(projectName: string): void {
     const newTab = window.open('', '_blank');
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });

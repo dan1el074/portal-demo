@@ -13,7 +13,7 @@ export class NotificationService {
   constructor(private http: HttpClient) {}
 
   public getMyNotifications(): Observable<Notification[]> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -22,7 +22,7 @@ export class NotificationService {
   }
 
   public getUnreadCount(): Observable<{ unreadCount: number }> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -31,7 +31,7 @@ export class NotificationService {
   }
 
   public markAsViewed(id: number): Observable<void> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -40,7 +40,7 @@ export class NotificationService {
   }
 
   public delete(id: number): Observable<void> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });

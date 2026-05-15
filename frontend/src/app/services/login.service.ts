@@ -42,13 +42,13 @@ export class LoginService {
       .post<LoginResponse>(this.api, body.toString(), { headers })
       .pipe(
           tap((value) => {
-            sessionStorage.setItem('auth-token', value.access_token);
+            localStorage.setItem('auth-token', value.access_token);
           })
       );
   }
 
   public logout(): void {
-    sessionStorage.removeItem('auth-token');
+    localStorage.removeItem('auth-token');
     this.authGuardService.clearUser();
     this.websocket.disconnect();
   }

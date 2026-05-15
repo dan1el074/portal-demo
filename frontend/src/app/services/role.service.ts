@@ -13,7 +13,7 @@ export class RoleService {
   constructor(private http: HttpClient) {}
 
   public findAll(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });

@@ -1,10 +1,4 @@
-<c-sidebar
-  #sidebar1="cSidebar"
-  class="d-print-none sidebar sidebar-fixed border-end"
-  colorScheme="dark"
-  id="sidebar1"
-  visible
->
+<c-sidebar #sidebar1="cSidebar" class="d-print-none sidebar sidebar-fixed border-end" colorScheme="dark" id="sidebar1" visible >
   <c-sidebar-header class="border-bottom">
     <c-sidebar-brand [routerLink]="['/home']">
       <img src="./assets/images/brand/white-logo.svg" height="26" class="sidebar-brand-full" name="brand" />
@@ -40,5 +34,5 @@
   <app-default-footer />
 </div>
 
-<app-layout-search-modal [visible]="showModal" (closeModal)="toggleSearchModal(false)"></app-layout-search-modal>
-<!-- (createNewMemorando)="openCreateTab($event)" -->
+<app-layout-alert-modal [visible]="showAlertModal" [pendingIssues]="user.pendingIssues" (closeModal)="toggleAlertModal(false)"></app-layout-alert-modal>
+<app-layout-search-modal [visible]="showSearchModal" (closeModal)="toggleSearchModal(false)"></app-layout-search-modal>
