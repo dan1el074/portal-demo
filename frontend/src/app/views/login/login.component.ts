@@ -31,6 +31,7 @@ export class LoginComponent implements OnInit {
   public ngOnInit(): void {
     document.documentElement.setAttribute('data-coreui-theme', 'light');
     this.loginService.logout();
+    sessionStorage.setItem('first-access', 'true');
     setTimeout(() => console.clear(), 200);
   }
 

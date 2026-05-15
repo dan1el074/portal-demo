@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonCloseDirective, ButtonDirective, ColDirective, ModalBodyComponent, ModalComponent, ModalHeaderComponent, PlaceholderAnimationDirective, PlaceholderDirective } from '@coreui/angular';
+import { ButtonCloseDirective, ColDirective, ModalBodyComponent, ModalComponent, ModalHeaderComponent, PlaceholderAnimationDirective, PlaceholderDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilCursor, cilFork } from '@coreui/icons';
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SearchService } from '../../../app/services/search.service';
 
 @Component({

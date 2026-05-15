@@ -36,6 +36,14 @@ export interface Me {
   supportToken: string | null;
   roles: Array<Role>;
   notifications: Array<Notification>;
+  pendingIssues: Array<PendingIssues>;
+}
+
+export interface PendingIssues {
+  id: number,
+  title: string;
+  action: string;
+  urgency: 'urgent' | 'pending';
 }
 
 export interface UserMinData {

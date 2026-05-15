@@ -1,0 +1,40 @@
+<c-modal [visible]="visible" alignment="center" backdrop="static" id="newAlertModal" scrollable class="layout-custom-alert">
+  <c-modal-header>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" class="warning-icon">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="white" stroke="white" stroke-width="0.5"/>
+      <line x1="12" y1="9" x2="12" y2="13" stroke="red" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="17" r="1" fill="red"/>
+    </svg>
+    <h6 cModalTitle class="header-title"><b>Açoes pendentes - atenção necessária</b></h6>
+  </c-modal-header>
+  <c-modal-body>
+    <span class="low-emphasis warning-text">Você possui itens que exigem sua ação antes de continuar.</span>
+
+    <div class="cards-container">
+      @for (item of pendingIssues; track item.id) {
+        <div class="card">
+          <div class="text">
+            <b>{{ item.title }}</b>
+            <span class="low-emphasis">{{ item.action }}</span>
+          </div>
+
+          @if (item.urgency == 'urgent') {
+            <div class="label">
+              <span class="red">Urgente</span>
+            </div>
+          }
+          @if (item.urgency == 'pending') {
+            <div class="label">
+              <span class="yellow">Pendente</span>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <span class="low-emphasis">Este aviso não pode ser dispensado até confirmação.</span>
+    <button cButton color="primary" (click)="closeAlertModal()">Entendido</button>
+  </c-modal-footer>
+</c-modal>

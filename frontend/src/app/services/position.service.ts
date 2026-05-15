@@ -13,7 +13,7 @@ export class PostitionService {
   constructor(private http: HttpClient) {}
 
   public findAll(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -22,7 +22,7 @@ export class PostitionService {
   }
 
   public list(): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -31,7 +31,7 @@ export class PostitionService {
   }
 
   public findById(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -40,7 +40,7 @@ export class PostitionService {
   }
 
   public insert(data: PositionFormImput): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -49,7 +49,7 @@ export class PostitionService {
   }
 
   public update(id: number, data: PositionFormImput): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
@@ -58,7 +58,7 @@ export class PostitionService {
   }
 
   public deactive(id: number): Observable<any> {
-    const token = sessionStorage.getItem('auth-token');
+    const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });

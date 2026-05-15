@@ -26,15 +26,8 @@ public class NotificationService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public void create(
-            String message,
-            String actionUrl,
-            Boolean autoDelete,
-            NotificationType type,
-            Long referenceId,
-            User createdBy,
-            User targetUser
-    ) {
+    public void create(String message, String actionUrl, Boolean autoDelete, NotificationType type, Long referenceId,
+                       User createdBy, User targetUser) {
         Notification notification = new Notification();
         notification.setMessage(message);
         notification.setActionUrl(actionUrl);
