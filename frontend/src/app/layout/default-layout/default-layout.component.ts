@@ -75,7 +75,6 @@ export class DefaultLayoutComponent implements OnInit {
     if (!this.userService.getCurrentUser()) {
       this.userService.refreshUser().subscribe();
     }
-
   }
 
   private updateTools(): void {

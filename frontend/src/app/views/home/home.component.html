@@ -5,14 +5,16 @@
     </c-alert>
   </div>
 
-  <app-hello
-    [userName]="user.name"
-    [userEmail]="user.email"
-    [pendingTodos]="5"
-    [upcomingEvents]="1"
-    [unreadMessages]="2"
-    [openChecklists]="3"
-  ></app-hello>
+  @if (user) {
+    <app-hello
+      [userName]="user.name"
+      [userEmail]="user.email"
+      [pendingTodos]="5"
+      [upcomingEvents]="1"
+      [unreadMessages]="2"
+      [openChecklists]="3"
+    ></app-hello>
+  }
 
   <div class="home-container">
     <div class="home left">
