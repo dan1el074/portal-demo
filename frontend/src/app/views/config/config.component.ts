@@ -18,7 +18,6 @@ import { ErrorService } from '../../services/error.service';
     CardComponent,
     CardHeaderComponent,
     CardBodyComponent,
-    CardTitleDirective,
     UserConfigFormComponent
   ],
   templateUrl: './config.component.html',

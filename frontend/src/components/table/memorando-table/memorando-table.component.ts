@@ -32,7 +32,6 @@ import { RouterLink } from '@angular/router';
     TruncatePipe,
     PlaceholderDirective,
     PlaceholderAnimationDirective,
-    BgColorDirective,
     ColDirective
   ],
   templateUrl: './memorando-table.component.html',
