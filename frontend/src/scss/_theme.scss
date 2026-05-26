@@ -17,19 +17,19 @@ body {
   height: 62px;
 }
 
-.wrapper {
-  width: 100%;
-  padding-inline: var(--cui-sidebar-occupy-start, 0) var(--cui-sidebar-occupy-end, 0);
-  will-change: auto;
-  @include transition(padding .15s);
-}
-
 .card {
   --cui-border-radius: 12px;
 }
 
 .card button {
   --cui-border-radius: 6px;
+}
+
+.wrapper {
+  width: 100%;
+  padding-inline: var(--cui-sidebar-occupy-start, 0) var(--cui-sidebar-occupy-end, 0);
+  will-change: auto;
+  @include transition(padding .15s);
 }
 
 @media (min-width: 992px) {
@@ -455,6 +455,7 @@ table {
   --cui-btn-active-border-color: rgb(57, 106, 170);
   --cui-btn-disabled-bg: #285ea5;
   --cui-btn-disabled-border-color: #285ea5;
+  --cui-btn-focus-shadow-rgb: 40, 94, 165;
 }
 
 .btn-outline-primary {
