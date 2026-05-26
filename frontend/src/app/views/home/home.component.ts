@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { UserService } from './../../services/user.service';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { AlertComponent, ContainerComponent } from '@coreui/angular';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { PostComponent } from './../../../components/cards/post/post.component';
@@ -9,6 +10,8 @@ import { PostCard } from './../../interface/post.interface';
 import { FileCard } from './../../interface/file.interface';
 import { EventCard } from './../../interface/event.interface';
 import { TodoTableCard } from '../../interface/todo.interface';
+import { HelloComponent } from '../../../components/cards/hello/hello.component';
+import { Me } from '../../interface/user.interface';
 
 @Component({
   selector: 'app-home',
@@ -18,18 +21,16 @@ import { TodoTableCard } from '../../interface/todo.interface';
     FilesComponent,
     EventComponent,
     TodoComponent,
-    PostComponent
+    PostComponent,
+    HelloComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
-  protected event: EventCard = {
-    title: 'Minuto da Qualidade',
-    picture: '.\\assets\\images\\others\\event_03.webp',
-    date: '2025-06-21T15:00:00Z',
-  };
+  protected user!: Me;
+
   protected files: Array<FileCard> = [
     {
       id: 1,
@@ -47,6 +48,11 @@ export class HomeComponent implements OnInit {
       path: 'caminho2',
     },
   ];
+  protected event: EventCard = {
+    title: 'Minuto da Qualidade',
+    picture: '.\\assets\\images\\others\\event_03.webp',
+    date: '2025-06-21T15:00:00Z',
+  };
   protected todoItems: Array<TodoTableCard> = [
     {
       priority: 'Urgente',
@@ -132,9 +138,17 @@ export class HomeComponent implements OnInit {
     },
   ];
 
-  constructor(private spinner: NgxSpinnerService) {}
+  constructor(
+    private spinner: NgxSpinnerService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
+    this.userService.user$.subscribe(user => {
+      if (!user) return;
+      this.user = user;
+    });
+
     setTimeout(() => {
       this.spinner.hide("loginSpinner")
     }, 500);

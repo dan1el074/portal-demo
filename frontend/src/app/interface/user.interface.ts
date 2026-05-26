@@ -107,3 +107,11 @@ export interface UserGroup {
   title: string;
   childrens: Array<UserMinSummary>;
 }
+
+export interface HomeCardStat {
+  label: string;
+  value: number | string;
+  iconPath: string;
+  iconColor: string;
+  iconBg: string;
+}

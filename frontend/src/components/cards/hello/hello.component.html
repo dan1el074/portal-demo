@@ -1,0 +1,57 @@
+
+<p class="ops-header">
+  <span class="ops-welcome">Bem-vindo de volta, {{ firstName }}</span>
+  <span class="ops-access-level">Acompanhe suas tarefas, eventos, publicações e muito mais.</span>
+</p>
+
+<c-card class="ops-dashboard-card border-0 overflow-hidden">
+  <c-card-body class="p-0">
+    <div class="ops-hero">
+      <div class="ops-grid-overlay" aria-hidden="true"></div>
+      <div class="ops-grid-overlay-overlay" aria-hidden="true"></div>
+
+      <div class="ops-hero-left">
+        <span class="ops-eyebrow">DASHBOARD DE OPERAÇÃO</span>
+        <h2 class="ops-title">Resumo geral do sistema e atividade operacional</h2>
+        <p class="ops-subtitle">Acesso rápido para as nossas ferramentas.</p>
+
+        <div class="ops-actions mt-3">
+          <button cButton color="primary" size="sm" routerLink="/general/memorando" class="flex-center">
+            Memorando
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="ms-1">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </button>
+          <button cButton color="primary" variant="outline" size="sm" routerLink="/general/raw-materials">Inventário</button>
+          <button cButton color="primary" variant="outline" size="sm" routerLink="/apps/mes">MES Metaro</button>
+        </div>
+      </div>
+
+      <div class="ops-hero-right">
+        <div class="ops-workspace-card">
+          <div class="ops-workspace-header">
+            <p class="ops-workspace-label">ÁREA DE TRABALHO</p>
+            <p class="ops-workspace-name">{{ userName }}</p>
+            <p class="ops-workspace-email">{{ userEmail }}</p>
+          </div>
+
+          <div class="ops-stats-grid">
+            @for (stat of stats; track stat.label) {
+              <div class="ops-stat-item">
+                <div class="ops-stat-icon" [ngStyle]="{ background: stat.iconBg }">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" [attr.stroke]="stat.iconColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="stat.iconPath" />
+                  </svg>
+                </div>
+                <p class="ops-stat-label">{{ stat.label }}</p>
+                <p class="ops-stat-value">{{ stat.value }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </c-card-body>
+</c-card>

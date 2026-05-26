@@ -82,7 +82,7 @@ export class DefaultLayoutComponent implements OnInit {
     const customNav: Array<INavData> = [];
 
     this.user.roles.forEach(role => {
-      if (role.authority == 'ROLE_USER' || role.authority == 'ROLE_ADMIN') return;
+      if (!role.title) return;
 
       const toolList: INavData = {
         name: role.parent,
@@ -106,10 +106,18 @@ export class DefaultLayoutComponent implements OnInit {
     });
 
     customNav.sort((a, b) => {
-      if ((a.name ?? '') === 'Gestão' && (b.name ?? '') !== 'Gestão') return -1;
-      if ((a.name ?? '') !== 'Gestão' && (b.name ?? '') === 'Gestão') return 1;
+      if ((a.name ?? '') === 'Apps' && (b.name ?? '') !== 'Apps') return 1;
+      if ((a.name ?? '') !== 'Apps' && (b.name ?? '') === 'Apps') return -1;
       return (a.name ?? '').localeCompare((b.name ?? ''), 'pt-BR', { sensitivity: 'base' });
     });
+
+    customNav.forEach(item => {
+      if (item.children?.length == 1) return;
+
+      item.children?.sort((a, b) => {
+        return (a.name ?? '').localeCompare((b.name ?? ''), 'pt-BR', { sensitivity: 'base' });
+      });
+    })
 
     const tempNavItems = [...navItems];
     tempNavItems.splice(-2, 0, customNav.length > 0 ? { title: true, name: 'Ferramentas' } : {}, ...customNav);

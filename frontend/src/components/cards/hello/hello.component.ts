@@ -1,0 +1,74 @@
+import { CommonModule } from '@angular/common';
+import { Component, Input } from '@angular/core';
+import { ButtonModule, CardModule } from '@coreui/angular';
+import { HomeCardStat } from './../../../app/interface/user.interface';
+import { RouterLink } from '@angular/router';
+
+@Component({
+  selector: 'app-hello',
+  imports: [
+    CommonModule,
+    CardModule,
+    ButtonModule,
+    RouterLink
+  ],
+  templateUrl: './hello.component.html',
+  styleUrl: './hello.component.scss',
+})
+export class HelloComponent {
+  @Input() userName!: string;
+  @Input() userEmail!: string;
+  @Input() pendingTodos!: number;
+  @Input() openChecklists!: number;
+  @Input() unreadMessages!: number;
+  @Input() upcomingEvents!: number;
+
+  readonly stats: HomeCardStat[] = [];
+
+  constructor() {}
+
+  public ngOnInit(): void {
+    this.buildStats();
+  }
+
+  private buildStats(): void {
+    this.stats.push(
+      {
+        label: 'TAREFAS',
+        value: this.pendingTodos,
+        iconPath:
+          'M8.25 6.75h7.5M8.25 9.75h7.5M8.25 12.75h4.5m-7.5-9H18a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0118 21.75H6a2.25 2.25 0 01-2.25-2.25V6a2.25 2.25 0 012.25-2.25z',
+        iconColor: '#6366f1',
+        iconBg: 'rgba(99,102,241,0.12)',
+      },
+      {
+        label: 'EVENTOS',
+        value: this.upcomingEvents,
+        iconPath:
+          'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5',
+        iconColor: '#f59e0b',
+        iconBg: 'rgba(245,158,11,0.12)',
+      },
+      {
+        label: 'MEMORANDOS',
+        value: this.unreadMessages,
+        iconPath:
+          'M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75',
+        iconColor: '#3b82f6',
+        iconBg: 'rgba(59,130,246,0.12)',
+      },
+      {
+        label: 'CHECKLIST',
+        value: this.openChecklists,
+        iconPath:
+          'M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12',
+        iconColor: '#22c55e',
+        iconBg: 'rgba(34,197,94,0.12)',
+      },
+    );
+  }
+
+  protected get firstName(): string {
+    return this.userName.split(' ')[0];
+  }
+}

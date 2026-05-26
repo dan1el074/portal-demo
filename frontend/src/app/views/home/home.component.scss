@@ -1,12 +1,15 @@
-.alert-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+c-container {
+  max-width: 1070px;
 
-  c-alert {
+  .alert-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    max-width: 1070px;
+
+    c-alert {
+      width: 100%;
+    }
   }
 }
 
@@ -16,6 +19,7 @@
   justify-content: center;
   gap: 24px;
   padding-bottom: 24px;
+  margin-top: 16px;
 
   .home {
     display: flex;
