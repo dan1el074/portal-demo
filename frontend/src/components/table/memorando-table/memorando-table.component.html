@@ -7,93 +7,194 @@
 </mat-form-field>
 
 <c-container class="scroll-x" fluid>
-  <table mat-table [dataSource]="dataSource" matSort class="table stripe">
-    <ng-container matColumnDef="memorandoNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Número</th>
-      <td mat-cell *matCellDef="let memorando">
-        <a [routerLink]="['./', memorando.id]" class="edit">
-          @if (memorando.number) {
-            {{ memorando.number }}/{{ memorando.createAt | date: "yyyy" : '-0300' }}
-          } @else {
-            n/a
-          }
-        </a>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="orderNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Pedido</th>
-      <td mat-cell *matCellDef="let memorando">{{ memorando.request }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="client">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
-      <td mat-cell *matCellDef="let memorando">{{ memorando.client | truncate:55 }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-      <td mat-cell *matCellDef="let memorando">
-        @switch (memorando.status) {
-          @case ('CREATED') {
-            <c-badge color="info">salvo</c-badge>
-          }
-
-          @case ('PUBLISH') {
-            <c-badge color="primary">publicado</c-badge>
-          }
-
-          @case ('APPROVED') {
-            <c-badge color="success">aprovado</c-badge>
-          }
-
-          @case ('CANCELED') {
-            <c-badge color="danger">cancelado</c-badge>
-          }
-        }
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="signature">
-      <th mat-header-cell *matHeaderCellDef>Assinaturas</th>
-      <td mat-cell *matCellDef="let memorando">
-        <div class="avatar-fix">
-          @for (item of memorando.signatureSummary; track item.id) {
-            <a [cTooltip]="item.name">
-              <c-avatar [src]="item.picture ? apiUrl + '/images/' + item.picture.id : './assets/images/avatars/default.png'" />
+  @if (loadSeach) {
+    <table class="table stripe ">
+      <thead>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></th>
+          <th><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></th>
+          <th><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></th>
+          <th></th>
+          <th><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="12" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="11" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="4" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="12" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="8" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="10" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="4" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="12" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="8" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="12" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="11" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="11" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="12" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="8" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="6" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="11" cPlaceholder></span></div></td>
+          <td></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="7" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span cCol="5" cPlaceholder></span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  } @else {
+    @if (data.length) {
+      <table mat-table [dataSource]="dataSource" matSort class="table stripe">
+        <ng-container matColumnDef="memorandoNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Número</th>
+          <td mat-cell *matCellDef="let memorando">
+            <a [routerLink]="['./', memorando.id]" class="edit">
+              @if (memorando.number) {
+                {{ memorando.number }}/{{ memorando.createAt | date: "yyyy" : '-0300' }}
+              } @else {
+                n/a
+              }
             </a>
-          } @empty {
-            n/a
-          }
-        </div>
-      </td>
-    </ng-container>
+          </td>
+        </ng-container>
 
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado</th>
-      <td mat-cell *matCellDef="let memorando">
-        @if (memorando.createAt) {
-          {{ memorando.createAt | date: "dd/MM/yyyy" : '-0300' }}
-        } @else {
-          n/a
-        }
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="orderNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Pedido</th>
+          <td mat-cell *matCellDef="let memorando">{{ memorando.request }}</td>
+        </ng-container>
 
-    <ng-container matColumnDef="buttons">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let memorando" class="btn-container multiple">
-        <a [routerLink]="['./', memorando.id]" class="edit">
-          <button cButton color="secondary" class="custom-btn">
-            <svg [cIcon]="icons.cilExternalLink" size="sm"></svg>
-          </button>
-        </a>
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="client">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
+          <td mat-cell *matCellDef="let memorando">{{ memorando.client | truncate:55 }}</td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let memorando; columns: displayedColumns"></tr>
-  </table>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let memorando">
+            @switch (memorando.status) {
+              @case ('CREATED') {
+                <c-badge color="info">salvo</c-badge>
+              }
+
+              @case ('PUBLISH') {
+                <c-badge color="primary">publicado</c-badge>
+              }
+
+              @case ('APPROVED') {
+                <c-badge color="success">aprovado</c-badge>
+              }
+
+              @case ('CANCELED') {
+                <c-badge color="danger">cancelado</c-badge>
+              }
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="signature">
+          <th mat-header-cell *matHeaderCellDef>Assinaturas</th>
+          <td mat-cell *matCellDef="let memorando">
+            <div class="avatar-fix">
+              @for (item of memorando.signatureSummary; track item.id) {
+                <a [cTooltip]="item.name">
+                  <c-avatar [src]="item.picture ? apiUrl + '/images/' + item.picture.id : './assets/images/avatars/default.png'" />
+                </a>
+              } @empty {
+                n/a
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado</th>
+          <td mat-cell *matCellDef="let memorando">
+            @if (memorando.createAt) {
+              {{ memorando.createAt | date: "dd/MM/yyyy" : '-0300' }}
+            } @else {
+              n/a
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="buttons">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let memorando" class="btn-container multiple">
+            <a [routerLink]="['./', memorando.id]" class="edit">
+              <button cButton color="secondary" class="custom-btn">
+                <svg [cIcon]="icons.cilExternalLink" size="sm"></svg>
+              </button>
+            </a>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let memorando; columns: displayedColumns"></tr>
+      </table>
+    } @else {
+      <span>Nenhum registro encontrado!</span>
+    }
+  }
 </c-container>
 
 <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" class="pagination"></mat-paginator>

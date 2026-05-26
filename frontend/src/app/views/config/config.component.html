@@ -1,8 +1,11 @@
 <c-row>
   <c-col xs="12">
     <c-card class="border fix-footer">
+      <c-card-header class="no-background">
+        <h5 class="no-margin">Configurações</h5>
+      </c-card-header>
+
       <c-card-body class="user-config-spinner">
-        <h4 cCardTitle>Configurações</h4>
         <div>
           <ngx-spinner name="userConfigSpinner" bdColor="#fff" size="default" color="#0053b0" type="ball-clip-rotate" [fullScreen]="false"></ngx-spinner>
           @if (loaded && userData) {

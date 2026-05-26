@@ -1,0 +1,244 @@
+.ops-header {
+  display: flex;
+  flex-direction: column;
+  color: var(--cui-card-title-color);
+
+  .ops-welcome {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .ops-access-level {
+    color: var(--cui-medium-emphasis);
+  }
+}
+
+.ops-dashboard-card {
+  border-radius: var(cui-border-radius);
+  overflow: hidden;
+  border: var(--cui-border-width) var(--cui-border-style) var(--cui-border-color) !important;
+}
+
+.ops-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2.5rem 2rem;
+  min-height: 300px;
+  background: linear-gradient(135deg, #ffffff 0%, #f7f9ff 50%, #f2f6ff 75%, #edf2ff 100%);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    right: 35%;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200, 195, 240, 0.30) 0%, rgba(180, 195, 255, 0.12) 45%, transparent 70%);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196, 208, 255, 0.35) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.ops-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.ops-hero-left {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.ops-eyebrow {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #0369dd;
+  margin-bottom: 0.75rem;
+}
+
+.ops-title {
+  font-size: 45px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #2E3744;
+  margin-bottom: 0.75rem;
+  max-width: 450px;
+}
+
+.ops-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.ops-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding-top: 8px;
+
+  button {
+    border-radius: 8px;
+    padding: 8px 12px;
+
+    &.flex-center {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.ops-hero-right {
+  flex-shrink: 0;
+  width: 280px;
+  position: relative;
+  z-index: 1;
+}
+
+.ops-workspace-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--cui-border-radius);
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(79, 70, 229, 0.07), 0 8px 32px rgba(79, 70, 229, 0.05);
+}
+
+.ops-workspace-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.ops-workspace-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+  margin: 0 0 0.3rem;
+}
+
+.ops-workspace-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.15rem;
+}
+
+.ops-workspace-email {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.ops-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.ops-stat-item {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--cui-border-radius);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ops-stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.35rem;
+}
+
+.ops-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.ops-stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .ops-hero {
+    flex-direction: column;
+    padding: 1.5rem 1.25rem;
+    min-height: auto;
+  }
+
+  .ops-hero-right {
+    width: 450px;
+  }
+}
+
+@media (max-width: 570px) {
+  .ops-header {
+    text-align: center;
+
+    .ops-welcome {
+      font-size: 20px;
+    }
+
+    .ops-access-level {
+      font-size: 14px;
+    }
+  }
+
+  .ops-hero-right {
+    width: 100%;
+  }
+
+  .ops-title {
+    font-size: 30px;
+  }
+
+  .ops-title,
+  .ops-subtitle,
+  .ops-eyebrow {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .ops-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, ColComponent, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
@@ -10,6 +10,7 @@ import { passwordMatchValidator } from '../../../../app/config/validators';
 import { UserConfigData } from '../../../../app/interface/user.interface';
 import { environment } from '../../../../environments/environment';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-user-config-form',
@@ -31,7 +32,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
     ModalBodyComponent,
     ModalFooterComponent,
     DatePickerComponent,
-    FormPasswordDirective
+    FormPasswordDirective,
+    RouterLink
   ],
   templateUrl: './user-config-form.component.html',
   styleUrl: './user-config-form.component.scss',
