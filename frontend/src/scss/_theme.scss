@@ -830,6 +830,12 @@ c-tabs-list {
   }
 }
 
+@media (max-width: 576px) {
+  .user-name {
+    display: none !important;
+  }
+}
+
 @media (max-width: 550px) {
   .layout-custom-alert {
     .modal-dialog {
