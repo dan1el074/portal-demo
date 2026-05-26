@@ -13,7 +13,7 @@
 
     <app-layout-button-search (openModal)="openProjectSearchModal()"></app-layout-button-search>
 
-    <c-header-nav class="d-none d-md-flex ms-auto">
+    <c-header-nav class="d-md-flex ms-auto">
       <c-dropdown alignment="end" class="fix">
         <button cButton cDropdownToggle color="link" class="position-relative icon-notify bell" [class.fix]="!websocket.unreadCount()">
           <svg [cIcon]="icons.cilBell" class="my-1" size="lg"></svg>
@@ -45,7 +45,7 @@
       </c-dropdown>
     </c-header-nav>
 
-    <c-header-nav class="ms-auto ms-md-0">
+    <c-header-nav class="ms-md-0">
       <ng-container *ngTemplateOutlet="themeDropdown" />
       <div class="nav-item py-1">
         <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
@@ -65,7 +65,7 @@
 <ng-template #userDropdown>
   <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
     <button [caret]="false" cDropdownToggle class="py-0 pe-0 flex" aria-label="Open user menu">
-      <span>{{ user.name }}</span>
+      <span class="user-name">{{ user.name }}</span>
       <c-avatar
         shape="rounded-1"
         size="md"
