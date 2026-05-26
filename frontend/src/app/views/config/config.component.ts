@@ -1,6 +1,5 @@
-import { CustomError, FieldMessage } from './../../interface/error.interface';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
+import { CardBodyComponent, CardComponent, CardHeaderComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
 import { UserConfigData } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
@@ -17,6 +16,7 @@ import { ErrorService } from '../../services/error.service';
     RowComponent,
     ColComponent,
     CardComponent,
+    CardHeaderComponent,
     CardBodyComponent,
     CardTitleDirective,
     UserConfigFormComponent
@@ -27,6 +27,7 @@ import { ErrorService } from '../../services/error.service';
 })
 export class ConfigComponent implements OnInit {
   @ViewChild(UserConfigFormComponent)
+
   protected userConfigForm!: UserConfigFormComponent;
   protected userData: UserConfigData | null = null;
   protected loaded = false;

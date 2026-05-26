@@ -1,7 +1,7 @@
 import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, Input, OnChanges, ViewChild } from '@angular/core';
-import { AvatarComponent, BadgeComponent, ButtonDirective, ContainerComponent, TooltipDirective } from '@coreui/angular';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { AvatarComponent, BadgeComponent, BgColorDirective, ButtonDirective, ColDirective, ContainerComponent, PlaceholderAnimationDirective, PlaceholderDirective, TooltipDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilSearch, cilPencil, cilX, cilExternalLink } from '@coreui/icons';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -10,7 +10,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { environment } from '../../../environments/environment';
-import { Memorando, MemorandoList } from '../../../app/interface/memorando.interface';
+import { MemorandoList } from '../../../app/interface/memorando.interface';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -29,7 +29,11 @@ import { RouterLink } from '@angular/router';
     MatInputModule,
     ButtonDirective,
     RouterLink,
-    TruncatePipe
+    TruncatePipe,
+    PlaceholderDirective,
+    PlaceholderAnimationDirective,
+    BgColorDirective,
+    ColDirective
   ],
   templateUrl: './memorando-table.component.html',
   styleUrl: './memorando-table.component.scss',
@@ -44,8 +48,13 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
   protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'signature', 'createdAt', 'buttons'];
   protected dataSource = new MatTableDataSource<MemorandoList>([]);
   protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
+  protected loadSeach = true;
+
+  constructor (private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(): void {
+    this.loadSeach = true;
+
     if (this.data && this.data.length) {
       this.data = this.data.sort((a, b) => {
         if (!a.number || !b.number || !a.createAt || !b.createAt) return 0;
@@ -63,6 +72,11 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
 
       this.dataSource.data = this.data;
     }
+
+    setTimeout(() => {
+      this.loadSeach = false;
+      this.cdr.detectChanges();
+    }, 1000);
   }
 
   applyFilter(event: Event): void {
