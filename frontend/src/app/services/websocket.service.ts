@@ -81,6 +81,11 @@ export class NotificationWebSocketService {
           this.unreadCount.set(data.unreadCount);
           return;
         }
+
+        if (data.type === 'ALL_NOTIFICATIONS_VIEWED') {
+          this.markAllAsViewedLocal();
+          return;
+        }
       });
     };
 
@@ -133,6 +138,14 @@ export class NotificationWebSocketService {
       list.map(n => n.id === notificationId ? { ...n, viewed: true } : n)
     );
     this.recalculateNotificationCount();
+  }
+
+  public markAllAsViewedLocal() {
+    this.notifications.update(list =>
+      list.filter(n => !n.autoDelete).map(n => ({ ...n, viewed: true }))
+    );
+
+    this.unreadCount.set(0);
   }
 
   public removeLocal(notificationId: number) {

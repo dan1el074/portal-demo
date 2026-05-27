@@ -111,6 +111,15 @@
   }
 }
 
+.ops-actions-subcontainer {
+  display: flex;
+  gap: 8px;
+
+  button {
+    text-wrap: nowrap;
+  }
+}
+
 .ops-hero-right {
   flex-shrink: 0;
   width: 280px;
@@ -169,6 +178,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  min-width: 100px;
+  text-wrap: nowrap;
 }
 
 .ops-stat-icon {
@@ -198,10 +209,19 @@
 }
 
 @media (max-width: 768px) {
+  .ops-header,
+  .ops-dashboard-card {
+    max-width: 540px;
+  }
+
   .ops-hero {
     flex-direction: column;
     padding: 1.5rem 1.25rem;
     min-height: auto;
+  }
+
+  c-container {
+    max-width: max-content;
   }
 
   .ops-hero-right {
@@ -240,5 +260,28 @@
   .ops-actions {
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (max-width: 450px) {
+  .ops-actions {
+    button {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .ops-actions-subcontainer {
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 365px) {
+  .ops-stats-grid {
+    grid-template-columns: none;
   }
 }
