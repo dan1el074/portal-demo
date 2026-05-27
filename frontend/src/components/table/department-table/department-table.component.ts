@@ -1,12 +1,12 @@
 import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, TooltipDirective } from '@coreui/angular';
+import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, PlaceholderAnimationDirective, PlaceholderDirective, TooltipDirective } from '@coreui/angular';
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
 import { Position } from '../../../app/interface/position.interface';
 import { environment } from '../../../environments/environment';
@@ -27,7 +27,9 @@ import { PositionDeleteModalComponent } from '../../modal/position-delete-modal/
     ModalToggleDirective,
     TooltipDirective,
     AvatarComponent,
-    PositionDeleteModalComponent
+    PositionDeleteModalComponent,
+    PlaceholderDirective,
+    PlaceholderAnimationDirective
   ],
   templateUrl: './department-table.component.html',
   styleUrl: './department-table.component.scss',
@@ -45,11 +47,21 @@ export class DepartmentTableComponent implements AfterViewInit, OnChanges {
   protected displayedColumns: string[] = ['id', 'name', 'manangers', 'updatedAt', 'createdAt', 'buttons'];
   protected dataSource = new MatTableDataSource<Position>([]);
   protected icons = { cilSearch, cilPencil, cilX };
+  protected loadSeach = true;
+
+  constructor (private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(): void {
+    this.loadSeach = true;
+
     if (this.data) {
       this.dataSource.data = this.data;
     }
+
+    setTimeout(() => {
+      this.loadSeach = false;
+      this.cdr.detectChanges();
+    }, 800);
   }
 
   ngAfterViewInit(): void {

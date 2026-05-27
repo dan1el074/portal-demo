@@ -7,64 +7,161 @@
 </mat-form-field>
 
 <c-container class="scroll-x" fluid>
-  <table mat-table [dataSource]="dataSource" matSort class="table stripe">
+  @if (loadSeach) {
+    <table class="table stripe table-placeholder">
+      <thead>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:14px;" cPlaceholder></span></div></th>
+          <th><div cPlaceholderAnimation="glow"><span style="width:40px;" cPlaceholder></span></div></th>
+          <th><div cPlaceholderAnimation="glow"><span style="width:60px;" cPlaceholder></span></div></th>
+          <th><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></th>
+          <th><div cPlaceholderAnimation="glow"><span style="width:50px;" cPlaceholder></span></div></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+        <tr>
+          <th><div cPlaceholderAnimation="glow"><span style="width:25px;" cPlaceholder></span></div></th>
+          <td><div cPlaceholderAnimation="glow"><span style="width:160px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:90px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
+          <td><div cPlaceholderAnimation="glow"><span style="width:58px;" cPlaceholder></span></div></td>
+        </tr>
+      </tbody>
+    </table>
+  } @else {
+    <table mat-table [dataSource]="dataSource" matSort class="table stripe">
 
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header class="grey">#</th>
-      <td mat-cell *matCellDef="let position" class="grey">{{ position.id | number:'3.0-0' }}</td>
-    </ng-container>
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="grey">#</th>
+        <td mat-cell *matCellDef="let position" class="grey">{{ position.id | number:'3.0-0' }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
-      <td mat-cell *matCellDef="let position">
-        <span class="edit" (click)="editPosition(position.id)">{{ position.name }}</span></td>
-    </ng-container>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+        <td mat-cell *matCellDef="let position">
+          <span class="edit" (click)="editPosition(position.id)">{{ position.name }}</span></td>
+      </ng-container>
 
-    <ng-container matColumnDef="manangers">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Gestores</th>
-      <td mat-cell *matCellDef="let position">
-        <div class="avatar-fix">
-          @for (mananger of position.manangers; track mananger.id) {
-            <a [cTooltip]="mananger.name">
-              <c-avatar [src]="mananger.picture ? apiUrl + '/images/' + mananger.picture.id : './assets/images/avatars/default.png'" />
-            </a>
-          } @empty {
-            -
-          }
-        </div>
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="manangers">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Gestores</th>
+        <td mat-cell *matCellDef="let position">
+          <div class="avatar-fix">
+            @for (mananger of position.manangers; track mananger.id) {
+              <a [cTooltip]="mananger.name">
+                <c-avatar [src]="mananger.picture ? apiUrl + '/images/' + mananger.picture.id : './assets/images/avatars/default.png'" />
+              </a>
+            } @empty {
+              -
+            }
+          </div>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="updatedAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Modificado</th>
-      <td mat-cell *matCellDef="let position">{{ position.updatedAt | date: "dd/MM/yyyy" : '-0300' }}</td>
-    </ng-container>
+      <ng-container matColumnDef="updatedAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Modificado</th>
+        <td mat-cell *matCellDef="let position">{{ position.updatedAt | date: "dd/MM/yyyy" : '-0300' }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado</th>
-      <td mat-cell *matCellDef="let position">{{ position.createdAt | date: "dd/MM/yyyy" : '-0300' }}</td>
-    </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Criado</th>
+        <td mat-cell *matCellDef="let position">{{ position.createdAt | date: "dd/MM/yyyy" : '-0300' }}</td>
+      </ng-container>
 
-    <ng-container matColumnDef="buttons">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let position" class="btn-container multiple">
-        <button cButton (click)="editPosition(position.id)" color="secondary" class="custom-btn">
-          <svg [cIcon]="icons.cilPencil" size="sm"></svg>
-        </button>
-
-        @if (!hideDeactiveButton) {
-          <button cButton cModalToggle="position-delete-modal-{{ position.id }}" color="secondary" class="custom-btn delete">
-            <svg [cIcon]="icons.cilX" size="sm"></svg>
+      <ng-container matColumnDef="buttons">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let position" class="btn-container multiple">
+          <button cButton (click)="editPosition(position.id)" color="secondary" class="custom-btn">
+            <svg [cIcon]="icons.cilPencil" size="sm"></svg>
           </button>
-        }
 
-        <app-position-delete-modal (deactivateTask)="deactivatePosition($event)" [position]="position"></app-position-delete-modal>
-      </td>
-    </ng-container>
+          @if (!hideDeactiveButton) {
+            <button cButton cModalToggle="position-delete-modal-{{ position.id }}" color="secondary" class="custom-btn delete">
+              <svg [cIcon]="icons.cilX" size="sm"></svg>
+            </button>
+          }
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let position; columns: displayedColumns"></tr>
-  </table>
+          <app-position-delete-modal (deactivateTask)="deactivatePosition($event)" [position]="position"></app-position-delete-modal>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let position; columns: displayedColumns"></tr>
+    </table>
+  }
 </c-container>
 
 <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" class="pagination"></mat-paginator>
