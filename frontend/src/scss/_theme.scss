@@ -457,6 +457,24 @@ table {
   }
 }
 
+.table-placeholder {
+  thead tr th {
+    padding: 12px 8px 19px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.425);
+  }
+
+  tbody tr {
+    td {
+      padding: 14px 8px;
+    }
+
+    th {
+      background-color: transparent;
+      border: none;
+    }
+  }
+}
+
 .custom-float {
   padding-top: 1.625rem !important;
   padding-bottom: 0.625rem !important;
