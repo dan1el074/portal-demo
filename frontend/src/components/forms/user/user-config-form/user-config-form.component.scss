@@ -166,6 +166,20 @@ form {
   }
 }
 
+@media (max-width: 520px) {
+  form .avatar-container  {
+    .image-container {
+      height: 180px;
+      width: 180px;
+    }
+
+    .delete-icon,
+    .icon-wrapper {
+      top: 150px;
+    }
+  }
+}
+
 @media (max-width: 500px) {
   form {
     padding: 20px;
@@ -184,5 +198,4 @@ form {
       top: 120px;
     }
   }
-
 }

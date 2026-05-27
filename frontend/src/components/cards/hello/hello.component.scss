@@ -283,5 +283,18 @@
 @media (max-width: 365px) {
   .ops-stats-grid {
     grid-template-columns: none;
+
+    .ops-stat-item {
+      align-items: center;
+      flex-direction: row;
+
+      .ops-stat-icon {
+        margin: 0;
+      }
+
+      .ops-stat-value {
+        margin-left: auto;
+      }
+    }
   }
 }
