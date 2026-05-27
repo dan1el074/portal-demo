@@ -1,7 +1,7 @@
 import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, Input, OnChanges, ViewChild } from '@angular/core';
-import { AvatarComponent, BadgeComponent, BgColorDirective, ButtonDirective, ColDirective, ContainerComponent, PlaceholderAnimationDirective, PlaceholderDirective, TooltipDirective } from '@coreui/angular';
+import { AvatarComponent, BadgeComponent, ButtonDirective, ContainerComponent, PlaceholderAnimationDirective, PlaceholderDirective, TooltipDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilSearch, cilPencil, cilX, cilExternalLink } from '@coreui/icons';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -31,8 +31,7 @@ import { RouterLink } from '@angular/router';
     RouterLink,
     TruncatePipe,
     PlaceholderDirective,
-    PlaceholderAnimationDirective,
-    ColDirective
+    PlaceholderAnimationDirective
   ],
   templateUrl: './memorando-table.component.html',
   styleUrl: './memorando-table.component.scss',
@@ -75,7 +74,7 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
     setTimeout(() => {
       this.loadSeach = false;
       this.cdr.detectChanges();
-    }, 1000);
+    }, 800);
   }
 
   applyFilter(event: Event): void {

@@ -1,12 +1,12 @@
 import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective } from '@coreui/angular';
+import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, PlaceholderAnimationDirective, PlaceholderDirective } from '@coreui/angular';
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
 import { UserTable } from '../../../app/interface/user.interface';
 import { UserDeleteModalComponent } from '../../modal/user-delete-modal/user-delete-modal.component';
@@ -26,7 +26,9 @@ import { environment } from '../../../environments/environment';
     MatInputModule,
     ButtonDirective,
     ModalToggleDirective,
-    UserDeleteModalComponent
+    UserDeleteModalComponent,
+    PlaceholderDirective,
+    PlaceholderAnimationDirective
   ],
   templateUrl: './user-table.component.html',
   styleUrl: './user-table.component.scss',
@@ -44,11 +46,21 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
   protected displayedColumns: string[] = ['name', 'username', 'position', 'email', 'updateAt', 'activated'];
   protected dataSource = new MatTableDataSource<UserTable>([]);
   protected icons = { cilSearch, cilPencil, cilX };
+  protected loadSeach = true;
+
+  constructor (private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(): void {
+    this.loadSeach = true;
+
     if (this.data) {
       this.dataSource.data = this.data;
     }
+
+    setTimeout(() => {
+      this.loadSeach = false;
+      this.cdr.detectChanges();
+    }, 800);
   }
 
   ngAfterViewInit(): void {
