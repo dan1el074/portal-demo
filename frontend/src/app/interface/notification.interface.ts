@@ -13,7 +13,7 @@ export interface Notification {
 }
 
 export interface NotificationSocketMessage {
-  type: 'NEW_NOTIFICATION'| 'UNREAD_COUNT_UPDATED'| 'NOTIFICATION_VIEWED'| 'NOTIFICATION_REMOVED'| 'NOTIFICATION_REFERENCE_REMOVED';
+  type: 'NEW_NOTIFICATION' | 'UNREAD_COUNT_UPDATED' | 'NOTIFICATION_VIEWED' | 'ALL_NOTIFICATIONS_VIEWED' | 'NOTIFICATION_REMOVED' | 'NOTIFICATION_REFERENCE_REMOVED';
   notification?: Notification;
   unreadCount: number;
   notificationId?: number;

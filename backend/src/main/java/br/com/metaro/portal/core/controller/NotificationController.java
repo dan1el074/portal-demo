@@ -37,6 +37,12 @@ public class NotificationController {
         notificationService.markAsViewed(id, userId);
     }
 
+    @PutMapping("/all/view")
+    public void markAllAsViewed(Authentication authentication) {
+        Long userId = extractUserId(authentication);
+        notificationService.markAllAsViewed(userId);
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id, Authentication authentication) {
         Long userId = extractUserId(authentication);

@@ -20,7 +20,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-
     private final NotificationRepository notificationRepository;
     private final NotificationSessionManager sessionManager;
     private final ObjectMapper objectMapper;
@@ -76,6 +75,14 @@ public class NotificationService {
     }
 
     @Transactional
+    public void markAllAsViewed(Long userId) {
+        notificationRepository.deleteAllAutoDeleteByUserId(userId);
+        notificationRepository.markAllAsViewedByUserId(userId);
+
+        sendAllNotificationsViewedToUser(userId);
+    }
+
+    @Transactional
     public void delete(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
                 .orElseThrow(() -> new RuntimeException("Notificação não encontrada"));
@@ -110,6 +117,18 @@ public class NotificationService {
         );
 
         sendToUserSessions(userId, payload, "Erro ao enviar atualização de visualização via websocket");
+    }
+
+    private void sendAllNotificationsViewedToUser(Long userId) {
+        NotificationSocketMessageDto payload = new NotificationSocketMessageDto(
+                "ALL_NOTIFICATIONS_VIEWED",
+                null,
+                0L,
+                null,
+                null
+        );
+
+        sendToUserSessions(userId, payload,"Erro ao enviar atualização de todas notificações visualizadas");
     }
 
     private void sendNotificationRemovedToUser(Long userId, Long notificationId) {

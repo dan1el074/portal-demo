@@ -36,7 +36,15 @@ c-container {
   }
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 768px) {
+  .alert-container {
+    max-width: 540px;
+  }
+
+  c-container {
+    max-width: max-content;
+  }
+
   .home-container {
     flex-direction: column;
 

@@ -39,6 +39,15 @@ export class NotificationService {
     return this.http.patch<void>(this.api + '/' + id + '/view', {}, { headers });
   }
 
+  public markAllAsViewed(): Observable<void> {
+    const token = localStorage.getItem('auth-token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.put<void>(this.api + '/all/view', {}, { headers });
+  }
+
   public delete(id: number): Observable<void> {
     const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({

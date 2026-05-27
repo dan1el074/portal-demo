@@ -22,22 +22,30 @@
           }
         </button>
         @if (websocket.notifications().length) {
-          <div cDropdownMenu class="no-padding-top notification">
-            @for (notification of websocket.notifications(); track notification.id) {
-              <div class="notification-container" [class.is-new]="!notification.viewed" (click)="openNotification(notification)">
+          <div cDropdownMenu class="notification">
+            <div class="notification-scroll">
+              @for (notification of websocket.notifications(); track notification.id) {
+                <div class="notification-container" [class.is-new]="!notification.viewed" (click)="openNotification(notification)">
+                  @if (notification.createdBy) {
+                    <c-avatar class="fix-avatar-width" [src]="notification.createdBy.picture ? apiUrl + '/images/' + notification.createdBy.picture.id : './assets/images/avatars/default.png'" />
+                  }
 
-                @if (notification.createdBy) {
-                  <c-avatar class="fix-avatar-width" [src]="notification.createdBy.picture ? apiUrl + '/images/' + notification.createdBy.picture.id : './assets/images/avatars/default.png'" />
-                }
-                @if (!notification.createdBy) {
-                  <svg [cIcon]="icons.cilPaperclip" class="custom-icon" title="List Icon"></svg>
-                }
+                  @if (!notification.createdBy) {
+                    <svg [cIcon]="icons.cilPaperclip" class="custom-icon" title="List Icon"></svg>
+                  }
 
-                <div class="text">
-                  <span [class.bold]="!notification.viewed" class="created-by">{{ notification.createdBy ? notification.createdBy.name : '' }}</span>
-                  <small>{{ notification.createdAt | timeAgo }}</small>
-                  <span [class.bold]="!notification.viewed" class="title">{{ notification.message }}</span>
+                  <div class="text">
+                    <span [class.bold]="!notification.viewed" class="created-by" >{{ notification.createdBy ? notification.createdBy.name : '' }}</span>
+                    <small>{{ notification.createdAt | timeAgo }}</small>
+                    <span [class.bold]="!notification.viewed" class="title">{{ notification.message }}</span>
+                  </div>
                 </div>
+              }
+            </div>
+
+            @if (websocket.notifications().length > 3) {
+              <div class="ntf-fixed-button">
+                <button cButton color="primary" variant="outline" class="btn w-100 btn-outline-primary" type="button" (click)="markAllAsViewed()">Dispensar</button>
               </div>
             }
           </div>

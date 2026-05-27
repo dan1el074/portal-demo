@@ -90,4 +90,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   public openProjectSearchModal(): void {
     this.openModal.emit();
   }
+
+  public markAllAsViewed(): void {
+    this.notificationService.markAllAsViewed().subscribe();
+  }
 }
