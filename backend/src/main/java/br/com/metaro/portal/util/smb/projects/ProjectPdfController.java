@@ -1,4 +1,4 @@
-package br.com.metaro.portal.util.smb;
+package br.com.metaro.portal.util.smb.projects;
 
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

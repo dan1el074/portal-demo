@@ -15,10 +15,16 @@ body {
 
 .card {
   --cui-border-radius: 12px;
-}
+  border: none;
+  overflow: hidden;
 
-.card button {
-  --cui-border-radius: 6px;
+  button {
+    --cui-border-radius: 6px;
+  }
+
+  .card-title {
+    margin-bottom: 4px;
+  }
 }
 
 .wrapper {
@@ -98,8 +104,36 @@ body {
   }
 }
 
-.card {
-  border: none;
+h6.notification-tile {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  padding: 4px 16px;
+  border-bottom: 1px solid var(--cui-border-color);
+  font-size: 12px;
+  font-weight: 700;
+
+  .align {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &.trash {
+      padding: 4px 6px 4px 4px;
+      justify-content: end;
+      border: 1px solid rgba(var(--cui-danger-rgb));
+      border-radius: 6px;
+      color: rgba(var(--cui-danger-rgb));
+      background-color: var(--cui-body-bg);
+      transition: .1s;
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgba(var(--cui-danger-rgb));
+        color: var(--cui-body-bg)
+      }
+    }
+  }
 }
 
 .no-bullet {
@@ -331,9 +365,17 @@ button.no-select {
 }
 
 c-container.scroll-x {
+  position: relative;
   overflow-x: auto;
   padding: 0;
   margin-bottom: 6px;
+
+  .loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: white;
+    z-index: 10;
+  }
 }
 
 table {
@@ -626,6 +668,26 @@ html[data-coreui-theme=dark] {
 
   .ops-stat-value {
     color: #e0e7ff;
+  }
+
+  // birthday card
+  .bday-header-title,
+  .bday-name,
+  .today-name {
+    color: #e0e7ff;
+  }
+
+  .bday-header-icon,
+  .bday-month-badge {
+    background: rgba(99, 102, 241, 0.2);
+  }
+
+  .today-card {
+    background: linear-gradient(135deg, rgb(67 81 247 / 15%) 0%, rgba(99, 102, 241, 0.08) 80%);
+  }
+
+  .bday-day {
+    background: rgba(99, 102, 241, 0.15);
   }
 }
 

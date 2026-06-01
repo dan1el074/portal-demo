@@ -1,5 +1,8 @@
-package br.com.metaro.portal.util.smb;
+package br.com.metaro.portal.util.smb.projects;
 
+import com.hierynomus.msdtyp.AccessMask;
+import com.hierynomus.mssmb2.SMB2CreateDisposition;
+import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.auth.AuthenticationContext;
 import com.hierynomus.smbj.connection.Connection;
@@ -8,6 +11,7 @@ import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -25,6 +29,8 @@ public class SmbService {
     private String password;
     @Value("${app.smb.projects-path}")
     private String projectsPath;
+    @Value("${app.smb.files-path}")
+    private String filesPath;
 
     private final Object lock = new Object();
     private SMBClient client;
@@ -54,10 +60,7 @@ public class SmbService {
 
         client = new SMBClient();
         connection = client.connect(hostname);
-
-        AuthenticationContext ac =
-                new AuthenticationContext(username, password.toCharArray(), null);
-
+        AuthenticationContext ac = new AuthenticationContext(username, password.toCharArray(), null);
         session = connection.authenticate(ac);
         share = (DiskShare) session.connectShare(projectsPath);
     }
@@ -108,6 +111,55 @@ public class SmbService {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao obter PDF SMB", e);
         }
+    }
+
+    public SmbFileStream getFileStream(String fileName) {
+        try {
+            SMBClient tempClient = new SMBClient();
+            Connection tempConnection = tempClient.connect(hostname);
+
+            AuthenticationContext ac = new AuthenticationContext(username, password.toCharArray(), null);
+            Session tempSession = tempConnection.authenticate(ac);
+            DiskShare tempShare = (DiskShare) tempSession.connectShare(filesPath);
+
+            String fullPath = "outros/portal/" + fileName;
+
+            if (!tempShare.fileExists(fullPath)) {
+                tempShare.close();
+                tempSession.close();
+                tempConnection.close();
+                tempClient.close();
+
+                return null;
+            }
+
+            File file = tempShare.openFile(
+                    fullPath,
+                    EnumSet.of(AccessMask.GENERIC_READ),
+                    null,
+                    SMB2ShareAccess.ALL,
+                    SMB2CreateDisposition.FILE_OPEN,
+                    null
+            );
+
+            InputStream inputStream = file.getInputStream();
+
+            return new SmbFileStream(file, inputStream, tempShare, tempSession, tempConnection, tempClient);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao obter mídia SMB", e);
+        }
+    }
+
+    public MediaType resolveMediaType(String fileName) {
+        String lower = fileName.toLowerCase();
+
+        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return MediaType.IMAGE_JPEG;
+        if (lower.endsWith(".png")) return MediaType.IMAGE_PNG;
+        if (lower.endsWith(".pdf")) return MediaType.APPLICATION_PDF;
+        if (lower.endsWith(".gif")) return MediaType.IMAGE_GIF;
+        if (lower.endsWith(".webp")) return MediaType.parseMediaType("image/webp");
+
+        return MediaType.APPLICATION_OCTET_STREAM;
     }
 
     private String getProjectFolder(String projectName) {

@@ -20,9 +20,6 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping(value = "/images")
 public class PictureController {
-    @Value("${app.server.image-path}")
-    private String serverPath;
-
     @Autowired
     private PictureRepository pictureRepository;
 

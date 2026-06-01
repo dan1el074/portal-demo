@@ -1,11 +1,10 @@
-import { ImageCard } from "./image.interface";
+import { Picture } from "./image.interface";
+import { UserSummary } from "./user.interface";
 
 export interface PostCard {
   id: number;
-  author: string,
-  authorPictureId: number,
-  position: string,
-  instant: string,
+  author: UserSummary,
+  createdAt: string,
   content: string,
-  pictures: Array<ImageCard>,
+  pictures: Array<Picture>,
 }

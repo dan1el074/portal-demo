@@ -3,7 +3,7 @@
     <c-modal-body class="img-modal-body">
       <div style="position: relative">
         <button [cModalToggle]="'modal-' + post.id" class="modal-img-btn" cButtonClose></button>
-        <img cCardImg="bottom" [src]="post.pictures[0].uri" />
+        <img cCardImg="bottom" [src]="apiUrl + '/images/' + post.pictures[0].id" />
       </div>
     </c-modal-body>
   </c-modal>

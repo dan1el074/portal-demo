@@ -1,5 +1,7 @@
+import { Picture } from "./image.interface";
+
 export interface EventCard {
   title: string;
-  picture: string;
-  date: string;
+  picture: Picture;
+  eventDate: string;
 }

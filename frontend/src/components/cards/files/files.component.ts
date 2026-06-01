@@ -4,6 +4,7 @@ import { CardBodyComponent, CardComponent, CardLinkDirective, CardTitleDirective
 import { cilCopy } from '@coreui/icons';
 import { CommonModule } from '@angular/common';
 import { FileCard } from '../../../app/interface/file.interface';
+import { FileService } from '../../../app/services/file.service';
 
 @Component({
   selector: 'app-files',
@@ -21,4 +22,10 @@ import { FileCard } from '../../../app/interface/file.interface';
 export class FilesComponent {
   @Input() files!: Array<FileCard>;
   icons = { cilCopy };
+
+  constructor(private fileService: FileService) {}
+
+  public openFile(path: string): void {
+    this.fileService.openFile(path);
+  }
 }

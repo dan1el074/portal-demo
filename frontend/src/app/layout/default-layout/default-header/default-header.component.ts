@@ -1,8 +1,8 @@
-import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, input, OnInit, Output } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AvatarComponent, BadgeComponent, BreadcrumbRouterComponent, ColorModeService, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, HeaderComponent, HeaderNavComponent, HeaderTogglerDirective, SidebarToggleDirective } from '@coreui/angular';
-import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast, cilPaperclip, cilCommentBubble } from '@coreui/icons';
+import { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilSun, cilMoon, cilContrast, cilPaperclip, cilCommentBubble, cilTrash } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { Me } from '../../../interface/user.interface';
 import { TimeAgoPipe } from './../../../pipes/time-ago.pipe';
@@ -41,7 +41,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   @Output()
   protected openModal = new EventEmitter<any>();
   protected apiUrl = environment.apiUrl;
-  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilPaperclip, cilCommentBubble };
+  readonly icons = { cilBell, cilMenu, cilTask, cilSettings, cilAccountLogout, cilX, cilPaperclip, cilCommentBubble, cilTrash };
   readonly sidebarId = input('sidebar1');
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;

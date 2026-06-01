@@ -3,6 +3,7 @@ package br.com.metaro.portal.modules.general.post;
 import br.com.metaro.portal.core.dto.user.UserSummaryDto;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.dto.PictureDto;
+import br.com.metaro.portal.util.picture.dto.PictureMinDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,19 +20,17 @@ public class PostDto {
     private String content;
     private UserSummaryDto author;
     private Instant createdAt;
-    private Instant updateAt;
 
-    private List<PictureDto> pictures = new ArrayList<>();
+    private List<PictureMinDto> pictures = new ArrayList<>();
 
     public PostDto(Post post) {
         id = post.getId();
         content = post.getContent();
-        createdAt = post.getCreatedAt();
-        updateAt = post.getUpdateAt();
         author = new UserSummaryDto(post.getAuthor());
+        createdAt = post.getCreatedAt();
 
         for (Picture picture : post.getPictures()) {
-            this.pictures.add(new PictureDto(picture));
+            this.pictures.add(new PictureMinDto(picture));
         }
     }
 }
