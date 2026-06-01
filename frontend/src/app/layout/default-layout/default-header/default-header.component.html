@@ -23,6 +23,20 @@
         </button>
         @if (websocket.notifications().length) {
           <div cDropdownMenu class="notification">
+            <h6 cdropdownheader="" class="dropdown-header notification-tile fw-semibold rounded-top">
+              <div class="align">
+                <svg [cIcon]="icons.cilBell"></svg>
+                Notificações
+              </div>
+
+              @if (websocket.notifications().length > 3) {
+                <div class="align trash" (click)="markAllAsViewed()">
+                  <svg [cIcon]="icons.cilTrash"></svg>
+                  Limpar
+                </div>
+              }
+            </h6>
+
             <div class="notification-scroll">
               @for (notification of websocket.notifications(); track notification.id) {
                 <div class="notification-container" [class.is-new]="!notification.viewed" (click)="openNotification(notification)">
@@ -42,12 +56,6 @@
                 </div>
               }
             </div>
-
-            @if (websocket.notifications().length > 3) {
-              <div class="ntf-fixed-button">
-                <button cButton color="primary" variant="outline" class="btn w-100 btn-outline-primary" type="button" (click)="markAllAsViewed()">Marcar todos como lido</button>
-              </div>
-            }
           </div>
         }
       </c-dropdown>

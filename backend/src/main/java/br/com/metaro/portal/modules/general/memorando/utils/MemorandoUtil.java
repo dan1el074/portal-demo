@@ -19,6 +19,7 @@ import br.com.metaro.portal.modules.general.memorando.repository.MemorandoReposi
 import br.com.metaro.portal.modules.general.memorando.services.MemorandoLogService;
 import br.com.metaro.portal.util.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,6 +91,7 @@ public class MemorandoUtil {
         }
     }
 
+    @CacheEvict(value = "homeInfo", allEntries = true)
     public void publishPipeline(Memorando entity) {
         if (entity.getSignatures().isEmpty()) {
             throw new UnprocessableEntityException("Não foram encontradas assinaturas pendentes!");
@@ -192,7 +194,6 @@ public class MemorandoUtil {
     }
 
     public void removeNotifications(Memorando entity) {
-        // TODO: N + 1
         List<Notification> notifications = notificationService.findByReferenceIdAndType(entity.getId(), NotificationType.MEMORANDO);
         for (Notification notification : notifications) {
             notificationService.delete(notification.getId(), notification.getUser().getId());

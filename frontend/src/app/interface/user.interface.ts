@@ -110,6 +110,7 @@ export interface UserGroup {
 
 export interface HomeCardStat {
   label: string;
+  title: string;
   value: number | string;
   iconPath: string;
   iconColor: string;

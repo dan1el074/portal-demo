@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class SearchService {
+export class FileService {
   private api = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
@@ -37,6 +37,19 @@ export class SearchService {
       });
 
       const fileURL = URL.createObjectURL(file);
+      newTab!.location.href = fileURL;
+    });
+  }
+
+  public openFile(fileName: string): void {
+    const newTab = window.open('', '_blank');
+    const token = localStorage.getItem('auth-token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    this.http.get(this.api + '/api/file/' + encodeURIComponent(fileName), { headers, responseType: 'blob' }).subscribe(blob => {
+      const fileURL = URL.createObjectURL(blob);
       newTab!.location.href = fileURL;
     });
   }

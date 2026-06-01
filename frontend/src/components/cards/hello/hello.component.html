@@ -40,7 +40,7 @@
 
           <div class="ops-stats-grid">
             @for (stat of stats; track stat.label) {
-              <div class="ops-stat-item">
+              <div class="ops-stat-item" [title]="stat.title">
                 <div class="ops-stat-icon" [ngStyle]="{ background: stat.iconBg }">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
                     viewBox="0 0 24 24" stroke-width="1.5" [attr.stroke]="stat.iconColor">
