@@ -20,4 +20,13 @@ export class HomeService {
 
     return this.http.get<Array<HomeInfo>>(this.api + '/api/info/home', { headers });
   }
+
+  public clearAllCache(): Observable<any> {
+    const token = localStorage.getItem('auth-token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.put<void>(this.api + '/api/info/clear-all', null, { headers });
+  }
 }
