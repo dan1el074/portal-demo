@@ -16,7 +16,7 @@ public class CacheConfig {
 
         manager.registerCustomCache(
                 "homeInfo",
-                Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).maximumSize(100).build()
+                Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).maximumSize(100).build()
         );
 
         manager.registerCustomCache(
