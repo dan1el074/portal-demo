@@ -16,6 +16,9 @@ import br.com.metaro.portal.util.smb.files.File;
 import br.com.metaro.portal.util.smb.files.FileDto;
 import br.com.metaro.portal.util.smb.files.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class InfoService {
@@ -40,6 +44,8 @@ public class InfoService {
     private MemorandoRepository memorandoRepository;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private CacheManager cacheManager;
 
     @Cacheable("homeInfo")
     @Transactional(readOnly = true)
@@ -68,5 +74,12 @@ public class InfoService {
 
         return new HomeInfoDto(upcomingEvents, openOrders, openMemorandos, filesDto, eventDto, monthBirthdaysDto,
                 todayBirthdaysDto, feedDto);
+    }
+
+    public void clearAllCache() {
+        cacheManager.getCacheNames().forEach(cacheName -> {
+            Cache cache = cacheManager.getCache(cacheName);
+            if (cache != null) cache.clear();
+        });
     }
 }
