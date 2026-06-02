@@ -56,7 +56,7 @@
               <div class="bday-avatar-sm">
                 <c-avatar
                   shape="rounded-1"
-                  [src]="birthday.user.id ? apiUrl + '/images/' + birthday.user.id : './assets/images/avatars/default.png'"
+                  [src]="birthday.user.picture ? apiUrl + '/images/' + birthday.user.picture.id : './assets/images/avatars/default.png'"
                 />
               </div>
               <div class="bday-info">

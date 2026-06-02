@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -62,7 +63,7 @@ public class InfoService {
                 .filter(dto -> dto.getDay() != today.getDayOfMonth())
                 .toList();
 
-        List<Post> feed = postRepository.findTop4ByOrderByCreatedAtDesc();
+        List<Post> feed = postRepository.findTop4ByOrderByIdDesc();
         List<PostDto> feedDto = feed.stream().map(PostDto::new).toList();
 
         return new HomeInfoDto(upcomingEvents, openOrders, openMemorandos, filesDto, eventDto, monthBirthdaysDto,

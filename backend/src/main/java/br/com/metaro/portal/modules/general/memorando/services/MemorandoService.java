@@ -158,6 +158,7 @@ public class MemorandoService {
         return new MemorandoDto(entity);
     }
 
+    @CacheEvict(value = "homeInfo", allEntries = true)
     @Transactional
     public MemorandoDto disable(Long id) {
         Memorando entity =  memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
