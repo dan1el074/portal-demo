@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../../config/authGuard';
-import { DocumentViewComponent } from './memorando/document-view/document-view.component';
 
 export const routes: Routes = [
   {
@@ -49,16 +48,7 @@ export const routes: Routes = [
           roles: ['ROLE_ADMIN','ROLE_RAW_MATERIALS'],
           title: 'Matérias primas'
         }
-      },
-      {
-        path: 'todo',
-        loadComponent: () => import('./todo/todo.component').then(m => m.TodoComponent),
-        canActivate: [AuthGuard],
-        data: {
-          roles: ['ROLE_ADMIN','ROLE_TODO'],
-          title: 'Para fazer'
-        }
-      },
+      }
     ]
   }
 ];
