@@ -12,6 +12,12 @@
         </c-alert>
       </div>
 
+      @if (isAdmin) {
+        <div class="admin-button">
+          <button cButton color="primary" (click)="clearCache()">Limpar cache</button>
+        </div>
+      }
+
       @if (user) {
         <app-hello
           [userName]="user.name"

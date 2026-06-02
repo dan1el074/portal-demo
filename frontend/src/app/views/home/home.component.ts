@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { AlertComponent, ContainerComponent } from '@coreui/angular';
+import { AlertComponent, ButtonDirective, ContainerComponent } from '@coreui/angular';
 import { HomeService } from './../../services/home.service';
 import { UserService } from './../../services/user.service';
 import { BirthdaysComponent } from './../../../components/cards/birthdays/birthdays.component';
@@ -21,7 +21,8 @@ import { Me } from '../../interface/user.interface';
     EventComponent,
     PostComponent,
     HelloComponent,
-    BirthdaysComponent
+    BirthdaysComponent,
+    ButtonDirective
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -31,6 +32,7 @@ export class HomeComponent implements OnInit {
   protected user!: Me;
   protected fatalError = false;
   protected homeInfo!: HomeInfo;
+  protected isAdmin = false;
 
   constructor(
     private homeService: HomeService,
@@ -40,7 +42,7 @@ export class HomeComponent implements OnInit {
     private cdf: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.homeService.getHomeInfo().subscribe({
       next: (data) => {
         this.homeInfo = data;
@@ -54,11 +56,23 @@ export class HomeComponent implements OnInit {
 
     this.userService.user$.subscribe(user => {
       if (!user) return;
+
+      if (user.roles.findIndex(role => role.authority == 'ROLE_ADMIN') >= 0) {
+        this.isAdmin = true;
+      }
+
       this.user = user;
     });
 
     setTimeout(() => {
       this.spinner.hide("loginSpinner")
     }, 500);
+  }
+
+  public clearCache(): void {
+    this.homeService.clearAllCache().subscribe({
+      next: () => this.toasterService.success("Cache limpo com sucesso!"),
+      error: () => this.toasterService.error("Erro ao limpar cache!")
+    });
   }
 }
