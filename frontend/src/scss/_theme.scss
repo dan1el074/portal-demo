@@ -373,7 +373,7 @@ c-container.scroll-x {
   .loading-overlay {
     position: absolute;
     inset: 0;
-    background: white;
+    background: var(--cui-body-bg);
     z-index: 10;
   }
 }
@@ -412,7 +412,6 @@ table {
       tr {
         td {
           border: none;
-          background-color: transparent;
           text-wrap: nowrap;
 
           &.code {
@@ -509,11 +508,6 @@ table {
     td {
       padding: 14px 8px;
     }
-
-    th {
-      background-color: transparent;
-      border: none;
-    }
   }
 }
 
@@ -550,6 +544,19 @@ table {
 html[data-coreui-theme=light] {
   --cui-primary-rgb: 40, 94, 165;
   --cui-memorando-logo: url('/assets/images/brand/default-logo.svg');
+
+  .table-placeholder {
+    tbody tr {
+      th {
+        background-color: transparent;
+        border: none;
+      }
+    }
+  }
+
+  table.table tbody tr td {
+    background-color: transparent;
+  }
 }
 
 html[data-coreui-theme=dark] {
@@ -580,20 +587,24 @@ html[data-coreui-theme=dark] {
     --cui-btn-disabled-border-color: #285ea5;
   }
 
-  table.table tbody tr td{
-    &.success {
-      background-color: #27AE60;
-      color: var(--cui-body-color);
-    }
+  table.table tbody tr {
+    border-bottom: 1px solid var(--cui-border-color);
 
-    &.warning {
-      background-color: #d9c36a;
-      color: #1C1C1C;
-    }
+    td{
+      &.success {
+        background-color: #27AE60;
+        color: var(--cui-body-color);
+      }
 
-    &.danger {
-      background-color: #a12929;
-      color: #FFFFFF;
+      &.warning {
+        background-color: #d9c36a;
+        color: #1C1C1C;
+      }
+
+      &.danger {
+        background-color: #a12929;
+        color: #FFFFFF;
+      }
     }
   }
 
