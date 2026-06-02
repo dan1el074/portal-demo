@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"author", "pictures"})
-    List<Post> findTop4ByOrderByCreatedAtDesc();
+    List<Post> findTop4ByOrderByIdDesc();
 }
