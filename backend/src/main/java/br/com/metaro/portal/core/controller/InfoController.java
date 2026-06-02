@@ -4,7 +4,9 @@ import br.com.metaro.portal.core.dto.info.HomeInfoDto;
 import br.com.metaro.portal.core.services.InfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,5 +20,12 @@ public class InfoController {
     public ResponseEntity<HomeInfoDto> getHomeInfo() {
         HomeInfoDto dto = infoService.getHomeInfo();
         return ResponseEntity.ok(dto);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PutMapping(value = "/clear-all")
+    public ResponseEntity<Void> clearCache() {
+        infoService.clearAllCache();
+        return ResponseEntity.noContent().build();
     }
 }

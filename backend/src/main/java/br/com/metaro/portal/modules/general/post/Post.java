@@ -28,5 +28,6 @@ public class Post {
     private User author;
 
     @OneToMany(mappedBy = "post")
+    @OrderBy("id ASC")
     private List<Picture> pictures = new ArrayList<>();
 }
