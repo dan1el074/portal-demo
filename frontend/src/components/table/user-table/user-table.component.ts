@@ -46,21 +46,21 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
   protected displayedColumns: string[] = ['name', 'username', 'position', 'email', 'updateAt', 'activated'];
   protected dataSource = new MatTableDataSource<UserTable>([]);
   protected icons = { cilSearch, cilPencil, cilX };
-  protected loadSeach = true;
+  protected loadSearch = true;
 
   constructor (private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(): void {
-    this.loadSeach = true;
+    this.loadSearch = true;
 
     if (this.data) {
       this.dataSource.data = this.data;
     }
 
     setTimeout(() => {
-      this.loadSeach = false;
+      this.loadSearch = false;
       this.cdr.detectChanges();
-    }, 800);
+    }, 500);
   }
 
   ngAfterViewInit(): void {
@@ -80,5 +80,4 @@ export class UserTableComponent implements AfterViewInit, OnChanges {
   deactivateUser(id: number) {
     this.deactivateTask.emit(id);
   }
-
 }

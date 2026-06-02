@@ -4,17 +4,17 @@
       <c-avatar
         shape="rounded-1"
         size="xl"
-        [src]="post.authorPictureId ? apiUrl + '/images/' + post.authorPictureId : './assets/images/avatars/default.png'"
+        [src]="apiUrl + '/' + post.author.id ? apiUrl + '/images/' + post.author.id : './assets/images/avatars/default.png'"
         textColor="primary"
         alt="User avatar"
       />
       <c-container>
         <p cCardText class="no-margin">
-          <strong>{{ post.author }}</strong>
-          {{ post.position }}
+          <strong>{{ post.author.name }}</strong>
+          {{ post.author.position.name }}
         </p>
         <p cCardText>
-          <small class="text-medium-emphasis">{{ post.instant }}</small>
+          <small class="text-medium-emphasis">{{ post.createdAt | timeAgo }}</small>
         </p>
       </c-container>
     </c-container>
@@ -24,14 +24,14 @@
   <div class="post-images" >
 
     @if (post.pictures.length == 1) {
-      <img cCardImg="bottom" (click)="openCarousel(0)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[0].uri" />
+      <img cCardImg="bottom" (click)="openCarousel(0)" [cModalToggle]="'modal-' + post.id" [src]="apiUrl + '/images/' + post.pictures[0].id" />
     }
 
     @if (post.pictures.length > 1 && post.pictures.length <= 3) {
       <c-row>
         @for (picture of post.pictures; track picture.id; let i = $index) {
           <c-col>
-            <img cCardImg="bottom" (click)="openCarousel(i)" [cModalToggle]="'modal-' + post.id" [src]="picture.uri" />
+            <img cCardImg="bottom" (click)="openCarousel(i)" [cModalToggle]="'modal-' + post.id" [src]="apiUrl + '/images/' + picture.id" />
           </c-col>
         }
       </c-row>
@@ -41,18 +41,18 @@
       <div class="four-grid">
         <c-row>
           <c-col>
-            <img cCardImg="bottom" (click)="openCarousel(0)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[0].uri" />
+            <img cCardImg="bottom" (click)="openCarousel(0)" [cModalToggle]="'modal-' + post.id" [src]="apiUrl + '/images/' + post.pictures[0].id" />
           </c-col>
           <c-col>
-            <img cCardImg="bottom" (click)="openCarousel(1)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[1].uri" />
+            <img cCardImg="bottom" (click)="openCarousel(1)" [cModalToggle]="'modal-' + post.id" [src]="apiUrl + '/images/' + post.pictures[1].id" />
           </c-col>
         </c-row>
         <c-row>
           <c-col>
-            <img cCardImg="bottom" (click)="openCarousel(2)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[2].uri" />
+            <img cCardImg="bottom" (click)="openCarousel(2)" [cModalToggle]="'modal-' + post.id" [src]="apiUrl + '/images/' + post.pictures[2].id" />
           </c-col>
           <c-col>
-            <img cCardImg="bottom" (click)="openCarousel(3)" [cModalToggle]="'modal-' + post.id" [src]="post.pictures[3].uri" />
+            <img cCardImg="bottom" (click)="openCarousel(3)" [cModalToggle]="'modal-' + post.id" [src]="apiUrl + '/images/' + post.pictures[3].id" />
 
               @if (post.pictures.length > 4) {
                 <div class="overlay" (click)="openCarousel(3)" [cModalToggle]="'modal-' + post.id">

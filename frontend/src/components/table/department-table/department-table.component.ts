@@ -47,21 +47,21 @@ export class DepartmentTableComponent implements AfterViewInit, OnChanges {
   protected displayedColumns: string[] = ['id', 'name', 'manangers', 'updatedAt', 'createdAt', 'buttons'];
   protected dataSource = new MatTableDataSource<Position>([]);
   protected icons = { cilSearch, cilPencil, cilX };
-  protected loadSeach = true;
+  protected loadSearch = true;
 
   constructor (private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(): void {
-    this.loadSeach = true;
+    this.loadSearch = true;
 
     if (this.data) {
       this.dataSource.data = this.data;
     }
 
     setTimeout(() => {
-      this.loadSeach = false;
+      this.loadSearch = false;
       this.cdr.detectChanges();
-    }, 800);
+    }, 500);
   }
 
   ngAfterViewInit(): void {

@@ -1,4 +1,5 @@
 package br.com.metaro.portal.util.picture;
+import br.com.metaro.portal.core.entities.Event;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.modules.general.post.Post;
 import jakarta.persistence.*;
@@ -27,4 +28,7 @@ public class Picture {
 
     @OneToOne(mappedBy = "picture")
     private User user;
+
+    @OneToOne(mappedBy = "picture", cascade = CascadeType.ALL)
+    private Event event;
 }

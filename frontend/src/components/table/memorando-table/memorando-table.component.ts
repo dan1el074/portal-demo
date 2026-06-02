@@ -46,12 +46,12 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
   protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'signature', 'createdAt', 'buttons'];
   protected dataSource = new MatTableDataSource<MemorandoList>([]);
   protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
-  protected loadSeach = true;
+  protected loadSearch = true;
 
   constructor (private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(): void {
-    this.loadSeach = true;
+    this.loadSearch = true;
 
     if (this.data && this.data.length) {
       this.data = this.data.sort((a, b) => {
@@ -72,9 +72,9 @@ export class MemorandoTableComponent implements AfterViewInit, OnChanges {
     }
 
     setTimeout(() => {
-      this.loadSeach = false;
+      this.loadSearch = false;
       this.cdr.detectChanges();
-    }, 800);
+    }, 500);
   }
 
   applyFilter(event: Event): void {

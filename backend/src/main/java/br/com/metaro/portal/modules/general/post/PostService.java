@@ -32,12 +32,6 @@ public class PostService {
     private String imgPath = "assets/others/";
 
     @Transactional(readOnly = true)
-    public Page<PostDto> findAll(Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
-        return posts.map(PostDto::new);
-    }
-
-    @Transactional(readOnly = true)
     public PostDto findById(Long id) {
         Optional<Post> post = postRepository.findById(id);
         return new PostDto(post.get());
@@ -52,7 +46,7 @@ public class PostService {
         post.setContent(content);
         post.setAuthor(userRepository.getReferenceById(userService.getMe().getId()));
         post.setCreatedAt(now);
-        post.setUpdateAt(now);
+        post.setUpdatedAt(now);
         post = postRepository.save(post);
 
         List<Picture> pictureList = new ArrayList<>();

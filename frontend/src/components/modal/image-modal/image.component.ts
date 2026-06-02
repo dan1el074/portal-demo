@@ -3,6 +3,7 @@ import { ButtonCloseDirective, CarouselComponent, CarouselControlComponent, Caro
 import { PostCard } from '../../../app/interface/post.interface';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-image',
@@ -26,12 +27,13 @@ export class ImageComponent implements OnInit {
   @Input() post!: PostCard;
   @Input() index!: number;
   @Input() ready!: boolean;
+
+  protected apiUrl = environment.apiUrl;
   protected slides: any[] = [];
 
   ngOnInit(): void {
     for(let i=0; i<this.post.pictures.length; i++) {
-      this.slides[i] = {id: this.post.pictures[i].id, src: this.post.pictures[i].uri};
+      this.slides[i] = { id: this.post.pictures[i].id, src: this.apiUrl + '/images/' + this.post.pictures[i].id };
     }
   }
-
 }

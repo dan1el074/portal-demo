@@ -1,0 +1,81 @@
+<c-card class="bday-card card border">
+  <c-card-body class="p-0">
+    <div class="bday-header">
+      <div class="bday-header-left">
+        <div>
+          <h5 cCardTitle class="bday-header-title">Aniversariantes</h5>
+          <div class="bday-header-sub">Comemorações do mês</div>
+        </div>
+      </div>
+      <div class="bday-month-badge">{{ currentMonth }}</div>
+    </div>
+
+    @if (todayBirthdays.length) {
+      <div class="bday-today-section">
+        <div class="section-eyebrow">Hoje</div>
+        @for (birthday of todayBirthdays; track birthday.user.id) {
+          <div class="today-card">
+            <div class="today-person">
+              <div class="today-avatar">
+                <c-avatar
+                  shape="rounded-1"
+                  size="xl"
+                  [src]="birthday.user.picture ? apiUrl + '/images/' + birthday.user.picture.id : './assets/images/avatars/default.png'"
+                />
+              </div>
+              <div class="today-info">
+                <div class="today-name">{{ birthday.user.name }}</div>
+                <div class="today-sector">{{ birthday.user.position.name }}</div>
+              </div>
+            </div>
+
+            <div class="today-person">
+              <div class="today-tag">Hoje!</div>
+
+              <div class="bday-day">
+                <div class="bday-day-num">{{ birthday.day }}</div>
+                <div class="bday-day-label">{{ birthday.month }}</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (todayBirthdays.length) {
+      <hr class="bday-divider" />
+    }
+
+    <div class="bday-month-section">
+      <div class="section-eyebrow">Este mês</div>
+
+      @if (monthBirthdays.length) {
+        <div class="bday-list">
+          @for (birthday of monthBirthdays; track birthday.user.id) {
+            <div class="bday-item">
+              <div class="bday-avatar-sm">
+                <c-avatar
+                  shape="rounded-1"
+                  [src]="birthday.user.id ? apiUrl + '/images/' + birthday.user.id : './assets/images/avatars/default.png'"
+                />
+              </div>
+              <div class="bday-info">
+                <div class="bday-name">{{ birthday.user.name }}</div>
+                <div class="bday-sector">{{ birthday.user.position.name }}</div>
+              </div>
+              <div class="bday-day">
+                <div class="bday-day-num">{{ birthday.day }}</div>
+                <div class="bday-day-label">{{ birthday.month }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="bday-empty">
+          Nenhum aniversariante este mês.
+        </div>
+      }
+    </div>
+
+  </c-card-body>
+</c-card>

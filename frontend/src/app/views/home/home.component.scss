@@ -33,6 +33,11 @@ c-container {
     &.right {
       max-width: 650px;
     }
+
+    &.left,
+    &.right {
+      width: 100%;
+    }
   }
 }
 

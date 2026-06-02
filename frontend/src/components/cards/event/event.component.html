@@ -1,15 +1,15 @@
 <c-card class="border">
-  <img cCardImg="top" [src]="event.picture" />
+  <img cCardImg="top" [src]="apiUrl + '/images/' + event.picture.id" />
   <div class="date">
-    <div class="month">{{ event.date | date: "MMM" : '-0300' }}</div>
-    <div class="day">{{ event.date | date: "dd" : '-0300' }}</div>
+    <div class="month">{{ event.eventDate | date: "MMM" : '-0300' }}</div>
+    <div class="day">{{ event.eventDate | date: "dd" : '-0300' }}</div>
   </div>
 
   <c-card-body>
     <h6 cCardTitle>{{ event.title }}</h6>
     <p cCardText>
       <small class="text-medium-emphasis">
-        {{ event.date | date: "dd MMM, y 'às' HH:mm" : '-0300' }}
+        {{ event.eventDate | date: "dd MMM, y 'às' HH:mm" : '-0300' }}
       </small>
       </p>
   </c-card-body>

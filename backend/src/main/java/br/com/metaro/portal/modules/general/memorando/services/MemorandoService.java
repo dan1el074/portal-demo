@@ -19,6 +19,7 @@ import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
 import br.com.metaro.portal.modules.general.memorando.utils.MemorandoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +65,7 @@ public class MemorandoService {
         return new MemorandoDto(entity);
     }
 
+    @CacheEvict(value = "homeInfo", allEntries = true)
     @Transactional
     public MemorandoDto insert(MemorandoInsertDto dto) throws Exception {
         User me = userService.authenticate();
@@ -180,6 +182,7 @@ public class MemorandoService {
         return new MemorandoDto(entity);
     }
 
+    @CacheEvict(value = "homeInfo", allEntries = true)
     @Transactional
     public MemorandoDto rollback(Long id) {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);

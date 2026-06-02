@@ -4,7 +4,7 @@ import { ButtonCloseDirective, ColDirective, ModalBodyComponent, ModalComponent,
 import { IconDirective } from '@coreui/icons-angular';
 import { cilCursor, cilFork } from '@coreui/icons';
 import { Subject } from 'rxjs';
-import { SearchService } from '../../../app/services/search.service';
+import { FileService } from '../../../app/services/file.service';
 
 @Component({
   selector: 'app-layout-search-modal',
@@ -35,7 +35,7 @@ export class LayoutSearchModalComponent implements OnDestroy, OnChanges {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private searchService: SearchService,
+    private fileService: FileService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -58,7 +58,7 @@ export class LayoutSearchModalComponent implements OnDestroy, OnChanges {
     this.showResult = true;
     this.loadSeach = true;
 
-    this.searchService.searchProject(value).subscribe({
+    this.fileService.searchProject(value).subscribe({
       next: (value) => {
         this.resultList = value;
         this.loadSeach = false;
@@ -74,7 +74,7 @@ export class LayoutSearchModalComponent implements OnDestroy, OnChanges {
   }
 
   protected openPdf(projectName: string): void {
-    this.searchService.openProject(projectName);
+    this.fileService.openProject(projectName);
   }
 
   private resetForm(): void {

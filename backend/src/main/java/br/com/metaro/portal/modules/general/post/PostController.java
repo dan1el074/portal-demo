@@ -19,13 +19,6 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
-    @GetMapping
-    public ResponseEntity<Page<PostDto>> findAll(Pageable pageable) {
-        Page<PostDto> page = postService.findAll(pageable);
-        return ResponseEntity.ok(page);
-    }
-
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POST')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<PostDto> findById(@PathVariable Long id) {

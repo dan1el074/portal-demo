@@ -1,11 +1,11 @@
-import { CarouselCustomConfig } from './carouse.config';
-import { CommonModule } from '@angular/common';
+import { TimeAgoPipe } from './../../../app/pipes/time-ago.pipe';
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CarouselCustomConfig } from './carouse.config';
 import { AvatarComponent, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, ModalToggleDirective, RowComponent } from '@coreui/angular';
-import { PostCard } from '../../../app/interface/post.interface';
 import { ImageComponent } from '../../modal/image-modal/image.component';
+import { PostCard } from '../../../app/interface/post.interface';
 import { environment } from '../../../environments/environment';
-
 
 @Component({
   selector: 'app-post',
@@ -21,7 +21,8 @@ import { environment } from '../../../environments/environment';
     RowComponent,
     ColComponent,
     ModalToggleDirective,
-    ImageComponent
+    ImageComponent,
+    TimeAgoPipe
   ],
   providers: [{ provide: CarouselConfig, useClass: CarouselCustomConfig }],
 })
