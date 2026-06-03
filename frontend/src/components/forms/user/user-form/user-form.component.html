@@ -76,11 +76,11 @@
 
     <c-col>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: createForm.get('name')?.errors != null ? false : undefined" id="name" type="text" placeholder="Nome" />
+        <input cFormControl formControlName="name" [valid]="!showErrors ? undefined : createForm.get('name')?.errors != null ? false : undefined" id="name" type="text" placeholder="Nome" />
         <label cLabel for="name">Nome</label>
       </div>
       <div cFormFloating class="mb-3">
-        <select cSelect formControlName="position" id="position" class="form-select">
+        <select cSelect formControlName="position" [class.is-invalid]="!showErrors ? false : createForm.get('position')?.errors != null ? true : false" id="position" class="form-select">
           <option disabled></option>
           @for (item of positions; track item.id) {
             <option [value]="item.id" >{{ item.name }}</option>
@@ -91,22 +91,22 @@
         <label cLabel for="position" [class.fix-float]="createForm.get('position')?.value == 0">Departamento</label>
       </div>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="email" [valid]="!showErrors ? undefined: createForm.get('email')?.errors != null ? false : undefined" id="email" type="email" placeholder="E-mail" />
+        <input cFormControl formControlName="email" [valid]="!showErrors ? undefined : createForm.get('email')?.errors != null ? false : undefined" id="email" type="email" placeholder="E-mail" />
         <label cLabel for="email">E-mail</label>
       </div>
       <div cFormFloating class="mb-3">
-        <c-date-picker [calendarDate]="birthDate" placeholder="Selecione" formControlName="birthDate"></c-date-picker>
+        <c-date-picker [calendarDate]="birthDate" placeholder="Selecione" formControlName="birthDate" [valid]="!showErrors ? undefined : createForm.get('birthDate')?.errors != null ? false : undefined" class="fix-calendar"></c-date-picker>
         <label cLabel class="fix-floating-label">Nascimento</label>
       </div>
       <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="username" [valid]="!showErrors ? undefined: createForm.get('username')?.errors != null ? false : undefined" id="nUN" type="text" placeholder="Nome de usuário" autocomplete="new-username" />
+        <input cFormControl formControlName="username" [valid]="!showErrors ? undefined : createForm.get('username')?.errors != null ? false : undefined" id="nUN" type="text" placeholder="Nome de usuário" autocomplete="new-username" />
         <label cLabel for="nUN">Nome de usuário</label>
       </div>
       <div cFormFloating class="mb-3">
         <input
           cFormPassword
           formControlName="password"
-          [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : undefined"
+          [valid]="!showErrors ? undefined : createForm.get('password')?.errors != null ? false : undefined"
           type="password"
           placeholder="Senha"
           autocomplete="new-password"
@@ -117,7 +117,7 @@
         <input
           cFormPassword
           formControlName="repeatPassword"
-          [valid]="!showErrors ? undefined: createForm.get('password')?.errors != null ? false : createForm.hasError('passwordMismatch') ? false : undefined"
+          [valid]="!showErrors ? undefined : createForm.get('password')?.errors != null ? false : createForm.hasError('passwordMismatch') ? false : undefined"
           id="repeatPassword"
           type="password"
           placeholder="Repetir senha"

@@ -51,7 +51,6 @@ export class DefaultLayoutComponent implements OnInit {
     username: '',
     supportToken: null,
     roles: [],
-    notifications: [],
     pendingIssues: []
   };
 
@@ -81,7 +80,7 @@ export class DefaultLayoutComponent implements OnInit {
     const customNav: Array<INavData> = [];
 
     this.user.roles.forEach(role => {
-      if (!role.title) return;
+      if (!role.title || !role.titleUrl) return;
 
       const toolList: INavData = {
         name: role.parent,

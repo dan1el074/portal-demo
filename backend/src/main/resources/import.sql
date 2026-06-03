@@ -2,10 +2,10 @@ INSERT INTO tb_param (id, name, content) VALUES (1, 'version', '0.7.1');
 INSERT INTO tb_param (id, name, content) VALUES (2, 'memorandoCount', '174');
 INSERT INTO tb_param (id, name, content) VALUES (3, 'memorandoYear', '2026');
 
-INSERT INTO tb_post (id, content, created_at, updated_at) VALUES (1, '<strong>Sobre nossa energia emocional:</strong><br><strong>- Gratidão:</strong> Aprecie as qualidades dos outros e veja o lado bom em cada situação. Seja grato por tudo e todos, sempre fazendo o que é certo!<br><strong>- Ambiente estimulante: </strong> Crie um ambiente leve, positivo e criativo. Para nós, é essencial trabalharmos em um lugar agradável!<br><strong>- Franqueza: </strong> Aja com franqueza e mostre seus sentimentos de maneira aberta e amigável!<br>Nós acreditamos que estamos criando a melhor empresa para se trabalhar! 🚀', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO tb_post (id, content, created_at, updated_at) VALUES (2, 'Hoje é o <strong>Dia da Família</strong>, e queremos lembrar que ela vai muito além dos laços de sangue. Família é onde encontramos apoio, afeto, cuidado e verdade.<br><br>Feliz Dia da Família!<br>Equipe Metaro.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO tb_post (id, content, created_at, updated_at) VALUES (3, '', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO tb_post (id, content, created_at, updated_at) VALUES (4, 'Hoje à tarde o RH juntamente com os gestores da área (Chailan e Diogo), conduziram a primeira etapa do processo seletivo de Recrutamento Interno para a vaga de líder de produção.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tb_post (id, content, created_at, updated_at) VALUES (3, '', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tb_post (id, content, created_at, updated_at) VALUES (2, 'Hoje é o <strong>Dia da Família</strong>, e queremos lembrar que ela vai muito além dos laços de sangue. Família é onde encontramos apoio, afeto, cuidado e verdade.<br><br>Feliz Dia da Família!<br>Equipe Metaro.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tb_post (id, content, created_at, updated_at) VALUES (1, '<strong>Sobre nossa energia emocional:</strong><br><strong>- Gratidão:</strong> Aprecie as qualidades dos outros e veja o lado bom em cada situação. Seja grato por tudo e todos, sempre fazendo o que é certo!<br><strong>- Ambiente estimulante: </strong> Crie um ambiente leve, positivo e criativo. Para nós, é essencial trabalharmos em um lugar agradável!<br><strong>- Franqueza: </strong> Aja com franqueza e mostre seus sentimentos de maneira aberta e amigável!<br>Nós acreditamos que estamos criando a melhor empresa para se trabalhar! 🚀', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tb_picture (name, path, type) VALUES ('1768850938328_1', 'C:\\workspace\\outros\\imagens\\1768850938328_1.png', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1774469447392_2', 'C:\\workspace\\outros\\imagens\\1774469447392_2.png', 'PROFILE');
@@ -13,14 +13,14 @@ INSERT INTO tb_picture (name, path, type) VALUES ('1768478302771_3', 'C:\\worksp
 INSERT INTO tb_picture (name, path, type) VALUES ('1774469447392_4', 'C:\\workspace\\outros\\imagens\\1774469447392_4.png', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1768478289921_5', 'C:\\workspace\\outros\\imagens\\1768478289921_5.jpg', 'PROFILE');
 INSERT INTO tb_picture (name, path, type) VALUES ('1768478289921_6', 'C:\\workspace\\outros\\imagens\\1774469447367_6.webp', 'EVENT');
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00001', 'C:\\workspace\\outros\\imagens\\img_00001.jpg', 'POST', 1);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00002', 'C:\\workspace\\outros\\imagens\\img_00002.jpg', 'POST', 1);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00003', 'C:\\workspace\\outros\\imagens\\img_00003.jpg', 'POST',1 );
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00004', 'C:\\workspace\\outros\\imagens\\img_00004.jpg', 'POST',1);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00005', 'C:\\workspace\\outros\\imagens\\img_00005.jpg', 'POST',1);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00006', 'C:\\workspace\\outros\\imagens\\img_00006.jpeg', 'POST', 3);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00007', 'C:\\workspace\\outros\\imagens\\img_00007.jpeg', 'POST', 2);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00008', 'C:\\workspace\\outros\\imagens\\img_00008.jpeg', 'POST', 4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00001', 'C:\\workspace\\outros\\imagens\\img_00001.jpg', 'POST', 4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00002', 'C:\\workspace\\outros\\imagens\\img_00002.jpg', 'POST', 4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00003', 'C:\\workspace\\outros\\imagens\\img_00003.jpg', 'POST', 4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00004', 'C:\\workspace\\outros\\imagens\\img_00004.jpg', 'POST',4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00005', 'C:\\workspace\\outros\\imagens\\img_00005.jpg', 'POST',4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00006', 'C:\\workspace\\outros\\imagens\\img_00006.jpeg', 'POST', 2);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00007', 'C:\\workspace\\outros\\imagens\\img_00007.jpeg', 'POST', 3);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00008', 'C:\\workspace\\outros\\imagens\\img_00008.jpeg', 'POST', 1);
 
 INSERT INTO tb_position (name, activated, updated_at, created_at) VALUES ('TI', true, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
 INSERT INTO tb_position (name, activated, updated_at, created_at) VALUES ('Compras', true, TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z', TIMESTAMP WITH TIME ZONE '2026-02-23T15:00:00Z');
@@ -66,8 +66,9 @@ INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (4, 'ROLE_POSITION_PANEL', 'Departamentos', '/departments', 'Administração','/administration');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (5, 'ROLE_RAW_MATERIALS', 'Matérias primas', '/raw-materials', 'Geral','/general');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (6, 'ROLE_MEMORANDO', 'Memorando', '/memorando', 'Geral', '/general');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (7, 'ROLE_MES', 'MES Metaro', '/mes', 'Apps', '/apps');
-INSERT INTO tb_role (id, authority) VALUES (8, 'ROLE_MES_ADMIN');
+INSERT INTO tb_role (id, authority, title, parent) VALUES (7, 'ROLE_POST', 'Postagens', 'Administração');
+--INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (8, 'ROLE_MES', 'MES Metaro', '/mes', 'Apps', '/apps');
+--INSERT INTO tb_role (id, authority, title, parent) VALUES (9, 'ROLE_MES_ADMIN', 'MES Metaro - Administrador', 'Apps');
 
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1,2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,1);

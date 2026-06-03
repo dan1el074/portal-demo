@@ -24,13 +24,11 @@ public class UserMinDto {
         this.id = user.getId();
         this.name = user.getName();
         this.username = user.getUsername();
-        this.position = user.getPosition().getName();
         this.email = user.getEmail();
         this.activated = user.getActivated();
         this.updateAt = user.getUpdateAt();
 
-        if (user.getPicture() != null) {
-            this.pictureId = user.getPicture().getId();
-        }
+        if (user.getPosition() != null) this.position = user.getPosition().getName();
+        if (user.getPicture() != null) this.pictureId = user.getPicture().getId();
     }
 }

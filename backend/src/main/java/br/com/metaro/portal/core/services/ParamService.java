@@ -15,7 +15,7 @@ public class ParamService {
     private ParamRepository paramRepository;
 
     @Transactional
-    public Long newInternalControl() {
+    public Long newMemorando() {
         List<Param> params = paramRepository.findAll();
         Param countParam = params.stream().filter(p -> p.getName().equals("memorandoCount")).findFirst()
                 .orElseThrow(ResourceNotFoundException::new);

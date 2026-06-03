@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 import { ButtonModule, CardModule } from '@coreui/angular';
 import { HomeCardStat } from './../../../app/interface/user.interface';
 import { RouterLink } from '@angular/router';
+import { NotificationWebSocketService } from '../../../app/services/websocket.service';
 
 @Component({
   selector: 'app-hello',
@@ -25,7 +26,7 @@ export class HelloComponent {
 
   readonly stats: HomeCardStat[] = [];
 
-  constructor() {}
+  constructor(protected websocket: NotificationWebSocketService) {}
 
   public ngOnInit(): void {
     this.stats.push(
@@ -48,11 +49,11 @@ export class HelloComponent {
         iconBg: 'rgba(245,158,11,0.12)',
       },
       {
-        label: 'PEDIDOS',
-        title: 'Pedidos em execução',
-        value: this.openOrders,
+        label: 'Notificações',
+        title: 'Novas notificações',
+        value: 0,
         iconPath:
-          'M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12',
+          'M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0',
         iconColor: '#22c55e',
         iconBg: 'rgba(34,197,94,0.12)',
       },

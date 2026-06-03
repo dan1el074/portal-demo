@@ -48,7 +48,11 @@
                   </svg>
                 </div>
                 <p class="ops-stat-label">{{ stat.label }}</p>
-                <p class="ops-stat-value">{{ stat.value }}</p>
+                @if (stat.label == "Notificações") {
+                  <p class="ops-stat-value">{{ websocket.unreadCount() }}</p>
+                } @else {
+                  <p class="ops-stat-value">{{ stat.value }}</p>
+                }
               </div>
             }
           </div>
