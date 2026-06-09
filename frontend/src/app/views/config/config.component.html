@@ -7,7 +7,7 @@
 
       <c-card-body class="user-config-spinner">
         <div>
-          <ngx-spinner name="userConfigSpinner" bdColor="#fff" size="default" color="#0053b0" type="ball-clip-rotate" [fullScreen]="false"></ngx-spinner>
+          <ngx-spinner name="userConfigSpinner" bdColor="var(--cui-tertiary-bg)" size="default" color="#0053b0" type="ball-clip-rotate" [fullScreen]="false"></ngx-spinner>
           @if (loaded && userData) {
             <app-user-config-form
               [userData]="userData"

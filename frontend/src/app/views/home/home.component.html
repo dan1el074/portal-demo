@@ -44,6 +44,16 @@
           @for (post of homeInfo.feed; track post.id) {
             <app-post [canPost]="canPost" [post]="post" (editTask)="toggleEditModal($event, true)" (deleteTask)="toggleDeleteModal($event, true)" class="card"></app-post>
           }
+
+          <div #sentinel class="sentinel"></div>
+
+          @if (loadingMore) {
+            <span>CARREGANDO...</span>
+          }
+
+          @if (noMorePosts) {
+            <p class="no-more-posts">Não há mais publicações.</p>
+          }
         </div>
       </div>
     } @else {

@@ -1,6 +1,6 @@
 <c-card class="border" [class.warning]="post.isWarning">
   <c-card-body>
-    <c-container class="flex" [class.margin]="post.content.length > 0">
+    <c-container class="flex" [class.margin]="post.content">
       <c-avatar
         shape="rounded-1"
         size="xl"
@@ -41,7 +41,9 @@
         </c-dropdown>
       }
     </c-container>
-    <p cCardText [innerHtml]="post.content"></p>
+    @if (post.content) {
+      <p cCardText [innerHtml]="post.content"></p>
+    }
   </c-card-body>
 
   <div class="post-images" >
