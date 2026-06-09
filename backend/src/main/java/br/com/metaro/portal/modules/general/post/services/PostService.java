@@ -13,6 +13,8 @@ import br.com.metaro.portal.util.picture.PictureService;
 import br.com.metaro.portal.util.picture.PictureType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +36,14 @@ public class PostService {
     @Autowired
     private UserService userService;
     private String imgPath = "assets/others/";
+
+    @Transactional(readOnly = true)
+    public List<PostDto> getFeed(Long lastId, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Post> posts = postRepository.findBeforeId(lastId, pageable);
+
+        return posts.stream().map(PostDto::new).toList();
+    }
 
     @CacheEvict(value = "homeInfo", allEntries = true)
     @Transactional

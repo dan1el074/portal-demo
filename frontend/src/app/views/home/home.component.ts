@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ButtonDirective, ContainerComponent } from '@coreui/angular';
@@ -13,7 +13,7 @@ import { HelloComponent } from '../../../components/cards/hello/hello.component'
 import { NewPostComponent } from './../../../components/cards/post/new-post/new-post.component';
 import { HomeInfo } from '../../interface/home.interface';
 import { Me } from '../../interface/user.interface';
-import { NewPost } from '../../interface/post.interface';
+import { NewPost, PostCard } from '../../interface/post.interface';
 import { DeletePostModalComponent } from '../../../components/modal/post/delete-post-modal/delete-post-modal.component';
 
 @Component({
@@ -33,7 +33,7 @@ import { DeletePostModalComponent } from '../../../components/modal/post/delete-
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild(NewPostComponent) newPost!: NewPostComponent;
   protected user!: Me;
   protected fatalError = false;
@@ -44,6 +44,18 @@ export class HomeComponent implements OnInit {
   protected idPostToDelete = 0;
   protected showEditModel = false;
   protected idPostToEdit = 0;
+
+  private _sentinel!: ElementRef;
+  @ViewChild('sentinel')
+  set sentinel(el: ElementRef) {
+    if (el && !this.observer) {
+      this._sentinel = el;
+      this.setupIntersectionObserver();
+    }
+  }
+  protected loadingMore = false;
+  protected noMorePosts = false;
+  private observer!: IntersectionObserver;
 
   constructor(
     private homeService: HomeService,
@@ -74,6 +86,48 @@ export class HomeComponent implements OnInit {
     setTimeout(() => {
       this.spinner.hide("loginSpinner")
     }, 500);
+  }
+
+  public ngOnDestroy(): void {
+    this.observer?.disconnect();
+  }
+
+  private setupIntersectionObserver(): void {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !this.loadingMore && !this.noMorePosts) {
+          this.loadMorePosts();
+        }
+      },
+      { root: null, rootMargin: '0px', threshold: 0.1 }
+    );
+
+    this.observer.observe(this._sentinel.nativeElement);
+  }
+
+  private loadMorePosts(): void {
+    console.log("carregando publicações...");
+    if (!this.homeInfo?.feed?.length) return;
+
+    const lastId = this.homeInfo.feed[this.homeInfo.feed.length - 1].id;
+    this.loadingMore = true;
+
+    this.postService.getFeedFromId(lastId).subscribe({
+      next: (newPosts: Array<PostCard>) => {
+        if (!newPosts.length) {
+          this.noMorePosts = true;
+        } else {
+          this.homeInfo!.feed = [...this.homeInfo!.feed, ...newPosts];
+        }
+
+        this.loadingMore = false;
+        this.cdf.detectChanges();
+      },
+      error: () => {
+        this.loadingMore = false;
+      }
+    });
   }
 
   private updateData(): void {

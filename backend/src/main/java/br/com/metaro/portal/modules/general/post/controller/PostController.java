@@ -12,12 +12,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/post")
 public class PostController {
     @Autowired
     private PostService postService;
+
+    @GetMapping
+    public ResponseEntity<List<PostDto>> getFeed(
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "4") int limit) {
+        List<PostDto> feed = postService.getFeed(lastId, limit);
+        return ResponseEntity.ok(feed);
+    }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POST')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
