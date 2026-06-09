@@ -49,7 +49,7 @@ export class HelloComponent {
         iconBg: 'rgba(245,158,11,0.12)',
       },
       {
-        label: 'Notificações',
+        label: 'NOTIFICAÇÕES',
         title: 'Novas notificações',
         value: 0,
         iconPath:

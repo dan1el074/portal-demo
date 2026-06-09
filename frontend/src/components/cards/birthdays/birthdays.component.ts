@@ -23,6 +23,6 @@ export class BirthdaysComponent implements OnInit {
   protected currentMonth!: string;
 
   public ngOnInit(): void {
-    this.currentMonth = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase();
+    this.currentMonth = new Date().toLocaleDateString('pt-BR', { month: 'long' }).toUpperCase();
   }
 }

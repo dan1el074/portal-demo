@@ -3,34 +3,23 @@ package br.com.metaro.portal.core.services;
 import br.com.metaro.portal.core.dto.event.EventDto;
 import br.com.metaro.portal.core.dto.info.BirthdayDto;
 import br.com.metaro.portal.core.dto.info.HomeInfoDto;
-import br.com.metaro.portal.core.entities.Event;
-import br.com.metaro.portal.core.entities.User;
-import br.com.metaro.portal.core.repositories.EventRepository;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
-import br.com.metaro.portal.modules.general.post.Post;
-import br.com.metaro.portal.modules.general.post.PostDto;
-import br.com.metaro.portal.modules.general.post.PostRepository;
-import br.com.metaro.portal.util.smb.files.File;
+import br.com.metaro.portal.modules.general.post.entities.Post;
+import br.com.metaro.portal.modules.general.post.dto.PostDto;
+import br.com.metaro.portal.modules.general.post.repositories.PostRepository;
 import br.com.metaro.portal.util.smb.files.FileDto;
 import br.com.metaro.portal.util.smb.files.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class InfoService {

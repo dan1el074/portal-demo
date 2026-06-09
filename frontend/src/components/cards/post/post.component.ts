@@ -1,9 +1,11 @@
-import { TimeAgoPipe } from './../../../app/pipes/time-ago.pipe';
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AvatarComponent, ButtonDirective, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, ModalToggleDirective, RowComponent } from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular';
+import { cilOptions, cilPencil, cilTrash } from '@coreui/icons';
 import { CarouselCustomConfig } from './carouse.config';
-import { AvatarComponent, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, ModalToggleDirective, RowComponent } from '@coreui/angular';
-import { ImageComponent } from '../../modal/image-modal/image.component';
+import { TimeAgoPipe } from './../../../app/pipes/time-ago.pipe';
+import { ImageComponent } from '../../modal/image/image-modal/image.component';
 import { PostCard } from '../../../app/interface/post.interface';
 import { environment } from '../../../environments/environment';
 
@@ -22,20 +24,29 @@ import { environment } from '../../../environments/environment';
     ColComponent,
     ModalToggleDirective,
     ImageComponent,
-    TimeAgoPipe
+    TimeAgoPipe,
+    DropdownComponent,
+    DropdownToggleDirective,
+    DropdownMenuDirective,
+    DropdownItemDirective,
+    ButtonDirective,
+    IconDirective
   ],
   providers: [{ provide: CarouselConfig, useClass: CarouselCustomConfig }],
 })
 export class PostComponent {
   @Input() post!: PostCard;
+  @Output() editTask = new EventEmitter<number>();
+  @Output() deleteTask = new EventEmitter<number>();
 
   protected slideIndex = 0;
   protected carouselReady = false;
   protected apiUrl = environment.apiUrl;
+  protected icons = { cilOptions, cilPencil, cilTrash };
 
   constructor (private cdr: ChangeDetectorRef) {}
 
-  openCarousel(index: number) {
+  protected openCarousel(index: number) {
     this.slideIndex = index;
     this.carouselReady = false;
 
@@ -43,5 +54,13 @@ export class PostComponent {
       this.carouselReady = true;
       this.cdr.detectChanges();
     });
+  }
+
+  protected onEdit(id: number): void {
+    this.editTask.emit(id);
+  }
+
+  protected onDelete(id: number): void {
+    this.deleteTask.emit(id);
   }
 }

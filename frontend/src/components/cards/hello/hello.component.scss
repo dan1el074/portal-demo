@@ -104,9 +104,10 @@
     border-radius: 8px;
     padding: 8px 12px;
 
-    &.flex-center {
+    &.main-btn {
       display: flex;
       align-items: center;
+      gap: 4px;
     }
   }
 }

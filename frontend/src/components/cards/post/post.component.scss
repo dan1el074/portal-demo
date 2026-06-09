@@ -11,6 +11,24 @@
   .no-margin {
     margin: 0;
   }
+
+  .option-btn {
+    display: flex;
+    padding: 8px !important;
+    border-radius: 50px;
+
+    &:hover {
+      background-color: #00000021;
+    }
+  }
+
+  .dropdown-item {
+    cursor: pointer;
+
+    svg {
+      margin-right: 8px;
+    }
+  }
 }
 
 .post-images {

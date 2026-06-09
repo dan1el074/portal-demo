@@ -1,0 +1,76 @@
+<c-modal alignment="center" backdrop="static" id="new-post-modal" scrollable [visible]="visible" (visibleChange)="handleToggleModal($event)">
+  <c-modal-header>
+    <h5 cModalTitle>Criar post</h5>
+    <button (click)="closeModal()" cButtonClose></button>
+  </c-modal-header>
+
+  <c-modal-body class="main">
+    <div class="user-container">
+      <c-avatar
+        shape="rounded-1"
+        size="md"
+        [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'"
+        textColor="primary"
+        alt="User avatar"
+      />
+      <div class="title-container">
+        <strong><span>{{ user.name }}</span></strong>
+        <span>{{ user.position }}</span>
+      </div>
+    </div>
+
+    <textarea
+      name="text-content"
+      id="text-content"
+      rows="5"
+      placeholder="No que você está pensando?"
+      [(ngModel)]="textContent"
+    ></textarea>
+
+    @if (selectedFiles.length) {
+      <div class="preview-container">
+        @for (preview of previews; track $index) {
+          <div class="preview-item">
+            <img [src]="preview" alt="Imagem {{ $index + 1 }}" />
+            <button class="preview-remove" (click)="removeImage($index)" type="button" aria-label="Remover imagem">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        }
+        @if (selectedFiles.length < maxImages) {
+          <div class="preview-add" (click)="fileInput.click()" title="Adicionar mais fotos">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="buttons-container">
+      <span>Adicionar ao post:</span>
+      <div class="buttons">
+        <input #fileInput type="file" accept=".png, .jpeg, .jpg, .webp" multiple hidden (change)="onFilesSelected($event)" />
+
+        <button (click)="fileInput.click()" cTooltip="Adicionar imagens" [class.active]="selectedFiles.length" class="media-btn" type="button">
+          <img src="./assets/images/icons/media.webp" />
+        </button>
+
+        <button (click)="toggleWarningButtom()" cTooltip="Marcar post como aviso" [class.active]="isWarning" class="warning-btn" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" class="warning-icon">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-width="0.5"/>
+            <line x1="12" y1="9" x2="12" y2="13" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="17" r="1" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </c-modal-body>
+
+  <c-modal-footer>
+    <button (click)="closeModal()" cButton color="secondary">Cancelar</button>
+    <button (click)="onPublish()" cButton color="primary">Publicar</button>
+  </c-modal-footer>
+</c-modal>

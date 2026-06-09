@@ -7,8 +7,8 @@ import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationWebSocketService } from '../../services/websocket.service';
 import { DefaultFooterComponent, DefaultHeaderComponent } from './';
-import { LayoutAlertModalComponent } from './../../../components/modal/layout-alert-modal/layout-alert-modal.component';
-import { LayoutSearchModalComponent } from '../../../components/modal/layout-search-modal/layout-search-modal.component';
+import { LayoutAlertModalComponent } from './../../../components/modal/layout/layout-alert-modal/layout-alert-modal.component';
+import { LayoutSearchModalComponent } from '../../../components/modal/layout/layout-search-modal/layout-search-modal.component';
 import { navItems } from './_nav';
 
 @Component({
