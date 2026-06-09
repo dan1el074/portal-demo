@@ -67,6 +67,7 @@ INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (5, 'ROLE_RAW_MATERIALS', 'Matérias primas', '/raw-materials', 'Geral','/general');
 INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (6, 'ROLE_MEMORANDO', 'Memorando', '/memorando', 'Geral', '/general');
 INSERT INTO tb_role (id, authority, title, parent) VALUES (7, 'ROLE_POST', 'Postagens', 'Administração');
+INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (8, 'ROLE_STEP_FLOW', 'Fluxo de etapas', '/step-flow', 'Geral', '/general');
 
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1,2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,1);

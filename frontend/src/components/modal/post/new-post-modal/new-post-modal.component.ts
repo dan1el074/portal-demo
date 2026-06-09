@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AvatarComponent, ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, TooltipDirective } from '@coreui/angular';
-import { NewPost } from '../../../../app/interface/post.interface';
+import { LoadingButtonComponent } from '@coreui/angular-pro';
 import { Me } from '../../../../app/interface/user.interface';
 import { environment } from '../../../../environments/environment';
 import { ToastrService } from 'ngx-toastr';
@@ -18,7 +18,8 @@ import { ToastrService } from 'ngx-toastr';
     ButtonDirective,
     ButtonCloseDirective,
     TooltipDirective,
-    AvatarComponent
+    AvatarComponent,
+    LoadingButtonComponent
   ],
   templateUrl: './new-post-modal.component.html',
   styleUrl: './new-post-modal.component.scss',
@@ -37,6 +38,7 @@ export class NewPostModalComponent implements OnChanges {
   protected textContent = '';
   protected selectedFiles: File[] = [];
   protected previews: string[] = [];
+  protected loading = false;
 
   constructor(
     private toasterService: ToastrService,
@@ -89,10 +91,16 @@ export class NewPostModalComponent implements OnChanges {
   }
 
   private resetForm(): void {
-    this.textContent = '';
+    this.loading = false;
+    this.isWarning = false;
     this.selectedFiles = [];
     this.previews = [];
-    this.isWarning = false;
+    this.textContent = '';
+  }
+
+  public stopLoad(): void {
+    this.loading = false;
+    this.cdr.detectChanges();
   }
 
   protected onPublish(): void {
@@ -101,6 +109,7 @@ export class NewPostModalComponent implements OnChanges {
       return;
     }
 
+    this.loading = true;
     const formData = new FormData();
 
     formData.append('text', this.textContent);
@@ -108,6 +117,5 @@ export class NewPostModalComponent implements OnChanges {
 
     this.selectedFiles.forEach(file => formData.append('images', file));
     this.publishTask.emit(formData);
-    this.resetForm();
   }
 }

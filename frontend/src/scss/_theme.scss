@@ -556,7 +556,7 @@ html[data-coreui-theme=light] {
     }
   }
 
-  table.table tbody tr td {
+  table.table:not(.colorfull) tbody tr td {
     background-color: transparent;
   }
 }
@@ -589,7 +589,7 @@ html[data-coreui-theme=dark] {
     --cui-btn-disabled-border-color: #285ea5;
   }
 
-  table.table tbody tr {
+  table.table.colorfull tbody tr {
     border-bottom: 1px solid var(--cui-border-color);
 
     td{

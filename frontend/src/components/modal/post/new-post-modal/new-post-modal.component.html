@@ -70,7 +70,7 @@
   </c-modal-body>
 
   <c-modal-footer>
-    <button (click)="closeModal()" cButton color="secondary">Cancelar</button>
-    <button (click)="onPublish()" cButton color="primary">Publicar</button>
+    <button cButton color="secondary" (click)="closeModal()">Cancelar</button>
+    <button cLoadingButton [loading]="loading" (click)="onPublish()">Publicar</button>
   </c-modal-footer>
 </c-modal>

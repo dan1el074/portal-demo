@@ -1,9 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AvatarComponent, CardBodyComponent, CardComponent } from '@coreui/angular';
-import { Me } from '../../../app/interface/user.interface';
-import { environment } from '../../../environments/environment';
-import { NewPostModalComponent } from '../../modal/post/new-post-modal/new-post-modal.component';
-import { NewPost } from '../../../app/interface/post.interface';
+import { Me } from '../../../../app/interface/user.interface';
+import { environment } from '../../../../environments/environment';
+import { NewPostModalComponent } from '../../../modal/post/new-post-modal/new-post-modal.component';
 
 @Component({
   selector: 'app-new-post',
@@ -19,6 +18,7 @@ import { NewPost } from '../../../app/interface/post.interface';
 export class NewPostComponent {
   @Input() user!: Me;
   @Output() publishTask = new EventEmitter<FormData>();
+  @ViewChild(NewPostModalComponent) modal!: NewPostModalComponent;
   protected apiUrl = environment.apiUrl;
   protected showModal = false;
   protected warning = false;
@@ -48,6 +48,10 @@ export class NewPostComponent {
   private clearArgs(): void {
     this.warning = false;
     this.showPictureDialog = false;
+  }
+
+  public stopLoad(): void {
+    this.modal.stopLoad();
   }
 
   protected publishPost(post: FormData): void {

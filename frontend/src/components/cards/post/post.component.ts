@@ -36,6 +36,7 @@ import { environment } from '../../../environments/environment';
 })
 export class PostComponent {
   @Input() post!: PostCard;
+  @Input() canPost!: Boolean;
   @Output() editTask = new EventEmitter<number>();
   @Output() deleteTask = new EventEmitter<number>();
 

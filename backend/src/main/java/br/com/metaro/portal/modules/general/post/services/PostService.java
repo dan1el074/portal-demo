@@ -3,10 +3,12 @@ package br.com.metaro.portal.modules.general.post.services;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import br.com.metaro.portal.core.services.UserService;
+import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.modules.general.post.dto.PostDto;
 import br.com.metaro.portal.modules.general.post.dto.PostInsertDto;
 import br.com.metaro.portal.modules.general.post.entities.Post;
 import br.com.metaro.portal.modules.general.post.repositories.PostRepository;
+import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.PictureService;
 import br.com.metaro.portal.util.picture.PictureType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,20 +33,7 @@ public class PostService {
     private PictureService pictureService;
     @Autowired
     private UserService userService;
-
     private String imgPath = "assets/others/";
-
-    @Transactional(readOnly = true)
-    public PostDto findById(Long id) {
-        Optional<Post> post = postRepository.findById(id);
-        return new PostDto(post.get());
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostDto> findLast4Posts() {
-        List<Post> feed = postRepository.findTop4ByOrderByIdDesc();
-        return feed.stream().map(PostDto::new).toList();
-    }
 
     @CacheEvict(value = "homeInfo", allEntries = true)
     @Transactional
@@ -52,6 +41,18 @@ public class PostService {
         Post post = new Post();
         post = rulesForInsert(dto, post);
         return new PostDto(post);
+    }
+
+    @CacheEvict(value = "homeInfo", allEntries = true)
+    @Transactional
+    public void delete(Long id) throws IOException {
+        Post post = postRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+
+        for (Picture picture : post.getPictures()) {
+            pictureService.delete(picture.getId());
+        }
+
+        postRepository.deleteById(id);
     }
 
     private Post rulesForInsert(PostInsertDto dto, Post post) throws IOException {

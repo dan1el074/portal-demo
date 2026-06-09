@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MesComponent } from './mes.component';
+import { StepFlowComponent } from './step-flow.component';
 
-describe('MesComponent', () => {
-  let component: MesComponent;
-  let fixture: ComponentFixture<MesComponent>;
+describe('StepFlowComponent', () => {
+  let component: StepFlowComponent;
+  let fixture: ComponentFixture<StepFlowComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MesComponent]
+      imports: [StepFlowComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MesComponent);
+    fixture = TestBed.createComponent(StepFlowComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

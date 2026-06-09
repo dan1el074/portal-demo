@@ -20,13 +20,6 @@ public class PostController {
     private PostService postService;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POST')")
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<PostDto> findById(@PathVariable Long id) {
-        PostDto post = postService.findById(id);
-        return ResponseEntity.ok(post);
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POST')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> insert(@ModelAttribute PostInsertDto dto) throws IOException {
         PostDto newDto = postService.insert(dto);
@@ -36,5 +29,12 @@ public class PostController {
                 .buildAndExpand(newDto.getId())
                 .toUri();
         return ResponseEntity.created(uri).build();
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POST')")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws IOException {
+        postService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

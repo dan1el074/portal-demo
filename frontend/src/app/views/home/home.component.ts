@@ -10,10 +10,11 @@ import { PostComponent } from './../../../components/cards/post/post.component';
 import { EventComponent } from './../../../components/cards/event/event.component';
 import { FilesComponent } from './../../../components/cards/files/files.component';
 import { HelloComponent } from '../../../components/cards/hello/hello.component';
-import { NewPostComponent } from './../../../components/cards/new-post/new-post.component';
+import { NewPostComponent } from './../../../components/cards/post/new-post/new-post.component';
 import { HomeInfo } from '../../interface/home.interface';
 import { Me } from '../../interface/user.interface';
-import { NewPost, PostCard } from '../../interface/post.interface';
+import { NewPost } from '../../interface/post.interface';
+import { DeletePostModalComponent } from '../../../components/modal/post/delete-post-modal/delete-post-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -25,20 +26,24 @@ import { NewPost, PostCard } from '../../interface/post.interface';
     PostComponent,
     HelloComponent,
     BirthdaysComponent,
-    NewPostComponent
+    NewPostComponent,
+    DeletePostModalComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
+  @ViewChild(NewPostComponent) newPost!: NewPostComponent;
   protected user!: Me;
   protected fatalError = false;
   protected homeInfo!: HomeInfo;
   protected isAdmin = false;
   protected canPost = false;
   protected showDeleteModel = false;
+  protected idPostToDelete = 0;
   protected showEditModel = false;
+  protected idPostToEdit = 0;
 
   constructor(
     private homeService: HomeService,
@@ -91,27 +96,36 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  protected publishNewPost(post: FormData): void {
+  protected toggleEditModal(id: number, status: boolean): void {
+    this.toasterService.info("Isso será implementado nas próximas atualizações.", "Não funcionou!");
+
+    // this.showEditModel = status;
+    // if (status) this.idPostToEdit = id;
+  }
+
+  protected toggleDeleteModal(id: number, status: boolean): void {
+    this.showDeleteModel = status;
+    if (status) this.idPostToDelete = id;
+  }
+
+  protected insertPost(post: FormData): void {
     this.postService.insert(post).subscribe({
       next: () => {
+        this.newPost.stopLoad()
         this.toasterService.success("Publicação enviada com sucesso!")
         this.updateData();
       },
-      error: () => this.toasterService.error("Erro ao enviar publicação!")
+      error: () => {
+        this.newPost.stopLoad()
+        this.toasterService.error("Erro ao enviar publicação!")
+      }
     });
-  }
-
-  protected openEditModal(id: number): void {
-    this.showEditModel = true;
-  }
-
-  protected openDeleteModal(id: number): void {
-    this.showDeleteModel = true;
   }
 
   protected editPost(id: number, post: NewPost): void {
     this.postService.update(id, post).subscribe({
       next: () => {
+        this.showEditModel = false;
         this.toasterService.success("Post deletado com sucesso!");
         this.updateData();
       },
@@ -122,6 +136,7 @@ export class HomeComponent implements OnInit {
   protected deletePost(id: number): void {
     this.postService.delete(id).subscribe({
       next: () => {
+        this.showDeleteModel = false;
         this.toasterService.success("Post deletado com sucesso!");
         this.updateData();
       },

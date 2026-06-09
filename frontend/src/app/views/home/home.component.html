@@ -38,11 +38,11 @@
 
         <div class="home right">
           @if (canPost) {
-            <app-new-post (publishTask)="publishNewPost($event)" [user]="user"></app-new-post>
+            <app-new-post (publishTask)="insertPost($event)" [user]="user"></app-new-post>
           }
 
           @for (post of homeInfo.feed; track post.id) {
-            <app-post [post]="post" (editTask)="openEditModal($event)" (deleteTask)="openDeleteModal($event)" class="card"></app-post>
+            <app-post [canPost]="canPost" [post]="post" (editTask)="toggleEditModal($event, true)" (deleteTask)="toggleDeleteModal($event, true)" class="card"></app-post>
           }
         </div>
       </div>
@@ -52,3 +52,4 @@
   }
 </c-container>
 
+<app-delete-post-modal [visible]="showDeleteModel" [id]="idPostToDelete" (closeTask)="toggleDeleteModal(0, false)" (deleteTask)="deletePost($event)"></app-delete-post-modal>

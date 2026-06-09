@@ -1,1 +1,16 @@
-<p>delete-post-modal works!</p>
+<c-modal alignment="center" id="delete-post-modal" scrollable [visible]="visible" (visibleChange)="handleToggleModal($event)">
+  <c-modal-header>
+    <svg [cIcon]="icons.cilTrash" class="modal-title-icon" size="lg"></svg>
+    <h5 cModalTitle>Apagar publicação <span class="text-medium-emphasis">#0{{ id }}</span></h5>
+    <button cButtonClose (click)="closeModal()"></button>
+  </c-modal-header>
+
+  <c-modal-body class="main">
+    <span>Essa publicação será excluída permanentemente, a ação não poderá ser desfeita. Deseja continuar?</span>
+  </c-modal-body>
+
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="closeModal()">Cancelar</button>
+    <button cButton class="delete" (click)="onDelete(id)">Apagar</button>
+  </c-modal-footer>
+</c-modal>

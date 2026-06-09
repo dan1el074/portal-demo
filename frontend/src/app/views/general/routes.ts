@@ -48,6 +48,15 @@ export const routes: Routes = [
           roles: ['ROLE_ADMIN','ROLE_RAW_MATERIALS'],
           title: 'Matérias primas'
         }
+      },
+      {
+        path: 'step-flow',
+        loadComponent: () => import('./step-flow/step-flow.component').then(m => m.StepFlowComponent),
+        canActivate: [AuthGuard],
+        data: {
+          roles: ['ROLE_ADMIN','ROLE_STEP_FLOW'],
+          title: 'Fluxo de etapas'
+        }
       }
     ]
   }

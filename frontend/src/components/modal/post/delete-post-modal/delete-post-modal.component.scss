@@ -1,0 +1,13 @@
+button.delete {
+  background-color: #c93130;
+  border-color: #c93130;
+
+  &:hover {
+    background-color: #911d1d;
+    border-color: #911d1d;
+  }
+}
+
+.modal-title-icon {
+  margin-right: 12px;
+}
