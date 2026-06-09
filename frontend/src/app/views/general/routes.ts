@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../../config/authGuard';
-import { DocumentViewComponent } from './memorando/document-view/document-view.component';
 
 export const routes: Routes = [
   {
@@ -51,14 +50,14 @@ export const routes: Routes = [
         }
       },
       {
-        path: 'todo',
-        loadComponent: () => import('./todo/todo.component').then(m => m.TodoComponent),
+        path: 'step-flow',
+        loadComponent: () => import('./step-flow/step-flow.component').then(m => m.StepFlowComponent),
         canActivate: [AuthGuard],
         data: {
-          roles: ['ROLE_ADMIN','ROLE_TODO'],
-          title: 'Para fazer'
+          roles: ['ROLE_ADMIN','ROLE_STEP_FLOW'],
+          title: 'Fluxo de etapas'
         }
-      },
+      }
     ]
   }
 ];

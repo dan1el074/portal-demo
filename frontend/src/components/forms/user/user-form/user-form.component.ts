@@ -9,6 +9,7 @@ import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { PositionMin } from '../../../../app/interface/position.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-user-form',
@@ -60,13 +61,16 @@ export class UserFormComponent implements OnChanges {
   protected modalReady = false;
   protected birthDate = new Date();
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private toasterService: ToastrService
+  ) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
       position: [0, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       birthDate: [null, [Validators.required]],
-      username: [ '', [Validators.required, Validators.minLength(7), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
+      username: [ '', [Validators.required, Validators.minLength(6), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: ['', [Validators.required]],
       roles: [[1,4,7]],
@@ -195,6 +199,7 @@ export class UserFormComponent implements OnChanges {
   onSubmit(): void {
     if (!this.createForm.valid) {
       this.showErrors = true;
+      this.toasterService.error("", "Existem campos inválidos!");
       return;
     }
 

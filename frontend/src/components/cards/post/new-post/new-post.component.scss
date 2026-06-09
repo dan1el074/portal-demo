@@ -1,0 +1,50 @@
+.new-post-container {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+
+  .modal-button {
+    width: 100%;
+    padding: 0 0 0 16px;
+    border-radius: 50px;
+    border: none;
+    text-align: start;
+    background-color: var(--cui-tertiary-bg);
+    color: var(--cui-card-color);
+    transition: .1s;
+    cursor: text;
+  }
+
+}
+
+.buttons-container {
+  display: flex;
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--cui-tertiary-bg);
+    }
+
+    .warning-icon {
+      path {
+        stroke: rgb(245, 158, 11);
+        fill: rgb(245, 158, 11);
+      }
+
+      circle,
+      line {
+        stroke: var(--cui-body-bg);
+        fill: var(--cui-body-bg);
+      }
+    }
+  }
+}

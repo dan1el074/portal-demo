@@ -1,4 +1,3 @@
-import { RawMaterialModalComponent } from './../../modal/raw-material-modal/raw-material-modal.component';
 import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule, registerLocaleData  } from '@angular/common';
 import { AfterViewInit, Component, Input, OnChanges, ViewChild } from '@angular/core';
@@ -8,6 +7,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ButtonDirective, ContainerComponent, ModalToggleDirective } from '@coreui/angular';
+import { RawMaterialModalComponent } from './../../modal/raw-materials/raw-material-modal/raw-material-modal.component';
 import { cilPencil, cilSearch } from '@coreui/icons';
 import { RawMaterialsTable } from '../../../app/interface/raw-materials.interface';
 import localePt from '@angular/common/locales/pt';

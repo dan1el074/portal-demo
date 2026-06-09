@@ -17,16 +17,13 @@ import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
 import br.com.metaro.portal.modules.general.memorando.services.MemorandoLogService;
-import br.com.metaro.portal.util.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Component
@@ -190,7 +187,7 @@ public class MemorandoUtil {
 
     public void addNumberAndCreatedAt(Memorando entity) {
         if (entity.getCreateAt() == null) entity.setCreateAt(Instant.now());
-        if (entity.getNumber() == null) entity.setNumber(paramService.newInternalControl());
+        if (entity.getNumber() == null) entity.setNumber(paramService.newMemorando());
     }
 
     public void removeNotifications(Memorando entity) {

@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, PlaceholderAnimationDirective, PlaceholderDirective } from '@coreui/angular';
 import { cilSearch, cilPencil, cilX } from '@coreui/icons';
 import { UserTable } from '../../../app/interface/user.interface';
-import { UserDeleteModalComponent } from '../../modal/user-delete-modal/user-delete-modal.component';
+import { UserDeleteModalComponent } from '../../modal/user/user-delete-modal/user-delete-modal.component';
 import { environment } from '../../../environments/environment';
 
 @Component({

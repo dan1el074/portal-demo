@@ -28,13 +28,13 @@ public class UserEditDto {
     public UserEditDto(User user) {
         id = user.getId();
         name = user.getName();
-        positionId = user.getPosition().getId();
         email = user.getEmail();
         birthDate = user.getBirthDate();
         username = user.getUsername();
         activated = user.getActivated();
         roles = new ArrayList<>();
 
+        if (user.getPosition() != null) positionId = user.getPosition().getId();
         if (user.getPicture() != null) pictureId = user.getPicture().getId();
         if (user.getSupportToken() != null) supportToken = user.getSupportToken();
 

@@ -35,7 +35,6 @@ export interface Me {
   username: string;
   supportToken: string | null;
   roles: Array<Role>;
-  notifications: Array<Notification>;
   pendingIssues: Array<PendingIssues>;
 }
 

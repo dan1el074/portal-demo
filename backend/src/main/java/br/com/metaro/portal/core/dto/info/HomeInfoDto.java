@@ -1,7 +1,7 @@
 package br.com.metaro.portal.core.dto.info;
 
 import br.com.metaro.portal.core.dto.event.EventDto;
-import br.com.metaro.portal.modules.general.post.PostDto;
+import br.com.metaro.portal.modules.general.post.dto.PostDto;
 import br.com.metaro.portal.util.smb.files.FileDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

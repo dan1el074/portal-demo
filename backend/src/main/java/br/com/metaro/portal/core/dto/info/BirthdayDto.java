@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.format.TextStyle;
+import java.util.Locale;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -17,6 +20,9 @@ public class BirthdayDto {
     public BirthdayDto(User user) {
         this.user = new UserSummaryDto(user);
         this.day = user.getBirthDate().getDayOfMonth();
-        this.month = user.getBirthDate().getMonth().name();
+        this.month = user.getBirthDate()
+                .getMonth()
+                .getDisplayName(TextStyle.SHORT, new Locale("pt", "BR"))
+                .replace(".", "");
     }
 }

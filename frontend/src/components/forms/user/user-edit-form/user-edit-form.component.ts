@@ -11,6 +11,7 @@ import { environment } from '../../../../environments/environment';
 import { PositionMin } from '../../../../app/interface/position.interface';
 import { UserEditData } from '../../../../app/interface/user.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -68,13 +69,16 @@ export class UserEditFormComponent implements OnChanges {
   // data picker
   protected birthDate = new Date();
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private toasterService: ToastrService
+  ) {
     this.editForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
       position: [0, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       birthDate: [null, [Validators.required]],
-      username: [ '', [Validators.required, Validators.minLength(7), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
+      username: [ '', [Validators.required, Validators.minLength(6), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
       password: ['', [Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: [''],
       roles: [[]],
@@ -240,6 +244,7 @@ export class UserEditFormComponent implements OnChanges {
   protected onSubmit(): void {
     if (!this.editForm.valid) {
       this.showErrors = true;
+      this.toasterService.error("", "Existem campos inválidos!");
       return;
     }
 

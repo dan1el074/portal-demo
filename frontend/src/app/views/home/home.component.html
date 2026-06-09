@@ -3,15 +3,7 @@
     <p>Erro ao carregar informações</p>
   } @else {
 
-    @if (!homeInfo) {
-      <p>Nenhum dado encontrado!</p>
-    } @else {
-      <div class="alert-container">
-        <c-alert [dismissible]="true" color="info" fade>
-          Essa tela de apresentação ainda está em processo de desenvolvimento, informações meramente ilustrativas.
-        </c-alert>
-      </div>
-
+    @if (homeInfo) {
       @if (isAdmin) {
         <div class="admin-button">
           <button cButton color="primary" (click)="clearCache()">Limpar cache</button>
@@ -35,21 +27,29 @@
             <app-files [files]="homeInfo.files" class="card"></app-files>
           }
 
+          @if (homeInfo.monthBirthdays.length) {
+            <app-birthdays [monthBirthdays]="homeInfo.monthBirthdays" [todayBirthdays]="homeInfo.todayBirthdays"></app-birthdays>
+          }
+
           @if (homeInfo.event) {
             <app-event [event]="homeInfo.event" class="card sticky-card"></app-event>
           }
         </div>
 
         <div class="home right">
-          @if (homeInfo.monthBirthdays.length) {
-            <app-birthdays [monthBirthdays]="homeInfo.monthBirthdays" [todayBirthdays]="homeInfo.todayBirthdays"></app-birthdays>
+          @if (canPost) {
+            <app-new-post (publishTask)="insertPost($event)" [user]="user"></app-new-post>
           }
 
           @for (post of homeInfo.feed; track post.id) {
-            <app-post [post]="post" class="card"></app-post>
+            <app-post [canPost]="canPost" [post]="post" (editTask)="toggleEditModal($event, true)" (deleteTask)="toggleDeleteModal($event, true)" class="card"></app-post>
           }
         </div>
       </div>
+    } @else {
+      <p>Nenhum dado encontrado!</p>
     }
   }
 </c-container>
+
+<app-delete-post-modal [visible]="showDeleteModel" [id]="idPostToDelete" (closeTask)="toggleDeleteModal(0, false)" (deleteTask)="deletePost($event)"></app-delete-post-modal>
