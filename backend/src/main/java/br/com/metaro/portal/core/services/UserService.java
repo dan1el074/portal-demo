@@ -229,7 +229,7 @@ public class UserService implements UserDetailsService {
         if (dto.getPicture() != null)  {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
-            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE).get(0);
+            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE, null).get(0);
 
             if (entity.getPicture() != null) {
                 pictureService.delete(entity.getPicture().getId());
@@ -262,7 +262,7 @@ public class UserService implements UserDetailsService {
         if (dto.getPicture() != null)  {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
-            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE).get(0);
+            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE, null).get(0);
 
             if (entity.getPicture() != null) {
                 pictureService.delete(entity.getPicture().getId());
@@ -293,7 +293,7 @@ public class UserService implements UserDetailsService {
         if (dto.getPicture() != null)  {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
-            entity.setPicture(pictureService.saveFiles(fileList, PictureType.PROFILE).get(0));
+            entity.setPicture(pictureService.saveFiles(fileList, PictureType.PROFILE, null).get(0));
         }
 
         List<Long> rolesList = new ArrayList<>();

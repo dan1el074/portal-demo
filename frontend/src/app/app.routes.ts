@@ -43,10 +43,6 @@ export const routes: Routes = [
       {
         path: 'general',
         loadChildren: () => import('./views/general/routes').then((m) => m.routes),
-      },
-      {
-        path: 'apps',
-        loadChildren: () => import('./views/apps/routes').then((m) => m.routes),
       }
     ],
   },

@@ -45,6 +45,18 @@ c-container {
   margin: 14px 0 20px;
 }
 
+.sentinel {
+  height: 1px;
+  width: 100%;
+}
+
+.no-more-posts {
+  text-align: center;
+  color: var(--cui-secondary-color);
+  padding: 1rem 0;
+  font-size: 0.875rem;
+}
+
 @media screen and (max-width: 768px) {
   .alert-container {
     max-width: 540px;

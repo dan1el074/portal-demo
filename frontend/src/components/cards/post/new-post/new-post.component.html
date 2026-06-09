@@ -1,0 +1,42 @@
+<c-card class="border">
+  <c-card-body>
+    <div class="new-post-container">
+      <c-avatar
+        shape="rounded-1"
+        size="md"
+        [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'"
+        textColor="primary"
+        alt="User avatar"
+      />
+
+      <button (click)="openModal()" class="modal-button">No que você está pensando?</button>
+    </div>
+
+    <hr>
+
+    <div class="buttons-container">
+      <button class="action-btn" (click)="openModalWithPicture()">
+        <img src="./assets/images/icons/media.webp" />
+        Imagens
+      </button>
+
+      <button (click)="openModalWithWarning()" class="action-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" class="warning-icon">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-width="0.5"/>
+          <line x1="12" y1="9" x2="12" y2="13" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="17" r="1" />
+        </svg>
+        Aviso
+      </button>
+    </div>
+  </c-card-body>
+</c-card>
+
+<app-new-post-modal
+  [visible]="showModal"
+  [isWarning]="warning"
+  [openDialog]="showPictureDialog"
+  [user]="user"
+  (closeTask)="closeModal()"
+  (publishTask)="publishPost($event)"
+></app-new-post-modal>

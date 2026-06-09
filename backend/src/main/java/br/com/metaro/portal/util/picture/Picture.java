@@ -1,7 +1,7 @@
 package br.com.metaro.portal.util.picture;
 import br.com.metaro.portal.core.entities.Event;
 import br.com.metaro.portal.core.entities.User;
-import br.com.metaro.portal.modules.general.post.Post;
+import br.com.metaro.portal.modules.general.post.entities.Post;
 import jakarta.persistence.*;
 import lombok.*;
 

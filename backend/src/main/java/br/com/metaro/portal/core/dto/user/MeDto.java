@@ -1,9 +1,7 @@
 package br.com.metaro.portal.core.dto.user;
 
-import br.com.metaro.portal.core.dto.notification.NotificationDto;
 import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
 import br.com.metaro.portal.core.dto.role.RoleDto;
-import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
 import lombok.AllArgsConstructor;
@@ -29,7 +27,6 @@ public class MeDto {
     private String supportToken;
 
     private final List<RoleDto> roles = new ArrayList<>();
-    private final List<NotificationDto> notifications = new ArrayList<>();
     private final List<PendingIssuesDto> pendingIssues = new ArrayList<>();
 
     public MeDto(User user) {
@@ -46,10 +43,6 @@ public class MeDto {
 
         for(Role role : user.getRoles()) {
             roles.add(new RoleDto(role));
-        }
-
-        for (Notification notification : user.getNotifications()) {
-            notifications.add(new NotificationDto(notification));
         }
     }
 }

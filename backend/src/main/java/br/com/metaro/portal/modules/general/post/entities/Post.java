@@ -1,0 +1,34 @@
+package br.com.metaro.portal.modules.general.post.entities;
+
+import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.util.picture.Picture;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "tb_post")
+@Data
+public class Post {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(columnDefinition = "TEXT")
+    private String content;
+    private Boolean isWarning = false;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant createdAt;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User author;
+
+    @OneToMany(mappedBy = "post")
+    @OrderBy("id ASC")
+    private List<Picture> pictures = new ArrayList<>();
+}
