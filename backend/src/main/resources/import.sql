@@ -93,4 +93,4 @@ INSERT INTO tb_file (id, title, file_name, created_at) VALUES (1, 'Manifesto', '
 INSERT INTO tb_file (id, title, file_name, created_at) VALUES (2, 'Lista de ramais', 'ramais.pdf', CURRENT_TIMESTAMP);
 INSERT INTO tb_file (id, title, file_name, created_at) VALUES (3, 'Memorando', 'manual-memorando.pdf', CURRENT_TIMESTAMP);
 
-INSERT INTO tb_event (title, picture_id, event_date, created_at, updated_at) VALUES ('Minuto da Qualidade', 6, TIMESTAMP WITH TIME ZONE '2026-06-09T20:15:00Z', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tb_event (title, picture_id, event_date, created_at, updated_at) VALUES ('Minuto da Qualidade', 6, TIMESTAMP WITH TIME ZONE '2026-07-14T20:15:00Z', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

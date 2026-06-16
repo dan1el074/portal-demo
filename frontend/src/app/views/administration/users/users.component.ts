@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, ContainerComponent, RowComponent, Tabs2Module } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { ToastrService } from 'ngx-toastr';
@@ -18,6 +18,7 @@ import { UserTable } from '../../../interface/user.interface';
 @Component({
   selector: 'app-users',
   imports: [
+    ContainerComponent,
     IconDirective,
     RowComponent,
     ButtonDirective,

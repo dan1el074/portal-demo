@@ -2,6 +2,9 @@ package br.com.metaro.portal.util.picture;
 
 import br.com.metaro.portal.modules.general.post.entities.Post;
 import br.com.metaro.portal.modules.general.post.repositories.PostRepository;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,14 +17,17 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PictureService {
@@ -38,7 +44,7 @@ public class PictureService {
 
         /// salva arquivo no servidor
         for (MultipartFile file : files) {
-            String fileName = System.currentTimeMillis() + "_" + type.name() + ".jpg";
+            String fileName = UUID.randomUUID() + "_" + type.name() + ".jpg";
             Path filePath = Paths.get(serverPath, fileName);
             saveCompressedImage(file, filePath);
 
@@ -71,13 +77,23 @@ public class PictureService {
 
         if (original == null) throw new IOException("Arquivo não é uma imagem válida");
 
-        final int maxWidth = 1920;
-
+        int orientation = getOrientation(file);
+        original = correctOrientation(original, orientation);
         BufferedImage imageToSave = original;
 
+        final int maxWidth = 1920;
+
         if (original.getWidth() > maxWidth) {
-            int newWidth = maxWidth;
-            int newHeight = (original.getHeight() * newWidth) / original.getWidth();
+            int newWidth;
+            int newHeight;
+
+            if (original.getWidth() > original.getHeight()) {
+                newWidth = maxWidth;
+                newHeight = (original.getHeight() * newWidth) / original.getWidth();
+            } else {
+                newHeight = maxWidth;
+                newWidth = (original.getWidth() * newHeight) / original.getHeight();
+            }
 
             BufferedImage resized = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = resized.createGraphics();
@@ -95,6 +111,7 @@ public class PictureService {
         }
 
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+
 
         if (!writers.hasNext()) {
             throw new IllegalStateException("Nenhum ImageWriter WebP encontrado. Verifique a dependência.");
@@ -127,5 +144,59 @@ public class PictureService {
         g.dispose();
 
         return rgbImage;
+    }
+
+    private BufferedImage correctOrientation(BufferedImage image, int orientation) {
+        AffineTransform transform = new AffineTransform();
+
+        switch (orientation) {
+            case 6: // 90° CW
+                transform.translate(image.getHeight(), 0);
+                transform.rotate(Math.toRadians(90));
+                break;
+
+            case 3: // 180°
+                transform.translate(image.getWidth(), image.getHeight());
+                transform.rotate(Math.toRadians(180));
+                break;
+
+            case 8: // 270° CW
+                transform.translate(0, image.getWidth());
+                transform.rotate(Math.toRadians(270));
+                break;
+
+            default:
+                return image;
+        }
+
+        BufferedImage rotated = new BufferedImage(
+                orientation == 6 || orientation == 8 ? image.getHeight() : image.getWidth(),
+                orientation == 6 || orientation == 8 ? image.getWidth() : image.getHeight(),
+                BufferedImage.TYPE_INT_RGB
+        );
+
+        Graphics2D g2d = rotated.createGraphics();
+        g2d.drawImage(image, transform, null);
+        g2d.dispose();
+
+        return rotated;
+    }
+
+    private int getOrientation(MultipartFile file) {
+        try (InputStream is = file.getInputStream()) {
+            Metadata metadata = ImageMetadataReader.readMetadata(is);
+
+            ExifIFD0Directory directory =
+                    metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+
+            if (directory != null &&
+                    directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
+
+                return directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+            }
+
+        } catch (Exception ignored) {}
+
+        return 1;
     }
 }
