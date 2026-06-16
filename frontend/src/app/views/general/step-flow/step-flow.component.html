@@ -1,1 +1,72 @@
-<p>step-flow works!</p>
+<c-container class="h-auto px-4" style="max-width: 1600px" fluid>
+  <p class="ops-header">
+    <span class="ops-welcome">Fluxo de Pedido de Venda</span>
+    <span class="ops-access-level">Acompanhe o ciclo completo dos pedidos em tempo real</span>
+  </p>
+
+  <div class="sfc-resume">
+    @for (item of resume; track item.id) {
+      <c-card class="step-card total" [style]="'border-left: 4px solid ' + item.color">
+        <c-card-body>
+          <div class="title-container">
+            <h6>{{ item.title }}</h6>
+            <div class="icon" [style]="'background-color: ' + item.color + '17'" [innerHTML]="item.icon"></div>
+          </div>
+          <p class="main-value" [style]="'color:' + item.color"><strong>{{ item.value }}</strong></p>
+          <span class="description">{{ item.description }}</span>
+        </c-card-body>
+      </c-card>
+    }
+  </div>
+
+  <c-card class="sfc-card border">
+    <c-card-body>
+      <div class="sfc-header">
+        <span class="sfc-title">Etapas do Fluxo</span>
+        <span class="sfc-description">Processo padrão de processamento de pedidos</span>
+      </div>
+
+      <div class="sfc-body sfc-collapse">
+        @for(step of steps; track step.id; let i = $index) {
+          @if (step.id != 1) {
+            <div class="arrow-divider">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
+            </div>
+          }
+
+          <div class="step-box">
+            <div class="step-icon">
+              <img [src]="`./assets/images/icons/step-icon-${step.icon}.svg`" alt="">
+            </div>
+            <div class="step-text">
+              <div class="step-title">{{ step.title }}</div>
+              <div class="step-description">{{ step.description }}</div>
+            </div>
+            <div class="badges">
+              @if (step.activeCount) {
+                <div class="badge info">{{ step.activeCount }} ativos</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </c-card-body>
+  </c-card>
+
+  <c-card class="sfc-card border">
+    <c-card-body>
+      <div class="sfc-header">
+        <span class="sfc-title">Visão Geral dos Pedidos</span>
+        <span class="sfc-description">12 pedidos encontrados</span>
+      </div>
+
+      <div class="sfc-table">
+        <app-step-flow-table [data]="data" (openInfoTask)="openOrder($event)"></app-step-flow-table>
+      </div>
+    </c-card-body>
+  </c-card>
+
+  <app-step-flow-offcanvas #stepFlowOffcanvas ></app-step-flow-offcanvas>
+</c-container>

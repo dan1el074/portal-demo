@@ -3,6 +3,10 @@
 
 body {
   background-color: var(--cui-tertiary-bg);
+
+  &:has(.custom-offcanvas-backdrop.active) {
+    overflow: hidden;
+  }
 }
 
 .no-margin {
@@ -11,6 +15,22 @@ body {
 
 .no-background {
   background-color: transparent;
+}
+
+.ops-header {
+  display: flex;
+  flex-direction: column;
+  color: var(--cui-card-title-color);
+
+  .ops-welcome {
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .ops-access-level {
+    color: var(--cui-medium-emphasis);
+    font-size: 16px;
+  }
 }
 
 .card {
@@ -109,31 +129,21 @@ body {
 h6.notification-tile {
   display: flex;
   justify-content: space-between;
-  padding: 0;
-  padding: 4px 16px;
+  align-items: center;
+  margin: 0;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--cui-border-color);
   font-size: 12px;
   font-weight: 700;
 
-  .align {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  button.custom-link {
+    background-color: transparent;
+    border: none;
+    color: var(--cui-blue);
+    cursor: pointer;
 
-    &.trash {
-      padding: 4px 6px 4px 4px;
-      justify-content: end;
-      border: 1px solid rgba(var(--cui-danger-rgb));
-      border-radius: 6px;
-      color: rgba(var(--cui-danger-rgb));
-      background-color: var(--cui-body-bg);
-      transition: .1s;
-      cursor: pointer;
-
-      &:hover {
-        background-color: rgba(var(--cui-danger-rgb));
-        color: var(--cui-body-bg)
-      }
+    &:hover {
+      text-decoration: underline;
     }
   }
 }
@@ -518,6 +528,70 @@ table {
   padding-bottom: 0.625rem !important;
 }
 
+// step flow tab
+.sof-custom-tab {
+  .nav-underline-border {
+    border-bottom: 1px solid var(--cui-nav-underline-border-border-color) !important;
+  }
+
+  .nav-link {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  c-tabs-content {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+
+    c-tab-panel {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+}
+
+// step flow table
+.step-flow-table {
+  table {
+    margin-bottom: 0;
+  }
+
+  div.position-relative {
+    margin-bottom: 10px;
+  }
+
+  .col-auto.ms-auto {
+    margin-inline-start: initial !important;
+
+    c-smart-table-items-per-page-selector {
+      flex-wrap: nowrap;
+
+      label {
+        width: fit-content;
+      }
+    }
+  }
+}
+
+@media (max-width: 650px) {
+  .step-flow-table {
+    .col-auto.ms-auto {
+      width: 100%;
+
+      c-smart-table-items-per-page-selector {
+        justify-content: center;
+      }
+    }
+
+    .col .justify-content-start.pagination {
+      justify-content: center !important;
+    }
+  }
+}
+
 .btn-primary {
   --cui-btn-active-bg: #285ea5;
   --cui-btn-hover-border-color: #285ea5;
@@ -594,18 +668,18 @@ html[data-coreui-theme=dark] {
 
     td{
       &.success {
-        background-color: #27AE60;
-        color: var(--cui-body-color);
+        background-color:  var(--cui-success-text-emphasis);
+        color: var(--cui-success-bg-subtle);
       }
 
       &.warning {
-        background-color: #d9c36a;
-        color: #1C1C1C;
+        background-color: var(--cui-warning-text-emphasis);
+        color: var(--cui-warning-bg-subtle);
       }
 
       &.danger {
-        background-color: #a12929;
-        color: #FFFFFF;
+        background-color: var(--cui-danger-text-emphasis);
+        color: var(--cui-danger-bg-subtle);
       }
     }
   }
@@ -931,6 +1005,26 @@ c-tabs-list {
 
   .footer {
     border: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .ops-header {
+    max-width: 540px;
+  }
+}
+
+@media (max-width: 570px) {
+  .ops-header {
+    text-align: center;
+
+    .ops-welcome {
+      font-size: 20px;
+    }
+
+    .ops-access-level {
+      font-size: 14px;
+    }
   }
 }
 

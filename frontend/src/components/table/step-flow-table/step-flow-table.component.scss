@@ -1,0 +1,119 @@
+.custom-header {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.custom-td {
+  font-size: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--cui-border-color);
+
+  .order-field {
+    color: #0369dd;
+    font-weight: 600;
+  }
+
+  .client-field {
+    text-transform: capitalize;
+  }
+
+  .date-field {
+    color: var(--cui-medium-emphasis);
+  }
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  width: fit-content;
+
+  &.inProgress {
+    color: #0369dd;
+    background-color: #0369dd17;
+  }
+  &.completed {
+    color: #009966;
+    background-color: #00996617;
+  }
+  &.late {
+    color: #c5232a;
+    background-color: #c5232a17;
+  }
+  &.simple {
+    color: var(--cui-medium-emphasis);
+    background-color: rgba(var(--cui-emphasis-color-rgb), 0.04)
+  }
+
+  .bullet {
+    margin-top: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3.40282e38px;
+    background-color: currentColor;
+  }
+}
+
+.custom-progress-container {
+  display: flex;
+  align-items: center;
+
+  .custom-progress-item {
+    display: flex;
+    align-items: center;
+
+    .custom-progress-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      padding: 8px;
+
+      &.green {
+        background-color: #00bc7d;
+        border: 1px solid #00bc7d;
+        color: #fff;
+        padding: 6px;
+
+        svg {
+          width: 13px;
+          height: 13px;
+        }
+      }
+
+      &.blue {
+        background-color: #2b7fff;
+        border: 1px solid #2b7fff;
+
+        svg {
+          color: #2b7fff;
+          fill: #fff;
+          width: 9px;
+          height: 9px;
+        }
+      }
+
+      &.none {
+        border: 2px solid var(--cui-border-color);
+
+        svg {
+          color: var(--cui-border-color);
+          width: 8px;
+          height: 8px;
+        }
+      }
+    }
+
+    .custom-progress-connector {
+      width: 16px;
+      height: 2px;
+      border: none;
+      background-color: var(--cui-border-color);
+
+      &.green {
+        background-color: #00bc7d;
+      }
+    }
+  }
+}

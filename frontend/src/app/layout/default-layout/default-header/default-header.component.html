@@ -24,16 +24,12 @@
         @if (websocket.notifications().length) {
           <div cDropdownMenu class="notification">
             @if (websocket.notifications().length > 3) {
-              <h6 cdropdownheader="" class="dropdown-header notification-tile fw-semibold rounded-top">
+              <h6 cdropdownheader="" class="notification-tile">
                 <div class="align">
-                  <svg [cIcon]="icons.cilBell"></svg>
                   Notificações
                 </div>
 
-                <div class="align trash" (click)="markAllAsViewed()">
-                  <svg [cIcon]="icons.cilTrash"></svg>
-                  Limpar
-                </div>
+                <button class="custom-link" (click)="markAllAsViewed()">Limpar tudo</button>
               </h6>
             }
 

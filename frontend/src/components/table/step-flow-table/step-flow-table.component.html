@@ -1,0 +1,116 @@
+<c-smart-table
+  #smartTable="cSmartTable"
+  [columnSorter]="true"
+  [columns]="columns"
+  [itemsPerPageSelect]="true"
+  itemsPerPageLabel="Itens por página"
+  [items]="data"
+  [tableProps]="{ hover: true, responsive: true }"
+  [tableBodyProps]="{ align: 'middle' }"
+  [tableFilter]="true"
+  tableFilterLabel="Filtro:"
+  tableFilterPlaceholder="buscar..."
+  [itemsPerPageOptions]="[10, 20, 30]"
+  header
+  pagination
+  clickableRows
+  cleaner
+  (rowClick)="openInfo($event)"
+  class="step-flow-table"
+>
+
+  <ng-template cTemplateId="columnLabel_all" let-column>
+    <span class="custom-header">{{ column.label }}</span>
+  </ng-template>
+
+  <ng-template cTemplateId="tableData" let-column="column" let-columnName="columnName" let-item="item" let-tdContent="tdContent" >
+    <td class="custom-td">
+      @switch (columnName) {
+        @case ('order') {
+          <span class="order-field">{{ item[columnName] }}</span>
+        }
+        @case ('client') {
+          <span class="client-field">{{ item[columnName] | truncate:50 }}</span>
+        }
+        @case ('status') {
+          <div [class]="'badge ' + item[columnName]">
+            <div class="bullet"></div>
+            @switch (item[columnName]) {
+              @case ('inProgress') {
+                Andamento
+              }
+              @case ('completed') {
+                Concluído
+              }
+              @case ('late') {
+                Atrasado
+              }
+            }
+          </div>
+        }
+        @case ('step') {
+          @if (item[columnName]) {
+            <div class="badge simple">{{ item[columnName] }}</div>
+          } @else {
+            <div class="badge simple">n/a</div>
+          }
+        }
+        @case ('initialDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
+        }
+        @case ('finalDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
+        }
+        @case ('progress') {
+          <div class="custom-progress-container">
+
+            @for (item of item[columnName]; track item; let i = $index) {
+              @switch (item) {
+                @case (1) {
+                  <div class="custom-progress-item" [title]="steps[i]">
+                    @if (i) {
+                      <div class="custom-progress-connector green"></div>
+                    }
+                    <div class="custom-progress-icon blue">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                      </svg>
+                    </div>
+                  </div>
+                }
+                @case (2) {
+                  <div class="custom-progress-item" [title]="steps[i]">
+                    @if (i) {
+                      <div class="custom-progress-connector green"></div>
+                    }
+                    <div class="custom-progress-icon green">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="m9 12 2 2 4-4"></path>
+                      </svg>
+                    </div>
+                  </div>
+                }
+                @default {
+                  <div class="custom-progress-item" [title]="steps[i]">
+                    <div class="custom-progress-connector"></div>
+                    <div class="custom-progress-icon none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                      </svg>
+                    </div>
+                  </div>
+                }
+              }
+            }
+
+          </div>
+        }
+        @default {
+          {{ tdContent }}
+        }
+      }
+    </td>
+  </ng-template>
+
+</c-smart-table>

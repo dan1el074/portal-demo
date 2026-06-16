@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent, Tabs2Module } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, ContainerComponent, RowComponent, Tabs2Module } from '@coreui/angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { ErrorService } from './../../../services/error.service';
@@ -15,6 +15,7 @@ import { OrderInfo } from './../../../interface/erp.interface';
 @Component({
   selector: 'app-memorando',
   imports: [
+    ContainerComponent,
     IconDirective,
     RowComponent,
     ColComponent,
