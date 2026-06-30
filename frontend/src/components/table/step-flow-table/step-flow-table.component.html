@@ -4,6 +4,7 @@
   [columns]="columns"
   [itemsPerPageSelect]="true"
   itemsPerPageLabel="Itens por página"
+  noItemsLabel="Nenhum dado encontrado!"
   [items]="data"
   [tableProps]="{ hover: true, responsive: true }"
   [tableBodyProps]="{ align: 'middle' }"
@@ -32,21 +33,11 @@
         @case ('client') {
           <span class="client-field">{{ item[columnName] | truncate:50 }}</span>
         }
-        @case ('status') {
-          <div [class]="'badge ' + item[columnName]">
-            <div class="bullet"></div>
-            @switch (item[columnName]) {
-              @case ('inProgress') {
-                Andamento
-              }
-              @case ('completed') {
-                Concluído
-              }
-              @case ('late') {
-                Atrasado
-              }
-            }
-          </div>
+        @case ('startDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
+        }
+        @case ('dueDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
         }
         @case ('step') {
           @if (item[columnName]) {
@@ -55,11 +46,16 @@
             <div class="badge simple">n/a</div>
           }
         }
-        @case ('initialDate') {
-          <span class="date-field">{{ item[columnName] }}</span>
-        }
-        @case ('finalDate') {
-          <span class="date-field">{{ item[columnName] }}</span>
+        @case ('status') {
+          <div
+            [class.late]="item[columnName] == 'Atrasado'"
+            [class.inProgress]="item[columnName] == 'Andamento'"
+            [class.complete]="item[columnName] == 'Concluído'"
+            class="badge"
+          >
+            <div class="bullet"></div>
+            {{ item[columnName] }}
+          </div>
         }
         @case ('progress') {
           <div class="custom-progress-container">
@@ -93,7 +89,9 @@
                 }
                 @default {
                   <div class="custom-progress-item" [title]="steps[i]">
-                    <div class="custom-progress-connector"></div>
+                    @if (i) {
+                      <div class="custom-progress-connector"></div>
+                    }
                     <div class="custom-progress-icon none">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>

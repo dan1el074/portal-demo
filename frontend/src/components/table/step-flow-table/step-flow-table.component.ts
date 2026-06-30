@@ -14,7 +14,7 @@ import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 })
 export class StepFlowTableComponent {
   @Output() openInfoTask = new EventEmitter<number>();
-  @Input() data!: Array<IItem>;
+  @Input() data: Array<IItem> = [];
 
   protected columns: (IColumn | string)[] = [
     {
@@ -30,13 +30,13 @@ export class StepFlowTableComponent {
       _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
     },
     {
-      key: 'initialDate',
+      key: 'startDate',
       label: 'Emissão',
       _labelTemplateId: 'all',
       _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
     },
     {
-      key: 'finalDate',
+      key: 'dueDate',
       label: 'Prazo',
       _labelTemplateId: 'all',
       _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
