@@ -1,16 +1,17 @@
-import { StepFlowService } from './../../../services/step-flow.service';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownDividerDirective, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective } from '@coreui/angular';
-import { IItem } from '@coreui/angular-pro';
+import { IItem, SmartPaginationComponent } from '@coreui/angular-pro';
 import { UserService } from './../../../services/user.service';
+import { StepFlowService } from './../../../services/step-flow.service';
 import { Me } from '../../../interface/user.interface';
 import { Resume, Step, AdminDashboard, StepFlowData } from '../../../interface/step-flow.interface';
 import { TruncatePipe } from '../../../pipes/truncate.pipe';
 import { StepFlowTableComponent } from './../../../../components/table/step-flow-table/step-flow-table.component';
 import { StepFlowOffcanvasComponent } from '../../../../components/offcanvas/step-flow-offcanvas/step-flow-offcanvas.component';
 import { StepFlowInputOffcanvasComponent } from '../../../../components/offcanvas/step-flow-input-offcanvas/step-flow-input-offcanvas.component';
+import { NewStepFlowModalComponent } from '../../../../components/modal/step-flow/new-step-flow-modal/new-step-flow-modal.component';
 @Component({
   selector: 'app-step-flow',
   imports: [
@@ -27,7 +28,9 @@ import { StepFlowInputOffcanvasComponent } from '../../../../components/offcanva
     DropdownDividerDirective,
     StepFlowInputOffcanvasComponent,
     ButtonDirective,
-    TruncatePipe
+    TruncatePipe,
+    SmartPaginationComponent,
+    NewStepFlowModalComponent
   ],
   templateUrl: './step-flow.component.html',
   styleUrl: './step-flow.component.scss',
@@ -39,12 +42,23 @@ export class StepFlowComponent implements OnInit {
   protected isAdmin: boolean = false;
   protected data!: Array<StepFlowData>;
   protected currentStepData!: Array<StepFlowData>;
-  protected dataTable!: Array<IItem>;
   protected resume!: Array<Resume>;
   protected steps!: Array<Step>;
   protected dashboard!: AdminDashboard;
   protected currentStepIndex!: number;
+  protected loading: boolean = true;
+  protected showNewModal: boolean = false;
   private user!: Me | null;
+
+  //smart table
+  protected dataTable!: Array<IItem>;
+  protected currentSearch?: string;
+  protected totalItems = 0;
+  protected loadingTable = false;
+  protected currentPage = 1;
+  protected totalPages = 1;
+  private itemsPerPage = 10;
+  private currentSort?: { column: string; state: 'asc' | 'desc' };
 
   constructor(
     private stepFlowService: StepFlowService,
@@ -135,16 +149,12 @@ export class StepFlowComponent implements OnInit {
       },
     ];
 
-    this.loadOrders();
-
     this.user = this.userService.getCurrentUser();
     this.getStepAccess();
+    this.loadOrders();
 
-    if (this.isAdmin)  {
-      this.loadDashboard();
-    } else {
-      this.loadCurrentStepOrders(this.currentStepIndex - 1);
-    }
+    if (this.isAdmin) this.loadDashboard();
+    if (this.currentStepIndex) this.loadCurrentStepOrders(this.currentStepIndex - 1);
   }
 
   public openOrder(orderId: number) {
@@ -154,7 +164,41 @@ export class StepFlowComponent implements OnInit {
   protected setCurrentStepIndex(index: number): void {
     this.currentStepData = [];
     this.currentStepIndex = index;
+
+    if (index == 0 && this.isAdmin) this.loadDashboard();
     if (index > 0) this.loadCurrentStepOrders(index - 1);
+  }
+
+  protected searchFor(term: string): void {
+    let text = term.toLowerCase();
+
+    if (text == 'total de pedidos') return
+    if (text == 'concluídos') text = 'concluído'
+    if (text == 'em andamento') text = 'andamento'
+    if (text == 'atrasados') text = 'atrasado'
+
+    this.currentSearch = text;
+    this.currentPage = 1;
+    this.loadOrders();
+  }
+
+  protected toggleNewModal(status: boolean): void {
+    this.showNewModal = status;
+  }
+
+  protected createNewOrder(orderNumber: number): void {
+    this.toggleNewModal(false);
+    this.stepFlowService.create(orderNumber).subscribe({
+      next: () => {
+        this.toaster.success("Registro criado com sucesso!");
+        this.loadOrders();
+        this.loadCurrentStepOrders(this.currentStepIndex - 1);
+      },
+      error: () => {
+        this.toaster.error("Erro ao criar registro!")
+        // TODO: caso ocorra outro erro como "Toda a quantidade do pedido já foi tratada anteriormente".
+      }
+    });
   }
 
   private loadDashboard(): void {
@@ -162,8 +206,8 @@ export class StepFlowComponent implements OnInit {
         next: (data: AdminDashboard) => {
           this.dashboard = data;
           this.resume[0].value = data.totalCount;
-          this.resume[1].value = data.completeCount;
-          this.resume[2].value = data.progressCount;
+          this.resume[1].value = data.progressCount;
+          this.resume[2].value = data.completeCount;
           this.resume[3].value = data.lateCount;
 
           for (let i: number = 0; i<data.stepsCount.length; i++) {
@@ -176,21 +220,13 @@ export class StepFlowComponent implements OnInit {
       });
   }
 
-  private loadOrders(): void {
-    this.stepFlowService.findAll().subscribe({
-      next: (data: Array<StepFlowData>) => {
-        this.data = data;
-        this.dataTable = data;
-        this.cdf.detectChanges();
-      },
-      error: () => this.toaster.error("Erro ao buscar informações!")
-    });
-  }
-
   private loadCurrentStepOrders(index: number): void {
+    this.loading = true;
+
     this.stepFlowService.findAllFromCurrentStep(index).subscribe({
       next: (data: Array<StepFlowData>) => {
         this.currentStepData = data;
+        this.loading = false;
         this.cdf.detectChanges();
       },
       error: () => this.toaster.error("Erro ao buscar informações!")
@@ -233,5 +269,56 @@ export class StepFlowComponent implements OnInit {
         this.currentStepIndex = this.steps.findIndex(step => step.title == 'Expedição');
         break;
     }
+  }
+
+  private loadOrders(): void {
+    this.loadingTable = true;
+
+    this.stepFlowService.findAll(this.currentPage-1, this.itemsPerPage, this.currentSort?.column, this.currentSort?.state, this.currentSearch).subscribe({
+      next: (result) => {
+        let data = result;
+
+        if (this.currentSort?.state == 'desc') data.content.reverse();
+
+        this.dataTable = data?.content ?? [];
+        this.totalItems = data?.totalElements ?? 0;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage) || 1;
+        this.loadingTable = false;
+        this.cdf.detectChanges();
+      },
+      error: () => {
+        this.toaster.error('Erro ao buscar informações!');
+        this.loadingTable = false;
+      },
+    });
+  }
+
+  protected onNextStep(id: number) {
+    this.stepFlowService.nextStep(id);
+    this.currentStepData = this.currentStepData.filter(step => step.id !== id);
+    this.cdf.detectChanges();
+    this.loadOrders();
+  }
+
+  protected onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadOrders();
+  }
+
+  protected onSorterChange(sorter: any): void {
+    this.currentSort = sorter?.state ? sorter?.column ? { column: sorter?.column, state: sorter.state } : undefined : undefined;
+    this.currentPage = 1;
+    this.loadOrders();
+  }
+
+  protected onItemsPerPageChange(itemsNumber: number): void {
+    this.itemsPerPage = itemsNumber;
+    this.loadOrders();
+  }
+
+  protected onFilterChange(value: string): void {
+    this.currentSearch = value;
+    this.currentPage = 1;
+    this.loadOrders();
   }
 }

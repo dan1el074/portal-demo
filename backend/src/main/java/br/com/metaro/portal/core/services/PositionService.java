@@ -38,6 +38,7 @@ public class PositionService {
     public List<PositionMinDto> list() {
         Sort sort = Sort.by("name");
         List<Position> positions = positionRepository.findAll(sort);
+        positions = positions.stream().filter(p -> p.getActivated().equals(true)).toList();
         return positions.stream().map(PositionMinDto::new).toList();
     }
 

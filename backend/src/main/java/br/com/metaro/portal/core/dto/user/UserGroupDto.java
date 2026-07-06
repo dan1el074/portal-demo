@@ -10,6 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class UserGroupDto {
-    String title;
-    List<UserSummaryMinDto> childrens;
+    private String title;
+    private List<UserSummaryMinDto> childrens;
 }

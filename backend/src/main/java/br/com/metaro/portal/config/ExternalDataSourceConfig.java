@@ -12,9 +12,8 @@ import javax.sql.DataSource;
 
 @Configuration
 public class ExternalDataSourceConfig {
-
-    @Primary
     @Bean
+    @Primary
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
@@ -28,9 +27,7 @@ public class ExternalDataSourceConfig {
     }
 
     @Bean
-    public JdbcTemplate externalJdbcTemplate(
-            @Qualifier("externalDataSource") DataSource dataSource) {
+    public JdbcTemplate externalJdbcTemplate(@Qualifier("externalDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
-
 }

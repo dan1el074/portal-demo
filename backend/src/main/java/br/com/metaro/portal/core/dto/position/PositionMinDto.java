@@ -16,4 +16,8 @@ public class PositionMinDto {
         id = position.getId();
         name = position.getName();
     }
+
+    public PositionMinDto(String name) {
+        this.name = name;
+    }
 }

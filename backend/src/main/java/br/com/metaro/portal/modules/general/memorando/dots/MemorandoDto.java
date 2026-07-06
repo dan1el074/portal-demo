@@ -3,19 +3,17 @@ package br.com.metaro.portal.modules.general.memorando.dots;
 import br.com.metaro.portal.core.dto.position.PositionDto;
 import br.com.metaro.portal.core.dto.user.UserSummaryDto;
 import br.com.metaro.portal.core.entities.Position;
-import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoLog;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
+import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor

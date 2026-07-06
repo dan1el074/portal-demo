@@ -2,7 +2,7 @@ package br.com.metaro.portal.core.dto.notification;
 
 import br.com.metaro.portal.core.dto.user.UserSummaryDto;
 import br.com.metaro.portal.core.entities.Notification;
-import br.com.metaro.portal.core.entities.NotificationType;
+import br.com.metaro.portal.core.repositories.projections.NotificationProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,5 +34,25 @@ public class NotificationDto {
         if (entity.getReferenceId() != null) referenceId = entity.getReferenceId();
         if (entity.getActionUrl() != null) actionUrl = entity.getActionUrl();
         if (entity.getCreatedBy() != null) createdBy = new UserSummaryDto(entity.getCreatedBy());
+    }
+
+    public NotificationDto(NotificationProjection projection) {
+        this.id = projection.getId();
+        this.message = projection.getMessage();
+        this.actionUrl = projection.getActionUrl();
+        this.viewed = projection.getViewed();
+        this.autoDelete = projection.getAutoDelete();
+        this.type = projection.getType();
+        this.referenceId = projection.getReferenceId();
+        this.createdAt = projection.getCreatedAt();
+
+        if (projection.getCreatedById() != null) {
+            this.createdBy = new UserSummaryDto(
+                    projection.getCreatedById(),
+                    projection.getCreatedByName(),
+                    projection.getCreatedByPictureId(),
+                    projection.getCreatedByPositionName()
+            );
+        }
     }
 }

@@ -1,19 +1,24 @@
 <c-smart-table
   #smartTable="cSmartTable"
+  [items]="data"
+  [loading]="loading"
+  [pagination]="false"
+  [tableFilter]="{ external: true }"
+  [tableFilterValue]="searchValue"
+  (tableFilterValueChange)="filterChange.emit($event)"
+  (sorterValueChange)="sorterChange.emit($event)"
+  (itemsPerPageChange)="itemsPerPageChange.emit($event)"
   [columnSorter]="true"
   [columns]="columns"
   [itemsPerPageSelect]="true"
   itemsPerPageLabel="Itens por página"
   noItemsLabel="Nenhum dado encontrado!"
-  [items]="data"
   [tableProps]="{ hover: true, responsive: true }"
   [tableBodyProps]="{ align: 'middle' }"
-  [tableFilter]="true"
   tableFilterLabel="Filtro:"
   tableFilterPlaceholder="buscar..."
   [itemsPerPageOptions]="[10, 20, 30]"
   header
-  pagination
   clickableRows
   cleaner
   (rowClick)="openInfo($event)"
@@ -39,12 +44,8 @@
         @case ('dueDate') {
           <span class="date-field">{{ item[columnName] }}</span>
         }
-        @case ('step') {
-          @if (item[columnName]) {
-            <div class="badge simple">{{ item[columnName] }}</div>
-          } @else {
-            <div class="badge simple">n/a</div>
-          }
+        @case ('currentStep') {
+          <div class="badge simple">{{ item[columnName] ? item[columnName] : 'n/a' }}</div>
         }
         @case ('status') {
           <div

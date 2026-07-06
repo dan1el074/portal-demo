@@ -1,0 +1,391 @@
+<div class="custom-offcanvas-backdrop" [class.active]="visible" (click)="close()"></div>
+
+<div class="sof-custom-offcanvas" [class.visible]="visible">
+  @if (order != null) {
+    <div class="sof-custom-header">
+      <div class="sfo-info">
+        <div class="sfo-status">
+          <span class="sofd-step">{{ order.currentStep }}</span>
+        </div>
+        <button cButtonClose (click)="close()"></button>
+      </div>
+
+      <div class="sfod-info-main">#{{ order.number }} - {{ order.client }}</div>
+      <small class="sofd-info-data">
+        @if (order.startDate) {
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2v4"></path>
+            <path d="M16 2v4"></path>
+            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+            <path d="M3 10h18"></path>
+          </svg>
+          Emissão: {{ order.startDate | date:'dd/MM/yyyy' }}
+        }
+        @if (order.dueDate) {
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2v4"></path>
+            <path d="M16 2v4"></path>
+            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+            <path d="M3 10h18"></path>
+          </svg>
+          Entrega: {{ order.dueDate | date:'dd/MM/yyyy' }}
+        }
+      </small>
+    </div>
+
+    <div class="sof-custom-body">
+      <div class="sofd-box client-info">
+        <div class="sofd-box-info">
+          <span class="sofd-box-info-label">Cliente</span>
+          <span>{{ order.client }}</span>
+        </div>
+        <div class="sofd-box-info">
+          <span class="sofd-box-info-label">CNPJ</span>
+          <span>{{ order.cnpj }}</span>
+        </div>
+      </div>
+
+      <div class="sofd-title-custom-container">
+        <hr class="custom-hr">
+        <div class="sofd-title-custom">Histórico completo do pedido</div>
+      </div>
+
+      <div class="sofd-history">
+        @for (step of order.steps; track step.id) {
+          @switch(step.status) {
+            @case ("DONE") {
+              @if (step.messages.length) {
+                <c-accordion [alwaysOpen]="true">
+                  <c-accordion-item #step5="cAccordionItem" [visible]="false" class="sofd-accordion completed">
+                    <ng-template cTemplateId="accordionHeaderTemplate">
+                      <button cAccordionButton [collapsed]="!step5.visible" (click)="step5.toggleItem()" class="sofd-accordion-btn">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon complete">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+
+                        <div class="sofd-accordion-text">
+                          <span>{{ step.step }}</span>
+                          <small>{{ step.userName ? step.userName : "Sistema" }} - {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}</small>
+                        </div>
+
+                        @if (step.messages.length) {
+                          <div class="sofd-accordion-icons">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            {{ step.messages.length }}
+                          </div>
+                        }
+                      </button>
+                    </ng-template>
+
+                    <ng-template cTemplateId="accordionBodyTemplate">
+                      <div class="sofd-accordion-body">
+                        <div class="sofd-sub-title">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                          </svg>
+                          Comentários
+                        </div>
+
+                        @for (message of step.messages; track message.id) {
+                          <div class="sofd-comment">
+                            <div class="sofd-comment-label">
+                              <span>{{ message.userName ? message.userName : "Sistema" }}</span>
+                              {{ message.created ? (message.created | date:'dd/MM/yyyy HH:mm') : "Agora" }}
+                            </div>
+
+                            <span [innerHtml]="message.message"></span>
+                          </div>
+                        }
+                      </div>
+                    </ng-template>
+                  </c-accordion-item>
+                </c-accordion>
+              } @else {
+                <div [class.late]="order.status == 'Atrasado'" class="sofd-accordion completed">
+                  <div class="sofd-accordion-btn collapsed">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon complete">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+
+                    <div class="sofd-accordion-text">
+                      <span>{{ step.step }}</span>
+                      <small>{{ step.userName ? step.userName : "Sistema" }} - {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}</small>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+            @case ("ACTIVE") {
+              @if (step.messages.length) {
+                <c-accordion [alwaysOpen]="true">
+                  <c-accordion-item #step5="cAccordionItem" [visible]="false" [class.late]="order.status == 'Atrasado'" class="sofd-accordion in-progress">
+                    <ng-template cTemplateId="accordionHeaderTemplate">
+                      <button cAccordionButton [collapsed]="!step5.visible" (click)="step5.toggleItem()" class="sofd-accordion-btn">
+                        @if (order.status == 'Atrasado') {
+                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
+                            <circle _ngcontent-ng-c975327498="" cx="12" cy="12" r="10" />
+                            <line _ngcontent-ng-c975327498="" x1="12" x2="12" y1="8" y2="12" />
+                            <line _ngcontent-ng-c975327498="" x1="12" x2="12.01" y1="16" y2="16" />
+                          </svg>
+                        } @else {
+                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
+                            <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+                          </svg>
+                        }
+
+                        <div class="sofd-accordion-text">
+                          <span>{{ step.step }}</span>
+                          <small><i>Em andamento</i></small>
+                        </div>
+
+                        @if (step.messages.length) {
+                          <div class="sofd-accordion-icons">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            {{ step.messages.length }}
+                          </div>
+                        }
+                      </button>
+                    </ng-template>
+
+                    <ng-template cTemplateId="accordionBodyTemplate">
+                      <div class="sofd-accordion-body">
+                        <div class="sofd-sub-title">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                          </svg>
+                          Comentários
+                        </div>
+
+                        @for (message of step.messages; track message.id) {
+                          <div class="sofd-comment">
+                            <div class="sofd-comment-label">
+                              <span>{{ message.userName ? message.userName : "Sistema" }}</span>
+                              {{ message.created ? (message.created | date:'dd/MM/yyyy HH:mm') : "Agora" }}
+                            </div>
+
+                            <span [innerHtml]="message.message"></span>
+                          </div>
+                        }
+                      </div>
+                    </ng-template>
+                  </c-accordion-item>
+                </c-accordion>
+              } @else {
+                <div [class.late]="order.status == 'Atrasado'" class="sofd-accordion in-progress">
+                  <div class="sofd-accordion-btn collapsed">
+                    @if (order.status == 'Atrasado') {
+                      <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
+                        <circle _ngcontent-ng-c975327498="" cx="12" cy="12" r="10" />
+                        <line _ngcontent-ng-c975327498="" x1="12" x2="12" y1="8" y2="12" />
+                        <line _ngcontent-ng-c975327498="" x1="12" x2="12.01" y1="16" y2="16" />
+                      </svg>
+                    } @else {
+                      <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
+                        <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                    }
+
+                    <div class="sofd-accordion-text">
+                      <span>{{ step.step }}</span>
+                      <small><i>Em andamento</i></small>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+            @default {
+              <div class="sofd-accordion">
+                <div class="sofd-accordion-btn collapsed">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon">
+                    <circle cx="12" cy="12" r="10"></circle>
+                  </svg>
+
+                  <div class="sofd-accordion-text">
+                    <span>{{ step.step }}</span>
+                    <small><i>Aguardando</i></small>
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        } @empty {
+          <i class="custom-error">Nenhuma etapa encontrada!</i>
+        }
+      </div>
+
+      @if (order.pictures.length) {
+        <div class="custom-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13.234 20.252 21 12.3"></path>
+            <path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"></path>
+          </svg>
+          Arquivos
+        </div>
+
+        <div class="sof-file-container">
+          @for (image of order.pictures; track image.id) {
+            <a class="sof-file-item" [href]="apiUrl + '/images/' + image.id" target="_blank">
+              <div class="step-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">
+                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                  <path d="M10 9H8"></path>
+                  <path d="M16 13H8"></path>
+                  <path d="M16 17H8"></path>
+                </svg>
+              </div>
+
+              <div class="sof-file-info">
+                <span>{{ image.name }}</span>
+                <small>{{ image.size }}</small>
+              </div>
+
+              <span class="sof-file-date">{{ image.createdAt | date: "dd/MM/yyyy" }}</span>
+
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6"/>
+                <path d="M10 14 21 3"/>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              </svg>
+            </a>
+          }
+        </div>
+      }
+
+      <div class="sofd-title-custom-container">
+        <hr class="custom-hr">
+        <div class="sofd-title-custom">Registrar trabalho</div>
+      </div>
+
+      <form cForm [formGroup]="form" (ngSubmit)="onSubmit()">
+        @if (order.currentStep == "Frete") {
+          <div class="mb-3">
+            <label cLabel for="carrier" class="custom-label">Transportadora</label>
+            <input cFormControl formControlName="carrier" id="carrier" type="text" placeholder="" class="custom-input" />
+          </div>
+
+          <div class="mb-3">
+            <label cLabel for="shippment" class="custom-label">Valor do frete</label>
+            <div class="input-group">
+              <span class="input-group-text">R$</span>
+              <input cFormControl appCurrencyMask formControlName="shippment" id="shippment" type="text" inputmode="decimal" placeholder="0,00" class="custom-input" />
+            </div>
+          </div>
+        }
+
+        <div class="mb-3">
+          <label cLabel for="comment" class="custom-label">Comentário</label>
+          <textarea cFormControl formControlName="comment" rows="4" id="comment" placeholder="" class="custom-input"></textarea>
+        </div>
+
+        @if (order.currentStep == "Montagem Final" || order.currentStep == "Expedição") {
+          <div class="mb-3">
+            @if (order.currentStep == "Montagem Final") {
+              <label cLabel for="comment" class="custom-label">Evidências</label>
+            }
+            @if (order.currentStep == "Expedição") {
+              <label cLabel for="comment" class="custom-label">Imagens</label>
+            }
+            <div class="upload-wrapper">
+              <div
+                class="drop-zone"
+                [class.drag-over]="isDragOver()"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+                (click)="fileInput.click()"
+                role="button"
+                tabindex="0"
+                aria-label="Área de upload de arquivos. Clique ou arraste imagens aqui."
+                (keydown.enter)="fileInput.click()"
+                (keydown.space)="fileInput.click()"
+              >
+                <input #fileInput name="file-content" type="file" [accept]="acceptedExtensions" multiple hidden (change)="onFileSelected($event)" />
+
+                <div class="drop-zone__content">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" x2="12" y1="3" y2="15"></line>
+                  </svg>
+
+                  <p class="drop-zone__text"> Arraste arquivos aqui ou <span class="drop-zone__link">clique para selecionar</span></p>
+                  <p class="drop-zone__hint">PNG, JPEG, JPG, WEBP</p>
+                </div>
+              </div>
+
+              @if (hasFiles()) {
+                <ul class="file-list" aria-label="Arquivos selecionados">
+                  @for (file of files(); track file.id) {
+                    <li class="file-item">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                        <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                        <path d="M10 9H8"></path>
+                        <path d="M16 13H8"></path>
+                        <path d="M16 17H8"></path>
+                      </svg>
+
+                      <span class="file-item__name" [title]="file.name">{{ file.name }}</span>
+                      <span class="file-item__size">{{ file.size }}</span>
+
+                      <button class="file-item__remove" (click)="removeFile(file.id)" [attr.aria-label]="'Remover ' + file.name" type="button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          </div>
+        }
+
+        <button cButton color="primary" type="submit" class="sofd-action-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+            <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+          </svg>
+          Salvar
+        </button>
+      </form>
+    </div>
+  }  @else {
+    <i class="custom-error">Pedido não encontrado!</i>
+  }
+
+  <div class="sofd-footer">
+    @if (order) {
+      @if (order.nextStep) {
+        <div>
+          <span>Próxima etapa:</span> {{ order.nextStep }}
+        </div>
+      }
+
+      <button cButton color="primary" class="sofd-action-btn" (click)="onNextStep()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 12h8"></path>
+            <path d="m12 16 4-4-4-4"></path>
+          </svg>
+          {{ order.currentStep == "Expedição" ? "Finalizar Pedido" : "Próxima Etapa" }}
+        </button>
+    } @else {
+      <button cButton color="primary" class="sofd-action-btn" (click)="loadOrder()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+        </svg>
+        Atualizar
+      </button>
+    }
+  </div>
+</div>

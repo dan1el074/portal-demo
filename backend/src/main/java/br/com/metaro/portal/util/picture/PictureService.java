@@ -2,6 +2,8 @@ package br.com.metaro.portal.util.picture;
 
 import br.com.metaro.portal.modules.general.post.entities.Post;
 import br.com.metaro.portal.modules.general.post.repositories.PostRepository;
+import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStep;
+import br.com.metaro.portal.modules.general.stepFlow.entities.StepType;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
@@ -39,12 +41,13 @@ public class PictureService {
     private String serverPath;
 
     @Transactional
-    public List<Picture> saveFiles(List<MultipartFile> files, PictureType type, Post post) throws IOException {
+    public List<Picture> savePostImages(List<MultipartFile> files, Post post) throws IOException {
         List<Picture> archives = new ArrayList<>();
+        PictureType type = PictureType.POST;
 
         /// salva arquivo no servidor
         for (MultipartFile file : files) {
-            String fileName = UUID.randomUUID() + "_" + type.name() + ".jpg";
+            String fileName = UUID.randomUUID().toString().replace("-","")+ "_" + type.name() + ".jpg";
             Path filePath = Paths.get(serverPath, fileName);
             saveCompressedImage(file, filePath);
 
@@ -58,7 +61,58 @@ public class PictureService {
             archives.add(archive);
         }
 
-        /// salva no banco
+        /// salva entidade no banco
+        return pictureRepository.saveAll(archives);
+    }
+
+    @Transactional
+    public List<Picture> saveProfileImages(List<MultipartFile> files) throws IOException {
+        List<Picture> archives = new ArrayList<>();
+        PictureType type = PictureType.PROFILE;
+
+        /// salva arquivo no servidor
+        for (MultipartFile file : files) {
+            String fileName = UUID.randomUUID().toString().replace("-","")+ "_" + type.name() + ".jpg";
+            Path filePath = Paths.get(serverPath, fileName);
+            saveCompressedImage(file, filePath);
+
+            Picture archive = new Picture();
+            archive.setName(fileName);
+            archive.setPath(filePath.toString());
+            archive.setType(type);
+            archives.add(archive);
+        }
+
+        /// salva entidade no banco
+        return pictureRepository.saveAll(archives);
+    }
+
+    @Transactional
+    public List<Picture> saveStepFlowImages(List<MultipartFile> files, OrderStep step) throws IOException {
+        List<Picture> archives = new ArrayList<>();
+        PictureType type = PictureType.STEP_FLOW;
+
+        String prefix = "IMAGEM_";
+        if (step.getStep().equals(StepType.FINAL_ASSEMBLY)) prefix = "EVIDENCIA_";
+        if (step.getStep().equals(StepType.SHIPPING)) prefix = "CANHOTO_";
+
+        /// salva arquivo no servidor
+        for (MultipartFile file : files) {
+            String fileName = UUID.randomUUID().toString().replace("-","")+ "_" + type.name() + ".jpg";
+            String name = prefix + UUID.randomUUID().toString().replace("-","") + ".jpg";
+            Path filePath = Paths.get(serverPath, fileName);
+            saveCompressedImage(file, filePath);
+
+            Picture archive = new Picture();
+            archive.setName(name);
+            archive.setPath(filePath.toString());
+            archive.setType(type);
+            archive.setOrderStep(step);
+
+            archives.add(archive);
+        }
+
+        /// salva entidade no banco
         return pictureRepository.saveAll(archives);
     }
 

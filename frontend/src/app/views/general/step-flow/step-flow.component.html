@@ -52,7 +52,7 @@
     @case (0) {
       <div class="sfc-resume">
         @for (item of resume; track item.id) {
-          <c-card class="step-card total" [style]="'border-left: 4px solid ' + item.color">
+          <c-card class="step-card total" [class.pointer]="item.title != 'Total de pedidos'" [style]="'border-left: 4px solid ' + item.color" (click)="searchFor(item.title)">
             <c-card-body>
               <div class="title-container">
                 <h6>{{ item.title }}</h6>
@@ -83,7 +83,7 @@
                   </div>
                 }
 
-                <div class="step-box">
+                <div class="step-box" (click)="searchFor(step.title)">
                   <div class="step-icon" [innerHtml]="step.icon"></div>
                   <div class="step-text">
                     <div class="step-title">{{ step.title }}</div>
@@ -113,7 +113,7 @@
         </div>
 
         @if (currentStepIndex == 1) {
-          <button cButton>
+          <button cButton (click)="toggleNewModal(true)">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14"></path>
               <path d="M12 5v14"></path>
@@ -128,94 +128,103 @@
         <span>Fila de Trabalho</span>
       </div>
 
-      <div class="scroll">
-        <table class="card-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-
-            @for (item of currentStepData; track item.id) {
-              <tr (click)="openCurrentStepOrder(item.id)">
-                <td>
-                  <div class="custom-cell">
-                    <div class="custom-cell-status" [class.late]="item.status == 'late'"></div>
-                    <div>
-                      <div class="custom-cell-title">Pedido</div>
-                      <div class="custom-cell-order">{{ item.order }}</div>
-                    </div>
-                  </div>
-                </td>
-
-                <td>
-                  <div>
-                    <div class="custom-cell-title">Cliente</div>
-                    <div>{{ item.client | truncate: 35 }}</div>
-                  </div>
-                </td>
-
-                <td>
-                  <div>
-                    <div class="custom-cell-title">Prev. Entrega</div>
-                    <div>{{ item.dueDate }}</div>
-                  </div>
-                </td>
-
-                <td>
-                  <div class="badge" [class.late]="item.status == 'late'">
-                    <div class="bullet"></div>
-                    @switch (item.status) {
-                      @case ('late') {
-                        Atrasado
-                      }
-                      @case ('inProgress') {
-                        Andamento
-                      }
-                    }
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="m9 18 6-6-6-6"></path>
-                    </svg>
-                  </div>
-                </td>
+      @if (!loading) {
+        <div class="scroll">
+          <table class="card-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
               </tr>
-            } @empty {
-              <i class="custom-error">Nenhum pedido para tratar.</i>
-            }
+            </thead>
+            <tbody>
 
-          </tbody>
-        </table>
-      </div>
+              @for (item of currentStepData; track item.id) {
+                <tr (click)="openCurrentStepOrder(item.id)">
+                  <td>
+                    <div class="custom-cell">
+                      <div class="custom-cell-status" [class.late]="item.status == 'late'"></div>
+                      <div>
+                        <div class="custom-cell-title">Pedido</div>
+                        <div class="custom-cell-order">{{ item.number }}</div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div>
+                      <div class="custom-cell-title">Cliente</div>
+                      <div>{{ item.client | truncate: 35 }}</div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div>
+                      <div class="custom-cell-title">Prev. Entrega</div>
+                      <div>{{ item.dueDate }}</div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="badge" [class.late]="item.status == 'Atrasado'">
+                      <div class="bullet"></div>
+                      {{ item.status }}
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m9 18 6-6-6-6"></path>
+                      </svg>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <i class="custom-error">Nenhum pedido para tratar.</i>
+              }
+
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <i class="custom-error">Carregando...</i>
+      }
 
       <div class="sfc-sub-title">
         <hr>
         <span>Resumo dos pedidos</span>
       </div>
 
-      <app-step-flow-input-offcanvas #stepFlowInputOffcanvas></app-step-flow-input-offcanvas>
+      <app-step-flow-input-offcanvas #stepFlowInputOffcanvas (nextStepTask)="onNextStep($event)"></app-step-flow-input-offcanvas>
+      <app-new-step-flow-modal [visible]="showNewModal" (closeModal)="toggleNewModal(false)" (createNewOrder)="createNewOrder($event)"></app-new-step-flow-modal>
     }
   }
 
-  @if (data && data.length) {
-    <c-card class="sfc-card border">
-      <c-card-body>
-        <div class="sfc-header">
-          <span class="sfc-title">Visão Geral dos Pedidos</span>
-          <span class="sfc-description">12 pedidos encontrados</span>
-        </div>
+  <c-card class="sfc-card border">
+    <c-card-body>
+      <div class="sfc-header">
+        <span class="sfc-title">Visão Geral dos Pedidos</span>
+        <span class="sfc-description">{{ totalItems }} pedidos encontrados</span>
+      </div>
 
-        <div class="sfc-table">
-          <app-step-flow-table [data]="dataTable" (openInfoTask)="openOrder($event)"></app-step-flow-table>
-        </div>
-      </c-card-body>
-    </c-card>
-  } @else {
-    <i class="sfc-default">Nenhum dado encontrado!</i>
-  }
+      <div class="sfc-table">
+        <app-step-flow-table
+          [data]="dataTable"
+          [loading]="loadingTable"
+          [searchValue]="currentSearch ?? ''"
+          (openInfoTask)="openOrder($event)"
+          (sorterChange)="onSorterChange($event)"
+          (itemsPerPageChange)="onItemsPerPageChange($event)"
+          (filterChange)="onFilterChange($event)"
+        />
+
+        <c-smart-pagination
+          [activePage]="currentPage"
+          [pages]="totalPages"
+          (activePageChange)="onPageChange($event)"
+        />
+      </div>
+
+    </c-card-body>
+  </c-card>
 
   <app-step-flow-offcanvas #stepFlowOffcanvas [isAdmin]="isAdmin"></app-step-flow-offcanvas>
 </c-container>

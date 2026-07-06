@@ -13,18 +13,15 @@ public class NotificationSessionManager {
     private final Map<Long, Set<WebSocketSession>> sessionsByUser = new ConcurrentHashMap<>();
 
     public void addSession(Long userId, WebSocketSession session) {
-        sessionsByUser
-                .computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet())
-                .add(session);
+        sessionsByUser.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(session);
     }
 
     public void removeSession(Long userId, WebSocketSession session) {
         Set<WebSocketSession> sessions = sessionsByUser.get(userId);
         if (sessions != null) {
             sessions.remove(session);
-            if (sessions.isEmpty()) {
-                sessionsByUser.remove(userId);
-            }
+
+            if (sessions.isEmpty()) sessionsByUser.remove(userId);
         }
     }
 

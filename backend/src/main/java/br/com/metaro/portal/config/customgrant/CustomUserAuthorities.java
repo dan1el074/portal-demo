@@ -1,11 +1,10 @@
 package br.com.metaro.portal.config.customgrant;
 
-import java.util.Collection;
-
 import org.springframework.security.core.GrantedAuthority;
 
-public class CustomUserAuthorities {
+import java.util.Collection;
 
+public class CustomUserAuthorities {
     private Long id;
     private String username;
     private Collection<? extends GrantedAuthority> authorities;

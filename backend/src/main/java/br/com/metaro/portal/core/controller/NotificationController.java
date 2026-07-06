@@ -15,7 +15,6 @@ import java.util.Map;
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
-
     @Autowired
     private NotificationService notificationService;
 

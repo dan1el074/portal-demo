@@ -20,7 +20,7 @@
                 <c-avatar
                   shape="rounded-1"
                   size="xl"
-                  [src]="birthday.user.picture ? apiUrl + '/images/' + birthday.user.picture.id : './assets/images/avatars/default.png'"
+                  [src]="birthday.user.picture ? birthday.user.picture.id ? apiUrl + '/images/' + birthday.user.picture.id : './assets/images/avatars/default.png' : './assets/images/avatars/default.png'"
                 />
               </div>
               <div class="today-info">
@@ -54,7 +54,7 @@
               <div class="bday-avatar-sm">
                 <c-avatar
                   shape="rounded-1"
-                  [src]="birthday.user.picture ? apiUrl + '/images/' + birthday.user.picture.id : './assets/images/avatars/default.png'"
+                  [src]="birthday.user.picture ? birthday.user.picture.id ? apiUrl + '/images/' + birthday.user.picture.id : './assets/images/avatars/default.png' : './assets/images/avatars/default.png'"
                 />
               </div>
               <div class="bday-info">

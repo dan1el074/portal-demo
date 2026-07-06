@@ -1,6 +1,6 @@
 package br.com.metaro.portal.core.dto.event;
 
-import br.com.metaro.portal.core.entities.Event;
+import br.com.metaro.portal.core.repositories.projections.EventProjection;
 import br.com.metaro.portal.util.picture.dto.PictureMinDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,13 +17,10 @@ public class EventDto {
     private Instant eventDate;
     private PictureMinDto picture;
 
-    public EventDto (Event event) {
-        id = event.getId();
-        title = event.getTitle();
-        eventDate = event.getEventDate();
-
-        if (event.getPicture() != null) {
-            picture = new PictureMinDto(event.getPicture());
-        }
+    public EventDto(EventProjection projection) {
+        this.id = projection.getId();
+        this.title = projection.getTitle();
+        this.eventDate = projection.getEventDate();
+        this.picture = projection.getPictureId() != null ? new PictureMinDto(projection.getPictureId()) : null;
     }
 }

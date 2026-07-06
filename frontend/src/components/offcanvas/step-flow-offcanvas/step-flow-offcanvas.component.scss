@@ -43,16 +43,28 @@
 
         .sfo-status {
           display: flex;
-          color: #0369dd;
           font-weight: 600;
+
+          .sof-order {
+            color: #0369dd;
+          }
 
           .sof-badge {
             display: flex;
             align-items: center;
             gap: 4px;
             margin-left: 8px;
-            color: currentColor;
-            background-color: rgba(3, 105, 221, 0.0901960784);
+            color: #0369dd;
+            background-color: #0369dd17;
+
+            &.late {
+              color: #c5232a;
+              background-color: #c5232a17
+            }
+            &.complete {
+              color: #009966;
+              background-color: #00996617;
+            }
 
             .bullet {
               width: 6px;
@@ -448,7 +460,9 @@
           border-radius: 12px;
           border: 1px solid var(--cui-border-color);
           font-size: 13px;
+          text-decoration: none;
           transition: .1s;
+          overflow-x: hidden;
           cursor: pointer;
 
           &:hover {
@@ -518,6 +532,22 @@
       font-size: 13px;
       font-weight: 600;
 
+      .refresh-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &:hover svg {
+          transform: rotate(180deg);
+        }
+
+        svg {
+          stroke: #fff;
+          width: 16px;
+          transition: .3s;
+        }
+      }
+
       svg {
         width: 16px;
         stroke: var(--cui-medium-emphasis);
@@ -531,6 +561,20 @@
         margin-left: auto;
         font-size: 13px;
       }
+    }
+  }
+
+  .custom-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 500;
+
+    &.image {
+      font-size: 13px;
+      font-weight: 400;
     }
   }
 }
