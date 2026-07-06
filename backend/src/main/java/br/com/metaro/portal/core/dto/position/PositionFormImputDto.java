@@ -13,8 +13,8 @@ import java.util.List;
 @Getter
 public class PositionFormImputDto {
     @NotBlank(message = "Nome é obrigatório")
-    String name;
+    private String name;
     @NotEmpty(message = "Lista de gestores não pode ser vazia")
-    List<Long> manangers;
-    Boolean activated;
+    private List<Long> manangers;
+    private Boolean activated;
 }

@@ -1,18 +1,24 @@
 <c-smart-table
   #smartTable="cSmartTable"
+  [items]="data"
+  [loading]="loading"
+  [pagination]="false"
+  [tableFilter]="{ external: true }"
+  [tableFilterValue]="searchValue"
+  (tableFilterValueChange)="filterChange.emit($event)"
+  (sorterValueChange)="sorterChange.emit($event)"
+  (itemsPerPageChange)="itemsPerPageChange.emit($event)"
   [columnSorter]="true"
   [columns]="columns"
   [itemsPerPageSelect]="true"
   itemsPerPageLabel="Itens por página"
-  [items]="data"
+  noItemsLabel="Nenhum dado encontrado!"
   [tableProps]="{ hover: true, responsive: true }"
   [tableBodyProps]="{ align: 'middle' }"
-  [tableFilter]="true"
   tableFilterLabel="Filtro:"
   tableFilterPlaceholder="buscar..."
   [itemsPerPageOptions]="[10, 20, 30]"
   header
-  pagination
   clickableRows
   cleaner
   (rowClick)="openInfo($event)"
@@ -32,34 +38,25 @@
         @case ('client') {
           <span class="client-field">{{ item[columnName] | truncate:50 }}</span>
         }
+        @case ('startDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
+        }
+        @case ('dueDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
+        }
+        @case ('currentStep') {
+          <div class="badge simple">{{ item[columnName] ? item[columnName] : 'n/a' }}</div>
+        }
         @case ('status') {
-          <div [class]="'badge ' + item[columnName]">
+          <div
+            [class.late]="item[columnName] == 'Atrasado'"
+            [class.inProgress]="item[columnName] == 'Andamento'"
+            [class.complete]="item[columnName] == 'Concluído'"
+            class="badge"
+          >
             <div class="bullet"></div>
-            @switch (item[columnName]) {
-              @case ('inProgress') {
-                Andamento
-              }
-              @case ('completed') {
-                Concluído
-              }
-              @case ('late') {
-                Atrasado
-              }
-            }
+            {{ item[columnName] }}
           </div>
-        }
-        @case ('step') {
-          @if (item[columnName]) {
-            <div class="badge simple">{{ item[columnName] }}</div>
-          } @else {
-            <div class="badge simple">n/a</div>
-          }
-        }
-        @case ('initialDate') {
-          <span class="date-field">{{ item[columnName] }}</span>
-        }
-        @case ('finalDate') {
-          <span class="date-field">{{ item[columnName] }}</span>
         }
         @case ('progress') {
           <div class="custom-progress-container">
@@ -93,7 +90,9 @@
                 }
                 @default {
                   <div class="custom-progress-item" [title]="steps[i]">
-                    <div class="custom-progress-connector"></div>
+                    @if (i) {
+                      <div class="custom-progress-connector"></div>
+                    }
                     <div class="custom-progress-icon none">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>

@@ -17,11 +17,6 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
       },
       {
-        path: 'dashboard',
-        loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes),
-        canActivate: [AuthGuard]
-      },
-      {
         path: 'newspaper',
         loadChildren: () => import('./views/newspaper/routes').then((m) => m.routes),
         canActivate: [AuthGuard]

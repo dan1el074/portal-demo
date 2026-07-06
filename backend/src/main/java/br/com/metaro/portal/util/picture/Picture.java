@@ -1,9 +1,13 @@
 package br.com.metaro.portal.util.picture;
+
 import br.com.metaro.portal.core.entities.Event;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.modules.general.post.entities.Post;
+import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStep;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "tb_picture")
@@ -21,14 +25,25 @@ public class Picture {
     private String path;
     @Enumerated(EnumType.STRING)
     private PictureType type;
+    private String size;
+    private Instant createdAt;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "step_id")
+    private OrderStep orderStep;
 
     @OneToOne(mappedBy = "picture")
     private User user;
 
     @OneToOne(mappedBy = "picture", cascade = CascadeType.ALL)
     private Event event;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = Instant.now();
+    }
 }

@@ -1,7 +1,6 @@
 package br.com.metaro.portal.core.services;
 
 import br.com.metaro.portal.core.dto.event.EventDto;
-import br.com.metaro.portal.core.entities.Event;
 import br.com.metaro.portal.core.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,14 +15,9 @@ public class EventService {
     private EventRepository eventRepository;
 
     @Cacheable("events")
-    @Transactional
+    @Transactional(readOnly = true)
     public EventDto getEvent() {
-        Event event = eventRepository.findFirstByEventDateAfterOrderByEventDateAsc(Instant.now()).orElse(null);
-
-        EventDto eventDto = null;
-        if (event != null) eventDto = new EventDto(event);
-
-        return eventDto;
+        return eventRepository.findNextEvent(Instant.now()).map(EventDto::new).orElse(null);
     }
 
     @Cacheable("eventCount")

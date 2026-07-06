@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
+import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, ContainerComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPrint } from '@coreui/icons';
 import { ToastrService } from 'ngx-toastr';
@@ -17,6 +17,7 @@ import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } fro
   selector: 'app-document-view',
   imports: [
     CommonModule,
+    ContainerComponent,
     IconDirective,
     RowComponent,
     ColComponent,

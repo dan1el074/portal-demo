@@ -1,13 +1,13 @@
 package br.com.metaro.portal.config;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.time.Duration;
-import java.util.List;
-import java.util.UUID;
-
+import br.com.metaro.portal.config.customgrant.CustomPasswordAuthenticationConverter;
+import br.com.metaro.portal.config.customgrant.CustomPasswordAuthenticationProvider;
+import br.com.metaro.portal.config.customgrant.CustomUserAuthorities;
+import br.com.metaro.portal.core.repositories.UserRepository;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -36,27 +36,21 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
-import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
-import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
-import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2AccessTokenGenerator;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
+import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
-
-import br.com.metaro.portal.config.customgrant.CustomPasswordAuthenticationConverter;
-import br.com.metaro.portal.config.customgrant.CustomPasswordAuthenticationProvider;
-import br.com.metaro.portal.config.customgrant.CustomUserAuthorities;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
+import java.util.List;
+import java.util.UUID;
+
 @Configuration
 public class AuthorizationServerConfig {
-
     @Value("${security.client-id}")
     private String clientId;
 
@@ -65,6 +59,9 @@ public class AuthorizationServerConfig {
 
     @Value("${security.jwt.duration}")
     private Integer jwtDurationSeconds;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -94,7 +91,7 @@ public class AuthorizationServerConfig {
                 .tokenEndpoint(tokenEndpoint -> tokenEndpoint
                         .accessTokenRequestConverter(new CustomPasswordAuthenticationConverter())
                         .authenticationProvider(new CustomPasswordAuthenticationProvider(
-                                authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder
+                                authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder, userRepository
                         )));
 
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -114,7 +111,6 @@ public class AuthorizationServerConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        // @formatter:off
         RegisteredClient registeredClient = RegisteredClient
                 .withId(UUID.randomUUID().toString())
                 .clientId(clientId)
@@ -125,19 +121,16 @@ public class AuthorizationServerConfig {
                 .tokenSettings(tokenSettings())
                 .clientSettings(clientSettings())
                 .build();
-        // @formatter:on
 
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
 
     @Bean
     public TokenSettings tokenSettings() {
-        // @formatter:off
         return TokenSettings.builder()
                 .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
                 .accessTokenTimeToLive(Duration.ofSeconds(jwtDurationSeconds))
                 .build();
-        // @formatter:on
     }
 
     @Bean
@@ -166,12 +159,10 @@ public class AuthorizationServerConfig {
             CustomUserAuthorities user = (CustomUserAuthorities) principal.getDetails();
             List<String> authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
             if (context.getTokenType().getValue().equals("access_token")) {
-                // @formatter:off
                 context.getClaims()
                         .claim("authorities", authorities)
                         .claim("username", user.getUsername())
                         .claim("userId", user.getId());
-                // @formatter:on
             }
         };
     }

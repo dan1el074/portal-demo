@@ -14,44 +14,55 @@ import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 })
 export class StepFlowTableComponent {
   @Output() openInfoTask = new EventEmitter<number>();
-  @Input() data!: Array<IItem>;
+  @Output() sorterChange = new EventEmitter<any>();
+  @Output() itemsPerPageChange = new EventEmitter<any>();
+  @Output() filterChange = new EventEmitter<string>();
+  @Input() data: Array<IItem> = [];
+  @Input() loading: boolean = false;
+  @Input() searchValue: string = '';
 
   protected columns: (IColumn | string)[] = [
     {
-      key: 'order',
+      key: 'number',
       label: '#',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' }
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
+      sorter: () => 0
     },
     {
       key: 'client',
       label: 'Cliente',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      sorter: () => 0
     },
     {
-      key: 'initialDate',
+      key: 'startDate',
       label: 'Emissão',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      sorter: () => 0
     },
     {
-      key: 'finalDate',
+      key: 'dueDate',
       label: 'Prazo',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      sorter: () => 0
     },
     {
-      key: 'step',
+      key: 'currentStep',
       label: 'Etapa atual',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      sorter: () => 0
     },
     {
       key: 'status',
       label: 'Status',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' }
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      sorter: () => 0
     },
     {
       key: 'progress',

@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class NotificationSocketMessageDto {
-    String type;
-    NotificationDto notification;
-    Long unreadCount;
+    private String type;
+    private NotificationDto notification;
+    private Long unreadCount;
     private Long notificationId;
     private Long referenceId;
 }

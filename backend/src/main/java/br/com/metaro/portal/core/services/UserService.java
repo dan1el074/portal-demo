@@ -130,8 +130,10 @@ public class UserService implements UserDetailsService {
                     urgency = "urgent";
                 }
 
-                dto.getPendingIssues().add(new PendingIssuesDto(count, "Memorando %d/%s".formatted(memorando.getNumber(), year),
-                        "Falta sua assiantura!", urgency));
+                dto.getPendingIssues().add(new PendingIssuesDto(count, "Memorando %d/%s"
+                        .formatted(memorando.getNumber(), year),"Falta sua assiantura!", urgency));
+
+                count++;
             }
         }
 
@@ -213,7 +215,15 @@ public class UserService implements UserDetailsService {
         if (!rolesList.contains(2L)) rolesList.add(1L);
 
         for (Long roleId : rolesList) {
-            Role role = roleRepository.getReferenceById(roleId);
+            Role role = roleRepository.findById(roleId).orElseThrow(ResourceNotFoundException::new);
+
+            if (
+                role.getFather() != null &&
+                entity.getRoles().stream().noneMatch(r -> r.getId().equals(role.getFather().getId()))
+            ) {
+                entity.addRole(role.getFather());
+            }
+
             entity.addRole(role);
         }
 
@@ -229,7 +239,7 @@ public class UserService implements UserDetailsService {
         if (dto.getPicture() != null)  {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
-            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE, null).get(0);
+            Picture picture = pictureService.saveProfileImages(fileList).get(0);
 
             if (entity.getPicture() != null) {
                 pictureService.delete(entity.getPicture().getId());
@@ -262,7 +272,7 @@ public class UserService implements UserDetailsService {
         if (dto.getPicture() != null)  {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
-            Picture picture = pictureService.saveFiles(fileList, PictureType.PROFILE, null).get(0);
+            Picture picture = pictureService.saveProfileImages(fileList).get(0);
 
             if (entity.getPicture() != null) {
                 pictureService.delete(entity.getPicture().getId());
@@ -293,7 +303,7 @@ public class UserService implements UserDetailsService {
         if (dto.getPicture() != null)  {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
-            entity.setPicture(pictureService.saveFiles(fileList, PictureType.PROFILE, null).get(0));
+            entity.setPicture(pictureService.saveProfileImages(fileList).get(0));
         }
 
         List<Long> rolesList = new ArrayList<>();
@@ -308,7 +318,15 @@ public class UserService implements UserDetailsService {
         rolesList.add(1L);
 
         for (Long roleId : rolesList) {
-            Role role = roleRepository.getReferenceById(roleId);
+            Role role = roleRepository.findById(roleId).orElseThrow(ResourceNotFoundException::new);
+
+            if (
+                role.getFather() != null &&
+                entity.getRoles().stream().noneMatch(r -> r.getId().equals(role.getFather().getId()))
+            ) {
+                entity.addRole(role.getFather());
+            }
+
             entity.addRole(role);
         }
     }
@@ -319,22 +337,30 @@ public class UserService implements UserDetailsService {
         Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
         String username = jwtPrincipal.getClaim("username");
 
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        return userRepository.findMeByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     @Override
     public UserDetails loadUserByUsername(String userName) {
-        List<UserDetailsProjection> projections =
-                userRepository.searchUserAndRolesByUsername(userName);
-        if (projections.isEmpty()) {
-            throw new UsernameNotFoundException("Username not found");
-        }
+        List<UserDetailsProjection> projections = userRepository.searchUserAndRolesByUsername(userName);
+
+        if (projections.isEmpty()) throw new UsernameNotFoundException("Username not found");
+
         User user = new User();
         user.setUsername(userName);
         user.setPassword(projections.getFirst().getPassword());
+
         for (UserDetailsProjection projection : projections) {
-            user.addRole(new Role(projection.getRoleId(),projection.getAuthority(), projection.getTitle(), projection.getTitleUrl(), projection.getParent(), projection.getParentUrl()));
+            user.addRole(new Role(
+                    projection.getRoleId(),
+                    projection.getAuthority(),
+                    projection.getTitle(),
+                    projection.getTitleUrl(),
+                    projection.getParent(),
+                    projection.getParentUrl()
+            ));
         }
+
         return user;
     }
 }

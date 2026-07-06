@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class UserSummaryMinDto {
-    Long id;
-    String name;
+    private Long id;
+    private String name;
 
     public UserSummaryMinDto(User user) {
         id = user.getId();

@@ -3,7 +3,7 @@ package br.com.metaro.portal.modules.general.post.entities;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.util.picture.Picture;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 import java.time.Instant;
 import java.util.ArrayList;

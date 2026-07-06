@@ -17,7 +17,6 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
-
     private final JwtDecoder jwtDecoder;
     private final UserRepository userRepository;
 
@@ -31,29 +30,21 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         try {
             String token = extractToken(request);
 
-            if (token == null || token.isBlank()) {
-                return false;
-            }
+            if (token == null || token.isBlank()) return false;
 
             Jwt jwt = jwtDecoder.decode(token);
 
             String username = jwt.getClaimAsString("username");
             if (username == null || username.isBlank()) {
-                username = jwt.getSubject(); // fallback
-            }
-
-            if (username == null || username.isBlank()) {
+                username = jwt.getSubject();
                 return false;
             }
 
-            Optional<User> userOpt = userRepository.findByUsername(username);
+            Optional<User> userOpt = userRepository.findMeByUsername(username);
 
-            if (userOpt.isEmpty()) {
-                return false;
-            }
+            if (userOpt.isEmpty()) return false;
 
             User user = userOpt.get();
-
             attributes.put("userId", user.getId());
             attributes.put("username", username);
 
@@ -75,9 +66,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         URI uri = request.getURI();
         String query = uri.getQuery();
 
-        if (query == null || query.isBlank()) {
-            return null;
-        }
+        if (query == null || query.isBlank()) return null;
 
         String[] params = query.split("&");
         for (String param : params) {
