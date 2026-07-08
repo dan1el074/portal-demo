@@ -41,8 +41,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         WHERE o.currentStep = :step
             AND s.step = :step
             AND s.status = :status
+            AND o.status <> :orderStatus
     """)
-    List<Order> findByCurrentStep(@Param("step") StepType step, @Param("status") StepStatus status);
+    List<Order> findByCurrentStep(@Param("step") StepType step, @Param("status") StepStatus status, @Param("orderStatus") OrderStatus orderStatus);
+
+    @Query("""
+        SELECT o
+        FROM Order o
+        WHERE o.number = :orderNumber
+            AND o.status <> :orderStatus
+    """)
+    List<Order> findByNumber(Integer orderNumber, @Param("orderStatus") OrderStatus orderStatus);
 
     @Query("""
         SELECT o

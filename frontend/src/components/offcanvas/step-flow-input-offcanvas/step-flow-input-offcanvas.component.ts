@@ -1,12 +1,14 @@
 import { ChangeDetectorRef, Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, TemplateIdDirective } from '@coreui/angular';
 import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.directive';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, InputGroupComponent, TemplateIdDirective } from '@coreui/angular';
 import { StepFlowService } from '../../../app/services/step-flow.service';
-import { StepFlowOrder } from '../../../app/interface/step-flow.interface';
+import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
+import { StepFlowOrder, StepFlowOrderItem } from '../../../app/interface/step-flow.interface';
 import { UploadedFile } from '../../../app/interface/file.interface';
+import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -23,7 +25,9 @@ import { environment } from '../../../environments/environment';
     FormsModule,
     FormControlDirective,
     FormLabelDirective,
-    CurrencyMaskDirective
+    CurrencyMaskDirective,
+    CancelStepFlowModalComponent,
+    TruncatePipe
   ],
   templateUrl: './step-flow-input-offcanvas.component.html',
   styleUrl: './step-flow-input-offcanvas.component.scss',
@@ -31,11 +35,14 @@ import { environment } from '../../../environments/environment';
 export class StepFlowInputOffcanvasComponent {
   @Input() orderId!: number;
   @Output() nextStepTask = new EventEmitter<number>();
+  @Output() reloadOrders = new EventEmitter<void>();
+
   protected order: StepFlowOrder | null = null;
   protected visible = false;
   protected apiUrl: string = environment.apiUrl;
   protected form!: FormGroup;
-  protected submitting = signal(false);
+  protected itemsForm!: FormArray;
+  protected showCancelModel = false;
 
   // file
   readonly acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
@@ -55,6 +62,12 @@ export class StepFlowInputOffcanvasComponent {
       shippment: [null],
       comment: [''],
     });
+
+    this.itemsForm = this.formBuilder.array([]);
+  }
+
+  protected get itemsFormControls(): FormGroup[] {
+    return this.itemsForm.controls as FormGroup[];
   }
 
   public open(id: number): void {
@@ -65,6 +78,7 @@ export class StepFlowInputOffcanvasComponent {
 
   public close(): void {
     this.visible = false;
+    this.toggleCancelModel(false);
   }
 
   private resetForm(): void {
@@ -74,10 +88,12 @@ export class StepFlowInputOffcanvasComponent {
 
   protected loadOrder(): void {
     this.order = null;
+    this.itemsForm.clear();
 
     this.stepFlowService.findById(this.orderId).subscribe({
       next: (data: StepFlowOrder) => {
         this.order = data;
+        this.buildItemsForm(data.items);
         this.cdf.detectChanges();
       },
       error: () => {
@@ -87,12 +103,51 @@ export class StepFlowInputOffcanvasComponent {
     });
   }
 
-  protected onSubmit(): void {
-    // TODO: transportadora e frete estão indo mesmo vazios
+  private buildItemsForm(items: Array<StepFlowOrderItem>): void {
+    this.itemsForm.clear();
 
+    items.forEach(item => {
+      this.itemsForm.push(
+        this.formBuilder.group({
+          id: [item.id],
+          code: [item.code],
+          description: [item.description],
+          quantity: [item.quantity],
+          producedQuantity: [
+            item.producedQuantity,
+            [Validators.required, Validators.min(0), Validators.max(item.quantity)],
+          ],
+        })
+      );
+    });
+  }
+
+  protected onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
+    }
+
+    let hasQuantityChanges = false;
+
+    if (this.order?.currentStep === 'Montagem Final') {
+      if (this.itemsForm.invalid) {
+        this.itemsForm.markAllAsTouched();
+        return;
+      }
+
+      hasQuantityChanges = this.itemsForm.controls.some(
+        control => control.get('producedQuantity')?.dirty
+      );
+
+      const hasAtLeastOneItem = this.itemsForm.controls.some(
+        control => control.get('producedQuantity')?.value > 0
+      );
+
+      if (!hasAtLeastOneItem) {
+        this.toasterService.error('Informe a quantidade produzida de ao menos um item.');
+        return;
+      }
     }
 
     const formData = this.buildFormData();
@@ -102,19 +157,30 @@ export class StepFlowInputOffcanvasComponent {
       return;
     }
 
-    this.submitting.set(true);
-
     this.stepFlowService.updateStep(this.orderId, formData).subscribe({
       next: (data: StepFlowOrder) => {
-        this.order = data;
-        this.cdf.detectChanges();
         this.toasterService.success('Etapa atualizada com sucesso.');
+
+        if (hasQuantityChanges) {
+          this.close();
+          this.reloadOrders.emit();
+          this.cdf.detectChanges();
+          return;
+        }
+
+        this.order = data;
+        this.buildItemsForm(data.items);
         this.resetForm();
+        this.cdf.detectChanges();
       },
-      error: () => {
+      error: (error) => {
+        if (error.error.status == 422) {
+          this.toasterService.error(error.error.error);
+          return;
+        }
+
         this.toasterService.error('Erro ao atualizar a etapa.');
-      },
-      complete: () => this.submitting.set(false),
+      }
     });
   }
 
@@ -122,18 +188,27 @@ export class StepFlowInputOffcanvasComponent {
     const formData = new FormData();
     const { carrier, shippment, comment } = this.form.value;
 
-    if (this.order?.currentStep === 'Frete') {
-      this.appendIfNotEmpty(formData, 'carrier', carrier);
-      this.appendIfNotEmpty(formData, 'shippment', shippment);
-    }
+    if (this.order?.currentStep === 'Montagem Final') {
+      const itemsPayload = this.itemsForm.value.map((item: any) => ({
+        id: item.id,
+        producedQuantity: item.producedQuantity,
+      }));
 
-    this.appendIfNotEmpty(formData, 'comment', comment);
+      formData.append('itemsJson', JSON.stringify(itemsPayload)); // <-- nome trocado
+    }
 
     if (this.order?.currentStep === 'Montagem Final' || this.order?.currentStep === 'Expedição') {
       this.files().forEach(uploaded => {
         formData.append('images', uploaded.file, uploaded.name);
       });
     }
+
+    if (this.order?.currentStep === 'Frete') {
+      this.appendIfNotEmpty(formData, 'carrier', carrier);
+      this.appendIfNotEmpty(formData, 'shippment', shippment);
+    }
+
+    this.appendIfNotEmpty(formData, 'comment', comment);
 
     return formData;
   }
@@ -157,12 +232,56 @@ export class StepFlowInputOffcanvasComponent {
     const id = this.order?.id as number;
     this.stepFlowService.nextStep(id).subscribe({
       next: () => {
-        this.visible = false;
+        this.close();
         this.nextStepTask.emit(id);
         this.cdf.detectChanges();
         this.toasterService.success('Etapa atualizada com sucesso.');
       },
       error: () => this.toasterService.error("Erro ao avançar etapa!"),
+    });
+  }
+
+  protected onDeleteImage(id: number): void {
+    this.stepFlowService.deleteImageById(id).subscribe({
+      next: () => {
+        if (!this.order) throw new Error("This order is null!");
+
+        this.order.pictures = this.order?.pictures.filter(p => p.id != id);
+        this.cdf.detectChanges();
+
+        this.toasterService.success("Imagem apagada com sucesso!");
+      },
+      error: () => this.toasterService.error("Erro ao deletar imagem!")
+    })
+  }
+
+  protected toggleCancelModel(status: boolean): void {
+    this.showCancelModel = status;
+    this.cdf.detectChanges();
+  }
+
+  protected onCancel(message: string): void {
+    if (this.order?.currentStep != 'PCP') return;
+
+    const formData = new FormData();
+
+    this.appendIfNotEmpty(formData, 'comment', message);
+    this.appendIfNotEmpty(formData, 'cancelled', 'true');
+
+    this.stepFlowService.updateStep(this.orderId, formData).subscribe({
+      next: () => {
+        this.nextStepTask.emit(this.orderId);
+        this.close();
+        this.toasterService.success('Pedido cancelado com sucesso!');
+      },
+      error: (error) => {
+        if (error.error.status == 422) {
+          this.toasterService.error(error.error.error);
+          return;
+        }
+
+        this.toasterService.error('Erro ao cancelar pedido!');
+      }
     });
   }
 

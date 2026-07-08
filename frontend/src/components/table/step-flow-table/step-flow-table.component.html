@@ -18,10 +18,10 @@
   tableFilterLabel="Filtro:"
   tableFilterPlaceholder="buscar..."
   [itemsPerPageOptions]="[10, 20, 30]"
+  (rowClick)="openInfo($event)"
   header
   clickableRows
   cleaner
-  (rowClick)="openInfo($event)"
   class="step-flow-table"
 >
 
@@ -49,7 +49,7 @@
         }
         @case ('status') {
           <div
-            [class.late]="item[columnName] == 'Atrasado'"
+            [class.late]="item[columnName] == 'Atrasado' || item[columnName] == 'Cancelado'"
             [class.inProgress]="item[columnName] == 'Andamento'"
             [class.complete]="item[columnName] == 'Concluído'"
             class="badge"

@@ -409,7 +409,7 @@
                               <span>{{ item.description | truncate: 38}}</span>
                               <small class="t-value">R$ {{ item.unitPrice | number:'1.2-2':'pt-BR' }} / {{ item.unit }}</small>
                             </td>
-                            <td>{{ item.quantity }} {{ item.unit }}</td>
+                            <td>{{ item.producedQuantity }}/{{ item.quantity }} {{ item.unit }}</td>
                             <td class="t-money">R$ {{ item.total | number:'1.2-2':'pt-BR' }}</td>
                           </tr>
                         }

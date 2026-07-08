@@ -137,6 +137,7 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -150,6 +151,13 @@
                         <div class="custom-cell-title">Pedido</div>
                         <div class="custom-cell-order">{{ item.number }}</div>
                       </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div>
+                      <div class="custom-cell-title">Quantidade</div>
+                      <div>{{ item.quantity }}</div>
                     </div>
                   </td>
 
@@ -193,7 +201,7 @@
         <span>Resumo dos pedidos</span>
       </div>
 
-      <app-step-flow-input-offcanvas #stepFlowInputOffcanvas (nextStepTask)="onNextStep($event)"></app-step-flow-input-offcanvas>
+      <app-step-flow-input-offcanvas #stepFlowInputOffcanvas (nextStepTask)="onNextStep($event)" (reloadOrders)="reloadOrders()"></app-step-flow-input-offcanvas>
       <app-new-step-flow-modal [visible]="showNewModal" (closeModal)="toggleNewModal(false)" (createNewOrder)="createNewOrder($event)"></app-new-step-flow-modal>
     }
   }

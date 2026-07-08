@@ -30,8 +30,8 @@ export interface AdminDashboard {
 export interface StepFlowData {
   id: number;
   number: number;
+  quantity: string;
   client: string;
-  startDate: string;
   dueDate: string;
   currentStep: string;
   status: string;
@@ -62,6 +62,8 @@ export interface StepFlowOrderItem {
   unit: string;
   unitPrice: number;
   quantity: number;
+  producedQuantity: number;
+  invoicedQuantity: number;
   total: number;
 }
 
@@ -106,4 +108,5 @@ export interface StepFlowOrderInfo {
   subtotal: number;
   discount: number;
   total: number;
+  items: Array<StepFlowOrderItem>;
 }

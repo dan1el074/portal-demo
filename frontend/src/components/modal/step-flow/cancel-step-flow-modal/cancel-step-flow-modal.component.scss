@@ -1,0 +1,27 @@
+.order-number {
+  color: var(--cui-medium-emphasis);
+  font-size: 19px;
+}
+
+.custom-label {
+  color: var(--cui-medium-emphasis);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 20px 0 8px;
+}
+
+.custom-input {
+  font-size: 15px;
+}
+
+.danger-btn {
+  color: #fff;
+  background-color: #c5232a;
+  border: 1px solid #c5232a;
+
+  &:hover {
+    background-color: #e55353;
+    border-color: #e55353;
+  }
+}

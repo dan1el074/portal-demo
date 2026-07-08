@@ -1,10 +1,10 @@
 <c-modal
-    alignment="center"
-    [visible]="visible"
-    (visibleChange)="handleLiveDemoChange($event)"
-    class="new-step-modal"
-    id="newStepFlowModal"
-  >
+  alignment="center"
+  [visible]="visible"
+  (visibleChange)="handleLiveDemoChange($event)"
+  class="new-step-modal"
+  id="newStepFlowModal"
+>
   <c-modal-header class="m-header">
     <div class="text-container">
       <h6 cModalTitle>Novo registro - Montagem Final</h6>
@@ -90,10 +90,46 @@
           </div>
         </div>
       </div>
+
+      <span class="sub-title">Itens</span>
+
+      <div class="items-container">
+        @for (itemGroup of itemsFormControls; track itemGroup.get('code')?.value; let i = $index) {
+          <div class="search-item" [formGroup]="itemGroup">
+            <span class="search-item-code">{{ itemGroup.get('code')?.value }}</span>
+            <span class="search-item-description">{{ itemGroup.get('description')?.value | truncate: 70 }}</span>
+
+            <div class="search-item-quantity">
+              <input
+                cFormControl
+                type="number"
+                formControlName="producedQuantity"
+                [min]="0"
+                [max]="itemGroup.get('maxQuantity')?.value"
+                [class.invalid]="itemGroup.get('producedQuantity')?.invalid ? true : false"
+                class="custom-form"
+              />
+              <span class="quantity-limit">/ {{ itemGroup.get('quantity')?.value }}</span>
+            </div>
+          </div>
+
+          @if (itemGroup.get('producedQuantity')?.invalid && itemGroup.get('producedQuantity')?.touched) {
+            <small class="text-danger">
+              @if (itemGroup.get('maxQuantity')?.value) {
+                Quantidade deve ser entre 0 e {{ itemGroup.get('maxQuantity')?.value }}.
+              } @else {
+                Esse item já foi produzido!
+              }
+            </small>
+          }
+        } @empty {
+          <i class="custom-error">Erro ao carregar itens do pedido</i>
+        }
+      </div>
     }
   </c-modal-body>
   <c-modal-footer class="m-footer">
     <button cButton class="default" (click)="closeMemorandoModal()">Cancelar</button>
-    <button cButton class="color" [disabled]="!searchResult" (click)="onCreate()">Continuar</button>
+    <button cButton class="color" [disabled]="!searchResult || itemsForm.invalid" (click)="onCreate()">Continuar</button>
   </c-modal-footer>
 </c-modal>

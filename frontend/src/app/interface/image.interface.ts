@@ -7,4 +7,5 @@ export interface StepFlowImage {
   name: string;
   size: string;
   createdAt: string;
+  isCurrentStep: boolean;
 }
