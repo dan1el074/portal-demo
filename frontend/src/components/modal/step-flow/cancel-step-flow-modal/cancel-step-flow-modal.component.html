@@ -1,0 +1,30 @@
+<c-modal id="cancelStepFlowModal" alignment="center" backdrop="static" [visible]="visible" [scrollable]="true" (visibleChange)="handleLiveDemoChange($event)">
+  <c-modal-header>
+    <h5 cModalTitle>Cancelar Registro <span class="order-number">#14064</span></h5>
+    <button (click)="onClose()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Tem certeza que deseja cancelar esse registro? Essa ação não poderá ser desfeita!
+
+    <form cForm [formGroup]="form">
+      <div class="mb-3">
+        <label cLabel for="comment" class="custom-label">Motivo</label>
+        <textarea
+          cFormControl
+          formControlName="comment"
+          [valid]="form.get('comment')?.touched && form.get('comment')?.invalid ? false : undefined"
+          rows="4"
+          placeholder="O pedido está sendo cancelado por que..."
+          class="custom-input"
+          id="comment"
+        ></textarea>
+      </div>
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="onClose()" cButton color="secondary">
+      Desistir
+    </button>
+    <button cButton class="danger-btn" (click)="onSubmit()">Cancelar</button>
+  </c-modal-footer>
+</c-modal>

@@ -24,12 +24,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer number;
-    @Column(columnDefinition = "TEXT")
-    private String observation;
     @Enumerated(EnumType.STRING)
     private StepType currentStep; // atualizar sempre que mexer no OrderStep
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // LATE apenas quando a dueDate passar - p/ frontend
+    private OrderStatus status; // LATE apenas quando a dueDate passar (só no frontend)
     private Double shipment;
     private String carrier;
 
@@ -92,4 +90,8 @@ public class Order {
     public void preUpdate() {
         updatedAt = Instant.now();
     }
+
+    // TODO: avaliar consultas no banco de dados (N+1).
+    // TODO: spinner ou template nos carregamentos;
+    // TODO: será possível voltar para determinada etapa? Sim, o administrador (deixar para depois);
 }

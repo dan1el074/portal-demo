@@ -30,15 +30,15 @@ export class StepFlowTableComponent {
       sorter: () => 0
     },
     {
-      key: 'client',
-      label: 'Cliente',
+      key: 'quantity',
+      label: 'QTD',
       _labelTemplateId: 'all',
       _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
-      sorter: () => 0
+      sorter: false
     },
     {
-      key: 'startDate',
-      label: 'Emissão',
+      key: 'client',
+      label: 'Cliente',
       _labelTemplateId: 'all',
       _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
       sorter: () => 0

@@ -4,6 +4,7 @@ import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
+import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import br.com.metaro.portal.modules.general.stepFlow.dto.*;
 import br.com.metaro.portal.modules.general.stepFlow.entities.*;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepository;
@@ -11,6 +12,8 @@ import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.St
 import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StepCountProjection;
 import br.com.metaro.portal.util.others.StringUtils;
 import br.com.metaro.portal.util.picture.PictureService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,10 +32,13 @@ import java.util.stream.Collectors;
 public class StepFlowService {
     @Autowired
     private OrderRepository orderRepository;
+
     @Autowired
-    private ErpOrderService erpOrderService;
+    private ObjectMapper objectMapper;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private PictureService pictureService;
 
@@ -59,8 +65,8 @@ public class StepFlowService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderMinDto> findByCurrentStep(Integer ordinal) {
-        List<Order> entities = orderRepository.findByCurrentStep(StepType.values()[ordinal], StepStatus.ACTIVE);
+    public List<OrderMinDto> listOrdersByCurrentStep(Integer ordinal) {
+        List<Order> entities = orderRepository.findByCurrentStep(StepType.values()[ordinal], StepStatus.ACTIVE, OrderStatus.CANCELLED);
         return entities.stream().map(OrderMinDto::new).toList();
     }
 
@@ -83,15 +89,11 @@ public class StepFlowService {
     }
 
     @Transactional
-    public void create(Integer orderNumber) {
-        ErpOrderSummaryDto info = erpOrderService.findByOrder(orderNumber).orElseThrow(ResourceNotFoundException::new);
-        List<ErpOrderItemDto> items = erpOrderService.findItemsByOrder(orderNumber);
-
+    public void create(ErpOrderDto erpOrder) {
         Order entity = new Order();
-        snapshotErpInfo(entity, info, items);
+        snapshotErpInfo(entity, erpOrder);
         addAllSteps(entity);
 
-        entity.setNumber(orderNumber);
         entity.setCurrentStep(StepType.FINAL_ASSEMBLY);
         entity.setStatus(OrderStatus.IN_PROGRESS);
         entity.setShipment(0.0);
@@ -109,6 +111,11 @@ public class StepFlowService {
     @Transactional
     public void goToNextStep(Long id) {
         Order order = this.orderRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+
+        if (order.getStatus().equals(OrderStatus.CANCELLED)) {
+            throw new UnprocessableEntityException("Não é possível editar um pedido cancelado!");
+        }
+
         StepType type = order.getCurrentStep();
         OrderStep currentStep = order.getSteps().stream().filter(step -> step.getStep().equals(type))
                 .findFirst().orElseThrow(ResourceNotFoundException::new);
@@ -134,28 +141,45 @@ public class StepFlowService {
         orderRepository.save(order);
     }
 
-    private void snapshotErpInfo(Order entity, ErpOrderSummaryDto summary, List<ErpOrderItemDto> items) {
-        // summary dto
-        entity.setClient(summary.getClient());
-        entity.setCnpj(summary.getCnpj());
-        entity.setSeller(summary.getSalesperson());
-        entity.setStartDate(summary.getStartDate());
-        entity.setDueDate(summary.getDueDate());
-        entity.setAddress(summary.getAddress());
-        entity.setSubtotal(summary.getSubtotal());
-        entity.setDiscount(summary.getDiscount());
-        entity.setTotal(summary.getTotal());
+    @Transactional
+    public void deleteImageById(Long id) throws IOException {
+        User me = userService.authenticate();
+
+        if (
+            !me.getPosition().getName().equals("Montagem Final")
+            && !me.getPosition().getName().equals("Expedição")
+            && !me.getPosition().getName().equals("TI")
+        ) {
+            throw new ForbiddenException("Você não tem permissão para excluir essa imagem!");
+        }
+
+        pictureService.delete(id);
+    }
+
+    private void snapshotErpInfo(Order entity, ErpOrderDto order) {
+        entity.setNumber(order.getNumber());
+        entity.setClient(order.getClient());
+        entity.setCnpj(order.getCnpj());
+        entity.setSeller(order.getSalesperson());
+        entity.setStartDate(order.getStartDate());
+        entity.setDueDate(order.getDueDate());
+        entity.setAddress(order.getAddress());
+        entity.setSubtotal(order.getSubtotal());
+        entity.setDiscount(order.getDiscount());
+        entity.setTotal(order.getTotal());
         entity.setItems(new ArrayList<>());
 
-        if (summary.getPhone() != null) entity.setPhone(summary.getPhone());
+        if (order.getPhone() != null) entity.setPhone(order.getPhone());
 
-        for (ErpOrderItemDto dto : items) {
+        for (ErpOrderItemDto dto : order.getItems()) {
             OrderItem item = new OrderItem();
 
             item.setItemCode(dto.getCode());
             item.setDescription(dto.getDescription());
             item.setUnit(dto.getUnit());
             item.setQuantity(dto.getQuantity());
+            item.setProducedQuantity(dto.getProducedQuantity());
+            item.setInvoicedQuantity(dto.getInvoicedQuantity());
             item.setUnitPrice(dto.getUnitValue());
             item.setTotal(dto.getUnitValue() * dto.getQuantity());
 
@@ -185,22 +209,85 @@ public class StepFlowService {
         User me = userService.authenticate();
         if (!canInteract(order, me)) throw new ForbiddenException("Usuário não corresponde ao setor competente!");
 
+        if (order.getStatus().equals(OrderStatus.CANCELLED)) {
+            throw new UnprocessableEntityException("Não é possível editar um pedido cancelado!");
+        }
+
         OrderStep currentStep = order.getSteps()
                 .stream()
                 .filter(step -> step.getStep().equals(order.getCurrentStep()))
                 .findFirst()
                 .orElseThrow(ResourceNotFoundException::new);
+
         if (dto.getComment() != null && !dto.getComment().trim().isEmpty()) {
             currentStep.getMessages().add(new StepMessage(StringUtils.toMarkdown(dto.getComment()), currentStep, me));
         }
 
         switch (order.getCurrentStep()) {
-            case FINAL_ASSEMBLY, SHIPPING -> proccessImage(dto, currentStep);
+            case FINAL_ASSEMBLY -> {
+                proccessImage(dto, currentStep);
+                checkQuantity(dto, order);
+            }
+            case PCP -> checkCancelled(dto, order);
             case FREIGHT -> {
                 if (dto.getCarrier() != null) order.setCarrier(dto.getCarrier());
                 if (dto.getShippment() != null) order.setShipment(Double.parseDouble(dto.getShippment()));
             }
+            case SHIPPING -> proccessImage(dto, currentStep);
         }
+    }
+
+    private void checkQuantity(OrderInputDto dto, Order order) {
+        if (dto.getItems() == null || dto.getItems().isEmpty()) return;
+
+        // verifica se houve alteração
+        boolean found = false;
+        for (OrderItemInputDto input : dto.getItems()) {
+            OrderItem item = order.getItems().stream().filter(currentItem -> currentItem.getId()
+                    .equals(input.getId())).findFirst().orElseThrow(ResourceNotFoundException::new);
+
+            if (input.getProducedQuantity() != null && !input.getProducedQuantity().equals(item.getProducedQuantity())) {
+                found = true;
+                break;
+            }
+            if (input.getInvoicedQuantity() != null && !input.getInvoicedQuantity().equals(item.getInvoicedQuantity())) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) return;
+
+        // traz todas as ordens desse mesmo código, exceto esse
+        List<Order> orders = orderRepository.findByNumber(order.getNumber(), OrderStatus.CANCELLED);
+        orders = orders.stream().filter(o -> !o.getId().equals(order.getId())).toList();
+
+        for (OrderItem item : order.getItems()) {
+            Integer totalProduced = 0;
+
+            for (Order currentOrder : orders) {
+                for (OrderItem orderItem : currentOrder.getItems()) {
+                    if (!orderItem.getItemCode().equals(item.getItemCode())) break;
+                    totalProduced += orderItem.getProducedQuantity();
+                }
+            }
+
+            OrderItemInputDto inputDto = dto.getItems().stream()
+                    .filter(oii -> oii.getId().equals(item.getId()))
+                    .findFirst().orElseThrow(ResourceNotFoundException::new);
+
+            if (inputDto.getProducedQuantity() <= (item.getQuantity() - totalProduced)) {
+                item.setProducedQuantity(inputDto.getProducedQuantity());
+                break;
+            }
+
+            throw new UnprocessableEntityException("Essa quantidade de itens não pode ser utilizada!");
+        }
+    }
+
+    private void checkCancelled(OrderInputDto dto, Order order) {
+        if (dto.getCancelled() == null || !dto.getCancelled().equals("true")) return;
+
+        order.setStatus(OrderStatus.CANCELLED);
     }
 
     private void proccessImage(OrderInputDto dto, OrderStep step) throws IOException {
@@ -220,5 +307,10 @@ public class StepFlowService {
             case BILLING -> user.getPosition().getName().equals("Faturamento");
             case SHIPPING -> user.getPosition().getName().equals("Expedição");
         };
+    }
+
+    public List<OrderItemInputDto> parseItems(String itemsJson) throws IOException {
+        if (itemsJson == null || itemsJson.isBlank()) return List.of();
+        return objectMapper.readValue(itemsJson, new TypeReference<List<OrderItemInputDto>>() {});
     }
 }

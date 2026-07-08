@@ -11,7 +11,8 @@ import java.util.Arrays;
 public enum OrderStatus {
     COMPLETED("Concluído"),
     IN_PROGRESS("Andamento"),
-    LATE("Atrasado");
+    LATE("Atrasado"),
+    CANCELLED("Cancelado");
 
     private final String description;
 

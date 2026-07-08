@@ -59,13 +59,13 @@ export class StepFlowService {
     return this.http.get<StepFlowOrderInfo>(this.api + '/erp/' + orderNumber, { headers });
   }
 
-  public create(orderNumber: number): Observable<void> {
+  public create(order: StepFlowOrderInfo): Observable<void> {
     const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.post<void>(this.api + '/' + orderNumber, {}, { headers });
+    return this.http.post<void>(this.api, order, { headers });
   }
 
   public updateStep(orderId: number, formData: FormData): Observable<StepFlowOrder> {
@@ -84,5 +84,14 @@ export class StepFlowService {
     });
 
     return this.http.put<void>(this.api + '/' + orderId + '/nextStep', null, { headers });
+  }
+
+  public deleteImageById(id: number): Observable<void> {
+    const token = localStorage.getItem('auth-token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.delete<void>(this.api + '/image/' + id, { headers });
   }
 }

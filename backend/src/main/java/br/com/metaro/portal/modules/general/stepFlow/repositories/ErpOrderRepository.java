@@ -1,7 +1,7 @@
 package br.com.metaro.portal.modules.general.stepFlow.repositories;
 
+import br.com.metaro.portal.modules.general.stepFlow.dto.ErpOrderDto;
 import br.com.metaro.portal.modules.general.stepFlow.dto.ErpOrderItemDto;
-import br.com.metaro.portal.modules.general.stepFlow.dto.ErpOrderSummaryDto;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,8 +19,8 @@ public class ErpOrderRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Optional<ErpOrderSummaryDto> findOrderSummary(int orderNumber) {
-        List<ErpOrderSummaryDto> result = jdbcTemplate.query("""
+    public Optional<ErpOrderDto> findOrder(int orderNumber) {
+        ErpOrderDto result = jdbcTemplate.query("""
                 SELECT DISTINCT
                     m.NR_DOCTO AS ORDER_NUMBER,
                     pes.CODIGO || ' - ' || pes.NOME AS CLIENT,
@@ -34,7 +33,12 @@ public class ErpOrderRepository {
                         REGEXP_REPLACE(REPLACE(m.CEP, '-', ''), '(\\d{5})(\\d{3})', '\\1-\\2') AS ADDRESS,
                     m.VL_PRODUTOS AS SUBTOTAL,
                     m.VL_DESC_PROD AS DISCOUNT,
-                    m.VL_DOCTO AS TOTAL
+                    m.VL_DOCTO AS TOTAL,
+                    mi.COD_ITEM AS ITEM_CODE,
+                    REGEXP_REPLACE(TRIM(mi.DESCRICAO), '(\\s*-\\s*)+', ' - ') AS ITEM_DESCRIPTION,
+                    mi.VL_UNITARIO AS ITEM_UNIT_VALUE,
+                    LOWER(mi.UNIDADE) AS ITEM_UNIT,
+                    mi.QUANTIDADE AS ITEM_QUANTITY
                 FROM Wonder.Cml_MovItens mi
                 LEFT JOIN Wonder.Cml_Movimento m ON mi.Id_Transacao = m.Id_Transacao
                 LEFT JOIN Wonder.Pessoas pes ON m.w_id_pessoa_filial = pes.w_id
@@ -42,35 +46,27 @@ public class ErpOrderRepository {
                 INNER JOIN Wonder.Est_Produtos esp ON esp.CODIGO = mi.COD_ITEM
                 WHERE m.NR_DOCTO = ?
                     AND m.W_TP_TRANS = 'EPV'
+                    AND mi.COD_ITEM NOT IN ('41669', '10462') --serviço e manutenção
                     AND m.SITUACAO IN ('LF','AL')
-            """, this::mapOrderSummary, orderNumber
+            """, this::extractOrder, orderNumber
         );
 
-        return result.stream().findFirst();
+        return Optional.ofNullable(result);
     }
 
-    public List<ErpOrderItemDto> findOrderItems(int orderNumber) {
-        return jdbcTemplate.query("""
-                SELECT DISTINCT
-                    mi.COD_ITEM AS CODE,
-                    REGEXP_REPLACE(TRIM(mi.DESCRICAO), '(\\s*-\\s*)+', ' - ') AS DESCRIPTION,
-                    mi.VL_UNITARIO AS UNIT_VALUE,
-                    LOWER(mi.UNIDADE) AS UNIT,
-                    mi.QUANTIDADE AS QUANTITY
-                FROM Wonder.Cml_MovItens mi
-                LEFT JOIN Wonder.Cml_Movimento m ON mi.Id_Transacao = m.Id_Transacao
-                LEFT JOIN Wonder.Pessoas pes ON m.w_id_pessoa_filial = pes.w_id
-                LEFT JOIN Wonder.Pessoas ven ON m.COD_VENDEDOR = ven.CODIGO
-                INNER JOIN Wonder.Est_Produtos esp ON esp.CODIGO = mi.COD_ITEM
-                WHERE m.NR_DOCTO = ?
-                    AND m.W_TP_TRANS = 'EPV'
-                    AND m.SITUACAO IN ('LF','AL')
-            """, this::mapOrderItem, orderNumber
-        );
+    private ErpOrderDto extractOrder(ResultSet rs) throws SQLException {
+        ErpOrderDto order = null;
+
+        while (rs.next()) {
+            if (order == null) order = mapOrder(rs);
+            order.getItems().add(mapOrderItem(rs));
+        }
+
+        return order;
     }
 
-    private ErpOrderSummaryDto mapOrderSummary(ResultSet rs, int rowNum) throws SQLException {
-        return new ErpOrderSummaryDto(
+    private ErpOrderDto mapOrder(ResultSet rs) throws SQLException {
+        return new ErpOrderDto(
                 rs.getInt("ORDER_NUMBER"),
                 rs.getString("CLIENT"),
                 rs.getString("CNPJ"),
@@ -85,13 +81,15 @@ public class ErpOrderRepository {
         );
     }
 
-    private ErpOrderItemDto mapOrderItem(ResultSet rs, int rowNum) throws SQLException {
+    private ErpOrderItemDto mapOrderItem(ResultSet rs) throws SQLException {
         return new ErpOrderItemDto(
-                rs.getInt("CODE"),
-                rs.getString("DESCRIPTION"),
-                rs.getDouble("UNIT_VALUE"),
-                rs.getString("UNIT"),
-                rs.getInt("QUANTITY")
+                rs.getInt("ITEM_CODE"),
+                rs.getString("ITEM_DESCRIPTION"),
+                rs.getDouble("ITEM_UNIT_VALUE"),
+                rs.getString("ITEM_UNIT"),
+                rs.getInt("ITEM_QUANTITY"),
+                0,
+                0
         );
     }
 }

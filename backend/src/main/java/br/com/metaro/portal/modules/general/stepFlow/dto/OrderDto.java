@@ -5,7 +5,6 @@ import br.com.metaro.portal.modules.general.stepFlow.entities.OrderItem;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStep;
 import br.com.metaro.portal.modules.general.stepFlow.entities.StepType;
 import br.com.metaro.portal.util.picture.Picture;
-import br.com.metaro.portal.util.picture.dto.PictureDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,14 +28,13 @@ public class OrderDto {
     private LocalDate dueDate;
     private String address;
     private List<OrderStepDto> steps;
-    private String observation;
     private List<OrderItemDto> items;
     private Double subtotal;
     private Double discount;
     private Double shipment;
     private String carrier;
     private Double total;
-    private List<PictureDto> pictures;
+    private List<ImageDto> pictures;
     private String currentStep;
     private String nextStep;
 
@@ -51,7 +49,6 @@ public class OrderDto {
         startDate = entity.getStartDate();
         dueDate = entity.getDueDate();
         address = entity.getAddress();
-        observation = entity.getObservation();
         subtotal = entity.getSubtotal();
         discount = entity.getDiscount();
         shipment = entity.getShipment();
@@ -77,7 +74,7 @@ public class OrderDto {
 
         for (OrderStep orderStep : entity.getSteps()) {
             for (Picture picture : orderStep.getPictures()) {
-                pictures.add(new PictureDto(picture));
+                pictures.add(new ImageDto(picture, orderStep.getStep().equals(entity.getCurrentStep())));
             }
         }
     }

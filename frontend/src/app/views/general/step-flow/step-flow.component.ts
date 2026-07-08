@@ -6,7 +6,7 @@ import { IItem, SmartPaginationComponent } from '@coreui/angular-pro';
 import { UserService } from './../../../services/user.service';
 import { StepFlowService } from './../../../services/step-flow.service';
 import { Me } from '../../../interface/user.interface';
-import { Resume, Step, AdminDashboard, StepFlowData } from '../../../interface/step-flow.interface';
+import { Resume, Step, AdminDashboard, StepFlowData, StepFlowOrderInfo } from '../../../interface/step-flow.interface';
 import { TruncatePipe } from '../../../pipes/truncate.pipe';
 import { StepFlowTableComponent } from './../../../../components/table/step-flow-table/step-flow-table.component';
 import { StepFlowOffcanvasComponent } from '../../../../components/offcanvas/step-flow-offcanvas/step-flow-offcanvas.component';
@@ -186,9 +186,9 @@ export class StepFlowComponent implements OnInit {
     this.showNewModal = status;
   }
 
-  protected createNewOrder(orderNumber: number): void {
+  protected createNewOrder(order: StepFlowOrderInfo): void {
     this.toggleNewModal(false);
-    this.stepFlowService.create(orderNumber).subscribe({
+    this.stepFlowService.create(order).subscribe({
       next: () => {
         this.toaster.success("Registro criado com sucesso!");
         this.loadOrders();
@@ -196,7 +196,6 @@ export class StepFlowComponent implements OnInit {
       },
       error: () => {
         this.toaster.error("Erro ao criar registro!")
-        // TODO: caso ocorra outro erro como "Toda a quantidade do pedido já foi tratada anteriormente".
       }
     });
   }
@@ -291,6 +290,11 @@ export class StepFlowComponent implements OnInit {
         this.loadingTable = false;
       },
     });
+  }
+
+  protected reloadOrders(): void {
+    this.loadCurrentStepOrders(this.currentStepIndex - 1);
+    this.loadOrders();
   }
 
   protected onNextStep(id: number) {

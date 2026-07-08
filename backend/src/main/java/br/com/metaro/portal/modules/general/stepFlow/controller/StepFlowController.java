@@ -1,9 +1,6 @@
 package br.com.metaro.portal.modules.general.stepFlow.controller;
 
-import br.com.metaro.portal.modules.general.stepFlow.dto.OrderDto;
-import br.com.metaro.portal.modules.general.stepFlow.dto.OrderInputDto;
-import br.com.metaro.portal.modules.general.stepFlow.dto.OrderMinDto;
-import br.com.metaro.portal.modules.general.stepFlow.dto.StepFlowInfoDto;
+import br.com.metaro.portal.modules.general.stepFlow.dto.*;
 import br.com.metaro.portal.modules.general.stepFlow.service.StepFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,7 +39,7 @@ public class StepFlowController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
     @GetMapping(value = "/step/{ordinal}")
     public ResponseEntity<List<OrderMinDto>> listOrdersByStep(@PathVariable Integer ordinal) {
-        List<OrderMinDto> dtos = stepFlowService.findByCurrentStep(ordinal);
+        List<OrderMinDto> dtos = stepFlowService.listOrdersByCurrentStep(ordinal);
         return ResponseEntity.ok(dtos);
     }
 
@@ -54,15 +51,20 @@ public class StepFlowController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
-    @PostMapping(value = "/{orderNumber}")
-    public ResponseEntity<Void> create (@PathVariable Integer orderNumber) {
-        stepFlowService.create(orderNumber);
+    @PostMapping
+    public ResponseEntity<Void> create (@RequestBody ErpOrderDto erpOrderDto) {
+        stepFlowService.create(erpOrderDto);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<OrderDto> update(@PathVariable Long id, @ModelAttribute OrderInputDto dto) throws IOException {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OrderDto> update(
+            @PathVariable Long id,
+            @ModelAttribute OrderInputDto dto,
+            @RequestParam(value = "itemsJson", required = false) String itemsJson
+    ) throws IOException {
+        dto.setItems(stepFlowService.parseItems(itemsJson));
         OrderDto newDto = stepFlowService.update(id, dto);
         return ResponseEntity.ok(newDto);
     }
@@ -71,6 +73,13 @@ public class StepFlowController {
     @PutMapping(value = "/{id}/nextStep")
     public ResponseEntity<Void> nextStep(@PathVariable Long id) {
         stepFlowService.goToNextStep(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
+    @DeleteMapping(value = "/image/{id}")
+    public ResponseEntity<Void> deleteImageById(@PathVariable Long id) throws IOException {
+        stepFlowService.deleteImageById(id);
         return ResponseEntity.noContent().build();
     }
 }

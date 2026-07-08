@@ -56,6 +56,8 @@ export class StepFlowOffcanvasComponent {
     if (this.orderId) {
       this.stepFlowService.findById(this.orderId).subscribe({
         next: data => {
+          console.log(data);
+
           this.order = data;
           this.cdf.detectChanges();
         },

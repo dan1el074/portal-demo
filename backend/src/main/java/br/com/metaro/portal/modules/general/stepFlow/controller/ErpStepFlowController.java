@@ -1,7 +1,6 @@
 package br.com.metaro.portal.modules.general.stepFlow.controller;
 
-import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
-import br.com.metaro.portal.modules.general.stepFlow.dto.ErpOrderSummaryDto;
+import br.com.metaro.portal.modules.general.stepFlow.dto.ErpOrderDto;
 import br.com.metaro.portal.modules.general.stepFlow.service.ErpOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +18,8 @@ public class ErpStepFlowController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
     @GetMapping(value = "/{orderNumber}")
-    public ResponseEntity<ErpOrderSummaryDto> findByOrder(@PathVariable Integer orderNumber) {
-        ErpOrderSummaryDto dto = erpOrderService.findByOrder(orderNumber)
-                .orElseThrow(ResourceNotFoundException::new);
+    public ResponseEntity<ErpOrderDto> findOrderByNumber(@PathVariable Integer orderNumber) {
+        ErpOrderDto dto = erpOrderService.findOrderByNumber(orderNumber);
         return ResponseEntity.ok(dto);
     }
 }
