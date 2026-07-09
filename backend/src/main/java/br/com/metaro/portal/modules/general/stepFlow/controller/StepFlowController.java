@@ -24,8 +24,12 @@ public class StepFlowController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
     @GetMapping
     public ResponseEntity<Page<OrderMinDto>> listOrders(
-            @RequestParam(required = false) String search, Pageable pageable) {
-        Page<OrderMinDto> dtos = stepFlowService.listOrders(search, pageable);
+            Pageable pageable,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String stepFilter
+    ) {
+        String step = (stepFilter != null && !stepFilter.isBlank()) ? stepFilter : null;
+        Page<OrderMinDto> dtos = stepFlowService.listOrders(pageable, search, step);
         return ResponseEntity.ok(dtos);
     }
 

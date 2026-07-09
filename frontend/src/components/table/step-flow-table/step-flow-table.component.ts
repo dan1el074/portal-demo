@@ -1,13 +1,16 @@
 import { Component, EventEmitter, Input, Output} from '@angular/core';
-import { IColumn, IItem, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
+import { IColumn, IItem, SmartTableComponent, TemplateIdDirective, TooltipDirective } from '@coreui/angular-pro';
 import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-step-flow-table',
   imports: [
     SmartTableComponent,
     TemplateIdDirective,
-    TruncatePipe
+    TruncatePipe,
+    FormsModule,
+    TooltipDirective
   ],
   templateUrl: './step-flow-table.component.html',
   styleUrl: './step-flow-table.component.scss',
@@ -17,10 +20,14 @@ export class StepFlowTableComponent {
   @Output() sorterChange = new EventEmitter<any>();
   @Output() itemsPerPageChange = new EventEmitter<any>();
   @Output() filterChange = new EventEmitter<string>();
+  @Output() stepFilterChange = new EventEmitter<string>();
+  @Output() clearAll = new EventEmitter<void>();
   @Input() data: Array<IItem> = [];
   @Input() loading: boolean = false;
   @Input() searchValue: string = '';
+  @Input() selectedStep: string = '';
 
+  protected steps: Array<string> = ["Montagem Final", "PCP", "Frete", "Faturamento", "Expedição"];
   protected columns: (IColumn | string)[] = [
     {
       key: 'number',
@@ -74,7 +81,14 @@ export class StepFlowTableComponent {
     }
   ];
 
-  protected steps: Array<string> = ["Montagem Final", "PCP", "Frete", "Faturamento", "Expedição"];
+  protected onStepChange(value: string): void {
+    this.stepFilterChange.emit(value);
+  }
+
+  protected onClearAll(): void {
+    this.selectedStep = '';
+    this.clearAll.emit();
+  }
 
   protected openInfo(event: any): void {
     this.openInfoTask.emit(event.item.id);

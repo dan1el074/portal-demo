@@ -57,6 +57,7 @@ export class StepFlowComponent implements OnInit {
   protected loadingTable = false;
   protected currentPage = 1;
   protected totalPages = 1;
+  protected currentStepFilter?: string;
   private itemsPerPage = 10;
   private currentSort?: { column: string; state: 'asc' | 'desc' };
 
@@ -169,7 +170,7 @@ export class StepFlowComponent implements OnInit {
     if (index > 0) this.loadCurrentStepOrders(index - 1);
   }
 
-  protected searchFor(term: string): void {
+  protected searchForStatus(term: string): void {
     let text = term.toLowerCase();
 
     if (text == 'total de pedidos') return
@@ -273,7 +274,14 @@ export class StepFlowComponent implements OnInit {
   private loadOrders(): void {
     this.loadingTable = true;
 
-    this.stepFlowService.findAll(this.currentPage-1, this.itemsPerPage, this.currentSort?.column, this.currentSort?.state, this.currentSearch).subscribe({
+    this.stepFlowService.findAll(
+      this.currentPage-1,
+      this.itemsPerPage,
+      this.currentSort?.column,
+      this.currentSort?.state,
+      this.currentSearch,
+      this.currentStepFilter
+    ).subscribe({
       next: (result) => {
         let data = result;
 
@@ -322,6 +330,26 @@ export class StepFlowComponent implements OnInit {
 
   protected onFilterChange(value: string): void {
     this.currentSearch = value;
+    this.currentPage = 1;
+    this.loadOrders();
+  }
+
+  protected onStepFilterChange(step: string): void {
+    this.currentStepFilter = step || '';
+    this.currentPage = 1;
+    this.loadOrders();
+  }
+
+  public filterByStep(step: string): void {
+    this.currentStepFilter = step;
+    this.currentPage = 1;
+    this.loadOrders();
+  }
+
+  protected onClearAll(): void {
+    this.currentSearch = undefined;
+    this.currentSort = undefined;
+    this.currentStepFilter = '';
     this.currentPage = 1;
     this.loadOrders();
   }

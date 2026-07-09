@@ -21,13 +21,14 @@ export class StepFlowService {
     return this.http.get<StepFlowOrder>(this.api + '/' + id, { headers });
   }
 
-  public findAll( page: number, size: number, sortColumn?: string, sortDirection?: 'asc' | 'desc', search?: string): Observable<PagedResult<StepFlowData>> {
+  public findAll( page: number, size: number, sortColumn?: string, sortDirection?: 'asc' | 'desc', search?: string, stepFilter?: string): Observable<PagedResult<StepFlowData>> {
     const token = localStorage.getItem('auth-token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     let params = new HttpParams().set('page', page).set('size', size);
 
     if (sortColumn) params = params.set('sort', `${sortColumn},${sortDirection ?? 'asc'}`);
     if (search) params = params.set('search', search);
+    if (stepFilter) params = params.set('stepFilter', stepFilter);
 
     return this.http.get<PagedResult<StepFlowData>>(this.api, { headers, params });
   }

@@ -52,7 +52,7 @@
     @case (0) {
       <div class="sfc-resume">
         @for (item of resume; track item.id) {
-          <c-card class="step-card total" [class.pointer]="item.title != 'Total de pedidos'" [style]="'border-left: 4px solid ' + item.color" (click)="searchFor(item.title)">
+          <c-card class="step-card total" [class.pointer]="item.title != 'Total de pedidos'" [style]="'border-left: 4px solid ' + item.color" (click)="searchForStatus(item.title)">
             <c-card-body>
               <div class="title-container">
                 <h6>{{ item.title }}</h6>
@@ -77,13 +77,13 @@
               @if (step.id != 0) {
                 @if (i != 1) {
                   <div class="arrow-divider">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="m6 9 6 6 6-6"></path>
                     </svg>
                   </div>
                 }
 
-                <div class="step-box" (click)="searchFor(step.title)">
+                <div class="step-box" (click)="filterByStep(step.title)">
                   <div class="step-icon" [innerHtml]="step.icon"></div>
                   <div class="step-text">
                     <div class="step-title">{{ step.title }}</div>
@@ -222,6 +222,9 @@
           (sorterChange)="onSorterChange($event)"
           (itemsPerPageChange)="onItemsPerPageChange($event)"
           (filterChange)="onFilterChange($event)"
+          [selectedStep]="currentStepFilter ?? ''"
+          (stepFilterChange)="onStepFilterChange($event)"
+          (clearAll)="onClearAll()"
         />
 
         <c-smart-pagination
