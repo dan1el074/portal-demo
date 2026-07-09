@@ -1,0 +1,180 @@
+.custom-table-header {
+  display: flex;
+
+  .step-select {
+    height: 38px;
+    margin-left: 26px;
+    padding: 6px 12px;
+    border: 1px solid var(--cui-border-color);
+    border-radius: var(--cui-border-radius);
+    background-color: var(--cui-body-bg);
+    color: var(--cui-body-color);
+    font-size: 14px;
+    appearance: auto;
+    cursor: pointer;
+    transition: .2s;
+
+    &:focus {
+      outline: none;
+      border-color: rgb(171, 175, 235);
+      box-shadow: 0 0 0 0.25rem rgba(86, 120, 214, 0.25);
+    }
+  }
+
+  .info-container {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+
+    svg {
+      padding-top: 2px;
+      width: 18px;
+      cursor: help;
+    }
+  }
+
+  .custom-cleaner {
+    height: 38px;
+    margin-left: 26px;
+    color: var(--cui-secondary-color);
+    background: transparent;
+    border: none;
+    transition: color 0.15s, background-color 0.15s;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--cui-danger);
+    }
+
+    svg {
+      width: 20px;
+    }
+  }
+}
+
+.custom-header {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.custom-td {
+  font-size: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--cui-border-color);
+
+  .order-field {
+    color: #0369dd;
+    font-weight: 600;
+  }
+
+  .client-field {
+    text-transform: capitalize;
+  }
+
+  .date-field {
+    color: var(--cui-medium-emphasis);
+  }
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  width: fit-content;
+
+  &.inProgress {
+    color: #0369dd;
+    background-color: #0369dd17;
+  }
+  &.complete {
+    color: #009966;
+    background-color: #00996617;
+  }
+  &.late {
+    color: #c5232a;
+    background-color: #c5232a17;
+  }
+  &.simple {
+    color: var(--cui-medium-emphasis);
+    background-color: rgba(var(--cui-emphasis-color-rgb), 0.04)
+  }
+
+  .bullet {
+    margin-top: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3.40282e38px;
+    background-color: currentColor;
+  }
+}
+
+.custom-progress-container {
+  display: flex;
+  align-items: center;
+
+  .custom-progress-item {
+    display: flex;
+    align-items: center;
+
+    .custom-progress-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      padding: 8px;
+
+      &.green {
+        background-color: #00bc7d;
+        border: 1px solid #00bc7d;
+        color: #fff;
+        padding: 6px;
+
+        svg {
+          width: 13px;
+          height: 13px;
+        }
+      }
+
+      &.blue {
+        background-color: #2b7fff;
+        border: 1px solid #2b7fff;
+
+        svg {
+          color: #2b7fff;
+          fill: #fff;
+          width: 9px;
+          height: 9px;
+        }
+      }
+
+      &.none {
+        border: 2px solid var(--cui-border-color);
+
+        svg {
+          color: var(--cui-border-color);
+          width: 8px;
+          height: 8px;
+        }
+      }
+    }
+
+    .custom-progress-connector {
+      width: 16px;
+      height: 2px;
+      border: none;
+      background-color: var(--cui-border-color);
+
+      &.green {
+        background-color: #00bc7d;
+      }
+    }
+  }
+}
+
+@media (max-width: 550px) {
+  .custom-table-header {
+    margin-left: 38px;
+  }
+}

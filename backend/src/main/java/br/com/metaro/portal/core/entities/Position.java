@@ -1,7 +1,7 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
+import br.com.metaro.portal.modules.general.memorando.entities.Signature;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,4 +44,8 @@ public class Position {
 
     @OneToMany(mappedBy = "departmentSigned")
     private List<Signature> memorandoSignatures = new ArrayList<>();
+
+    // TODO: não deixar que mudem os nomes dos departamentos usados nos módulos,
+    //  criar novo atributo e fazer essa verificação ao editar, emitindo um erro
+    //  visível ao usuário como POP-UP ao tentar fazer isso!
 }

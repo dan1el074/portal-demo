@@ -1,12 +1,12 @@
 package br.com.metaro.portal.core.services;
 
+import br.com.metaro.portal.config.websocket.NotificationSessionManager;
 import br.com.metaro.portal.core.dto.notification.NotificationDto;
 import br.com.metaro.portal.core.dto.notification.NotificationSocketMessageDto;
 import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.NotificationRepository;
-import br.com.metaro.portal.config.websocket.NotificationSessionManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

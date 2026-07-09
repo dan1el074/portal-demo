@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PostService {
@@ -85,7 +84,7 @@ public class PostService {
                 fileList.add(file);
             }
 
-            post.setPictures(pictureService.saveFiles(fileList, PictureType.POST, post));
+            post.setPictures(pictureService.savePostImages(fileList, post));
         }
 
         return post;

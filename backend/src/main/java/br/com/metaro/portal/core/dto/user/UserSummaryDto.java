@@ -25,4 +25,11 @@ public class UserSummaryDto {
             this.picture = new PictureMinDto(user.getPicture());
         }
     }
+
+    public UserSummaryDto(Long id, String name, Long pictureId, String positionName) {
+        this.id = id;
+        this.name = name;
+        this.picture = new PictureMinDto(pictureId);
+        this.position = new PositionMinDto(positionName);
+    }
 }

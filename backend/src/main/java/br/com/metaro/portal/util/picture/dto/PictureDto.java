@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -14,14 +16,18 @@ public class PictureDto {
     private String name;
     private String path;
     private PictureType type;
-    private Long post_id;
+    private Long postId;
+    private String size;
+    private Instant createdAt;
 
     public PictureDto(Picture picture) {
         id = picture.getId();
         name = picture.getName();
         path = picture.getPath();
         type = picture.getType();
+        size = picture.getSize();
+        createdAt = picture.getCreatedAt();
 
-        if (picture.getPost() != null) post_id = picture.getPost().getId();
+        if (picture.getPost() != null) postId = picture.getPost().getId();
     }
 }

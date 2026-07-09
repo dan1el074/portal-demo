@@ -2,6 +2,7 @@ package br.com.metaro.portal.modules.general.post.dto;
 
 import br.com.metaro.portal.core.dto.user.UserSummaryDto;
 import br.com.metaro.portal.modules.general.post.entities.Post;
+import br.com.metaro.portal.modules.general.post.repositories.projections.PostProjection;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.dto.PictureMinDto;
 import lombok.AllArgsConstructor;
@@ -34,5 +35,19 @@ public class PostDto {
         for (Picture picture : post.getPictures()) {
             this.pictures.add(new PictureMinDto(picture));
         }
+    }
+
+    public PostDto(PostProjection projection, List<PictureMinDto> pictures) {
+        this.id = projection.getId();
+        this.content = projection.getContent();
+        this.isWarning = projection.getIsWarning();
+        this.createdAt = projection.getCreatedAt();
+        this.author = new UserSummaryDto(
+                projection.getAuthorId(),
+                projection.getAuthorName(),
+                projection.getAuthorPictureId(),
+                projection.getAuthorPositionName()
+        );
+        this.pictures = pictures;
     }
 }

@@ -4,6 +4,7 @@ import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,6 +19,12 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
         WHERE m.id = :id
     """)
     public Optional<Memorando> findByIdWithDepartments(Long id);
+
+    @Query("""
+        SELECT m FROM Memorando m
+        WHERE m.id IN :ids
+    """)
+    public List<Memorando> findAllByIds(@Param("ids") List<Long> ids);
 
     public Long countByStatus(MemorandoStatus status);
 }

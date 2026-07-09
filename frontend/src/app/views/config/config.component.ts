@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { CardBodyComponent, CardComponent, CardHeaderComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
+import { CardBodyComponent, CardComponent, CardHeaderComponent, CardTitleDirective, ColComponent, ContainerComponent, RowComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
 import { UserConfigData } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
@@ -13,6 +13,7 @@ import { ErrorService } from '../../services/error.service';
   imports: [
     CommonModule,
     NgxSpinnerModule,
+    ContainerComponent,
     RowComponent,
     ColComponent,
     CardComponent,

@@ -1,0 +1,81 @@
+package br.com.metaro.portal.modules.general.stepFlow.dto;
+
+import br.com.metaro.portal.modules.general.stepFlow.entities.Order;
+import br.com.metaro.portal.modules.general.stepFlow.entities.OrderItem;
+import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStep;
+import br.com.metaro.portal.modules.general.stepFlow.entities.StepType;
+import br.com.metaro.portal.util.picture.Picture;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class OrderDto {
+    private Long id;
+    private Integer number;
+    private String status;
+    private String client;
+    private String cnpj;
+    private String phone;
+    private String seller;
+    private LocalDate startDate;
+    private LocalDate dueDate;
+    private String address;
+    private List<OrderStepDto> steps;
+    private List<OrderItemDto> items;
+    private Double subtotal;
+    private Double discount;
+    private Double shipment;
+    private String carrier;
+    private Double total;
+    private List<ImageDto> pictures;
+    private String currentStep;
+    private String nextStep;
+
+    public OrderDto(Order entity) {
+        id = entity.getId();
+        number = entity.getNumber();
+        status = entity.getStatus().toString();
+        client = entity.getClient();
+        cnpj = entity.getCnpj();
+        phone = entity.getPhone();
+        seller = entity.getSeller();
+        startDate = entity.getStartDate();
+        dueDate = entity.getDueDate();
+        address = entity.getAddress();
+        subtotal = entity.getSubtotal();
+        discount = entity.getDiscount();
+        shipment = entity.getShipment();
+        carrier = entity.getCarrier();
+        total = entity.getTotal();
+        currentStep = entity.getCurrentStep().toString();
+        steps = new ArrayList<>();
+        items = new ArrayList<>();
+        pictures = new ArrayList<>();
+        nextStep = "";
+
+        if (!entity.getCurrentStep().equals(StepType.SHIPPING)) {
+            nextStep = StepType.values()[entity.getCurrentStep().ordinal() + 1].toString();
+        }
+
+        for (OrderStep orderStep: entity.getSteps()) {
+            steps.add(new OrderStepDto(orderStep));
+        }
+
+        for (OrderItem orderItem: entity.getItems()) {
+            items.add(new OrderItemDto(orderItem));
+        }
+
+        for (OrderStep orderStep : entity.getSteps()) {
+            for (Picture picture : orderStep.getPictures()) {
+                pictures.add(new ImageDto(picture, orderStep.getStep().equals(entity.getCurrentStep())));
+            }
+        }
+    }
+}

@@ -1,0 +1,143 @@
+<c-smart-table
+  #smartTable="cSmartTable"
+  [items]="data"
+  [loading]="loading"
+  [pagination]="false"
+  [tableFilter]="{ external: true }"
+  [tableFilterValue]="searchValue"
+  (tableFilterValueChange)="filterChange.emit($event)"
+  (sorterValueChange)="sorterChange.emit($event)"
+  (itemsPerPageChange)="itemsPerPageChange.emit($event)"
+  [columnSorter]="true"
+  [columns]="columns"
+  [itemsPerPageSelect]="true"
+  itemsPerPageLabel="Itens por página"
+  noItemsLabel="Nenhum dado encontrado!"
+  [tableProps]="{ hover: true, responsive: true }"
+  [tableBodyProps]="{ align: 'middle' }"
+  tableFilterLabel="Filtro:"
+  tableFilterPlaceholder="buscar..."
+  [itemsPerPageOptions]="[10, 20, 30]"
+  (rowClick)="openInfo($event)"
+  header
+  clickableRows
+  class="step-flow-table"
+>
+
+  <ng-template cTemplateId="tableCustomHeader">
+    <div class="custom-table-header col-auto p-0">
+      <div class="col-auto p-0 step-select-container">
+        <select class="step-select" [(ngModel)]="selectedStep" (ngModelChange)="onStepChange($event)">
+          <option value="">Todas as etapas</option>
+          @for (step of steps; track step) {
+            <option [value]="step">{{ step }}</option>
+          }
+        </select>
+      </div>
+
+      <div cTooltip="Somente pedidos não cancelados serão exibidos ao selecionar a etapa" cTooltipPlacement="top" class="col-auto p-0 info-container">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4"/>
+          <path d="M12 8h.01"/>
+        </svg>
+      </div>
+
+      <button class="col-auto p-0 custom-cleaner" (click)="onClearAll()" title="Limpar filtros">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.531 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14v6a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341l.427-.473"/>
+          <path d="m16.5 3.5 5 5"/>
+          <path d="m21.5 3.5-5 5"/>
+        </svg>
+      </button>
+    </div>
+  </ng-template>
+
+  <ng-template cTemplateId="columnLabel_all" let-column>
+    <span class="custom-header">{{ column.label }}</span>
+  </ng-template>
+
+  <ng-template cTemplateId="tableData" let-column="column" let-columnName="columnName" let-item="item" let-tdContent="tdContent" >
+    <td class="custom-td">
+      @switch (columnName) {
+        @case ('order') {
+          <span class="order-field">{{ item[columnName] }}</span>
+        }
+        @case ('client') {
+          <span class="client-field">{{ item[columnName] | truncate:50 }}</span>
+        }
+        @case ('startDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
+        }
+        @case ('dueDate') {
+          <span class="date-field">{{ item[columnName] }}</span>
+        }
+        @case ('currentStep') {
+          <div class="badge simple">{{ item[columnName] ? item[columnName] : 'n/a' }}</div>
+        }
+        @case ('status') {
+          <div
+            [class.late]="item[columnName] == 'Atrasado' || item[columnName] == 'Cancelado'"
+            [class.inProgress]="item[columnName] == 'Andamento'"
+            [class.complete]="item[columnName] == 'Concluído'"
+            class="badge"
+          >
+            <div class="bullet"></div>
+            {{ item[columnName] }}
+          </div>
+        }
+        @case ('progress') {
+          <div class="custom-progress-container">
+
+            @for (item of item[columnName]; track item; let i = $index) {
+              @switch (item) {
+                @case (1) {
+                  <div class="custom-progress-item" [title]="steps[i]">
+                    @if (i) {
+                      <div class="custom-progress-connector green"></div>
+                    }
+                    <div class="custom-progress-icon blue">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                      </svg>
+                    </div>
+                  </div>
+                }
+                @case (2) {
+                  <div class="custom-progress-item" [title]="steps[i]">
+                    @if (i) {
+                      <div class="custom-progress-connector green"></div>
+                    }
+                    <div class="custom-progress-icon green">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="m9 12 2 2 4-4"></path>
+                      </svg>
+                    </div>
+                  </div>
+                }
+                @default {
+                  <div class="custom-progress-item" [title]="steps[i]">
+                    @if (i) {
+                      <div class="custom-progress-connector"></div>
+                    }
+                    <div class="custom-progress-icon none">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                      </svg>
+                    </div>
+                  </div>
+                }
+              }
+            }
+
+          </div>
+        }
+        @default {
+          {{ tdContent }}
+        }
+      }
+    </td>
+  </ng-template>
+
+</c-smart-table>
