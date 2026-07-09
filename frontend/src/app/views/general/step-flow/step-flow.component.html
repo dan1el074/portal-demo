@@ -201,7 +201,13 @@
         <span>Resumo dos pedidos</span>
       </div>
 
-      <app-step-flow-input-offcanvas #stepFlowInputOffcanvas (nextStepTask)="onNextStep($event)" (reloadOrders)="reloadOrders()"></app-step-flow-input-offcanvas>
+      <app-step-flow-input-offcanvas
+        #stepFlowInputOffcanvas
+        [isAdmin] = "isAdmin"
+        [steps]="steps"
+        (nextStepTask)="onNextStep($event)"
+        (reloadOrders)="reloadOrders()"
+      ></app-step-flow-input-offcanvas>
       <app-new-step-flow-modal [visible]="showNewModal" (closeModal)="toggleNewModal(false)" (createNewOrder)="createNewOrder($event)"></app-new-step-flow-modal>
     }
   }

@@ -4,7 +4,7 @@ import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, B
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { StepFlowOrder } from '../../../app/interface/step-flow.interface';
 import localePt from '@angular/common/locales/pt';
-import { CommonModule, registerLocaleData } from '@angular/common';
+import { CommonModule, NgTemplateOutlet, registerLocaleData } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { TruncatePipe } from '../../../app/pipes/truncate.pipe';
 
@@ -21,7 +21,8 @@ registerLocaleData(localePt);
     AccordionItemComponent,
     TemplateIdDirective,
     AccordionButtonDirective,
-    TruncatePipe
+    TruncatePipe,
+    NgTemplateOutlet
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],
   templateUrl: './step-flow-offcanvas.component.html',

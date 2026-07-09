@@ -91,6 +91,5 @@ public class Order {
         updatedAt = Instant.now();
     }
 
-    // TODO: será possível voltar para determinada etapa? Sim, o administrador;
     // TODO: avaliar consultas no banco de dados (N+1).
 }

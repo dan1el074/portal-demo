@@ -50,174 +50,139 @@
         <div class="sofd-title-custom">Histórico completo do pedido</div>
       </div>
 
+
+
+
+
+
+      <!-- INÍCIO -->
       <div class="sofd-history">
         @for (step of order.steps; track step.id) {
-          @switch(step.status) {
-            @case ("DONE") {
-              @if (step.messages.length) {
-                <c-accordion [alwaysOpen]="true">
-                  <c-accordion-item #step5="cAccordionItem" [visible]="false" class="sofd-accordion completed">
-                    <ng-template cTemplateId="accordionHeaderTemplate">
-                      <button cAccordionButton [collapsed]="!step5.visible" (click)="step5.toggleItem()" class="sofd-accordion-btn">
-                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon complete">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="m9 12 2 2 4-4"></path>
-                        </svg>
-
-                        <div class="sofd-accordion-text">
-                          <span>{{ step.step }}</span>
-                          <small>{{ step.userName ? step.userName : "Sistema" }} - {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}</small>
-                        </div>
-
-                        @if (step.messages.length) {
-                          <div class="sofd-accordion-icons">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                            {{ step.messages.length }}
-                          </div>
-                        }
-                      </button>
-                    </ng-template>
-
-                    <ng-template cTemplateId="accordionBodyTemplate">
-                      <div class="sofd-accordion-body">
-                        <div class="sofd-sub-title">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                          </svg>
-                          Comentários
-                        </div>
-
-                        @for (message of step.messages; track message.id) {
-                          <div class="sofd-comment">
-                            <div class="sofd-comment-label">
-                              <span>{{ message.userName ? message.userName : "Sistema" }}</span>
-                              {{ message.created ? (message.created | date:'dd/MM/yyyy HH:mm') : "Agora" }}
-                            </div>
-
-                            <span [innerHtml]="message.message"></span>
-                          </div>
-                        }
-                      </div>
-                    </ng-template>
-                  </c-accordion-item>
-                </c-accordion>
-              } @else {
-                <div [class.late]="order.status == 'Atrasado'" class="sofd-accordion completed">
-                  <div class="sofd-accordion-btn collapsed">
-                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon complete">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="m9 12 2 2 4-4"></path>
-                    </svg>
+          @if (step.messages.length) {
+            <c-accordion [alwaysOpen]="true">
+              <c-accordion-item #acc="cAccordionItem" [visible]="false"
+                class="sofd-accordion"
+                [class.completed]="step.status === 'DONE'"
+                [class.in-progress]="step.status === 'ACTIVE'"
+                [class.late]="step.status === 'ACTIVE' && order.status === 'Atrasado'"
+              >
+                <ng-template cTemplateId="accordionHeaderTemplate">
+                  <button cAccordionButton [collapsed]="!acc.visible" (click)="acc.toggleItem()" class="sofd-accordion-btn">
+                    <ng-container *ngTemplateOutlet="stepIcon; context: { step: step }"/>
 
                     <div class="sofd-accordion-text">
                       <span>{{ step.step }}</span>
-                      <small>{{ step.userName ? step.userName : "Sistema" }} - {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}</small>
+                      <small>
+                        @switch (step.status) {
+                          @case ('DONE') {
+                            {{ step.userName ?? 'Sistema' }} · {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}
+                          }
+                          @case ('ACTIVE') {
+                            <i>Em andamento</i> · iniciado em {{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}
+                          }
+                          @default {
+                            <i>Aguardando</i>
+                          }
+                        }
+                      </small>
                     </div>
-                  </div>
-                </div>
-              }
-            }
-            @case ("ACTIVE") {
-              @if (step.messages.length) {
-                <c-accordion [alwaysOpen]="true">
-                  <c-accordion-item #step5="cAccordionItem" [visible]="false" [class.late]="order.status == 'Atrasado'" class="sofd-accordion in-progress">
-                    <ng-template cTemplateId="accordionHeaderTemplate">
-                      <button cAccordionButton [collapsed]="!step5.visible" (click)="step5.toggleItem()" class="sofd-accordion-btn">
-                        @if (order.status == 'Atrasado') {
-                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
-                            <circle _ngcontent-ng-c975327498="" cx="12" cy="12" r="10" />
-                            <line _ngcontent-ng-c975327498="" x1="12" x2="12" y1="8" y2="12" />
-                            <line _ngcontent-ng-c975327498="" x1="12" x2="12.01" y1="16" y2="16" />
-                          </svg>
-                        } @else {
-                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
-                            <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-                          </svg>
-                        }
 
-                        <div class="sofd-accordion-text">
-                          <span>{{ step.step }}</span>
-                          <small><i>Em andamento</i></small>
+                    <div class="sofd-accordion-icons">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                      {{ step.messages.length }}
+                    </div>
+
+                  </button>
+                </ng-template>
+
+                <ng-template cTemplateId="accordionBodyTemplate">
+                  <div class="sofd-accordion-body">
+                    <div class="sofd-sub-title">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                      Comentários
+                    </div>
+
+                    @for (message of step.messages; track message.id) {
+                      <div class="sofd-comment">
+                        <div class="sofd-comment-label">
+                          <span>{{ message.userName ?? 'Sistema' }}</span>
+                          {{ message.created ? (message.created | date:'dd/MM/yyyy HH:mm') : 'Agora' }}
                         </div>
-
-                        @if (step.messages.length) {
-                          <div class="sofd-accordion-icons">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                            {{ step.messages.length }}
-                          </div>
-                        }
-                      </button>
-                    </ng-template>
-
-                    <ng-template cTemplateId="accordionBodyTemplate">
-                      <div class="sofd-accordion-body">
-                        <div class="sofd-sub-title">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15 a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                          </svg>
-                          Comentários
-                        </div>
-
-                        @for (message of step.messages; track message.id) {
-                          <div class="sofd-comment">
-                            <div class="sofd-comment-label">
-                              <span>{{ message.userName ? message.userName : "Sistema" }}</span>
-                              {{ message.created ? (message.created | date:'dd/MM/yyyy HH:mm') : "Agora" }}
-                            </div>
-
-                            <span [innerHtml]="message.message"></span>
-                          </div>
-                        }
+                        <span [innerHtml]="message.message"></span>
                       </div>
-                    </ng-template>
-                  </c-accordion-item>
-                </c-accordion>
-              } @else {
-                <div [class.late]="order.status == 'Atrasado'" class="sofd-accordion in-progress">
-                  <div class="sofd-accordion-btn collapsed">
-                    @if (order.status == 'Atrasado') {
-                      <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
-                        <circle _ngcontent-ng-c975327498="" cx="12" cy="12" r="10" />
-                        <line _ngcontent-ng-c975327498="" x1="12" x2="12" y1="8" y2="12" />
-                        <line _ngcontent-ng-c975327498="" x1="12" x2="12.01" y1="16" y2="16" />
-                      </svg>
-                    } @else {
-                      <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon in-progress">
-                        <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-                      </svg>
                     }
-
-                    <div class="sofd-accordion-text">
-                      <span>{{ step.step }}</span>
-                      <small><i>Em andamento</i></small>
-                    </div>
                   </div>
-                </div>
-              }
-            }
-            @default {
-              <div class="sofd-accordion">
-                <div class="sofd-accordion-btn collapsed">
-                  <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon">
-                    <circle cx="12" cy="12" r="10"></circle>
-                  </svg>
+                </ng-template>
+              </c-accordion-item>
+            </c-accordion>
 
-                  <div class="sofd-accordion-text">
-                    <span>{{ step.step }}</span>
-                    <small><i>Aguardando</i></small>
-                  </div>
+          } @else {
+            <div
+              class="sofd-accordion"
+              [class.completed]="step.status === 'DONE'"
+              [class.in-progress]="step.status === 'ACTIVE'"
+              [class.late]="step.status === 'ACTIVE' && order.status === 'Atrasado'"
+            >
+              <div class="sofd-accordion-btn collapsed">
+
+                <ng-container *ngTemplateOutlet="stepIcon; context: { step: step }"/>
+
+                <div class="sofd-accordion-text">
+                  <span>{{ step.step }}</span>
+                  <small>
+                    @if (step.status === 'DONE') {
+                      {{ step.userName ?? 'Sistema' }} · {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}
+                    } @else if (step.status === 'ACTIVE') {
+                      <i>Em andamento</i> · iniciado em {{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}
+                    } @else {
+                      <i>Aguardando</i>
+                    }
+                  </small>
                 </div>
+
               </div>
-            }
+            </div>
           }
+
         } @empty {
           <i class="custom-error">Nenhuma etapa encontrada!</i>
         }
       </div>
+
+      <ng-template #stepIcon let-step="step">
+        @switch (step.status) {
+          @case ('DONE') {
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          }
+          @case ('ACTIVE') {
+            @if (order.status === 'Atrasado') {
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" x2="12" y1="8" y2="12"/>
+                <line x1="12" x2="12.01" y1="16" y2="16"/>
+              </svg>
+            } @else {
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            }
+          }
+          @default {
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" class="sofd-accordion-icon">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+          }
+        }
+      </ng-template>
+      <!-- FIM -->
 
       @if (order.pictures.length) {
         <div class="custom-title">
@@ -396,6 +361,19 @@
                 </ul>
               }
             </div>
+          </div>
+        }
+
+        @if (isAdmin || order.currentStep != "Montagem Final") {
+          <div class="mb-3">
+            <label cLabel for="setStage" class="custom-label">Escolher etapa</label>
+            <select cSelect id="setStage" [formControl]="adminStepControl">
+              @for (currentStep of steps; track currentStep.id; let i = $index) {
+                @if (i != 0) {
+                  <option [value]="currentStep.id">{{ currentStep.title }}</option>
+                }
+              }
+            </select>
           </div>
         }
 

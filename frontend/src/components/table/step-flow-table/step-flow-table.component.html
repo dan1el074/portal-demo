@@ -26,7 +26,7 @@
 
   <ng-template cTemplateId="tableCustomHeader">
     <div class="custom-table-header col-auto p-0">
-      <div class="step-select-container">
+      <div class="col-auto p-0 step-select-container">
         <select class="step-select" [(ngModel)]="selectedStep" (ngModelChange)="onStepChange($event)">
           <option value="">Todas as etapas</option>
           @for (step of steps; track step) {
@@ -35,7 +35,7 @@
         </select>
       </div>
 
-      <div cTooltip="Somente pedidos não cancelados serão exibidos ao selecionar a etapa" cTooltipPlacement="top" class="info-container">
+      <div cTooltip="Somente pedidos não cancelados serão exibidos ao selecionar a etapa" cTooltipPlacement="top" class="col-auto p-0 info-container">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <circle cx="12" cy="12" r="10"/>
           <path d="M12 16v-4"/>
@@ -43,7 +43,7 @@
         </svg>
       </div>
 
-      <button class="custom-cleaner" (click)="onClearAll()" title="Limpar filtros">
+      <button class="col-auto p-0 custom-cleaner" (click)="onClearAll()" title="Limpar filtros">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12.531 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14v6a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341l.427-.473"/>
           <path d="m16.5 3.5 5 5"/>
