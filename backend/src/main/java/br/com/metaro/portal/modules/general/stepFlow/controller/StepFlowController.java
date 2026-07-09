@@ -24,8 +24,12 @@ public class StepFlowController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
     @GetMapping
     public ResponseEntity<Page<OrderMinDto>> listOrders(
-            @RequestParam(required = false) String search, Pageable pageable) {
-        Page<OrderMinDto> dtos = stepFlowService.listOrders(search, pageable);
+            Pageable pageable,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String stepFilter
+    ) {
+        String step = (stepFilter != null && !stepFilter.isBlank()) ? stepFilter : null;
+        Page<OrderMinDto> dtos = stepFlowService.listOrders(pageable, search, step);
         return ResponseEntity.ok(dtos);
     }
 
@@ -62,8 +66,10 @@ public class StepFlowController {
     public ResponseEntity<OrderDto> update(
             @PathVariable Long id,
             @ModelAttribute OrderInputDto dto,
-            @RequestParam(value = "itemsJson", required = false) String itemsJson
+            @RequestParam(value = "itemsJson", required = false) String itemsJson,
+            @RequestParam(value = "setStage", required = false) String stepId
     ) throws IOException {
+        if (stepId != null) dto.setNewStepId(Integer.parseInt(stepId));
         dto.setItems(stepFlowService.parseItems(itemsJson));
         OrderDto newDto = stepFlowService.update(id, dto);
         return ResponseEntity.ok(newDto);

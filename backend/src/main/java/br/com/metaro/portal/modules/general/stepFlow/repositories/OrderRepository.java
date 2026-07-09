@@ -24,12 +24,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             COALESCE(SUM(CASE WHEN o.status = 'LATE' THEN 1 ELSE 0 END), 0) AS lateCount
         FROM Order o
     """)
-    public Optional<StatusCountsProjection> findStatusCounts();
+    public Optional<StatusCountsProjection> findCountByStatus();
 
     @Query("""
         SELECT o.currentStep AS step, COUNT(o) AS count
         FROM Order o
-        WHERE o.status <> :status
+        WHERE o.status = :status
         GROUP BY o.currentStep
     """)
     public List<StepCountProjection> findCountByStep(@Param("status") OrderStatus status);
@@ -43,7 +43,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND s.status = :status
             AND o.status <> :orderStatus
     """)
-    List<Order> findByCurrentStep(@Param("step") StepType step, @Param("status") StepStatus status, @Param("orderStatus") OrderStatus orderStatus);
+    public List<Order> findByCurrentStep(@Param("step") StepType step,
+                                         @Param("status") StepStatus status,
+                                         @Param("orderStatus") OrderStatus orderStatus);
 
     @Query("""
         SELECT o
@@ -51,7 +53,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         WHERE o.number = :orderNumber
             AND o.status <> :orderStatus
     """)
-    List<Order> findByNumber(Integer orderNumber, @Param("orderStatus") OrderStatus orderStatus);
+    public List<Order> findByNumber(Integer orderNumber, @Param("orderStatus") OrderStatus orderStatus);
 
     @Query("""
         SELECT o
@@ -62,5 +64,19 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
             OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
     """)
-    Page<Order> search(@Param("search") String search, Pageable pageable);
+    public Page<Order> search(Pageable pageable, @Param("search") String search);
+
+    @Query("""
+        SELECT o
+        FROM Order o
+        WHERE o.status <> :status
+            AND LOWER(o.currentStep) = LOWER(:step)
+            AND (
+                LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
+            )
+    """)
+    public Page<Order> searchOnlyStep(Pageable pageable, @Param("search") String search, @Param("step") String step,
+                                      @Param("status") OrderStatus status);
 }

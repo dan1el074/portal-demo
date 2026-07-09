@@ -83,290 +83,82 @@
               <div class="sof-scroll">
 
                 @for (step of order.steps; track step.id; let i = $index) {
-                    @switch (step.status) {
-                      @case ("DONE") {
-                        <div class="timeline-item">
-                          <div class="sof-icon complete" [class.first]="i == 0">
-                            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <path d="m9 12 2 2 4-4" />
-                            </svg>
-                          </div>
+                  <div class="timeline-item">
+                    <div
+                      class="sof-icon"
+                      [class.first]="i === 0"
+                      [class.complete]="step.status === 'DONE'"
+                      [class.in-progress]="step.status === 'ACTIVE' && order.status !== 'Atrasado'"
+                      [class.late]="step.status === 'ACTIVE' && order.status === 'Atrasado'"
+                      [class.default]="step.status !== 'DONE' && step.status !== 'ACTIVE'"
+                    >
+                      <ng-container *ngTemplateOutlet="connectorIcon; context: { step: step }"/>
+                    </div>
+                    <div
+                      class="timeline-box"
+                      [class.complete]="step.status === 'DONE'"
+                      [class.in-progress]="step.status === 'ACTIVE' && order.status !== 'Atrasado'"
+                      [class.late]="step.status === 'ACTIVE' && order.status === 'Atrasado'"
+                      [class.default]="step.status !== 'DONE' && step.status !== 'ACTIVE'"
+                    >
+                      <div class="timeline-box-header">
 
-                          <div class="timeline-box complete">
-                            <div class="timeline-box-header">
-                              <div class="step-icon complete">
-                                @switch (step.step) {
-                                  @case("Montagem Final") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                                    </svg>
-                                  }
-                                  @case("PCP") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle>
-                                    </svg>
-                                  }
-                                  @case("Frete") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle>
-                                    </svg>
-                                  }
-                                  @case("Faturamento") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 17.5v-11"></path>
-                                    </svg>
-                                  }
-                                  @case("Expedição") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="m16 16 2 2 4-4"></path><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"></path><path d="m7.5 4.27 9 5.15"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><line x1="12" x2="12" y1="22" y2="12"></line>
-                                    </svg>
-                                  }
-                                }
-                              </div>
-                              <div class="timeline-box-title">
-                                <div class="timeline-box-title-department">{{ step.step }}</div>
-                                <div class="timeline-box-title-user">
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                  </svg>
-                                  {{ step.userName }}
-                                </div>
-                              </div>
-                              <div class="timeline-box-dates">
-                                @if (step.startedAt) {
-                                  <div>
-                                    <span>Início:</span>
-                                    <div>{{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}</div>
-                                  </div>
-                                }
-                                @if (step.finishedAt) {
-                                  <div>
-                                    <span>Fim:</span>
-                                    <div>{{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}</div>
-                                  </div>
-                                }
-                              </div>
-                            </div>
-
-                            <div class="timeline-box-log-container" [class.default]="!step.messages.length">
-                              @for(message of step.messages; track message.id) {
-                                <div class="timeline-box-log">
-                                  <div class="timeline-box-log-instant">
-                                    <div>{{ message.created | date:'dd/MM/yyyy' }}</div>
-                                    <span>{{ message.created | date:'HH:mm' }}<span class="hide">:</span></span>
-                                  </div>
-                                  <div class="timeline-box-log-text">
-                                    <strong>{{ message.userName ? message.userName : 'Sistema' }}: </strong><span [innerHtml]="message.message"></span>
-                                  </div>
-                                </div>
-                              } @empty {
-                                <i>Nenhuma mensagem encontrada!</i>
-                              }
-                            </div>
-                          </div>
+                        <div class="step-icon">
+                          <ng-container *ngTemplateOutlet="stepIcon; context: { step: step }"/>
                         </div>
-                      }
 
-                      @case ("ACTIVE") {
-                        @if (order.status == "Atrasado") {
-                          <div class="timeline-item">
-                            <div class="sof-icon late" [class.first]="i == 0">
-                              <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" x2="12" y1="8" y2="12"></line>
-                                <line x1="12" x2="12.01" y1="16" y2="16"></line>
+                        <div class="timeline-box-title">
+                          <div class="timeline-box-title-department">{{ step.step }}</div>
+                          @if (step.userName) {
+                            <div class="timeline-box-title-user">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
                               </svg>
+                              {{ step.userName }}
                             </div>
+                          }
+                        </div>
 
-                            <div class="timeline-box late">
-                              <div class="timeline-box-header">
-                                <div class="step-icon">
-                                  @switch (step.step) {
-                                    @case("Montagem Final") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                                      </svg>
-                                    }
-                                    @case("PCP") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle>
-                                      </svg>
-                                    }
-                                    @case("Frete") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle>
-                                      </svg>
-                                    }
-                                    @case("Faturamento") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 17.5v-11"></path>
-                                      </svg>
-                                    }
-                                    @case("Expedição") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="m16 16 2 2 4-4"></path><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"></path><path d="m7.5 4.27 9 5.15"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><line x1="12" x2="12" y1="22" y2="12"></line>
-                                      </svg>
-                                    }
-                                  }
-                                </div>
-                                <div class="timeline-box-title">
-                                  <div class="timeline-box-title-department">{{ step.step }}</div>
-                                </div>
-                                <div class="timeline-box-dates">
-                                  @if (step.startedAt) {
-                                    <div>
-                                      <span>Início:</span>
-                                      <div>{{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}</div>
-                                    </div>
-                                  }
-                                </div>
+                        <div class="timeline-box-dates">
+                          @if (step.startedAt) {
+                            <div>
+                              <span>Início:</span>
+                              <div>{{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                            </div>
+                          }
+                          @if (step.finishedAt) {
+                            <div>
+                              <span>Fim:</span>
+                              <div>{{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                            </div>
+                          }
+                        </div>
+
+                      </div>
+
+                      <div class="timeline-box-log-container" [class.default]="!step.messages?.length">
+                        @if (step.messages?.length) {
+                          @for (message of step.messages; track message.id) {
+                            <div class="timeline-box-log">
+                              <div class="timeline-box-log-instant">
+                                <div>{{ message.created | date:'dd/MM/yyyy' }}</div>
+                                <span>{{ message.created | date:'HH:mm' }}<span class="hide">:</span></span>
                               </div>
-
-                              <div class="timeline-box-log-container" [class.default]="!step.messages.length">
-                                @for(message of step.messages; track message.id) {
-                                  <div class="timeline-box-log">
-                                    <div class="timeline-box-log-instant">
-                                      <div>{{ message.created | date:'dd/MM/yyyy' }}</div>
-                                      <span>{{ message.created | date:'HH:mm' }}<span class="hide">:</span></span>
-                                    </div>
-                                    <div class="timeline-box-log-text">
-                                      <strong>{{ message.userName ? message.userName : 'Sistema' }}: </strong><span [innerHtml]="message.message"></span>
-                                    </div>
-                                  </div>
-                                } @empty {
-                                  <i>Nenhuma mensagem encontrada!</i>
-                                }
+                              <div class="timeline-box-log-text">
+                                <strong>{{ message.userName ?? 'Sistema' }}: </strong>
+                                <span [innerHtml]="message.message"></span>
                               </div>
                             </div>
-                          </div>
+                          }
+                        } @else if (step.status === 'DONE' || step.status === 'ACTIVE') {
+                          <i>Nenhuma mensagem encontrada!</i>
                         } @else {
-                          <div class="timeline-item">
-                            <div class="sof-icon in-progress" [class.first]="i == 0">
-                              <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                              </svg>
-                            </div>
-
-                            <div class="timeline-box in-progress">
-                              <div class="timeline-box-header">
-                                <div class="step-icon">
-                                  @switch (step.step) {
-                                    @case("Montagem Final") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                                      </svg>
-                                    }
-                                    @case("PCP") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle>
-                                      </svg>
-                                    }
-                                    @case("Frete") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle>
-                                      </svg>
-                                    }
-                                    @case("Faturamento") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 17.5v-11"></path>
-                                      </svg>
-                                    }
-                                    @case("Expedição") {
-                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="m16 16 2 2 4-4"></path><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"></path><path d="m7.5 4.27 9 5.15"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><line x1="12" x2="12" y1="22" y2="12"></line>
-                                      </svg>
-                                    }
-                                  }
-                                </div>
-                                <div class="timeline-box-title">
-                                  <div class="timeline-box-title-department">{{ step.step }}</div>
-                                </div>
-                                <div class="timeline-box-dates">
-                                  @if (step.startedAt) {
-                                    <div>
-                                      <span>Início:</span>
-                                      <div>{{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}</div>
-                                    </div>
-                                  }
-                                </div>
-                              </div>
-
-                              <div class="timeline-box-log-container" [class.default]="!step.messages.length">
-                                @for(message of step.messages; track message.id) {
-                                  <div class="timeline-box-log">
-                                    <div class="timeline-box-log-instant">
-                                      <div>{{ message.created | date:'dd/MM/yyyy' }}</div>
-                                      <span>{{ message.created | date:'HH:mm' }}<span class="hide">:</span></span>
-                                    </div>
-                                    <div class="timeline-box-log-text">
-                                      <strong>{{ message.userName ? message.userName : 'Sistema' }}: </strong><span [innerHtml]="message.message"></span>
-                                    </div>
-                                  </div>
-                                } @empty {
-                                  <i>Nenhuma mensagem encontrada!</i>
-                                }
-                              </div>
-                            </div>
-                          </div>
+                          <i>Aguardando início desta etapa.</i>
                         }
-                      }
-
-                      @default {
-                        <div class="timeline-item ">
-                          <div class="sof-icon default" [class.first]="i == 0">
-                            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
-                              <circle cx="12" cy="12" r="10"></circle>
-                            </svg>
-                          </div>
-
-                          <div class="timeline-box default">
-                            <div class="timeline-box-header">
-                              <div class="step-icon">
-                                @switch (step.step) {
-                                  @case("Montagem Final") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                                    </svg>
-                                  }
-                                  @case("PCP") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M20 7h-9"></path><path d="M14 17H5"></path><circle cx="17" cy="17" r="3"></circle><circle cx="7" cy="7" r="3"></circle>
-                                    </svg>
-                                  }
-                                  @case("Frete") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle>
-                                    </svg>
-                                  }
-                                  @case("Faturamento") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 17.5v-11"></path>
-                                    </svg>
-                                  }
-                                  @case("Expedição") {
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                      <path d="m16 16 2 2 4-4"></path><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"></path><path d="m7.5 4.27 9 5.15"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><line x1="12" x2="12" y1="22" y2="12"></line>
-                                    </svg>
-                                  }
-                                }
-                              </div>
-                              <div class="timeline-box-title">
-                                <div class="timeline-box-title-department">{{ step.step }}</div>
-                              </div>
-                              <div class="timeline-box-dates">
-                              </div>
-                            </div>
-
-                            <div class="timeline-box-log-container default">
-                              <i>Aguardando início desta etapa.</i>
-                            </div>
-                          </div>
-                        </div>
-                      }
-                    }
+                      </div>
+                    </div>
+                  </div>
 
                 } @empty {
                   <i class="custom-error">Nenhuma etapa encontrada!</i>
@@ -376,7 +168,7 @@
                   <div class="timeline-obs">
                     <div class="timeline-obs-title">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                       </svg>
                       Observações do pedido
                     </div>
@@ -386,6 +178,70 @@
 
               </div>
             </div>
+
+            <ng-template #connectorIcon let-step="step">
+              @if (step.status === 'DONE') {
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+              } @else if (step.status === 'ACTIVE' && order.status === 'Atrasado') {
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" x2="12" y1="8" y2="12"/>
+                  <line x1="12" x2="12.01" y1="16" y2="16"/>
+                </svg>
+              } @else if (step.status === 'ACTIVE') {
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              } @else {
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/>
+                </svg>
+              }
+            </ng-template>
+
+            <ng-template #stepIcon let-step="step">
+              @switch (step.step) {
+                @case ('Montagem Final') {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                }
+                @case ('PCP') {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 7h-9"/><path d="M14 17H5"/>
+                    <circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>
+                  </svg>
+                }
+                @case ('Frete') {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+                    <path d="M15 18H9"/>
+                    <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+                    <circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+                  </svg>
+                }
+                @case ('Faturamento') {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+                    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                    <path d="M12 17.5v-11"/>
+                  </svg>
+                }
+                @case ('Expedição') {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m16 16 2 2 4-4"/>
+                    <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/>
+                    <path d="m7.5 4.27 9 5.15"/>
+                    <polyline points="3.29 7 12 12 20.71 7"/>
+                    <line x1="12" x2="12" y1="22" y2="12"/>
+                  </svg>
+                }
+              }
+            </ng-template>
           </c-tab-panel>
 
           <c-tab-panel [itemKey]="1">
@@ -409,10 +265,34 @@
                               <span>{{ item.description | truncate: 38}}</span>
                               <small class="t-value">R$ {{ item.unitPrice | number:'1.2-2':'pt-BR' }} / {{ item.unit }}</small>
                             </td>
-                            <td>{{ item.producedQuantity }}/{{ item.quantity }} {{ item.unit }}</td>
+                            <td>{{ item.producedQuantity }}/{{ item.quantity }}</td>
                             <td class="t-money">R$ {{ item.total | number:'1.2-2':'pt-BR' }}</td>
                           </tr>
                         }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="sof-table-container">
+                    <table class="sof-table sof-table-total">
+                      <thead>
+                        <tr>
+                          <th>Informações de envio</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <span>Transportadora</span>
+                            <span>{{ order.carrier ? order.carrier : "-" }}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <span>Frete</span>
+                            <span><strong>R$ {{ order.shipment | number:'1.2-2':'pt-BR' }}</strong></span>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </div>
@@ -437,16 +317,10 @@
                             <span>- R$ {{ order.discount | number:'1.2-2':'pt-BR' }}</span>
                           </td>
                         </tr>
-                        <tr>
-                          <td>
-                            <span>Frete {{ order.carrier ? `(${order.carrier})` : "" }}</span>
-                            <span>R$ {{ order.shipment | number:'1.2-2':'pt-BR' }}</span>
-                          </td>
-                        </tr>
                         <tr class="sof-total">
                           <td>
                             <span>Total do Pedido</span>
-                            <span class="sof-total-value">R$ {{ order.total + order.shipment | number:'1.2-2':'pt-BR' }}</span>
+                            <span class="sof-total-value">R$ {{ order.total | number:'1.2-2':'pt-BR' }}</span>
                           </td>
                         </tr>
                       </tbody>

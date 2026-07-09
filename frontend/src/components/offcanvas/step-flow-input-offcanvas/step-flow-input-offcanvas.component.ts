@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, TemplateIdDirective } from '@coreui/angular';
+import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, TemplateIdDirective } from '@coreui/angular';
 import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.directive';
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
-import { StepFlowOrder, StepFlowOrderItem } from '../../../app/interface/step-flow.interface';
+import { Step, StepFlowOrder, StepFlowOrderItem } from '../../../app/interface/step-flow.interface';
 import { UploadedFile } from '../../../app/interface/file.interface';
 import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { environment } from '../../../environments/environment';
@@ -23,6 +23,7 @@ import { environment } from '../../../environments/environment';
     AccordionButtonDirective,
     ReactiveFormsModule,
     FormsModule,
+    FormSelectDirective,
     FormControlDirective,
     FormLabelDirective,
     CurrencyMaskDirective,
@@ -34,6 +35,8 @@ import { environment } from '../../../environments/environment';
 })
 export class StepFlowInputOffcanvasComponent {
   @Input() orderId!: number;
+  @Input() isAdmin!: boolean;
+  @Input() steps!: Array<Step>;
   @Output() nextStepTask = new EventEmitter<number>();
   @Output() reloadOrders = new EventEmitter<void>();
 
@@ -43,6 +46,7 @@ export class StepFlowInputOffcanvasComponent {
   protected form!: FormGroup;
   protected itemsForm!: FormArray;
   protected showCancelModel = false;
+  protected adminStepControl = new FormControl<number | null>(null);
 
   // file
   readonly acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
@@ -95,6 +99,11 @@ export class StepFlowInputOffcanvasComponent {
         this.order = data;
         this.buildItemsForm(data.items);
         this.cdf.detectChanges();
+
+        if (this.isAdmin) {
+          const current = this.steps.find(s => s.title === data.currentStep);
+          this.adminStepControl.setValue(current?.id ?? null);
+        }
       },
       error: () => {
         this.cdf.detectChanges();
@@ -171,6 +180,17 @@ export class StepFlowInputOffcanvasComponent {
         this.order = data;
         this.buildItemsForm(data.items);
         this.resetForm();
+
+        if (this.isAdmin) {
+          const current = this.steps.find(s => s.title === data.currentStep);
+          this.adminStepControl.setValue(current?.id ?? null, { emitEvent: false });
+          this.adminStepControl.markAsPristine();
+
+          if (formData.has('setStage')) {
+            this.reloadOrders.emit();
+          }
+        }
+
         this.cdf.detectChanges();
       },
       error: (error) => {
@@ -187,6 +207,14 @@ export class StepFlowInputOffcanvasComponent {
   private buildFormData(): FormData {
     const formData = new FormData();
     const { carrier, shippment, comment } = this.form.value;
+
+    if (this.isAdmin && this.adminStepControl.dirty) {
+      const stepId = this.adminStepControl.value;
+
+      if (stepId !== null) {
+        formData.append('setStage', String(stepId - 1));
+      }
+    }
 
     if (this.order?.currentStep === 'Montagem Final') {
       const itemsPayload = this.itemsForm.value.map((item: any) => ({

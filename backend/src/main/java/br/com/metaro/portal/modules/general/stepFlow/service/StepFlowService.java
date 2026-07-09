@@ -49,18 +49,36 @@ public class StepFlowService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderMinDto> listOrders(String search, Pageable pageable) {
+    public Page<OrderMinDto> listOrders(Pageable pageable, String search, String stepFilter) {
         String translated = search;
+        String onlyStep = stepFilter;
 
         if (translated != null) {
-            OrderStatus status = OrderStatus.fromDescription(search);
-            if (status != null) translated = status.name();
-
             StepType step = StepType.fromDescription(search);
             if (step != null) translated = step.name();
+
+            OrderStatus status = OrderStatus.fromDescription(search);
+            if (status != null) translated = status.name();
         }
 
-        Page<Order> entities = orderRepository.search(translated != null ? translated : "", pageable);
+        if (onlyStep != null) {
+            StepType step = StepType.fromDescription(stepFilter);
+            if (step != null) onlyStep = step.name();
+        }
+
+        Page<Order> entities;
+
+        if (onlyStep != null) {
+            entities = orderRepository.searchOnlyStep(
+                    pageable,
+                    translated != null ? translated : "",
+                    onlyStep,
+                    OrderStatus.CANCELLED
+            );
+            return entities.map(OrderMinDto::new);
+        }
+
+        entities = orderRepository.search(pageable, translated != null ? translated : "");
         return entities.map(OrderMinDto::new);
     }
 
@@ -72,13 +90,13 @@ public class StepFlowService {
 
     @Transactional(readOnly = true)
     public StepFlowInfoDto generateDashboard() {
-        StatusCountsProjection counts = orderRepository.findStatusCounts().orElseThrow(ResourceNotFoundException::new);
+        StatusCountsProjection counts = orderRepository.findCountByStatus().orElseThrow(ResourceNotFoundException::new);
         Integer total = counts.getTotalCount() != null ? counts.getTotalCount().intValue() : 0;
         Integer progress = counts.getProgressCount() != null ? counts.getProgressCount().intValue() : 0;
         Integer complete = counts.getCompleteCount() != null ? counts.getCompleteCount().intValue() : 0;
         Integer late = counts.getLateCount() != null ? counts.getLateCount().intValue() : 0;
 
-        Map<StepType, Integer> stepMap = orderRepository.findCountByStep(OrderStatus.COMPLETED).stream().collect(Collectors
+        Map<StepType, Integer> stepMap = orderRepository.findCountByStep(OrderStatus.IN_PROGRESS).stream().collect(Collectors
                 .toMap(StepCountProjection::getStep, row -> row.getCount().intValue()));
 
         List<Integer> stepsCount = Arrays.stream(StepType.values())
@@ -207,10 +225,15 @@ public class StepFlowService {
 
     private void rulesForUpdate(OrderInputDto dto, Order order) throws IOException {
         User me = userService.authenticate();
-        if (!canInteract(order, me)) throw new ForbiddenException("Usuário não corresponde ao setor competente!");
 
+        if (!canInteract(order, me)) {
+            throw new ForbiddenException("Usuário não corresponde ao setor competente!");
+        }
         if (order.getStatus().equals(OrderStatus.CANCELLED)) {
             throw new UnprocessableEntityException("Não é possível editar um pedido cancelado!");
+        }
+        if (order.getStatus().equals(OrderStatus.COMPLETED)) {
+            throw new UnprocessableEntityException("Não é possível editar um pedido concluído!");
         }
 
         OrderStep currentStep = order.getSteps()
@@ -221,6 +244,36 @@ public class StepFlowService {
 
         if (dto.getComment() != null && !dto.getComment().trim().isEmpty()) {
             currentStep.getMessages().add(new StepMessage(StringUtils.toMarkdown(dto.getComment()), currentStep, me));
+        }
+
+        if (dto.getNewStepId() != null && order.getCurrentStep() != StepType.values()[dto.getNewStepId()]) {
+            boolean isAdmin = me.getAuthorities().stream().anyMatch(a -> a
+                    .getAuthority().equals("ROLE_ADMIN"));
+
+            if (!isAdmin) {
+                throw new ForbiddenException("Apenas administradores podem alterar etapas!");
+            }
+
+            if (dto.getNewStepId() > order.getCurrentStep().ordinal()) {
+                throw new UnprocessableEntityException("Só é permitido retroceder etapas!");
+            }
+
+            currentStep.getMessages().add(new StepMessage("*Etapa alterada*: %s -> %s".formatted(order.getCurrentStep()
+                    .getDescription(), StepType.values()[dto.getNewStepId()].getDescription()), currentStep, me));
+            order.setCurrentStep(StepType.values()[dto.getNewStepId()]);
+
+            for (OrderStep step : order.getSteps()) {
+                if (step.getStep().ordinal() < dto.getNewStepId()) {
+                    step.setStatus(StepStatus.DONE);
+                    continue;
+                }
+                if (step.getStep().ordinal() == dto.getNewStepId()) {
+                    step.setStatus(StepStatus.ACTIVE);
+                    continue;
+                }
+
+                step.setStatus(StepStatus.WAITING);
+            }
         }
 
         switch (order.getCurrentStep()) {

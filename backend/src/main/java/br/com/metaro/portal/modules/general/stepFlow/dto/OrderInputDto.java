@@ -17,6 +17,7 @@ public class OrderInputDto {
     private String shippment;
     private String comment;
     private String cancelled;
+    private Integer newStepId;
     private List<OrderItemInputDto> items;
     private MultipartFile[] images;
 }
