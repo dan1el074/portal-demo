@@ -137,8 +137,8 @@
 
                       </div>
 
-                      <div class="timeline-box-log-container" [class.default]="!step.messages?.length">
-                        @if (step.messages?.length) {
+                      <div class="timeline-box-log-container" [class.default]="!step.messages.length">
+                        @if (step.messages.length) {
                           @for (message of step.messages; track message.id) {
                             <div class="timeline-box-log">
                               <div class="timeline-box-log-instant">
@@ -146,7 +146,7 @@
                                 <span>{{ message.created | date:'HH:mm' }}<span class="hide">:</span></span>
                               </div>
                               <div class="timeline-box-log-text">
-                                <strong>{{ message.userName ?? 'Sistema' }}: </strong>
+                                <strong>{{ message.userName ? message.userName : 'Sistema' }}: </strong>
                                 <span [innerHtml]="message.message"></span>
                               </div>
                             </div>
