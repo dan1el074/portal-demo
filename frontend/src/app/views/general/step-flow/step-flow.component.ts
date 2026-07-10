@@ -193,7 +193,7 @@ export class StepFlowComponent implements OnInit {
       next: () => {
         this.toaster.success("Registro criado com sucesso!");
         this.loadOrders();
-        this.loadCurrentStepOrders(this.currentStepIndex - 1);
+        if (this.currentStepIndex) this.loadCurrentStepOrders(this.currentStepIndex - 1);
       },
       error: () => {
         this.toaster.error("Erro ao criar registro!")
@@ -304,7 +304,7 @@ export class StepFlowComponent implements OnInit {
   }
 
   protected reloadOrders(): void {
-    this.loadCurrentStepOrders(this.currentStepIndex - 1);
+    if (this.currentStepIndex) this.loadCurrentStepOrders(this.currentStepIndex - 1);
     this.loadOrders();
   }
 
