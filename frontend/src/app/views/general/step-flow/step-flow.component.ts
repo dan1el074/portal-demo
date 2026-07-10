@@ -45,7 +45,7 @@ export class StepFlowComponent implements OnInit {
   protected resume!: Array<Resume>;
   protected steps!: Array<Step>;
   protected dashboard!: AdminDashboard;
-  protected currentStepIndex!: number;
+  protected currentStepIndex: number = -1;
   protected loading: boolean = true;
   protected showNewModal: boolean = false;
   private user!: Me | null;
@@ -240,6 +240,7 @@ export class StepFlowComponent implements OnInit {
   private getStepAccess(): void {
     if (!this.user) {
       this.toaster.error("Erro ao ler dados do usuário");
+      this.currentStepIndex = -1;
       return;
     }
 
@@ -268,6 +269,8 @@ export class StepFlowComponent implements OnInit {
       case 'Almoxarifado':
         this.currentStepIndex = this.steps.findIndex(step => step.title == 'Expedição');
         break;
+      default:
+        this.currentStepIndex = -1;
     }
   }
 
