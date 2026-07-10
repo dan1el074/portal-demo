@@ -75,7 +75,7 @@
                       <small>
                         @switch (step.status) {
                           @case ('DONE') {
-                            {{ step.userName ?? 'Sistema' }} · {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}
+                            {{ step.userName ? step.userName : 'Sistema' }} · {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}
                           }
                           @case ('ACTIVE') {
                             <i>Em andamento</i> · iniciado em {{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}
@@ -109,7 +109,7 @@
                     @for (message of step.messages; track message.id) {
                       <div class="sofd-comment">
                         <div class="sofd-comment-label">
-                          <span>{{ message.userName ?? 'Sistema' }}</span>
+                          <span>{{ message.userName ? message.userName : 'Sistema' }}</span>
                           {{ message.created ? (message.created | date:'dd/MM/yyyy HH:mm') : 'Agora' }}
                         </div>
                         <span [innerHtml]="message.message"></span>
@@ -135,7 +135,7 @@
                   <span>{{ step.step }}</span>
                   <small>
                     @if (step.status === 'DONE') {
-                      {{ step.userName ?? 'Sistema' }} · {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}
+                      {{ step.userName ? step.userName : 'Sistema' }} · {{ step.finishedAt | date:'dd/MM/yyyy HH:mm' }}
                     } @else if (step.status === 'ACTIVE') {
                       <i>Em andamento</i> · iniciado em {{ step.startedAt | date:'dd/MM/yyyy HH:mm' }}
                     } @else {
