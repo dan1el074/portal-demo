@@ -345,13 +345,21 @@ export class StepFlowInputOffcanvasComponent {
     }
   }
 
+  private generateId(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  }
+
   private processFiles(newFiles: File[]): void {
     const invalid = newFiles.filter(f => !this.acceptedTypes.includes(f.type));
     if (invalid.length > 0) this.toasterService.error('Use apenas PNG, JPEG, JPG ou WEBP.');
 
     const valid = newFiles.filter(f => this.acceptedTypes.includes(f.type));
     const mapped: UploadedFile[] = valid.map(f => ({
-      id: crypto.randomUUID(),
+      id: this.generateId(),
       file: f,
       name: f.name,
       size: this.formatSize(f.size),
