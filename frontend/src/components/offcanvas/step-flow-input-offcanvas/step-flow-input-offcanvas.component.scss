@@ -549,6 +549,7 @@
         align-items: center;
         gap: 8px;
         width: fit-content;
+        height: 34px;
         font-size: 13px;
         border-radius: 6px;
         padding: 4px 12px;
@@ -566,6 +567,11 @@
 
         svg {
           width: 14px;
+        }
+
+        c-spinner {
+          width: 14px;
+          height: 14px;
         }
       }
     }

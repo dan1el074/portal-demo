@@ -314,12 +314,14 @@ public class StepFlowService {
         List<Order> orders = orderRepository.findByNumber(order.getNumber(), OrderStatus.CANCELLED);
         orders = orders.stream().filter(o -> !o.getId().equals(order.getId())).toList();
 
-        for (OrderItem item : order.getItems()) {
+        List<OrderItem> items = order.getItems();
+
+        for (OrderItem item : items) {
             Integer totalProduced = 0;
 
             for (Order currentOrder : orders) {
                 for (OrderItem orderItem : currentOrder.getItems()) {
-                    if (!orderItem.getItemCode().equals(item.getItemCode())) break;
+                    if (!orderItem.getItemCode().equals(item.getItemCode())) continue;
                     totalProduced += orderItem.getProducedQuantity();
                 }
             }
@@ -330,7 +332,7 @@ public class StepFlowService {
 
             if (inputDto.getProducedQuantity() <= (item.getQuantity() - totalProduced)) {
                 item.setProducedQuantity(inputDto.getProducedQuantity());
-                break;
+                continue;
             }
 
             throw new UnprocessableEntityException("Essa quantidade de itens não pode ser utilizada!");
