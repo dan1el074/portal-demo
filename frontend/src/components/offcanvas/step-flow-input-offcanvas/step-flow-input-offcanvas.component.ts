@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, computed, EventEmitter, Input, Output, si
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, TemplateIdDirective } from '@coreui/angular';
+import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent, TemplateIdDirective } from '@coreui/angular';
 import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.directive';
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
@@ -10,6 +10,7 @@ import { Step, StepFlowOrder, StepFlowOrderItem } from '../../../app/interface/s
 import { UploadedFile } from '../../../app/interface/file.interface';
 import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { environment } from '../../../environments/environment';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -28,7 +29,8 @@ import { environment } from '../../../environments/environment';
     FormLabelDirective,
     CurrencyMaskDirective,
     CancelStepFlowModalComponent,
-    TruncatePipe
+    TruncatePipe,
+    SpinnerComponent
   ],
   templateUrl: './step-flow-input-offcanvas.component.html',
   styleUrl: './step-flow-input-offcanvas.component.scss',
@@ -47,6 +49,7 @@ export class StepFlowInputOffcanvasComponent {
   protected itemsForm!: FormArray;
   protected showCancelModel = false;
   protected adminStepControl = new FormControl<number | null>(null);
+  protected saveLoading: boolean = false;
 
   // file
   readonly acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
@@ -166,42 +169,45 @@ export class StepFlowInputOffcanvasComponent {
       return;
     }
 
-    this.stepFlowService.updateStep(this.orderId, formData).subscribe({
-      next: (data: StepFlowOrder) => {
-        this.toasterService.success('Etapa atualizada com sucesso.');
+    this.saveLoading = true;
 
-        if (hasQuantityChanges) {
-          this.close();
-          this.reloadOrders.emit();
-          this.cdf.detectChanges();
-          return;
-        }
-
-        this.order = data;
-        this.buildItemsForm(data.items);
-        this.resetForm();
-
-        if (this.isAdmin) {
-          const current = this.steps.find(s => s.title === data.currentStep);
-          this.adminStepControl.setValue(current?.id ?? null, { emitEvent: false });
-          this.adminStepControl.markAsPristine();
-
-          if (formData.has('setStage')) {
-            this.reloadOrders.emit();
-          }
-        }
-
+    this.stepFlowService.updateStep(this.orderId, formData)
+      .pipe(finalize(() => {
+        this.saveLoading = false;
         this.cdf.detectChanges();
-      },
-      error: (error) => {
-        if (error.error.status == 422) {
-          this.toasterService.error(error.error.error);
-          return;
-        }
+      }))
+      .subscribe({
+        next: (data: StepFlowOrder) => {
+          this.toasterService.success('Etapa atualizada com sucesso.');
 
-        this.toasterService.error('Erro ao atualizar a etapa.');
-      }
-    });
+          if (hasQuantityChanges) {
+            this.close();
+            this.reloadOrders.emit();
+            return;
+          }
+
+          this.order = data;
+          this.buildItemsForm(data.items);
+          this.resetForm();
+
+          if (this.isAdmin) {
+            const current = this.steps.find(s => s.title === data.currentStep);
+            this.adminStepControl.setValue(current?.id ?? null, { emitEvent: false });
+            this.adminStepControl.markAsPristine();
+
+            if (formData.has('setStage')) {
+              this.reloadOrders.emit();
+            }
+          }
+        },
+        error: (error) => {
+          if (error.error.status == 422) {
+            this.toasterService.error(error.error.error);
+            return;
+          }
+          this.toasterService.error('Erro ao atualizar a etapa.');
+        }
+      });
   }
 
   private buildFormData(): FormData {
