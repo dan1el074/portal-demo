@@ -42,6 +42,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND s.step = :step
             AND s.status = :status
             AND o.status <> :orderStatus
+        ORDER BY o.number
     """)
     public List<Order> findByCurrentStep(@Param("step") StepType step,
                                          @Param("status") StepStatus status,
@@ -63,6 +64,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             OR LOWER(o.currentStep) LIKE LOWER(CONCAT('%', :search, '%'))
             OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
             OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
+        ORDER BY o.number
     """)
     public Page<Order> search(Pageable pageable, @Param("search") String search);
 
@@ -76,6 +78,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                 OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
                 OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
             )
+        ORDER BY o.number
     """)
     public Page<Order> searchOnlyStep(Pageable pageable, @Param("search") String search, @Param("step") String step,
                                       @Param("status") OrderStatus status);

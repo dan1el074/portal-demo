@@ -45,7 +45,7 @@ export class StepFlowComponent implements OnInit {
   protected resume!: Array<Resume>;
   protected steps!: Array<Step>;
   protected dashboard!: AdminDashboard;
-  protected currentStepIndex: number = -1;
+  protected currentStepIndex: number = - 1;
   protected loading: boolean = true;
   protected showNewModal: boolean = false;
   private user!: Me | null;
