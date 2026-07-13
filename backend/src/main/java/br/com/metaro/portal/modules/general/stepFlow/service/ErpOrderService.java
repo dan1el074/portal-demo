@@ -36,21 +36,13 @@ public class ErpOrderService {
                         .orElseThrow(ResourceNotFoundException::new)
                         .getProducedQuantity();
 
-                Integer InvoicedQuantity = order.getItems()
-                        .stream()
-                        .filter(oi -> oi.getItemCode().equals(item.getCode()))
-                        .findFirst()
-                        .orElseThrow(ResourceNotFoundException::new)
-                        .getInvoicedQuantity();
-
                 item.setProducedQuantity(item.getProducedQuantity() + producedQuantity);
-                item.setInvoicedQuantity(item.getInvoicedQuantity() + InvoicedQuantity);
             }
         }
 
         if (dto.getItems().stream()
                 .allMatch(item -> item.getProducedQuantity().equals(item.getQuantity()))) {
-            throw new UnprocessableEntityException("Essa ordem já foi produzida!");
+            throw new UnprocessableEntityException("Pedido não disponível para produção!");
         }
 
         return dto;
