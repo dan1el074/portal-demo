@@ -155,7 +155,7 @@ export class StepFlowComponent implements OnInit {
     this.loadOrders();
 
     if (this.isAdmin) this.loadDashboard();
-    if (this.currentStepIndex) this.loadCurrentStepOrders(this.currentStepIndex - 1);
+    if (this.currentStepIndex > 0) this.loadCurrentStepOrders(this.currentStepIndex - 1);
   }
 
   public openOrder(orderId: number) {
@@ -193,7 +193,7 @@ export class StepFlowComponent implements OnInit {
       next: () => {
         this.toaster.success("Registro criado com sucesso!");
         this.loadOrders();
-        if (this.currentStepIndex) this.loadCurrentStepOrders(this.currentStepIndex - 1);
+        if (this.currentStepIndex > 0) this.loadCurrentStepOrders(this.currentStepIndex - 1);
       },
       error: () => {
         this.toaster.error("Erro ao criar registro!")
@@ -304,7 +304,7 @@ export class StepFlowComponent implements OnInit {
   }
 
   protected reloadOrders(): void {
-    if (this.currentStepIndex) this.loadCurrentStepOrders(this.currentStepIndex - 1);
+    if (this.currentStepIndex > 0) this.loadCurrentStepOrders(this.currentStepIndex - 1);
     this.loadOrders();
   }
 

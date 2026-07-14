@@ -21,7 +21,6 @@ public class OrderItem {
     private String unit;
     private Integer quantity;
     private Integer producedQuantity;
-    private Integer invoicedQuantity;
     private Double unitPrice;
     private Double total;
 

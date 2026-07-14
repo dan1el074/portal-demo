@@ -92,6 +92,4 @@ public class Order {
     public void preUpdate() {
         updatedAt = Instant.now();
     }
-
-    // TODO: avaliar consultas no banco de dados (N+1).
 }

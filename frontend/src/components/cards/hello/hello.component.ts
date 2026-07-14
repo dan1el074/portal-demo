@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { ButtonModule, CardModule } from '@coreui/angular';
 import { HomeCardStat } from './../../../app/interface/user.interface';
 import { RouterLink } from '@angular/router';
@@ -26,7 +26,10 @@ export class HelloComponent {
 
   readonly stats: HomeCardStat[] = [];
 
-  constructor(protected websocket: NotificationWebSocketService) {}
+  constructor(
+    protected websocket: NotificationWebSocketService,
+    private cdf: ChangeDetectorRef
+  ) {}
 
   public ngOnInit(): void {
     this.stats.push(
@@ -67,6 +70,8 @@ export class HelloComponent {
         iconBg: 'rgba(59,130,246,0.12)',
       }
     );
+
+    this.cdf.detectChanges();
   }
 
   protected get firstName(): string {

@@ -4,7 +4,7 @@
       <c-avatar
         shape="rounded-1"
         size="xl"
-        [src]="post.author.picture ? apiUrl + '/images/' + post.author.picture.id : './assets/images/avatars/default.png'"
+        [src]="post.author.picture ? post.author.picture.id ? apiUrl + '/images/' + post.author.picture.id : './assets/images/avatars/default.png' : './assets/images/avatars/default.png'"
         textColor="primary"
         alt="User avatar"
       />

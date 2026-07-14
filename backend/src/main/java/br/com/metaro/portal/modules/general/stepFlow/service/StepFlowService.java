@@ -197,7 +197,6 @@ public class StepFlowService {
             item.setUnit(dto.getUnit());
             item.setQuantity(dto.getQuantity());
             item.setProducedQuantity(dto.getProducedQuantity());
-            item.setInvoicedQuantity(dto.getInvoicedQuantity());
             item.setUnitPrice(dto.getUnitValue());
             item.setTotal(dto.getUnitValue() * dto.getQuantity());
 
@@ -300,10 +299,6 @@ public class StepFlowService {
                     .equals(input.getId())).findFirst().orElseThrow(ResourceNotFoundException::new);
 
             if (input.getProducedQuantity() != null && !input.getProducedQuantity().equals(item.getProducedQuantity())) {
-                found = true;
-                break;
-            }
-            if (input.getInvoicedQuantity() != null && !input.getInvoicedQuantity().equals(item.getInvoicedQuantity())) {
                 found = true;
                 break;
             }

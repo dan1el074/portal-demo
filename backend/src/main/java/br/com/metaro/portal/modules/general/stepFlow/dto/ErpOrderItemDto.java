@@ -14,5 +14,4 @@ public class ErpOrderItemDto {
     private final String unit;
     private final Integer quantity;
     private Integer producedQuantity;
-    private Integer invoicedQuantity;
 }

@@ -16,7 +16,6 @@ public class OrderItemDto {
     private Double unitPrice;
     private Integer quantity;
     private Integer producedQuantity;
-    private Integer invoicedQuantity;
     private Double total;
 
     public OrderItemDto(OrderItem entity) {
@@ -27,7 +26,6 @@ public class OrderItemDto {
         unitPrice = entity.getUnitPrice();
         quantity = entity.getQuantity();
         producedQuantity = entity.getProducedQuantity();
-        invoicedQuantity = entity.getInvoicedQuantity();
         total = entity.getTotal();
     }
 }

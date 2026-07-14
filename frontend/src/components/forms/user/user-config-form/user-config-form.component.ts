@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonCloseDirective, ButtonDirective, ColComponent, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { DatePickerComponent, FormPasswordDirective } from '@coreui/angular-pro';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPencil, cilX } from '@coreui/icons';
@@ -16,11 +16,10 @@ import { RouterLink } from '@angular/router';
   selector: 'app-user-config-form',
   imports: [
     CommonModule,
+    CardComponent,
+    CardBodyComponent,
     ReactiveFormsModule,
     ImageCropperComponent,
-    ColComponent,
-    RowComponent,
-    FormFloatingDirective,
     FormLabelDirective,
     FormControlDirective,
     IconDirective,
@@ -33,7 +32,7 @@ import { RouterLink } from '@angular/router';
     ModalFooterComponent,
     DatePickerComponent,
     FormPasswordDirective,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './user-config-form.component.html',
   styleUrl: './user-config-form.component.scss',

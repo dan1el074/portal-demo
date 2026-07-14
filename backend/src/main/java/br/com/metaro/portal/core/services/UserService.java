@@ -1,24 +1,22 @@
 package br.com.metaro.portal.core.services;
 
 import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
+import br.com.metaro.portal.core.dto.role.RoleDto;
 import br.com.metaro.portal.core.dto.user.*;
-import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.PositionRepository;
 import br.com.metaro.portal.core.repositories.RoleRepository;
 import br.com.metaro.portal.core.repositories.UserRepository;
-import br.com.metaro.portal.core.repositories.projections.UserDetailsProjection;
+import br.com.metaro.portal.core.repositories.projections.*;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
-import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
+import br.com.metaro.portal.modules.general.memorando.repository.projections.MemorandoPendingProjection;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.PictureService;
-import br.com.metaro.portal.util.picture.PictureType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,19 +33,18 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private PositionRepository positionRepository;
-    @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private PositionRepository positionRepository;
     @Autowired
     private PictureService pictureService;
     @Autowired
@@ -57,84 +54,96 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public List<UserMinDto> findAll() {
-        Sort sort = Sort.by("name");
-        List<User> users = userRepository.findAll(sort);
-        return users.stream().map(UserMinDto::new).toList();
+        return userRepository.findAllMin();
     }
 
     @Transactional(readOnly = true)
     public List<UserGroupDto> listByPositionName() {
-        List<User> users = userRepository.findAll();
-        List<UserGroupDto> dtos = new ArrayList<>();
+        Map<String, List<UserSummaryMinDto>> groups = new LinkedHashMap<>();
 
-        for (User user : users) {
-            if (!user.getActivated()) continue;
-
-            Boolean find = false;
-
-            if (!dtos.isEmpty()) {
-                for (UserGroupDto groupDto : dtos) {
-                    if (groupDto.getTitle().equals(user.getPosition().getName())) {
-                        groupDto.getChildrens().add(new UserSummaryMinDto(user));
-                        find = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!find) {
-                List<UserSummaryMinDto> summaryMinDtoList = new ArrayList<>();
-                summaryMinDtoList.add(new UserSummaryMinDto(user));
-                dtos.add(new UserGroupDto(user.getPosition().getName(), summaryMinDtoList));
-            }
+        for (UserGroupProjection row : userRepository.findAllGrouped()) {
+            groups.computeIfAbsent(row.getPosition(), k -> new ArrayList<>())
+                    .add(new UserSummaryMinDto(row.getId(), row.getName()));
         }
 
-        return dtos;
+        return groups.entrySet().stream()
+                .map(entry -> new UserGroupDto(entry.getKey(), entry.getValue())).toList();
     }
 
     @Transactional(readOnly = true)
     public UserEditDto findById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> {
-            throw new RuntimeException("Erro ao buscar usuário por ID");
-        });
-        return new UserEditDto(user);
+        UserEditProjection projection = userRepository.findEditById(id)
+                .orElseThrow(() -> new RuntimeException("Erro ao buscar usuário por ID"));
+
+        return new UserEditDto(
+                projection.getId(),
+                projection.getPictureId(),
+                projection.getName(),
+                projection.getPositionId(),
+                projection.getEmail(),
+                projection.getBirthDate(),
+                projection.getUsername(),
+                roleRepository.findRoleIds(id),
+                projection.getActivated(),
+                projection.getSupportToken()
+        );
     }
 
     @Transactional(readOnly = true)
     public MeDto getMe() {
-        User user = authenticate();
+        String username = authenticatedUsername();
 
-        if (user.getRoles().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"))) {
-            user.getRoles().clear();
-            List<Role> roleList = roleRepository.findAll();
+        MeProjection me = userRepository.findMeProjectionByUsername(username)
+                .orElseThrow(ResourceNotFoundException::new);
 
-            for (Role role : roleList) {
-                if (role.getAuthority().equals("ROLE_USER")) continue;
-                user.getRoles().add(role);
-            }
+        List<RoleProjection> roles = userRepository.findRoleProjectionsByUsername(username);
+
+        if (roles.stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getAuthority()))) {
+            roles = roleRepository.findAllAdminRoles();
         }
 
-        MeDto dto = new MeDto(user);
+        MeDto dto = new MeDto(me);
+
+        roles.forEach(role -> dto.getRoles().add(new RoleDto(role)));
+
+        List<NotificationMinProjection> notifications = userRepository.findNotificationsByUsername(username);
+
+        List<Long> memorandoIds = notifications.stream()
+                .filter(n -> n.getType() == NotificationType.MEMORANDO)
+                .map(NotificationMinProjection::getReferenceId)
+                .distinct()
+                .toList();
+
+        Map<Long, MemorandoPendingProjection> memorandos = Collections.emptyMap();
+
+        if (!memorandoIds.isEmpty()) {
+            memorandos = memorandoRepository.findPendingByIds(memorandoIds)
+                    .stream()
+                    .collect(Collectors.toMap(MemorandoPendingProjection::getId, Function.identity()));
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy").withZone(ZoneId.systemDefault());
+
         Long count = 1L;
 
-        for (Notification notification : user.getNotifications()) {
-            if (notification.getType().equals(NotificationType.MEMORANDO)) {
-                Memorando memorando = memorandoRepository.findById(notification.getReferenceId())
-                        .orElseThrow(ResourceNotFoundException::new);
+        for (NotificationMinProjection notification : notifications) {
+            if (notification.getType() != NotificationType.MEMORANDO) continue;
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy").withZone(ZoneId.systemDefault());
-                String year = formatter.format(memorando.getCreateAt());
+            MemorandoPendingProjection memorando = memorandos.get(notification.getReferenceId());
 
-                String urgency = "pending";
-                if (Duration.between(memorando.getCreateAt(), Instant.now()).toHours() >= 24) {
-                    urgency = "urgent";
-                }
+            if (memorando == null) continue;
 
-                dto.getPendingIssues().add(new PendingIssuesDto(count, "Memorando %d/%s"
-                        .formatted(memorando.getNumber(), year),"Falta sua assiantura!", urgency));
+            String urgency = Duration.between(memorando.getCreateAt(), Instant.now())
+                    .toHours() >= 24 ? "urgent" : "pending";
 
-                count++;
-            }
+            dto.getPendingIssues().add(
+                    new PendingIssuesDto(
+                            count++,
+                            "Memorando %d/%s".formatted(memorando.getNumber(),formatter.format(memorando.getCreateAt())),
+                            "Falta sua assinatura!",
+                            urgency
+                    )
+            );
         }
 
         return dto;
@@ -142,8 +151,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public UserConfigDto getConfig() {
-        User user = authenticate();
-        return new UserConfigDto(user);
+        return userRepository.findConfigByUsername(authenticatedUsername())
+                .map(UserConfigDto::new)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional
@@ -157,16 +167,25 @@ public class UserService implements UserDetailsService {
     @Transactional
     public List<UserMinDto> update(Long id, UserInsertDto dto, String resetPicture) throws IOException {
         User user = userRepository.getReferenceById(id);
-        rulesForUpdate(dto, user, resetPicture);
+        Picture pictureToDelete = rulesForUpdate(dto, user, resetPicture);
+
         user = userRepository.save(user);
+        userRepository.flush();
+
+        if (pictureToDelete != null) pictureService.deleteCheckingReferences(pictureToDelete.getId(), user.getId());
         return findAll();
     }
 
     @Transactional
     public UserConfigDto updateConfig(UserConfigInsertDto dto, String resetPicture) throws IOException {
         User user = authenticate();
-        rulesForUpdateConfig(dto, user, resetPicture);
+        Picture pictureToDelete = rulesForUpdateConfig(dto, user, resetPicture);
+
         user = userRepository.save(user);
+        userRepository.flush();
+
+        if (pictureToDelete != null) pictureService.deleteCheckingReferences(pictureToDelete.getId(), user.getId());
+
         return new UserConfigDto(user);
     }
 
@@ -182,7 +201,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    private void rulesForUpdate(UserInsertDto dto, User entity, String resetPicture) throws IOException {
+    private Picture rulesForUpdate(UserInsertDto dto, User entity, String resetPicture) throws IOException {
         entity.setName(dto.getName());
         entity.setPosition(positionRepository.getReferenceById(Long.valueOf(dto.getPosition())));
         entity.setBirthDate(dto.getBirthDate());
@@ -205,10 +224,7 @@ public class UserService implements UserDetailsService {
         List<Long> rolesList = new ArrayList<>();
         if (dto.getRoles() != null && !dto.getRoles().isBlank()) {
             rolesList.addAll(
-                    Arrays.stream(dto.getRoles().split(","))
-                            .map(String::trim)
-                            .map(Long::valueOf)
-                            .toList()
+                    Arrays.stream(dto.getRoles().split(",")).map(String::trim).map(Long::valueOf).toList()
             );
         }
 
@@ -218,8 +234,8 @@ public class UserService implements UserDetailsService {
             Role role = roleRepository.findById(roleId).orElseThrow(ResourceNotFoundException::new);
 
             if (
-                role.getFather() != null &&
-                entity.getRoles().stream().noneMatch(r -> r.getId().equals(role.getFather().getId()))
+                    role.getFather() != null && entity.getRoles().stream()
+                            .noneMatch(r -> r.getId().equals(role.getFather().getId()))
             ) {
                 entity.addRole(role.getFather());
             }
@@ -227,59 +243,54 @@ public class UserService implements UserDetailsService {
             entity.addRole(role);
         }
 
-        if (resetPicture != null && resetPicture.equals("true")) {
-            if (entity.getPicture() != null) {
-                pictureService.delete(entity.getPicture().getId());
-            }
+        Picture pictureToDelete = null;
 
+        if (resetPicture != null && resetPicture.equals("true")) {
+            pictureToDelete = entity.getPicture();
             entity.setPicture(null);
-            return;
+            return pictureToDelete;
         }
 
-        if (dto.getPicture() != null)  {
+        if (dto.getPicture() != null) {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
             Picture picture = pictureService.saveProfileImages(fileList).get(0);
 
-            if (entity.getPicture() != null) {
-                pictureService.delete(entity.getPicture().getId());
-            }
-
+            pictureToDelete = entity.getPicture();
             entity.setPicture(picture);
         }
+
+        return pictureToDelete;
     }
 
-    private void rulesForUpdateConfig(UserConfigInsertDto dto, User entity, String resetPicture) throws IOException {
+    private Picture rulesForUpdateConfig(UserConfigInsertDto dto, User entity, String resetPicture) throws IOException {
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
         entity.setBirthDate(dto.getBirthDate());
         entity.setUpdateAt(Instant.now());
 
         if (dto.getPassword() != null) {
-            String newPassword = passwordEncoder.encode(dto.getPassword());
-            entity.setPassword(newPassword);
+            entity.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
+
+        Picture pictureToDelete = null;
 
         if (resetPicture != null && resetPicture.equals("true")) {
-            if (entity.getPicture() != null) {
-                pictureService.delete(entity.getPicture().getId());
-            }
-
+            pictureToDelete = entity.getPicture();
             entity.setPicture(null);
-            return;
+            return pictureToDelete;
         }
 
-        if (dto.getPicture() != null)  {
+        if (dto.getPicture() != null) {
             List<MultipartFile> fileList = new ArrayList<>();
             fileList.add(dto.getPicture());
-            Picture picture = pictureService.saveProfileImages(fileList).get(0);
+            Picture picture = pictureService.saveProfileImages(fileList).getFirst();
 
-            if (entity.getPicture() != null) {
-                pictureService.delete(entity.getPicture().getId());
-            }
-
+            pictureToDelete = entity.getPicture();
             entity.setPicture(picture);
         }
+
+        return pictureToDelete;
     }
 
     private void rulesForInsert(UserInsertDto dto, User entity) throws IOException {
@@ -332,12 +343,14 @@ public class UserService implements UserDetailsService {
     }
 
     public User authenticate() {
-        // pega os claims do token
+        return userRepository.findMeByUsername(authenticatedUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("\"username\" não encontrado"));
+    }
+
+    private String authenticatedUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
-        String username = jwtPrincipal.getClaim("username");
-
-        return userRepository.findMeByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        return jwtPrincipal.getClaim("username");
     }
 
     @Override
