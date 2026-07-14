@@ -15,21 +15,16 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class UserConfigInsertDto {
-
     private MultipartFile picture;
-
     @NotBlank(message = "Nome é obrigatório")
     private String name;
-
     @Email(message = "Email inválido")
     @NotBlank(message = "Email é obrigatório")
     private String email;
-
     @PastOrPresent(message = "Data inválida")
     @NotNull(message = "Data de nascimento é obrigatória")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthDate;
-
     @Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres")
     private String password;
 }

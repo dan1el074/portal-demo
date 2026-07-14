@@ -28,18 +28,18 @@ public class Picture {
     private String size;
     private Instant createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "step_id")
     private OrderStep orderStep;
 
-    @OneToOne(mappedBy = "picture")
+    @OneToOne(mappedBy = "picture", fetch = FetchType.LAZY)
     private User user;
 
-    @OneToOne(mappedBy = "picture", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "picture", fetch = FetchType.LAZY)
     private Event event;
 
     @PrePersist

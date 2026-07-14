@@ -7,10 +7,10 @@ INSERT INTO tb_post (content, is_warning, created_at, updated_at) VALUES ('Hoje 
 INSERT INTO tb_post (content, is_warning, created_at, updated_at) VALUES ('', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO tb_post (content, is_warning, created_at, updated_at) VALUES ('Hoje à tarde o RH juntamente com os gestores da área (Chailan e Diogo), conduziram a primeira etapa do processo seletivo de Recrutamento Interno para a vaga de líder de produção.', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1768850938328_1', 'C:\\workspace\\outros\\imagens\\1768850938328_1.png', 'PROFILE', NULL);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1768850938328_1', 'C:\\workspace\\outros\\imagens\\1768850938328_1.jpg', 'PROFILE', NULL);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1774469447392_2', 'C:\\workspace\\outros\\imagens\\1774469447392_2.png', 'PROFILE', NULL);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1768478302771_3', 'C:\\workspace\\outros\\imagens\\1768478302771_3.jpg', 'PROFILE', NULL);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1774469447392_4', 'C:\\workspace\\outros\\imagens\\1774469447392_4.png', 'PROFILE', NULL);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1774469447392_4', 'C:\\workspace\\outros\\imagens\\1774469447392_4.jpg', 'PROFILE', NULL);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1768478289921_5', 'C:\\workspace\\outros\\imagens\\1768478289921_5.jpg', 'PROFILE', NULL);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1768478289921_6', 'C:\\workspace\\outros\\imagens\\1774469447367_6.webp', 'EVENT', NULL);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00001', 'C:\\workspace\\outros\\imagens\\img_00001.jpg', 'POST', 4);

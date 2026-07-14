@@ -1,23 +1,15 @@
-<c-container breakpoint="lg" class="h-auto px-4" fluid>
-  <c-row>
-    <c-col xs="12">
-      <c-card class="border fix-footer">
-        <c-card-header class="no-background">
-          <h5 class="no-margin">Configurações</h5>
-        </c-card-header>
+<c-container breakpoint="lg" class="h-auto px-4 config-width" fluid>
+  <p class="ops-header">
+    <span class="ops-welcome">Configurações</span>
+    <span class="ops-access-level">Atualize suas informações pessoais e credenciais de acesso</span>
+  </p>
 
-        <c-card-body class="user-config-spinner">
-          <div>
-            <ngx-spinner name="userConfigSpinner" bdColor="var(--cui-tertiary-bg)" size="default" color="#0053b0" type="ball-clip-rotate" [fullScreen]="false"></ngx-spinner>
-            @if (loaded && userData) {
-              <app-user-config-form
-                [userData]="userData"
-                (editTask)="updateConfig($event)">
-              </app-user-config-form>
-            }
-          </div>
-        </c-card-body>
-      </c-card>
-    </c-col>
-  </c-row>
+  @if (loaded && userData) {
+    <app-user-config-form
+      [userData]="userData"
+      (editTask)="updateConfig($event)">
+    </app-user-config-form>
+  } @else {
+    <i>Carregando...</i>
+  }
 </c-container>

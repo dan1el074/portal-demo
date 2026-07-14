@@ -118,12 +118,20 @@ public class PictureService {
 
     @Transactional
     public void delete(Long id) throws IOException {
-        if (!pictureRepository.existsById(id)) {
-            throw new RuntimeException("Não foi possível localizar a imagem!");
-        }
-        Picture picture = pictureRepository.getReferenceById(id);
+        PictureDeleteProjection picture = pictureRepository.findDeleteProjectionById(id)
+                .orElseThrow(RuntimeException::new);
+
         Files.deleteIfExists(Paths.get(picture.getPath()));
-        pictureRepository.deleteById(id);
+        pictureRepository.deleteDirectlyById(id);
+    }
+
+    @Transactional
+    public void deleteCheckingReferences(Long id, Long excludingUserId) throws IOException {
+        boolean referenced = pictureRepository
+                .existsUserReference(id, excludingUserId) || pictureRepository.existsEventReference(id);
+
+        if (referenced) return;
+        delete(id);
     }
 
     private void saveCompressedImage(MultipartFile file, Path destination) throws IOException {
