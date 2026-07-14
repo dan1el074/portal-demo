@@ -4,6 +4,7 @@ import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
 import br.com.metaro.portal.core.dto.role.RoleDto;
 import br.com.metaro.portal.core.entities.Role;
 import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.core.repositories.projections.MeProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class MeDto {
+
     private Long id;
     private String name;
     private String email;
@@ -29,20 +31,15 @@ public class MeDto {
     private final List<RoleDto> roles = new ArrayList<>();
     private final List<PendingIssuesDto> pendingIssues = new ArrayList<>();
 
-    public MeDto(User user) {
-        this.id = user.getId();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.position = user.getPosition().getName();
-        this.birthDate = user.getBirthDate();
-        this.activated = user.getActivated();
-        this.username = user.getUsername();
-
-        if (user.getSupportToken() != null) this.supportToken = user.getSupportToken();
-        if (user.getPicture() != null) this.pictureId = user.getPicture().getId();
-
-        for(Role role : user.getRoles()) {
-            roles.add(new RoleDto(role));
-        }
+    public MeDto(MeProjection projection) {
+        this.id = projection.getId();
+        this.name = projection.getName();
+        this.email = projection.getEmail();
+        this.position = projection.getPosition();
+        this.birthDate = projection.getBirthDate();
+        this.pictureId = projection.getPictureId();
+        this.activated = projection.getActivated();
+        this.username = projection.getUsername();
+        this.supportToken = projection.getSupportToken();
     }
 }

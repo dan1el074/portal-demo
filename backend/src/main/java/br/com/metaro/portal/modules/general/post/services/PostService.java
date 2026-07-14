@@ -11,6 +11,8 @@ import br.com.metaro.portal.modules.general.post.repositories.PostRepository;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.PictureService;
 import br.com.metaro.portal.util.picture.PictureType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +36,9 @@ public class PostService {
     private PictureService pictureService;
     @Autowired
     private UserService userService;
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private String imgPath = "assets/others/";
 
     @Transactional(readOnly = true)
@@ -56,11 +61,14 @@ public class PostService {
     @Transactional
     public void delete(Long id) throws IOException {
         Post post = postRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        List<Picture> pictures = new ArrayList<>(post.getPictures());
 
-        for (Picture picture : post.getPictures()) {
+        for (Picture picture : pictures) {
             pictureService.delete(picture.getId());
+            entityManager.detach(picture);
         }
 
+        post.getPictures().clear();
         postRepository.deleteById(id);
     }
 

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ButtonDirective, ContainerComponent } from '@coreui/angular';
@@ -11,10 +11,10 @@ import { EventComponent } from './../../../components/cards/event/event.componen
 import { FilesComponent } from './../../../components/cards/files/files.component';
 import { HelloComponent } from '../../../components/cards/hello/hello.component';
 import { NewPostComponent } from './../../../components/cards/post/new-post/new-post.component';
+import { DeletePostModalComponent } from '../../../components/modal/post/delete-post-modal/delete-post-modal.component';
 import { HomeInfo } from '../../interface/home.interface';
 import { Me } from '../../interface/user.interface';
 import { NewPost, PostCard } from '../../interface/post.interface';
-import { DeletePostModalComponent } from '../../../components/modal/post/delete-post-modal/delete-post-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -45,7 +45,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   protected showEditModel = false;
   protected idPostToEdit = 0;
 
+  // carregar mais posts
   private _sentinel!: ElementRef;
+  protected loadingMore = false;
+  protected noMorePosts = false;
+  private observer!: IntersectionObserver;
   @ViewChild('sentinel')
   set sentinel(el: ElementRef) {
     if (el && !this.observer) {
@@ -53,9 +57,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.setupIntersectionObserver();
     }
   }
-  protected loadingMore = false;
-  protected noMorePosts = false;
-  private observer!: IntersectionObserver;
 
   constructor(
     private homeService: HomeService,
@@ -151,7 +152,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   protected toggleEditModal(id: number, status: boolean): void {
-    this.toasterService.info("Isso será implementado nas próximas atualizações.", "Não funcionou!");
+    this.toasterService.info("Isso será implementado nas próximas atualizações.");
 
     // this.showEditModel = status;
     // if (status) this.idPostToEdit = id;

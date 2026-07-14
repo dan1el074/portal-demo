@@ -2,6 +2,7 @@ package br.com.metaro.portal.modules.general.memorando.repository;
 
 import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
+import br.com.metaro.portal.modules.general.memorando.repository.projections.MemorandoPendingProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +26,16 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
         WHERE m.id IN :ids
     """)
     public List<Memorando> findAllByIds(@Param("ids") List<Long> ids);
+
+    @Query("""
+        SELECT
+            m.id AS id,
+            m.number AS number,
+            m.createAt AS createAt
+        FROM Memorando m
+        WHERE m.id IN :ids
+    """)
+    List<MemorandoPendingProjection> findPendingByIds(@Param("ids") List<Long> ids);
 
     public Long countByStatus(MemorandoStatus status);
 }

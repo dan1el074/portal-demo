@@ -1,22 +1,22 @@
 <form [formGroup]="configForm" (ngSubmit)="onSubmit()" autocomplete="off">
-  <c-row class="">
-    <c-col xs="5">
+  <c-card class="border">
+    <c-card-body>
       <div class="avatar-container">
-        <div class="image-container" *ngIf="file; else placeholder" [ngStyle]="{backgroundImage: 'url(' + file + ')'}"></div>
+        <div [class.has-file]="file" class="image-container" *ngIf="file; else placeholder" [ngStyle]="{backgroundImage: 'url(' + file + ')'}"></div>
+
         <ng-template #placeholder>
-          <div class="image-container avatar-placeholder"></div>
+          <div [class.has-file]="file" class="image-container avatar-placeholder"></div>
         </ng-template>
+
         <label for="fileInput2">
           <div class="icon-wrapper">
             <input #fileInput2 id="fileInput2" type="file" accept="image/*" (change)="onFileChange($event)" />
-            <svg [cIcon]="icons.cilPencil" size="lg" title="List Icon"></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="new-picture">
+              <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/>
+              <circle cx="12" cy="13" r="3"/>
+            </svg>
           </div>
         </label>
-        @if (file) {
-          <button type="button" class="delete-icon" (click)="removePicture()">
-            <svg [cIcon]="icons.cilX" size="lg" title="List Icon"></svg>
-          </button>
-        }
       </div>
 
       @if (configForm.get('picture')?.errors?.['invalidImageType']) {
@@ -29,6 +29,36 @@
           A imagem deve ter no máximo 2MB
         </div>
       }
+
+      <div class="username">
+        <strong>{{ configForm.get('name')?.value ? configForm.get('name')?.value : 'Nome Sobrenome' }}</strong>
+        <span>{{ userData ? userData.position : 'Departamento' }}</span>
+      </div>
+
+      <div class="avatar-buttons-container">
+        <label for="fileInput2" class="btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="new-picture">
+            <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/>
+            <circle cx="12" cy="13" r="3"/>
+          </svg>
+          Alterar foto
+        </label>
+
+        @if (file) {
+          <button class="btn trash-icon" (click)="removePicture()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 11v6"/>
+              <path d="M14 11v6"/>
+              <path d="M3 6h18"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            Remover
+          </button>
+        }
+      </div>
+
+      <span class="file-info">PNG, JPEG, JPG, WEBP · máx. 2 MB</span>
 
       <c-modal id="modal2" [visible]="modalReady" (visibleChange)="handleModalChange($event)" backdrop="static" alignment="center">
         <c-modal-header>
@@ -53,73 +83,101 @@
           <button cButton color="primary" (click)="processImage()">Salvar</button>
         </c-modal-footer>
       </c-modal>
+    </c-card-body>
+  </c-card>
 
-      <div class="username">
-        <h3>{{ configForm.get('name')?.value ? configForm.get('name')?.value : 'Nome Sobrenome' }}</h3>
-        <h3><span>{{ userData ? userData.position : 'Departamento' }}</span></h3>
-      </div>
-    </c-col>
-
-    <c-col>
+  <c-card class="border p-3 fix-overflow">
+    <c-card-body>
+      <hr>
       <span class="form-section-title">DADOS CADASTRAIS</span>
 
-      <div [cFormFloating]="true" class="mt-2 mb-3">
-        <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: configForm.get('name')?.errors != null ? false : undefined" id="name2" type="text" placeholder="Nome" />
-        <label cLabel for="name2">Nome</label>
-      </div>
+      <label cLabel for="name" class="fix-space">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="5"/>
+          <path d="M20 21a8 8 0 0 0-16 0"/>
+        </svg>
+        Nome
+      </label>
+      <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: configForm.get('name')?.errors != null ? false : undefined" id="name" type="text" placeholder="Nome" />
 
-      <c-row class="mb-4">
-        <c-col [xs]>
-          <div cFormFloating class="input-group-fix mb-3">
-            <input cFormControl formControlName="email" [valid]="!showErrors ? undefined: configForm.get('email')?.errors != null ? false : undefined" id="email2" type="email" placeholder="E-mail" />
-            <label cLabel for="email2">E-mail</label>
-          </div>
-        </c-col>
+      <label cLabel for="email">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+        </svg>
+        E-mail
+      </label>
+      <input cFormControl formControlName="email" [valid]="!showErrors ? undefined: configForm.get('email')?.errors != null ? false : undefined" id="email" type="email" placeholder="E-mail" />
 
-        <c-col [xs]>
-          <div cFormFloating>
-            <c-date-picker [calendarDate]="birthDate" placeholder="Selecione" formControlName="birthDate"></c-date-picker>
-            <label cLabel class="fix-floating-label">Nascimento</label>
-          </div>
-        </c-col>
-      </c-row>
+      <label cLabel for="birthday">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 2v4"/>
+          <path d="M16 2v4"/>
+          <rect width="18" height="18" x="3" y="4" rx="2"/>
+          <path d="M3 10h18"/>
+        </svg>
+        Nascimento
+      </label>
+      <c-date-picker [calendarDate]="birthDate" placeholder="Selecione" formControlName="birthDate" id="birthday" class="fix-padding"></c-date-picker>
+    </c-card-body>
+  </c-card>
 
+  <c-card class="border p-3 fix-overflow">
+    <c-card-body>
+      <hr>
       <span class="form-section-title">SEGURANÇA</span>
 
-      <div cFormFloating class="mt-2 mb-3">
-        <input
-          cFormPassword
-          formControlName="password"
-          [valid]="!showErrors ? undefined : configForm.get('password')?.errors != null ? false : undefined"
-          type="password"
-          placeholder="Nova senha"
-          autocomplete="new-password"
-          floatingLabel="Nova senha"
-        />
-      </div>
+      <small class="form-obs">Deixe em branco para manter a senha atual.</small>
 
-      <div cFormFloating class="mb-4">
-        <input
-          cFormPassword
-          formControlName="repeatPassword"
-          [valid]="!showErrors ? undefined : configForm.get('password')?.errors != null ? false : configForm.hasError('passwordMismatch') ? false : undefined"
-          type="password"
-          placeholder="Repetir senha"
-          autocomplete="new-password"
-          floatingLabel="Repetir senha"
-        />
-      </div>
+      <label cLabel for="name">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Nova senha
+      </label>
+      <input
+        cFormPassword
+        formControlName="password"
+        [valid]="!showErrors ? undefined : configForm.get('password')?.errors != null ? false : undefined"
+        type="password"
+        placeholder="Mínimo 8 caracteres"
+        autocomplete="new-password"
+      />
+
+      <label cLabel for="name" class="fix-space">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Confirmar senha
+      </label>
+      <input
+        cFormPassword
+        formControlName="repeatPassword"
+        [valid]="!showErrors ? undefined : configForm.get('password')?.errors != null ? false : configForm.hasError('passwordMismatch') ? false : undefined"
+        type="password"
+        placeholder="Repita a nova senha"
+        autocomplete="new-password"
+      />
 
       @if (configForm.hasError('passwordMismatch') && configForm.touched) {
         <div class="text-danger">
           As senhas não coincidem
         </div>
       }
-    </c-col>
-  </c-row>
+    </c-card-body>
+  </c-card>
 
   <div class="button-container">
-    <button cButton color="secondary" [routerLink]="['/home']">Cancelar</button>
-    <button cButton type="submit" color="primary">Salvar</button>
+    <a [routerLink]="['/home']">Descartar alterações</a>
+    <button type="submit" class="save-button">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+        <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+        <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+      </svg>
+      Salvar alterações
+    </button>
   </div>
 </form>

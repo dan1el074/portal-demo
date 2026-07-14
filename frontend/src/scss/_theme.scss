@@ -866,6 +866,11 @@ mat-paginator.pagination {
   padding: 26px 12px 10px;
 }
 
+.fix-padding .date-picker-input-group {
+  margin-bottom: 20px;
+  padding: 10px 12px;
+}
+
 .fix-floating-label {
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }

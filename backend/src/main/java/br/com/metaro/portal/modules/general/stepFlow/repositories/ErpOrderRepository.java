@@ -88,7 +88,6 @@ public class ErpOrderRepository {
                 rs.getDouble("ITEM_UNIT_VALUE"),
                 rs.getString("ITEM_UNIT"),
                 rs.getInt("ITEM_QUANTITY"),
-                0,
                 0
         );
     }

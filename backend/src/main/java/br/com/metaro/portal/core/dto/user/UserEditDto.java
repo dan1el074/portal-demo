@@ -1,13 +1,10 @@
 package br.com.metaro.portal.core.dto.user;
 
-import br.com.metaro.portal.core.entities.Role;
-import br.com.metaro.portal.core.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -24,22 +21,4 @@ public class UserEditDto {
     private List<Long> roles;
     private Boolean activated;
     private String supportToken;
-
-    public UserEditDto(User user) {
-        id = user.getId();
-        name = user.getName();
-        email = user.getEmail();
-        birthDate = user.getBirthDate();
-        username = user.getUsername();
-        activated = user.getActivated();
-        roles = new ArrayList<>();
-
-        if (user.getPosition() != null) positionId = user.getPosition().getId();
-        if (user.getPicture() != null) pictureId = user.getPicture().getId();
-        if (user.getSupportToken() != null) supportToken = user.getSupportToken();
-
-        for (Role role : user.getRoles()) {
-            roles.add(role.getId());
-        }
-    }
 }

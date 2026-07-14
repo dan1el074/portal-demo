@@ -41,11 +41,11 @@ public class User implements UserDetails {
     private Instant updateAt;
     private String supportToken;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "position_id")
     private Position position;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tb_user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -63,7 +63,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<MemorandoLog> ciLog = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "picture_id", unique = true)
     private Picture picture;
 
@@ -88,9 +88,7 @@ public class User implements UserDetails {
 
     public boolean hasRole(String roleName) {
         for (Role role : roles) {
-            if (role.getAuthority().equals(roleName)) {
-                return true;
-            }
+            if (role.getAuthority().equals(roleName)) return true;
         }
         return false;
     }
