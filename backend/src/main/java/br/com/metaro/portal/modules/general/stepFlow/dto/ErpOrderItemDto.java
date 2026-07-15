@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ErpOrderItemDto {
-    private final Integer code;
+    private final String code;
     private final String description;
     private final Double unitValue;
     private final String unit;

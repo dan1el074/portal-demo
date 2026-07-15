@@ -135,16 +135,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public List<BirthdayProjection> findBirthdaysOfCurrentMonth();
 
     @Query("""
-        SELECT
-            r.id AS id,
-            r.authority AS authority
-        FROM User u
-        JOIN u.roles r
-        WHERE u.username = :username
-    """)
-    public List<RoleProjection> findRoleProjectionsByUsername(String username);
-
-    @Query("""
         SELECT u FROM User u
         JOIN FETCH u.position
         JOIN FETCH u.roles

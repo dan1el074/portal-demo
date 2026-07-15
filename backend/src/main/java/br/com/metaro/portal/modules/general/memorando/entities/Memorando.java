@@ -27,6 +27,7 @@ public class Memorando {
     private String title;
     @Column(columnDefinition = "TEXT")
     private String description;
+    @Column(columnDefinition = "TEXT")
     private String reason;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createAt;
