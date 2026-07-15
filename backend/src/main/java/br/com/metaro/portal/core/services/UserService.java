@@ -96,7 +96,7 @@ public class UserService implements UserDetailsService {
         MeProjection me = userRepository.findMeProjectionByUsername(username)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        List<RoleProjection> roles = userRepository.findRoleProjectionsByUsername(username);
+        List<RoleProjection> roles = roleRepository.findRoleProjectionsByUsername(username);
 
         if (roles.stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getAuthority()))) {
             roles = roleRepository.findAllAdminRoles();
