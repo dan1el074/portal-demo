@@ -83,7 +83,7 @@ public class ErpOrderRepository {
 
     private ErpOrderItemDto mapOrderItem(ResultSet rs) throws SQLException {
         return new ErpOrderItemDto(
-                rs.getInt("ITEM_CODE"),
+                rs.getString("ITEM_CODE"),
                 rs.getString("ITEM_DESCRIPTION"),
                 rs.getDouble("ITEM_UNIT_VALUE"),
                 rs.getString("ITEM_UNIT"),

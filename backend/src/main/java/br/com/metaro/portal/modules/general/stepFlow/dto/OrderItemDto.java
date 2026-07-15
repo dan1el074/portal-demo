@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class OrderItemDto {
     private Long id;
-    private Integer code;
+    private String code;
     private String description;
     private String unit;
     private Double unitPrice;
