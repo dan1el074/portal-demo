@@ -308,20 +308,9 @@
               <label cLabel for="comment" class="custom-label">Imagens</label>
             }
             <div class="upload-wrapper">
-              <div
-                class="drop-zone"
-                [class.drag-over]="isDragOver()"
-                (dragover)="onDragOver($event)"
-                (dragleave)="onDragLeave($event)"
-                (drop)="onDrop($event)"
-                (click)="fileInput.click()"
-                role="button"
-                tabindex="0"
-                aria-label="Área de upload de arquivos. Clique ou arraste imagens aqui."
-                (keydown.enter)="fileInput.click()"
-                (keydown.space)="fileInput.click()"
-              >
+              <div class="drop-zone" [class.drag-over]="isDragOver()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" role="button" tabindex="0" aria-label="Área de upload de arquivos. Clique ou arraste imagens aqui.">
                 <input #fileInput name="file-content" type="file" [accept]="acceptedExtensions" multiple hidden (change)="onFileSelected($event)" />
+                <input #cameraInput name="camera-content" type="file" [accept]="acceptedExtensions" capture="environment" hidden (change)="onFileSelected($event)" />
 
                 <div class="drop-zone__content">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -330,8 +319,20 @@
                     <line x1="12" x2="12" y1="3" y2="15"></line>
                   </svg>
 
-                  <p class="drop-zone__text"> Arraste arquivos aqui ou <span class="drop-zone__link">clique para selecionar</span></p>
+                  <p class="drop-zone__text">Arraste arquivos aqui</p>
                   <p class="drop-zone__hint">PNG, JPEG, JPG, WEBP</p>
+
+                  <div class="drop-zone__actions">
+                    <button cButton variant="outline" (click)="fileInput.click()" type="button" class="drop-zone__btn">
+                      Selecionar arquivos
+                    </button>
+
+                    @if (isMobileDevice) {
+                      <button cButton variant="outline" (click)="cameraInput.click()" type="button" class="drop-zone__btn drop-zone__btn--camera">
+                        Tirar foto
+                      </button>
+                    }
+                  </div>
                 </div>
               </div>
 

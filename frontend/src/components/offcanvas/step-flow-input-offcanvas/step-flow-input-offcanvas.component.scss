@@ -642,7 +642,7 @@
           flex-direction: column;
           align-items: center;
           gap: 8px;
-          pointer-events: none;
+          pointer-events: auto;
         }
 
         &__icon {
@@ -798,6 +798,33 @@
       font-size: 13px;
       font-weight: 400;
     }
+  }
+}
+
+.drop-zone__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.drop-zone__btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  height: 34px;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 4px 12px;
+
+  svg {
+    width: 14px;
+  }
+}
+
+.drop-zone__btn--camera {
+  @media (min-width: 992px) {
+    display: none;
   }
 }
 

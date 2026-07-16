@@ -52,6 +52,7 @@ export class StepFlowInputOffcanvasComponent {
   protected saveLoading: boolean = false;
 
   // file
+  protected readonly isMobileDevice: boolean = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   readonly acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
   readonly acceptedExtensions = '.png,.jpeg,.jpg,.webp';
   protected isDragOver = signal(false);
