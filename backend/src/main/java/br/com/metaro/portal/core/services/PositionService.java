@@ -71,6 +71,11 @@ public class PositionService {
     @Transactional
     public List<PositionDto> update(Long id, PositionFormImputDto dto) {
         Position position = positionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        if (position.getIsLocked() && !dto.getName().equals(position.getName())) {
+            throw new UnprocessableEntityException("Esse departamento não pode ser renomeado porque é usado em alguma ferramenta do sistema!");
+        }
+
         copyDtoToEntity(dto, position);
 
         if (dto.getManangers().isEmpty()) {

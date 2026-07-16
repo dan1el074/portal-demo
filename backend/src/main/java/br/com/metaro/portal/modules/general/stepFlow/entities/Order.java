@@ -27,7 +27,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private StepType currentStep; // atualizar sempre que mexer no OrderStep
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // LATE apenas quando a dueDate passar (só no frontend)
+    private OrderStatus status; // LATE -> apenas quando a dueDate passar (só no frontend)
     private Double shipment;
     private String carrier;
 

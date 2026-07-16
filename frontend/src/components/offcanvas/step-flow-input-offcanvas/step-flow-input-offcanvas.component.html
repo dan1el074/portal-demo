@@ -251,7 +251,7 @@
               @for (itemGroup of itemsFormControls; track itemGroup.get('id')?.value; let i = $index) {
                 <div class="search-item" [class.fix]="i == 0" [formGroup]="itemGroup">
                   <span class="search-item-code">{{ itemGroup.get('code')?.value }}</span>
-                  <span class="search-item-description">{{ itemGroup.get('description')?.value | truncate: 80 }}</span>
+                  <span class="search-item-description">{{ itemGroup.get('description')?.value }}</span>
 
                   <div class="search-item-quantity">
                     <input
@@ -326,12 +326,6 @@
                     <button cButton variant="outline" (click)="fileInput.click()" type="button" class="drop-zone__btn">
                       Selecionar arquivos
                     </button>
-
-                    @if (isMobileDevice) {
-                      <button cButton variant="outline" (click)="cameraInput.click()" type="button" class="drop-zone__btn drop-zone__btn--camera">
-                        Tirar foto
-                      </button>
-                    }
                   </div>
                 </div>
               </div>

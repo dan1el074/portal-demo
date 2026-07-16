@@ -116,21 +116,28 @@ export class NewStepFlowModalComponent {
   }
 
   private buildItemsForm(items: Array<StepFlowOrderItem>): void {
-    items.forEach(item => {
-      const maxQuantity = item.quantity - item.producedQuantity;
+  items.forEach(item => {
+    const maxQuantity = item.quantity - item.producedQuantity;
 
-      this.itemsForm.push(
-        this.formBuilder.group({
-          code: [item.code],
-          description: [item.description],
-          quantity: [item.quantity],
-          maxQuantity: [maxQuantity],
-          producedQuantity: [maxQuantity, [Validators.required, Validators.min(0), Validators.max(maxQuantity)],
+    this.itemsForm.push(
+      this.formBuilder.group({
+        code: [item.code],
+        description: [item.description],
+        quantity: [item.quantity],
+        maxQuantity: [maxQuantity],
+        producedQuantity: [
+          maxQuantity,
+          [
+            Validators.required,
+            Validators.min(0),
+            Validators.max(maxQuantity),
+            Validators.pattern(/^\d+$/),
           ],
-        })
-      );
-    });
-  }
+        ],
+      })
+    );
+  });
+}
 
   private stopLoadButton(): void {
     setTimeout(() => {
