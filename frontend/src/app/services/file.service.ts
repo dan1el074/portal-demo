@@ -3,6 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+declare global {
+  interface Window {
+    PortalMetaroAndroid?: {
+      openPdf(url: string, bearerToken: string, fileName: string): void;
+    };
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -21,36 +29,35 @@ export class FileService {
   }
 
   public openProject(projectName: string): void {
+    const token = localStorage.getItem('auth-token') ?? '';
+    const url = this.api + '/api/pdf/' + encodeURIComponent(projectName);
+
+    if (window.PortalMetaroAndroid) {
+      window.PortalMetaroAndroid.openPdf(url, token, projectName);
+      return;
+    }
+
     const newTab = window.open('', '_blank');
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    this.http.get(this.api + '/api/pdf/' + encodeURIComponent(projectName), {
-      headers,
-      responseType: 'blob'
-    }).subscribe((blob: Blob) => {
-
-      const file = new File([blob], projectName, {
-        type: 'application/pdf'
-      });
-
-      const fileURL = URL.createObjectURL(file);
-      newTab!.location.href = fileURL;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get(url, { headers, responseType: 'blob' }).subscribe((blob: Blob) => {
+      const file = new File([blob], projectName, { type: 'application/pdf' });
+      newTab!.location.href = URL.createObjectURL(file);
     });
   }
 
   public openFile(fileName: string): void {
-    const newTab = window.open('', '_blank');
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
+    const token = localStorage.getItem('auth-token') ?? '';
+    const url = this.api + '/api/file/' + encodeURIComponent(fileName);
 
-    this.http.get(this.api + '/api/file/' + encodeURIComponent(fileName), { headers, responseType: 'blob' }).subscribe(blob => {
-      const fileURL = URL.createObjectURL(blob);
-      newTab!.location.href = fileURL;
+    if (window.PortalMetaroAndroid && fileName.toLowerCase().endsWith('.pdf')) {
+      window.PortalMetaroAndroid.openPdf(url, token, fileName);
+      return;
+    }
+
+    const newTab = window.open('', '_blank');
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get(url, { headers, responseType: 'blob' }).subscribe(blob => {
+      newTab!.location.href = URL.createObjectURL(blob);
     });
   }
 }
