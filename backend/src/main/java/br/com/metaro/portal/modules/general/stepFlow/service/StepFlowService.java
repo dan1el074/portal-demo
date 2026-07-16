@@ -142,6 +142,14 @@ public class StepFlowService {
         currentStep.setFinishedAt(Instant.now());
         currentStep.setFinishedBy(userService.authenticate());
 
+        if (type.equals(StepType.FINAL_ASSEMBLY) || type.equals(StepType.SHIPPING)) {
+            checkIfHavePictures(order);
+        }
+
+        if (type.equals(StepType.SHIPPING)) {
+            order.setStatus(OrderStatus.COMPLETED);
+        }
+
         if (!type.equals(StepType.SHIPPING)) {
             StepType nextType = StepType.values()[type.ordinal() + 1];
             OrderStep nextStep = order.getSteps().stream().filter(step -> step.getStep().equals(nextType))
@@ -150,10 +158,6 @@ public class StepFlowService {
             order.setCurrentStep(nextType);
             nextStep.setStatus(StepStatus.ACTIVE);
             nextStep.setStartedAt(Instant.now());
-        }
-
-        if (type.equals(StepType.SHIPPING)) {
-            order.setStatus(OrderStatus.COMPLETED);
         }
 
         orderRepository.save(order);
@@ -351,16 +355,29 @@ public class StepFlowService {
             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) return true;
 
         return switch (order.getCurrentStep()) {
-            case FINAL_ASSEMBLY -> user.getPosition().getName().equals("Montagem Final");
+            case FINAL_ASSEMBLY -> user.getPosition().getName().equals("Montagem Final")
+                                || user.getPosition().getName().equals("Almoxarifado");
             case PCP ->  user.getPosition().getName().equals("PCP");
-            case FREIGHT -> user.getPosition().getName().equals("Frete");
-            case BILLING -> user.getPosition().getName().equals("Faturamento");
-            case SHIPPING -> user.getPosition().getName().equals("Expedição");
+            case FREIGHT -> user.getPosition().getName().equals("Comercial");
+            case BILLING -> user.getPosition().getName().equals("Financeiro");
+            case SHIPPING -> user.getPosition().getName().equals("Almoxarifado");
         };
     }
 
     public List<OrderItemInputDto> parseItems(String itemsJson) throws IOException {
         if (itemsJson == null || itemsJson.isBlank()) return List.of();
         return objectMapper.readValue(itemsJson, new TypeReference<List<OrderItemInputDto>>() {});
+    }
+
+    public void checkIfHavePictures(Order order) {
+        boolean empty = order.getSteps().stream()
+                .filter(s -> s.getStep().equals(order.getCurrentStep()))
+                .findFirst().orElseThrow(ResourceNotFoundException::new)
+                .getPictures()
+                .isEmpty();
+
+        if (empty) {
+            throw new UnprocessableEntityException("É necessário anexar no mínimo uma imagem!");
+        }
     }
 }

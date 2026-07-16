@@ -338,6 +338,14 @@
               display: flex;
               gap: 12px;
 
+              .timeline-box-log-text {
+                hyphens: auto;
+                overflow-wrap: break-word;
+                word-break: normal;
+                -webkit-hyphens: auto;
+                -ms-hyphens: auto;
+              }
+
               .timeline-box-log-instant {
                 display: flex;
                 gap: 4px;

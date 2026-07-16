@@ -24,6 +24,7 @@ public class Position {
     @EqualsAndHashCode.Include
     private Long id;
     private String name;
+    private Boolean isLocked;
     private Boolean activated;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updatedAt;

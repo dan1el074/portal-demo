@@ -30,7 +30,8 @@ import { NewStepFlowModalComponent } from '../../../../components/modal/step-flo
     ButtonDirective,
     TruncatePipe,
     SmartPaginationComponent,
-    NewStepFlowModalComponent
+    NewStepFlowModalComponent,
+    TruncatePipe
   ],
   templateUrl: './step-flow.component.html',
   styleUrl: './step-flow.component.scss',
@@ -40,6 +41,7 @@ export class StepFlowComponent implements OnInit {
   @ViewChild('stepFlowInputOffcanvas')stepFlowInputOffcanvas!: StepFlowInputOffcanvasComponent;
 
   protected isAdmin: boolean = false;
+  protected isShipping: boolean = false;
   protected data!: Array<StepFlowData>;
   protected currentStepData!: Array<StepFlowData>;
   protected resume!: Array<Resume>;
@@ -268,6 +270,7 @@ export class StepFlowComponent implements OnInit {
         break;
       case 'Almoxarifado':
         this.currentStepIndex = this.steps.findIndex(step => step.title == 'Expedição');
+        this.isShipping = true;
         break;
       default:
         this.currentStepIndex = -1;
@@ -309,7 +312,6 @@ export class StepFlowComponent implements OnInit {
   }
 
   protected onNextStep(id: number) {
-    this.stepFlowService.nextStep(id);
     this.currentStepData = this.currentStepData.filter(step => step.id !== id);
     this.cdf.detectChanges();
     this.loadOrders();

@@ -272,7 +272,7 @@ export class StepFlowInputOffcanvasComponent {
         this.cdf.detectChanges();
         this.toasterService.success('Etapa atualizada com sucesso.');
       },
-      error: () => this.toasterService.error("Erro ao avançar etapa!"),
+      error: (error) => this.toasterService.error(error.error.error),
     });
   }
 
