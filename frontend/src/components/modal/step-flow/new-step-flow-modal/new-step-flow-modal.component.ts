@@ -123,11 +123,9 @@ export class NewStepFlowModalComponent {
         this.formBuilder.group({
           code: [item.code],
           description: [item.description],
-          quantity: [item.quantity],       // quantidade total do pedido (só exibição)
-          maxQuantity: [maxQuantity],       // limite real de validação
-          producedQuantity: [
-            maxQuantity,
-            [Validators.required, Validators.min(0), Validators.max(maxQuantity)],
+          quantity: [item.quantity],
+          maxQuantity: [maxQuantity],
+          producedQuantity: [maxQuantity, [Validators.required, Validators.min(0), Validators.max(maxQuantity)],
           ],
         })
       );
