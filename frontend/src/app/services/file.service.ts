@@ -7,6 +7,7 @@ declare global {
   interface Window {
     PortalMetaroAndroid?: {
       openPdf(url: string, bearerToken: string, fileName: string): void;
+      openFile(url: string, bearerToken: string, fileName: string): void;
     };
   }
 }
@@ -49,8 +50,8 @@ export class FileService {
     const token = localStorage.getItem('auth-token') ?? '';
     const url = this.api + '/api/file/' + encodeURIComponent(fileName);
 
-    if (window.PortalMetaroAndroid && fileName.toLowerCase().endsWith('.pdf')) {
-      window.PortalMetaroAndroid.openPdf(url, token, fileName);
+    if (window.PortalMetaroAndroid) {
+      window.PortalMetaroAndroid.openFile(url, token, fileName);
       return;
     }
 
