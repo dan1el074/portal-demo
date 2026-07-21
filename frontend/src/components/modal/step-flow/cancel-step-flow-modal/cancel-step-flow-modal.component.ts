@@ -22,6 +22,7 @@ import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelD
 })
 export class CancelStepFlowModalComponent {
   @Input() visible!: boolean;
+  @Input() orderNumber!: number;
   @Output() close = new EventEmitter<void>();
   @Output() cancelTask = new EventEmitter<string>();
   protected form!: FormGroup;
