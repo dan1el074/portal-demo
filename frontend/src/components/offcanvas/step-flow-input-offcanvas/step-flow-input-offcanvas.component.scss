@@ -838,6 +838,20 @@
   }
 }
 
+.upload-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  overflow: hidden;
+  margin-top: 4px;
+
+  &__fill {
+    height: 100%;
+    background: var(--cui-primary, #3b82f6);
+    transition: width .2s ease;
+  }
+}
+
 .drop-zone__btn--camera {
   @media (min-width: 992px) {
     display: none;

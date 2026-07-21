@@ -218,6 +218,7 @@ public class StepFlowService {
             step.setStatus(StepStatus.WAITING);
             step.setMessages(new ArrayList<>());
             step.setPictures(new ArrayList<>());
+            step.setVideos(new ArrayList<>());
 
             entity.addStep(step);
         }

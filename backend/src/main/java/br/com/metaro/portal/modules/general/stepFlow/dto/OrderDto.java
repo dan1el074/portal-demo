@@ -1,9 +1,6 @@
 package br.com.metaro.portal.modules.general.stepFlow.dto;
 
-import br.com.metaro.portal.modules.general.stepFlow.entities.Order;
-import br.com.metaro.portal.modules.general.stepFlow.entities.OrderItem;
-import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStep;
-import br.com.metaro.portal.modules.general.stepFlow.entities.StepType;
+import br.com.metaro.portal.modules.general.stepFlow.entities.*;
 import br.com.metaro.portal.util.picture.Picture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,6 +32,7 @@ public class OrderDto {
     private String carrier;
     private Double total;
     private List<ImageDto> pictures;
+    private List<StepFlowVideoDto> videos;
     private String currentStep;
     private String nextStep;
 
@@ -58,6 +56,7 @@ public class OrderDto {
         steps = new ArrayList<>();
         items = new ArrayList<>();
         pictures = new ArrayList<>();
+        videos = new ArrayList<>();
         nextStep = "";
 
         if (!entity.getCurrentStep().equals(StepType.SHIPPING)) {
@@ -73,8 +72,15 @@ public class OrderDto {
         }
 
         for (OrderStep orderStep : entity.getSteps()) {
+            boolean isCurrentStep = orderStep.getStep().equals(entity.getCurrentStep());
+
             for (Picture picture : orderStep.getPictures()) {
-                pictures.add(new ImageDto(picture, orderStep.getStep().equals(entity.getCurrentStep())));
+                pictures.add(new ImageDto(picture, isCurrentStep));
+            }
+
+            for (StepFlowVideo video : orderStep.getVideos()) {
+                if (!video.getStatus().equals(VideoStatus.READY)) continue;
+                videos.add(new StepFlowVideoDto(video, isCurrentStep));
             }
         }
     }

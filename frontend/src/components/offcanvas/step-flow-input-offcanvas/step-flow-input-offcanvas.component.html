@@ -50,12 +50,6 @@
         <div class="sofd-title-custom">Histórico completo do pedido</div>
       </div>
 
-
-
-
-
-
-      <!-- INÍCIO -->
       <div class="sofd-history">
         @for (step of order.steps; track step.id) {
           @if (step.messages.length) {
@@ -182,58 +176,121 @@
           }
         }
       </ng-template>
-      <!-- FIM -->
 
-      @if (order.pictures.length) {
-        <div class="custom-title">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M13.234 20.252 21 12.3"></path>
-            <path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"></path>
-          </svg>
-          Arquivos
-        </div>
+      @if (order.pictures.length || order.videos.length || uploadingVideos().length) {
+        <div #filesSection>
+          <div class="custom-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13.234 20.252 21 12.3"></path>
+              <path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486"></path>
+            </svg>
+            Arquivos
+          </div>
 
-        <div class="sof-file-container">
-          @for (image of order.pictures; track image.id) {
-            <div class="sof-file-item">
-              <a class="sof-file-item-box" [href]="apiUrl + '/images/' + image.id" target="_blank">
-                <div class="step-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">
-                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                    <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                    <path d="M10 9H8"></path>
-                    <path d="M16 13H8"></path>
-                    <path d="M16 17H8"></path>
+          <div class="sof-file-container">
+            @for (image of order.pictures; track image.id) {
+              <div class="sof-file-item">
+                <a class="sof-file-item-box" [href]="apiUrl + '/images/' + image.id" target="_blank">
+                  <div class="step-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">
+                      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                      <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                      <path d="M10 9H8"></path>
+                      <path d="M16 13H8"></path>
+                      <path d="M16 17H8"></path>
+                    </svg>
+                  </div>
+
+                  <div class="sof-file-info">
+                    <span>{{ image.name }}</span>
+                    <small>Imagem</small>
+                  </div>
+
+                  <span class="sof-file-date">{{ image.createdAt | date: "dd/MM/yyyy" }}</span>
+
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h6v6"/>
+                    <path d="M10 14 21 3"/>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  </svg>
+                </a>
+
+                @if (image.isCurrentStep) {
+                  <button class="sof-file-trash-icon" (click)="onDeleteImage(image.id)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 11v6"/>
+                    <path d="M14 11v6"/>
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                  </button>
+                }
+              </div>
+            }
+
+            @for (video of order.videos; track video.id) {
+              <div class="sof-file-item">
+                <div class="sof-file-item-box" (click)="onOpenVideoModal(video)" role="button" tabindex="0">
+                  <div class="step-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">
+                      <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/>
+                      <path d="M15.033 13.44a.647.647 0 0 1 0 1.12l-4.065 2.352a.645.645 0 0 1-.968-.56v-4.704a.645.645 0 0 1 .967-.56z"/>
+                      <path d="M14 2v5a1 1 0 0 0 1 1h5"/>
+                    </svg>
+                  </div>
+
+                  <div class="sof-file-info">
+                    <span>{{ video.name }}</span>
+                    <small>Vídeo</small>
+                  </div>
+
+                  <span class="sof-file-date">{{ video.createdAt | date: "dd/MM/yyyy" }}</span>
+
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h6v6"/>
+                    <path d="M10 14 21 3"/>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                   </svg>
                 </div>
 
-                <div class="sof-file-info">
-                  <span>{{ image.name }}</span>
-                  <small>{{ image.size }}</small>
+                @if (video.isCurrentStep) {
+                  <button class="sof-file-trash-icon" (click)="onDeleteVideo(video.id)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10 11v6"/>
+                      <path d="M14 11v6"/>
+                      <path d="M3 6h18"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                }
+              </div>
+            }
+
+            @for (uploading of uploadingVideos(); track uploading.tempId) {
+              <div class="sof-file-item uploading">
+                <div class="sof-file-item-box">
+                  <div class="step-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">
+                      <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/>
+                      <path d="M15.033 13.44a.647.647 0 0 1 0 1.12l-4.065 2.352a.645.645 0 0 1-.968-.56v-4.704a.645.645 0 0 1 .967-.56z"/>
+                      <path d="M14 2v5a1 1 0 0 0 1 1h5"/>
+                    </svg>
+                  </div>
+
+                  <div class="sof-file-info">
+                    <span>{{ uploading.name }}</span>
+                    <div class="upload-progress-bar">
+                      <div class="upload-progress-bar__fill" [style.width.%]="uploading.progress"></div>
+                    </div>
+                  </div>
+
+                  <span class="sof-file-date">{{ uploading.progress }}%</span>
                 </div>
-
-                <span class="sof-file-date">{{ image.createdAt | date: "dd/MM/yyyy" }}</span>
-
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M15 3h6v6"/>
-                  <path d="M10 14 21 3"/>
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                </svg>
-              </a>
-
-              @if (image.isCurrentStep) {
-                <button class="sof-file-trash-icon" (click)="onDeleteImage(image.id)">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M10 11v6"/>
-                  <path d="M14 11v6"/>
-                  <path d="M3 6h18"/>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
-                </button>
-              }
-            </div>
-          }
+              </div>
+            }
+          </div>
         </div>
       }
 
@@ -309,8 +366,8 @@
             }
             <div class="upload-wrapper">
               <div class="drop-zone" [class.drag-over]="isDragOver()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" role="button" tabindex="0" aria-label="Área de upload de arquivos. Clique ou arraste imagens aqui.">
-                <input #fileInput name="file-content" type="file" [accept]="acceptedExtensions" multiple hidden (change)="onFileSelected($event)" />
-                <input #cameraInput name="camera-content" type="file" [accept]="acceptedExtensions" capture="environment" hidden (change)="onFileSelected($event)" />
+                <input #fileInput name="file-content" type="file" [accept]="acceptedAllExtensions" multiple hidden (change)="onFileSelected($event)" />
+                <input #cameraInput name="camera-content" type="file" [accept]="acceptedAllExtensions" capture="environment" hidden (change)="onFileSelected($event)" />
 
                 <div class="drop-zone__content">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -320,7 +377,7 @@
                   </svg>
 
                   <p class="drop-zone__text">Arraste arquivos aqui</p>
-                  <p class="drop-zone__hint">PNG, JPEG, JPG, WEBP</p>
+                  <p class="drop-zone__hint">PNG, JPEG, JPG, WEBP, MP4, WEBM, MOV</p>
 
                   <div class="drop-zone__actions">
                     <button cButton variant="outline" (click)="fileInput.click()" type="button" class="drop-zone__btn">
@@ -334,13 +391,21 @@
                 <ul class="file-list" aria-label="Arquivos selecionados">
                   @for (file of files(); track file.id) {
                     <li class="file-item">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                        <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                        <path d="M10 9H8"></path>
-                        <path d="M16 13H8"></path>
-                        <path d="M16 17H8"></path>
-                      </svg>
+                      @if (file.kind === 'image') {
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                          <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                          <path d="M10 9H8"></path>
+                          <path d="M16 13H8"></path>
+                          <path d="M16 17H8"></path>
+                        </svg>
+                      } @else {
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/>
+                          <path d="M15.033 13.44a.647.647 0 0 1 0 1.12l-4.065 2.352a.645.645 0 0 1-.968-.56v-4.704a.645.645 0 0 1 .967-.56z"/>
+                          <path d="M14 2v5a1 1 0 0 0 1 1h5"/>
+                        </svg>
+                      }
 
                       <span class="file-item__name" [title]="file.name">{{ file.name }}</span>
                       <span class="file-item__size">{{ file.size }}</span>
@@ -430,3 +495,4 @@
 </div>
 
 <app-cancel-step-flow-modal [visible]="showCancelModel" (close)="toggleCancelModel(false)" (cancelTask)="onCancel($event)"></app-cancel-step-flow-modal>
+<app-video-modal [visible]="showVideoModal" [video]="selectedVideo" (close)="onCloseVideoModal()"></app-video-modal>
