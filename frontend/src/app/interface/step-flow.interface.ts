@@ -87,6 +87,7 @@ export interface StepFlowOrder {
   carrier: string;
   total: number;
   pictures: Array<StepFlowImage>;
+  videos: Array<StepFlowVideo>;
   currentStep: string;
   nextStep: string | null;
 }
@@ -109,4 +110,39 @@ export interface StepFlowOrderInfo {
   discount: number;
   total: number;
   items: Array<StepFlowOrderItem>;
+}
+
+// video
+export interface StepFlowVideo {
+  id: number;
+  name: string;
+  viewUrl: string;
+  status: 'PENDING' | 'READY' | 'ERROR';
+  createdAt: string;
+  isCurrentStep: boolean;
+}
+
+export interface StepFlowVideoUploadInfo {
+  id: number;
+  bunnyVideoId: string;
+  libraryId: string;
+  uploadEndpoint: string;
+  authorizationSignature: string;
+  authorizationExpire: number;
+  viewUrl: string;
+}
+
+export interface UploadingVideo {
+  tempId: string;
+  id: number | null;
+  name: string;
+  progress: number;
+}
+
+export interface UploadedFile {
+  id: string;
+  file: File;
+  name: string;
+  size: string;
+  kind: 'image' | 'video';
 }

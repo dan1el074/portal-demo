@@ -1,16 +1,18 @@
-import { ChangeDetectorRef, Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent, TemplateIdDirective } from '@coreui/angular';
-import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.directive';
-import { StepFlowService } from '../../../app/services/step-flow.service';
-import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
-import { Step, StepFlowOrder, StepFlowOrderItem } from '../../../app/interface/step-flow.interface';
-import { UploadedFile } from '../../../app/interface/file.interface';
-import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
-import { environment } from '../../../environments/environment';
 import { finalize } from 'rxjs';
+import { Upload } from 'tus-js-client';
+import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent, TemplateIdDirective } from '@coreui/angular';
+import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
+import { VideoModalComponent } from '../../modal/media/video-modal/video-modal.component';
+import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.directive';
+import { StepFlowVideosService } from './../../../app/services/step-flow-videos.service';
+import { StepFlowService } from '../../../app/services/step-flow.service';
+import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -29,13 +31,14 @@ import { finalize } from 'rxjs';
     FormLabelDirective,
     CurrencyMaskDirective,
     CancelStepFlowModalComponent,
-    TruncatePipe,
-    SpinnerComponent
+    SpinnerComponent,
+    VideoModalComponent
   ],
   templateUrl: './step-flow-input-offcanvas.component.html',
   styleUrl: './step-flow-input-offcanvas.component.scss',
 })
 export class StepFlowInputOffcanvasComponent {
+  @ViewChild('filesSection') filesSection?: ElementRef<HTMLDivElement>;
   @Input() orderId!: number;
   @Input() isAdmin!: boolean;
   @Input() steps!: Array<Step>;
@@ -55,15 +58,23 @@ export class StepFlowInputOffcanvasComponent {
   protected readonly isMobileDevice: boolean = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   readonly acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
   readonly acceptedExtensions = '.png,.jpeg,.jpg,.webp';
+  readonly acceptedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
+  readonly acceptedVideoExtensions = '.mp4,.webm,.mov';
+  readonly acceptedAllExtensions = this.acceptedExtensions + ',' + this.acceptedVideoExtensions;
   protected isDragOver = signal(false);
   protected files = signal<UploadedFile[]>([]);
   protected hasFiles = computed(() => this.files().length > 0);
+  protected uploadingVideos = signal<UploadingVideo[]>([]);
+  protected showVideoModal = false;
+  protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
     private stepFlowService: StepFlowService,
+    private stepFlowVideoService: StepFlowVideosService,
     private toasterService: ToastrService,
-    private cdf: ChangeDetectorRef
+    private cdf: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) {
     this.form = this.formBuilder.group({
       carrier: [''],
@@ -164,9 +175,19 @@ export class StepFlowInputOffcanvasComponent {
     }
 
     const formData = this.buildFormData();
+    const hasPendingVideos = this.files().some(f => f.kind === 'video');
+
+    if (this.isFormDataEmpty(formData) && !hasPendingVideos) {
+      this.toasterService.warning('Preencha ao menos um campo ou anexe um arquivo antes de salvar.');
+      return;
+    }
+
+    if (hasPendingVideos) {
+      this.triggerPendingVideoUploads();
+      this.scrollToFilesSection();
+    }
 
     if (this.isFormDataEmpty(formData)) {
-      this.toasterService.warning('Preencha ao menos um campo ou anexe um arquivo antes de salvar.');
       return;
     }
 
@@ -179,7 +200,7 @@ export class StepFlowInputOffcanvasComponent {
       }))
       .subscribe({
         next: (data: StepFlowOrder) => {
-          this.toasterService.success('Etapa atualizada com sucesso.');
+          this.toasterService.success('Informações atualizada com sucesso.');
 
           if (hasQuantityChanges) {
             this.close();
@@ -229,13 +250,15 @@ export class StepFlowInputOffcanvasComponent {
         producedQuantity: item.producedQuantity,
       }));
 
-      formData.append('itemsJson', JSON.stringify(itemsPayload)); // <-- nome trocado
+      formData.append('itemsJson', JSON.stringify(itemsPayload));
     }
 
     if (this.order?.currentStep === 'Montagem Final' || this.order?.currentStep === 'Expedição') {
-      this.files().forEach(uploaded => {
-        formData.append('images', uploaded.file, uploaded.name);
-      });
+      this.files()
+        .filter(uploaded => uploaded.kind === 'image')
+        .forEach(uploaded => {
+          formData.append('images', uploaded.file, uploaded.name);
+        });
     }
 
     if (this.order?.currentStep === 'Frete') {
@@ -270,7 +293,7 @@ export class StepFlowInputOffcanvasComponent {
         this.close();
         this.nextStepTask.emit(id);
         this.cdf.detectChanges();
-        this.toasterService.success('Etapa atualizada com sucesso.');
+        this.toasterService.success('Informações atualizada com sucesso.');
       },
       error: (error) => this.toasterService.error(error.error.error),
     });
@@ -288,6 +311,18 @@ export class StepFlowInputOffcanvasComponent {
       },
       error: () => this.toasterService.error("Erro ao deletar imagem!")
     })
+  }
+
+  protected onDeleteVideo(id: number): void {
+    this.stepFlowVideoService.deleteById(id).subscribe({
+      next: () => {
+        if (!this.order) throw new Error("This order is null!");
+        this.order.videos = this.order.videos.filter(v => v.id !== id);
+        this.cdf.detectChanges();
+        this.toasterService.success("Vídeo apagado com sucesso!");
+      },
+      error: () => this.toasterService.error("Erro ao deletar vídeo!"),
+    });
   }
 
   protected toggleCancelModel(status: boolean): void {
@@ -318,6 +353,16 @@ export class StepFlowInputOffcanvasComponent {
         this.toasterService.error('Erro ao cancelar pedido!');
       }
     });
+  }
+
+  protected onOpenVideoModal(video: StepFlowVideo): void {
+    this.selectedVideo = { ...video, safeUrl: this.sanitizer.bypassSecurityTrustResourceUrl(video.viewUrl) };
+    this.showVideoModal = true;
+  }
+
+  protected onCloseVideoModal(): void {
+    this.showVideoModal = false;
+    this.selectedVideo = null;
   }
 
   // file input
@@ -360,19 +405,115 @@ export class StepFlowInputOffcanvasComponent {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
   }
 
+  /*
+   * Apenas seleciona/valida os arquivos (imagens e vídeos) e os mantém
+   * pendentes na mesma lista. Nenhum upload é disparado aqui — isso só
+   * acontece quando o usuário clica em "Salvar" (ver onSubmit).
+   */
   private processFiles(newFiles: File[]): void {
-    const invalid = newFiles.filter(f => !this.acceptedTypes.includes(f.type));
-    if (invalid.length > 0) this.toasterService.error('Use apenas PNG, JPEG, JPG ou WEBP.');
+    const images = newFiles.filter(f => this.acceptedTypes.includes(f.type));
+    const videos = newFiles.filter(f => this.acceptedVideoTypes.includes(f.type));
+    const invalid = newFiles.filter(f =>
+      !this.acceptedTypes.includes(f.type) && !this.acceptedVideoTypes.includes(f.type)
+    );
 
-    const valid = newFiles.filter(f => this.acceptedTypes.includes(f.type));
-    const mapped: UploadedFile[] = valid.map(f => ({
+    if (invalid.length > 0) {
+      this.toasterService.error('Use apenas PNG, JPEG, JPG, WEBP, MP4, WEBM ou MOV.');
+    }
+
+    const mapped: UploadedFile[] = [...images, ...videos].map(f => ({
       id: this.generateId(),
       file: f,
       name: f.name,
       size: this.formatSize(f.size),
+      kind: this.acceptedTypes.includes(f.type) ? 'image' : 'video',
     }));
 
-    this.files.update(current => [...current, ...mapped]);
+    if (mapped.length) {
+      this.files.update(current => [...current, ...mapped]);
+    }
+  }
+
+  /*
+   * Move os vídeos pendentes (selecionados, ainda não enviados) da lista de
+   * seleção para a lista de "enviando", e dispara o upload TUS de cada um.
+   */
+  private triggerPendingVideoUploads(): void {
+    const pendingVideos = this.files().filter(f => f.kind === 'video');
+    if (!pendingVideos.length) return;
+
+    this.files.update(current => current.filter(f => f.kind !== 'video'));
+
+    pendingVideos.forEach(pending => this.uploadVideo(pending.file));
+  }
+
+  private uploadVideo(file: File): void {
+    const tempId = this.generateId();
+
+    this.uploadingVideos.update(current => [
+      ...current,
+      { tempId, id: null, name: file.name, progress: 0 },
+    ]);
+    this.cdf.detectChanges();
+
+    this.stepFlowVideoService.create(this.orderId, file.name).subscribe({
+      next: (info) => {
+        this.uploadingVideos.update(current =>
+          current.map(v => (v.tempId === tempId ? { ...v, id: info.id } : v))
+        );
+
+        const upload = new Upload(file, {
+          endpoint: info.uploadEndpoint,
+          retryDelays: [0, 1000, 3000, 5000],
+          headers: {
+            AuthorizationSignature: info.authorizationSignature,
+            AuthorizationExpire: String(info.authorizationExpire),
+            VideoId: info.bunnyVideoId,
+            LibraryId: info.libraryId,
+          },
+          metadata: {
+            filetype: file.type,
+            title: file.name,
+          },
+          onError: () => {
+            this.toasterService.error(`Erro ao enviar o vídeo "${file.name}".`);
+            this.uploadingVideos.update(current => current.filter(v => v.tempId !== tempId));
+            this.stepFlowVideoService.deleteById(info.id).subscribe();
+            this.cdf.detectChanges();
+          },
+          onProgress: (bytesSent, bytesTotal) => {
+            const progress = Math.round((bytesSent / bytesTotal) * 100);
+            this.uploadingVideos.update(current =>
+              current.map(v => (v.tempId === tempId ? { ...v, progress } : v))
+            );
+            this.cdf.detectChanges();
+          },
+          onSuccess: () => {
+            this.stepFlowVideoService.complete(info.id).subscribe({
+              next: () => {
+                this.uploadingVideos.update(current => current.filter(v => v.tempId !== tempId));
+                this.toasterService.success("Vídeo enviado com sucesso!");
+                this.loadOrder();
+              },
+            });
+          },
+        });
+
+        upload.start();
+      },
+      error: () => {
+        this.toasterService.error(`Erro ao preparar o envio do vídeo.`);
+        this.uploadingVideos.update(current => current.filter(v => v.tempId !== tempId));
+      },
+    });
+  }
+
+  private scrollToFilesSection(): void {
+    this.cdf.detectChanges();
+
+    setTimeout(() => {
+      this.filesSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   protected removeFile(id: string): void {

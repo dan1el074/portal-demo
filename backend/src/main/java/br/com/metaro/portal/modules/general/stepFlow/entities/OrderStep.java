@@ -40,6 +40,8 @@ public class OrderStep {
     private List<StepMessage> messages;
     @OneToMany(mappedBy = "orderStep", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Picture> pictures;
+    @OneToMany(mappedBy = "orderStep", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StepFlowVideo> videos;
     @ManyToOne
     @JoinColumn(name = "finished_by_id", nullable = true)
     private User finishedBy;

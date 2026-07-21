@@ -5,7 +5,7 @@ import { IconDirective } from '@coreui/icons-angular';
 import { cilOptions, cilPencil, cilTrash } from '@coreui/icons';
 import { CarouselCustomConfig } from './carouse.config';
 import { TimeAgoPipe } from './../../../app/pipes/time-ago.pipe';
-import { ImageComponent } from '../../modal/image/image-modal/image.component';
+import { ImageComponent } from '../../modal/media/image-modal/image.component';
 import { PostCard } from '../../../app/interface/post.interface';
 import { environment } from '../../../environments/environment';
 
