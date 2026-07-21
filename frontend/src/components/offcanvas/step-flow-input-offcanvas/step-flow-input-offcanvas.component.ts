@@ -10,6 +10,7 @@ import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-
 import { VideoModalComponent } from '../../modal/media/video-modal/video-modal.component';
 import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.directive';
 import { StepFlowVideosService } from './../../../app/services/step-flow-videos.service';
+import { BackNavigationService } from '../../../app/services/back-navigation.service';
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
 import { environment } from '../../../environments/environment';
@@ -74,7 +75,8 @@ export class StepFlowInputOffcanvasComponent {
     private stepFlowVideoService: StepFlowVideosService,
     private toasterService: ToastrService,
     private cdf: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private backNav: BackNavigationService
   ) {
     this.form = this.formBuilder.group({
       carrier: [''],
@@ -93,9 +95,16 @@ export class StepFlowInputOffcanvasComponent {
     this.visible = true;
     this.orderId = id;
     this.loadOrder();
+    this.backNav.register(() => this.hide());
   }
 
   public close(): void {
+    this.visible = false;
+    this.toggleCancelModel(false);
+    this.backNav.unregister();
+  }
+
+  private hide(): void {
     this.visible = false;
     this.toggleCancelModel(false);
   }
