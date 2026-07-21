@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
