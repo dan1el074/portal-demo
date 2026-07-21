@@ -7,6 +7,7 @@ import localePt from '@angular/common/locales/pt';
 import { CommonModule, NgTemplateOutlet, registerLocaleData } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { TruncatePipe } from '../../../app/pipes/truncate.pipe';
+import { BackNavigationService } from '../../../app/services/back-navigation.service';
 
 registerLocaleData(localePt);
 
@@ -38,17 +39,20 @@ export class StepFlowOffcanvasComponent {
   constructor(
     private stepFlowService: StepFlowService,
     private toasterService: ToastrService,
-    private cdf: ChangeDetectorRef
+    private cdf: ChangeDetectorRef,
+    private backNav: BackNavigationService
   ) {}
 
   public open(orderId: number): void {
     this.visible = true;
     this.orderId = orderId;
     this.getData();
+    this.backNav.register(() => this.close());
   }
 
   public close(): void {
     this.visible = false;
+    this.cdf.detectChanges();
   }
 
   protected getData(): void {
