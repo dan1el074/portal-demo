@@ -494,5 +494,5 @@
   </div>
 </div>
 
-<app-cancel-step-flow-modal [visible]="showCancelModel" (close)="toggleCancelModel(false)" (cancelTask)="onCancel($event)"></app-cancel-step-flow-modal>
+<app-cancel-step-flow-modal [visible]="showCancelModel" [orderNumber]="order ? order.number : 0 " (close)="toggleCancelModel(false)" (cancelTask)="onCancel($event)"></app-cancel-step-flow-modal>
 <app-video-modal [visible]="showVideoModal" [video]="selectedVideo" (close)="onCloseVideoModal()"></app-video-modal>
