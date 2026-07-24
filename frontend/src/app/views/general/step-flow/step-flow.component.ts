@@ -41,6 +41,7 @@ export class StepFlowComponent implements OnInit {
   @ViewChild('stepFlowInputOffcanvas')stepFlowInputOffcanvas!: StepFlowInputOffcanvasComponent;
 
   protected isAdmin: boolean = false;
+  protected showMoney: boolean = true;
   protected isShipping: boolean = false;
   protected data!: Array<StepFlowData>;
   protected currentStepData!: Array<StepFlowData>;
@@ -258,6 +259,7 @@ export class StepFlowComponent implements OnInit {
     switch (this.user.position) {
       case 'Montagem Final':
         this.currentStepIndex = this.steps.findIndex(step => step.title == 'Montagem Final');
+        this.showMoney = false;
         break;
       case 'PCP':
         this.currentStepIndex = this.steps.findIndex(step => step.title == 'PCP');

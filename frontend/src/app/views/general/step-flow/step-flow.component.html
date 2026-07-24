@@ -232,7 +232,7 @@
 
       <app-step-flow-input-offcanvas
         #stepFlowInputOffcanvas
-        [isAdmin] = "isAdmin"
+        [isAdmin]="isAdmin"
         [steps]="steps"
         (nextStepTask)="onNextStep($event)"
         (reloadOrders)="reloadOrders()"
@@ -266,11 +266,12 @@
           [activePage]="currentPage"
           [pages]="totalPages"
           (activePageChange)="onPageChange($event)"
+          class="step-flow-table"
         />
       </div>
 
     </c-card-body>
   </c-card>
 
-  <app-step-flow-offcanvas #stepFlowOffcanvas [isAdmin]="isAdmin"></app-step-flow-offcanvas>
+  <app-step-flow-offcanvas #stepFlowOffcanvas [isAdmin]="isAdmin" [showMoney]="showMoney"></app-step-flow-offcanvas>
 </c-container>

@@ -57,7 +57,8 @@
             color: #0369dd;
             background-color: #0369dd17;
 
-            &.late {
+            &.late,
+            &.cancel {
               color: #c5232a;
               background-color: #c5232a17
             }
@@ -386,7 +387,6 @@
         overflow: hidden;
         border-radius: 12px;
         border: 1px solid var(--cui-border-color);
-        white-space: nowrap;
         margin-bottom: 16px;
 
         .sof-table {
@@ -436,7 +436,6 @@
           td {
             display: flex;
             justify-content: space-between;
-
           }
           .sof-total {
             background-color: rgba(var(--cui-emphasis-color-rgb), 0.04);
@@ -447,6 +446,34 @@
               .sof-total-value {
                 font-size: 15px;
                 color: #0369dd;
+              }
+            }
+          }
+        }
+
+        &.sof-table-scroll {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          white-space: nowrap;
+
+          .sof-table {
+            min-width: 500px;
+
+            thead th {
+              white-space: nowrap;
+            }
+
+            tbody td {
+              &.t-description {
+                white-space: normal;
+
+                small {
+                  white-space: nowrap;
+                }
+              }
+
+              &.t-money {
+                white-space: nowrap;
               }
             }
           }

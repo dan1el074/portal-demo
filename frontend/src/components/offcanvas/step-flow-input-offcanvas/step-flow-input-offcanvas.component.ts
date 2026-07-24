@@ -14,6 +14,7 @@ import { BackNavigationService } from '../../../app/services/back-navigation.ser
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
 import { environment } from '../../../environments/environment';
+import { EditableItem, QuantityStepFlowModalComponent } from '../../modal/step-flow/quantity-step-flow-modal/quantity-step-flow-modal.component';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -33,7 +34,8 @@ import { environment } from '../../../environments/environment';
     CurrencyMaskDirective,
     CancelStepFlowModalComponent,
     SpinnerComponent,
-    VideoModalComponent
+    VideoModalComponent,
+    QuantityStepFlowModalComponent
   ],
   templateUrl: './step-flow-input-offcanvas.component.html',
   styleUrl: './step-flow-input-offcanvas.component.scss',
@@ -47,13 +49,16 @@ export class StepFlowInputOffcanvasComponent {
   @Output() reloadOrders = new EventEmitter<void>();
 
   protected order: StepFlowOrder | null = null;
+  protected loading: boolean = true;
   protected visible = false;
   protected apiUrl: string = environment.apiUrl;
   protected form!: FormGroup;
   protected itemsForm!: FormArray;
-  protected showCancelModel = false;
+  protected showCancelModal = false;
   protected adminStepControl = new FormControl<number | null>(null);
   protected saveLoading: boolean = false;
+  protected showEditQuantityModal = false;
+  protected editingItem: EditableItem | null = null;
 
   // file
   protected readonly isMobileDevice: boolean = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -63,9 +68,9 @@ export class StepFlowInputOffcanvasComponent {
   readonly acceptedVideoExtensions = '.mp4,.webm,.mov';
   readonly acceptedAllExtensions = this.acceptedExtensions + ',' + this.acceptedVideoExtensions;
   protected isDragOver = signal(false);
-  protected files = signal<UploadedFile[]>([]);
+  protected files = signal<Array<UploadedFile>>([]);
   protected hasFiles = computed(() => this.files().length > 0);
-  protected uploadingVideos = signal<UploadingVideo[]>([]);
+  protected uploadingVideos = signal<Array<UploadingVideo>>([]);
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
 
@@ -87,8 +92,8 @@ export class StepFlowInputOffcanvasComponent {
     this.itemsForm = this.formBuilder.array([]);
   }
 
-  protected get itemsFormControls(): FormGroup[] {
-    return this.itemsForm.controls as FormGroup[];
+  protected get itemsFormControls(): Array<FormGroup> {
+    return this.itemsForm.controls as Array<FormGroup>;
   }
 
   public open(id: number): void {
@@ -115,6 +120,7 @@ export class StepFlowInputOffcanvasComponent {
   }
 
   protected loadOrder(): void {
+    this.loading = true;
     this.order = null;
     this.itemsForm.clear();
 
@@ -122,6 +128,7 @@ export class StepFlowInputOffcanvasComponent {
       next: (data: StepFlowOrder) => {
         this.order = data;
         this.buildItemsForm(data.items);
+        this.loading = false;
         this.cdf.detectChanges();
 
         if (this.isAdmin) {
@@ -130,8 +137,9 @@ export class StepFlowInputOffcanvasComponent {
         }
       },
       error: () => {
-        this.cdf.detectChanges();
         this.toasterService.error("Erro ao carregar informações do pedido!");
+        this.loading = false;
+        this.cdf.detectChanges();
       },
     });
   }
@@ -297,6 +305,7 @@ export class StepFlowInputOffcanvasComponent {
 
   protected onNextStep(): void {
     const id = this.order?.id as number;
+
     this.stepFlowService.nextStep(id).subscribe({
       next: () => {
         this.close();
@@ -319,7 +328,7 @@ export class StepFlowInputOffcanvasComponent {
         this.toasterService.success("Imagem apagada com sucesso!");
       },
       error: () => this.toasterService.error("Erro ao deletar imagem!")
-    })
+    });
   }
 
   protected onDeleteVideo(id: number): void {
@@ -335,7 +344,7 @@ export class StepFlowInputOffcanvasComponent {
   }
 
   protected toggleCancelModel(status: boolean): void {
-    this.showCancelModel = status;
+    this.showCancelModal = status;
     this.cdf.detectChanges();
   }
 
@@ -372,6 +381,36 @@ export class StepFlowInputOffcanvasComponent {
   protected onCloseVideoModal(): void {
     this.showVideoModal = false;
     this.selectedVideo = null;
+  }
+
+  protected onOpenEditQuantityModal(itemGroup: FormGroup): void {
+    this.editingItem = {
+      id: itemGroup.get('id')?.value,
+      code: itemGroup.get('code')?.value,
+      description: itemGroup.get('description')?.value,
+      quantity: itemGroup.get('quantity')?.value,
+      producedQuantity: itemGroup.get('producedQuantity')?.value ?? 0,
+    };
+    this.showEditQuantityModal = true;
+    this.cdf.detectChanges();
+  }
+
+  protected onCloseEditQuantityModal(): void {
+    this.showEditQuantityModal = false;
+    this.editingItem = null;
+  }
+
+  protected onSaveEditQuantity(newQuantity: number): void {
+    const control = this.itemsFormControls.find(
+      group => group.get('id')?.value === this.editingItem?.id
+    );
+
+    if (control) {
+      control.get('producedQuantity')?.setValue(newQuantity);
+      control.get('producedQuantity')?.markAsDirty();
+    }
+
+    this.onCloseEditQuantityModal();
   }
 
   // file input
@@ -417,9 +456,9 @@ export class StepFlowInputOffcanvasComponent {
   /*
    * Apenas seleciona/valida os arquivos (imagens e vídeos) e os mantém
    * pendentes na mesma lista. Nenhum upload é disparado aqui — isso só
-   * acontece quando o usuário clica em "Salvar" (ver onSubmit).
+   * acontece quando o usuário clica em "Salvar" (onSubmit).
    */
-  private processFiles(newFiles: File[]): void {
+  private processFiles(newFiles: Array<File>): void {
     const images = newFiles.filter(f => this.acceptedTypes.includes(f.type));
     const videos = newFiles.filter(f => this.acceptedVideoTypes.includes(f.type));
     const invalid = newFiles.filter(f =>
@@ -430,7 +469,7 @@ export class StepFlowInputOffcanvasComponent {
       this.toasterService.error('Use apenas PNG, JPEG, JPG, WEBP, MP4, WEBM ou MOV.');
     }
 
-    const mapped: UploadedFile[] = [...images, ...videos].map(f => ({
+    const mapped: Array<UploadedFile> = [...images, ...videos].map(f => ({
       id: this.generateId(),
       file: f,
       name: f.name,

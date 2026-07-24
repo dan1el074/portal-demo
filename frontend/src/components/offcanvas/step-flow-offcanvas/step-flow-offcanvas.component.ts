@@ -34,6 +34,7 @@ registerLocaleData(localePt);
 })
 export class StepFlowOffcanvasComponent {
   @Input() isAdmin!: boolean;
+  @Input() showMoney!: boolean;
   protected order: StepFlowOrder | null = null;
   protected orderId: number | null = null;
   protected visible = false;
