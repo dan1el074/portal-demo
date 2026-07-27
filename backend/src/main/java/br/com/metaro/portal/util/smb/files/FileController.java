@@ -1,7 +1,7 @@
 package br.com.metaro.portal.util.smb.files;
 
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
-import br.com.metaro.portal.util.smb.projects.SmbFileStream;
+import br.com.metaro.portal.util.smb.projects.dto.SmbFileStreamDto;
 import br.com.metaro.portal.util.smb.projects.SmbService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,14 +23,14 @@ public class FileController {
 
     @GetMapping("/{fileName:.+}")
     public ResponseEntity<StreamingResponseBody> getMedia(@PathVariable String fileName) throws Exception {
-        SmbFileStream smbFile = smbService.getFileStream(fileName);
+        SmbFileStreamDto smbFile = smbService.getFileStream(fileName);
 
         if (smbFile == null) throw new ResourceNotFoundException();
 
         MediaType mediaType = smbService.resolveMediaType(fileName);
 
         StreamingResponseBody stream = outputStream -> {
-            try (InputStream in = smbFile.inputStream()) {
+            try (InputStream in = smbFile.getInputStream()) {
                 in.transferTo(outputStream);
             } finally {
                 smbFile.close();

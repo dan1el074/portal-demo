@@ -1,6 +1,7 @@
 package br.com.metaro.portal.util.smb.projects;
 
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
+import br.com.metaro.portal.util.smb.projects.dto.SmbFileStreamDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,12 +26,12 @@ public class ProjectPdfController {
 
     @GetMapping("/{fileName}")
     public ResponseEntity<StreamingResponseBody> getPdf(@PathVariable String fileName) throws Exception {
-        SmbFileStream smbFile = smbService.getProjectPdfStream(fileName);
+        SmbFileStreamDto smbFile = smbService.getProjectPdfStream(fileName);
 
         if (smbFile == null) throw new ResourceNotFoundException();
 
         StreamingResponseBody stream = outputStream -> {
-            try (InputStream in = smbFile.inputStream()) {
+            try (InputStream in = smbFile.getInputStream()) {
                 in.transferTo(outputStream);
             } finally {
                 smbFile.close();

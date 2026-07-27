@@ -1,6 +1,7 @@
 package br.com.metaro.portal.integration.bunny;
 
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
+import br.com.metaro.portal.integration.bunny.dto.TusCredentialsDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -63,7 +64,7 @@ public class BunnyStreamClient {
         }
     }
 
-    public TusCredentials generateTusCredentials(String providerVideoId) {
+    public TusCredentialsDto generateTusCredentials(String providerVideoId) {
         validateConfiguration();
         long expiration = Instant.now().plus(1, ChronoUnit.HOURS).getEpochSecond();
         String content = properties.getLibraryId()
@@ -71,7 +72,7 @@ public class BunnyStreamClient {
                 + expiration
                 + providerVideoId;
 
-        return new TusCredentials(sha256Hex(content), expiration);
+        return new TusCredentialsDto(sha256Hex(content), expiration);
     }
 
     public String buildPlaybackUrl(String providerVideoId) {
@@ -113,6 +114,4 @@ public class BunnyStreamClient {
         }
     }
 
-    public record TusCredentials(String signature, long expiration) {
-    }
 }

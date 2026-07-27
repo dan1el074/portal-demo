@@ -1,5 +1,7 @@
 package br.com.metaro.portal.util.smb.projects;
 
+import br.com.metaro.portal.util.smb.projects.dto.SmbFileStreamDto;
+
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
@@ -88,7 +90,7 @@ public class SmbService {
         return results;
     }
 
-    public SmbFileStream getProjectPdfStream(String fileName) {
+    public SmbFileStreamDto getProjectPdfStream(String fileName) {
         try {
             DiskShare share = getShare();
             String fullPath = getProjectFolder(fileName) + "/" + fileName;
@@ -106,14 +108,14 @@ public class SmbService {
 
             InputStream inputStream = file.getInputStream();
 
-            return new SmbFileStream(file, inputStream);
+            return new SmbFileStreamDto(file, inputStream);
 
         } catch (Exception e) {
             throw new RuntimeException("Erro ao obter PDF SMB", e);
         }
     }
 
-    public SmbFileStream getFileStream(String fileName) {
+    public SmbFileStreamDto getFileStream(String fileName) {
         try {
             SMBClient tempClient = new SMBClient();
             Connection tempConnection = tempClient.connect(hostname);
@@ -144,7 +146,7 @@ public class SmbService {
 
             InputStream inputStream = file.getInputStream();
 
-            return new SmbFileStream(file, inputStream, tempShare, tempSession, tempConnection, tempClient);
+            return new SmbFileStreamDto(file, inputStream, tempShare, tempSession, tempConnection, tempClient);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao obter mídia SMB", e);
         }

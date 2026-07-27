@@ -1,6 +1,7 @@
 package br.com.metaro.portal.util.video;
 
 import br.com.metaro.portal.integration.bunny.BunnyStreamClient;
+import br.com.metaro.portal.integration.bunny.dto.TusCredentialsDto;
 import br.com.metaro.portal.util.video.dto.VideoUploadDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ public class VideoService {
     }
 
     public VideoUploadDto createUploadInstructions(Video video) {
-        BunnyStreamClient.TusCredentials credentials =
+        TusCredentialsDto credentials =
                 bunnyStreamClient.generateTusCredentials(video.getProviderVideoId());
 
         return new VideoUploadDto(
@@ -41,8 +42,8 @@ public class VideoService {
                 video.getProviderVideoId(),
                 bunnyStreamClient.getLibraryId(),
                 BunnyStreamClient.TUS_UPLOAD_ENDPOINT,
-                credentials.signature(),
-                credentials.expiration(),
+                credentials.getSignature(),
+                credentials.getExpiration(),
                 video.getPlaybackUrl()
         );
     }

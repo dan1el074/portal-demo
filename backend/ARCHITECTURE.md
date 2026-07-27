@@ -37,6 +37,7 @@ br.com.metaro.portal
 - Repositories tratam exclusivamente da persistencia.
 - DTOs representam contratos de entrada e saida; entidades JPA nao devem ser
   expostas diretamente pela API.
+- Objetos de transferencia sao classes DTO; a aplicacao nao utiliza a palavra-chave record.
 - Metodos descrevem a intencao: `listMemorandos`, `getMemorando`,
   `createMemorando` e `returnMemorandoToDraft`, em vez de nomes genericos ou
   ambiguos.
