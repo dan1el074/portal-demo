@@ -1,0 +1,24 @@
+<c-modal
+  alignment="center"
+  backdrop="static"
+  [visible]="visible"
+  (visibleChange)="!$event && onClose()"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Alterações não salvas</h5>
+    <button cButtonClose type="button" (click)="onClose()"></button>
+  </c-modal-header>
+
+  <c-modal-body>
+    Existem alterações não salvas. Continuar mesmo assim?
+  </c-modal-body>
+
+  <c-modal-footer>
+    <button cButton color="secondary" type="button" (click)="onClose()">
+      Voltar
+    </button>
+    <button cButton color="primary" type="button" (click)="confirm.emit()">
+      Continuar
+    </button>
+  </c-modal-footer>
+</c-modal>

@@ -1,4 +1,4 @@
-<form [formGroup]="configForm" (ngSubmit)="onSubmit()" autocomplete="off">
+<form [formGroup]="configForm" (ngSubmit)="onSubmit()" autocomplete="off" class="config-form">
   <c-card class="border">
     <c-card-body>
       <div class="avatar-container">
@@ -177,7 +177,7 @@
         <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
         <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
       </svg>
-      Salvar alterações
+      Salvar <span class="hide-on-mobile">alterações</span>
     </button>
   </div>
 </form>

@@ -1,7 +1,7 @@
 package br.com.metaro.portal.modules.general.memorando.repository;
 
-import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
-import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
+import br.com.metaro.portal.modules.general.memorando.entity.Memorando;
+import br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.repository.projections.MemorandoPendingProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

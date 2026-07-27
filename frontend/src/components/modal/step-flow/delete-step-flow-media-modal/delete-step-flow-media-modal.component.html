@@ -1,0 +1,31 @@
+<c-modal
+  alignment="center"
+  backdrop="static"
+  [visible]="visible"
+  (visibleChange)="!$event && onClose()"
+>
+  @if (media) {
+    <c-modal-header>
+      <h5 cModalTitle>Excluir {{ mediaTypeLabel }}</h5>
+      <button cButtonClose type="button" [disabled]="deleting" (click)="onClose()"></button>
+    </c-modal-header>
+
+    <c-modal-body>
+      Tem certeza que deseja excluir {{ mediaTypeLabel }}
+      <strong class="media-name">{{ media.name }}</strong>?
+    </c-modal-body>
+
+    <c-modal-footer>
+      <button cButton color="secondary" type="button" [disabled]="deleting" (click)="onClose()">
+        Cancelar
+      </button>
+      <button cButton class="delete-button" type="button" [disabled]="deleting" (click)="onConfirm()">
+        @if (deleting) {
+          <c-spinner size="sm" />
+        } @else {
+          Excluir
+        }
+      </button>
+    </c-modal-footer>
+  }
+</c-modal>

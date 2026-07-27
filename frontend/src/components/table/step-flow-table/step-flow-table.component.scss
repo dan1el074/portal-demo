@@ -36,7 +36,7 @@
 
   .custom-cleaner {
     height: 38px;
-    margin-left: 26px;
+    margin: 0 26px;
     color: var(--cui-secondary-color);
     background: transparent;
     border: none;
@@ -173,8 +173,14 @@
   }
 }
 
-@media (max-width: 550px) {
-  .custom-table-header {
-    margin-left: 38px;
+@media (max-width: 495px) {
+  .custom-table-header .step-select {
+    margin-left: 4px;
+  }
+}
+
+@media (max-width: 468px) {
+  .custom-table-header .step-select {
+    margin-left: 0;
   }
 }

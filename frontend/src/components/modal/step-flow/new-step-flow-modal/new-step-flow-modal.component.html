@@ -30,7 +30,7 @@
           formControlName="number"
           [valid]="(valid == false && newOrderForm.get('number')?.errors != null) ? false : undefined"
           id="number"
-          type="text"
+          type="number"
         />
 
         <button cButton type="submit" [disabled]="newOrderForm.get('number')?.errors != null">

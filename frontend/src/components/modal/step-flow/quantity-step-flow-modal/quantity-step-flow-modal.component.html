@@ -1,0 +1,80 @@
+<c-modal [visible]="visible" backdrop="static" alignment="center" (visibleChange)="!$event && onClose()">
+  @if (item) {
+    <c-modal-header>
+      <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
+      <h5 cModalTitle>Editar quantidade - {{ item.code }}</h5>
+      <button cButtonClose type="button" (click)="onClose()"></button>
+    </c-modal-header>
+
+    <c-modal-body>
+      <div class="custom-card text">
+        <h6>Item</h6>
+        <span>{{ item.description }}</span>
+      </div>
+
+      <div class="custom-card">
+        <h6>Quantidade produzida</h6>
+        <div class="flex-container">
+          <div class="flex-container">
+            <button
+              cButton
+              color="info"
+              type="button"
+              tabindex="-1"
+              (mousedown)="$event.preventDefault()"
+              (click)="decrement()"
+              aria-label="Diminuir"
+              variant="outline"
+            >-</button>
+
+            <div class="input-item">
+              <input
+                #quantityInput
+                type="number"
+                id="inputQuantity"
+                [formControl]="quantityControl"
+                [min]="0"
+                [max]="item.quantity"
+                step="1"
+                inputmode="numeric"
+                (keydown)="onKeyDown($event)"
+                (keydown.enter)="onEnter($event)"
+                (paste)="onPaste($event)"
+                cFormControl
+              >
+              <div cFormText>
+                Total: <strong>{{ item.quantity }}</strong>
+              </div>
+            </div>
+
+            <button
+              cButton
+              color="info"
+              type="button"
+              tabindex="-1"
+              (mousedown)="$event.preventDefault()"
+              (click)="increment()"
+              aria-label="Aumentar"
+              variant="outline"
+            >+</button>
+          </div>
+        </div>
+
+        @if (quantityControl.invalid && quantityControl.touched) {
+          <small class="text-danger d-block text-center mt-2">
+            @if (quantityControl.hasError('notInteger')) {
+              Apenas números inteiros são permitidos.
+            } @else {
+              Quantidade deve ser entre 0 e {{ item.quantity }}.
+            }
+          </small>
+        }
+      </div>
+    </c-modal-body>
+
+    <c-modal-footer>
+      <button cButton color="secondary" type="button" (click)="onClose()">Cancelar</button>
+      <button cButton color="primary" type="button" (click)="onSave()">Salvar</button>
+    </c-modal-footer>
+  }
+</c-modal>

@@ -1,6 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withEnabledBlockingInitialNavigation, withHashLocation, withInMemoryScrolling, withRouterConfig, withViewTransitions } from '@angular/router';
-import { IconSetService } from '@coreui/icons-angular';
+import { provideRouter, withHashLocation, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomPaginator } from './shared/CustomPaginator';

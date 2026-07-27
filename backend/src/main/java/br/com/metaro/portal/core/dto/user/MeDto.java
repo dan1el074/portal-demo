@@ -2,8 +2,6 @@ package br.com.metaro.portal.core.dto.user;
 
 import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
 import br.com.metaro.portal.core.dto.role.RoleDto;
-import br.com.metaro.portal.core.entities.Role;
-import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.projections.MeProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class MeDto {
-
     private Long id;
     private String name;
     private String email;

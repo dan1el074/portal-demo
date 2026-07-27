@@ -1,7 +1,7 @@
 package br.com.metaro.portal.core.services;
 
 import br.com.metaro.portal.core.dto.position.PositionDto;
-import br.com.metaro.portal.core.dto.position.PositionFormImputDto;
+import br.com.metaro.portal.core.dto.position.PositionFormInputDto;
 import br.com.metaro.portal.core.dto.position.PositionMinDto;
 import br.com.metaro.portal.core.entities.Position;
 import br.com.metaro.portal.core.entities.User;
@@ -28,14 +28,14 @@ public class PositionService {
     private UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<PositionDto> findAll() {
+    public List<PositionDto> listPositions() {
         Sort sort = Sort.by("name");
         List<Position> positions = positionRepository.findAll(sort);
         return positions.stream().map(PositionDto::new).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<PositionMinDto> list() {
+    public List<PositionMinDto> listActivePositions() {
         Sort sort = Sort.by("name");
         List<Position> positions = positionRepository.findAll(sort);
         positions = positions.stream().filter(p -> p.getActivated().equals(true)).toList();
@@ -43,13 +43,13 @@ public class PositionService {
     }
 
     @Transactional(readOnly = true)
-    public PositionDto findById(Long id) {
+    public PositionDto getPosition(Long id) {
         Position position = positionRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         return new PositionDto(position);
     }
 
     @Transactional
-    public List<PositionDto> insert(PositionFormImputDto dto) {
+    public List<PositionDto> createPosition(PositionFormInputDto dto) {
         Position position = new Position();
         position.setManangers(new HashSet<>());
         position.setCreatedAt(Instant.now());
@@ -65,11 +65,11 @@ public class PositionService {
         }
 
         positionRepository.save(position);
-        return findAll();
+        return listPositions();
     }
 
     @Transactional
-    public List<PositionDto> update(Long id, PositionFormImputDto dto) {
+    public List<PositionDto> updatePosition(Long id, PositionFormInputDto dto) {
         Position position = positionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         if (position.getIsLocked() && !dto.getName().equals(position.getName())) {
@@ -89,11 +89,11 @@ public class PositionService {
         }
 
         positionRepository.save(position);
-        return findAll();
+        return listPositions();
     }
 
     @Transactional
-    public List<PositionDto> deactive(Long id) {
+    public List<PositionDto> deactivate(Long id) {
         Position position = positionRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         /// verifica se o departamento está em uso por algum usuário, se sim, jogar uma exceção
@@ -103,10 +103,10 @@ public class PositionService {
 
         position.setActivated(false);
         positionRepository.save(position);
-        return findAll();
+        return listPositions();
     }
 
-    private void copyDtoToEntity(PositionFormImputDto dto, Position entity) {
+    private void copyDtoToEntity(PositionFormInputDto dto, Position entity) {
         entity.setName(dto.getName());
         entity.setActivated(dto.getActivated());
         entity.setUpdatedAt(Instant.now());

@@ -1,8 +1,8 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
-import br.com.metaro.portal.modules.general.memorando.entities.MemorandoLog;
-import br.com.metaro.portal.modules.general.memorando.entities.Signature;
+import br.com.metaro.portal.modules.general.memorando.entity.Memorando;
+import br.com.metaro.portal.modules.general.memorando.entity.MemorandoLog;
+import br.com.metaro.portal.modules.general.memorando.entity.Signature;
 import br.com.metaro.portal.modules.general.post.entities.Post;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStep;
 import br.com.metaro.portal.modules.general.stepFlow.entities.StepMessage;

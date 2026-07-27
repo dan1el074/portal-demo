@@ -28,7 +28,7 @@ public class OrderMinDto {
         number = entity.getNumber();
         quantity = "-";
         client = entity.getClient();
-        dueDate = entity.getDueDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        dueDate = entity.getDueDate() != null ? entity.getDueDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-";
         currentStep = entity.getCurrentStep().toString();
         status = entity.getStatus().toString();
         progress = entity.getProgress();

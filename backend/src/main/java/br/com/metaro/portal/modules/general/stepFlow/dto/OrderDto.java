@@ -2,6 +2,8 @@ package br.com.metaro.portal.modules.general.stepFlow.dto;
 
 import br.com.metaro.portal.modules.general.stepFlow.entities.*;
 import br.com.metaro.portal.util.picture.Picture;
+import br.com.metaro.portal.util.video.Video;
+import br.com.metaro.portal.util.video.VideoStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,7 +80,7 @@ public class OrderDto {
                 pictures.add(new ImageDto(picture, isCurrentStep));
             }
 
-            for (StepFlowVideo video : orderStep.getVideos()) {
+            for (Video video : orderStep.getVideos()) {
                 if (!video.getStatus().equals(VideoStatus.READY)) continue;
                 videos.add(new StepFlowVideoDto(video, isCurrentStep));
             }

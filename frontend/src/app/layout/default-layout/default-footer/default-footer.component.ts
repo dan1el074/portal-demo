@@ -10,6 +10,7 @@ import { environment } from './../../../../environments/environment';
 })
 export class DefaultFooterComponent extends FooterComponent {
   protected appVersion = environment.appVersion;
+  protected year: number = (new Date).getFullYear();
 
   constructor() { super() }
 }

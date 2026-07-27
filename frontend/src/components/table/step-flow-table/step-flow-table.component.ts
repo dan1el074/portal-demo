@@ -40,42 +40,42 @@ export class StepFlowTableComponent {
       key: 'quantity',
       label: 'QTD',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
       sorter: false
     },
     {
       key: 'client',
       label: 'Cliente',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
       sorter: () => 0
     },
     {
       key: 'dueDate',
       label: 'Prazo',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
       sorter: () => 0
     },
     {
       key: 'currentStep',
       label: 'Etapa atual',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
       sorter: () => 0
     },
     {
       key: 'status',
       label: 'Status',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
       sorter: () => 0
     },
     {
       key: 'progress',
       label: 'Progresso',
       _labelTemplateId: 'all',
-      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)' },
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
       filter: false,
       sorter: false,
     }
