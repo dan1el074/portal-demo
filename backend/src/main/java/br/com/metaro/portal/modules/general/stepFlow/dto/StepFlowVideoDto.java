@@ -1,6 +1,6 @@
 package br.com.metaro.portal.modules.general.stepFlow.dto;
 
-import br.com.metaro.portal.modules.general.stepFlow.entities.StepFlowVideo;
+import br.com.metaro.portal.util.video.Video;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +20,10 @@ public class StepFlowVideoDto {
     private Instant createdAt;
     private Boolean isCurrentStep;
 
-    public StepFlowVideoDto(StepFlowVideo entity, Boolean isCurrentStep) {
+    public StepFlowVideoDto(Video entity, Boolean isCurrentStep) {
         this.id = entity.getId();
         this.name = entity.getName();
-        this.viewUrl = entity.getViewUrl();
+        this.viewUrl = entity.getPlaybackUrl();
         this.status = entity.getStatus().name();
         this.createdAt = entity.getCreatedAt();
         this.isCurrentStep = isCurrentStep;

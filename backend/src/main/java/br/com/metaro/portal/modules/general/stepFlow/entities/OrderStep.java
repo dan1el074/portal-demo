@@ -2,6 +2,7 @@ package br.com.metaro.portal.modules.general.stepFlow.entities;
 
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.util.picture.Picture;
+import br.com.metaro.portal.util.video.Video;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,16 +35,21 @@ public class OrderStep {
     private Instant finishedAt;
 
     // relacionamentos
-    @ManyToOne
-    @JoinColumn(name = "order_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
     @OneToMany(mappedBy = "step", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StepMessage> messages;
+    private List<StepMessage> messages = new ArrayList<>();
     @OneToMany(mappedBy = "orderStep", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Picture> pictures;
-    @OneToMany(mappedBy = "orderStep", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StepFlowVideo> videos;
-    @ManyToOne
-    @JoinColumn(name = "finished_by_id", nullable = true)
+    private List<Picture> pictures = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "order_step_id")
+    private List<Video> videos = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "finished_by_id")
     private User finishedBy;
+
+    public void addVideo(Video video) {
+        videos.add(video);
+    }
 }

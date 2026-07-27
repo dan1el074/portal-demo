@@ -6,27 +6,36 @@ import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import br.com.metaro.portal.modules.general.stepFlow.dto.StepFlowVideoCreateDto;
-import br.com.metaro.portal.modules.general.stepFlow.dto.StepFlowVideoUploadDto;
 import br.com.metaro.portal.modules.general.stepFlow.entities.*;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepository;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.StepFlowVideoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.metaro.portal.util.video.Video;
+import br.com.metaro.portal.util.video.VideoService;
+import br.com.metaro.portal.util.video.dto.VideoUploadDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StepFlowVideoService {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private StepFlowVideoRepository stepFlowVideoRepository;
-    @Autowired
-    private BunnyStreamService bunnyStreamService;
-    @Autowired
-    private UserService userService;
+    private final OrderRepository orderRepository;
+    private final StepFlowVideoRepository stepFlowVideoRepository;
+    private final VideoService videoService;
+    private final UserService userService;
+
+    public StepFlowVideoService(
+            OrderRepository orderRepository,
+            StepFlowVideoRepository stepFlowVideoRepository,
+            VideoService videoService,
+            UserService userService
+    ) {
+        this.orderRepository = orderRepository;
+        this.stepFlowVideoRepository = stepFlowVideoRepository;
+        this.videoService = videoService;
+        this.userService = userService;
+    }
 
     @Transactional
-    public StepFlowVideoUploadDto create(Long orderId, StepFlowVideoCreateDto dto) {
+    public VideoUploadDto createVideoUpload(Long orderId, StepFlowVideoCreateDto dto) {
         Order order = orderRepository.findById(orderId).orElseThrow(ResourceNotFoundException::new);
 
         if (order.getStatus().equals(OrderStatus.CANCELLED)) {
@@ -37,42 +46,20 @@ public class StepFlowVideoService {
                 .filter(step -> step.getStep().equals(order.getCurrentStep()))
                 .findFirst().orElseThrow(ResourceNotFoundException::new);
 
-        String bunnyVideoId = bunnyStreamService.createVideo(dto.getName());
-        String viewUrl = bunnyStreamService.buildViewUrl(bunnyVideoId);
+        Video video = videoService.createPendingVideo(dto.getName());
+        currentStep.addVideo(video);
 
-        StepFlowVideo video = new StepFlowVideo();
-        video.setName(dto.getName());
-        video.setBunnyVideoId(bunnyVideoId);
-        video.setViewUrl(viewUrl);
-        video.setStatus(VideoStatus.PENDING);
-        video.setOrderStep(currentStep);
-
-        currentStep.getVideos().add(video);
-        stepFlowVideoRepository.save(video);
-
-        BunnyStreamService.TusCredentials credentials = bunnyStreamService.generateTusCredentials(bunnyVideoId);
-
-        StepFlowVideoUploadDto response = new StepFlowVideoUploadDto();
-        response.setId(video.getId());
-        response.setBunnyVideoId(bunnyVideoId);
-        response.setLibraryId(bunnyStreamService.getLibraryId());
-        response.setUploadEndpoint(BunnyStreamService.TUS_ENDPOINT);
-        response.setAuthorizationSignature(credentials.signature());
-        response.setAuthorizationExpire(credentials.expiration());
-        response.setViewUrl(viewUrl);
-
-        return response;
+        return videoService.createUploadInstructions(video);
     }
 
     @Transactional
-    public void complete(Long id) {
-        StepFlowVideo video = stepFlowVideoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-        video.setStatus(VideoStatus.READY);
-        stepFlowVideoRepository.save(video);
+    public void completeVideoUpload(Long id) {
+        Video video = findStepFlowVideo(id);
+        videoService.markAsReady(video);
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteVideo(Long id) {
         User me = userService.authenticate();
 
         if (
@@ -83,8 +70,11 @@ public class StepFlowVideoService {
             throw new ForbiddenException("Você não tem permissão para excluir esse vídeo!");
         }
 
-        StepFlowVideo video = stepFlowVideoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-        bunnyStreamService.deleteVideo(video.getBunnyVideoId());
-        stepFlowVideoRepository.delete(video);
+        videoService.delete(findStepFlowVideo(id));
+    }
+
+    private Video findStepFlowVideo(Long id) {
+        return stepFlowVideoRepository.findVideoById(id)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }

@@ -1,7 +1,7 @@
 package br.com.metaro.portal.core.entities;
 
-import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
-import br.com.metaro.portal.modules.general.memorando.entities.Signature;
+import br.com.metaro.portal.modules.general.memorando.entity.Memorando;
+import br.com.metaro.portal.modules.general.memorando.entity.Signature;
 import jakarta.persistence.*;
 import lombok.*;
 

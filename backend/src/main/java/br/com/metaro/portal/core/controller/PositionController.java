@@ -1,7 +1,7 @@
 package br.com.metaro.portal.core.controller;
 
 import br.com.metaro.portal.core.dto.position.PositionDto;
-import br.com.metaro.portal.core.dto.position.PositionFormImputDto;
+import br.com.metaro.portal.core.dto.position.PositionFormInputDto;
 import br.com.metaro.portal.core.dto.position.PositionMinDto;
 import br.com.metaro.portal.core.services.PositionService;
 import jakarta.validation.Valid;
@@ -20,43 +20,43 @@ public class PositionController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
     @GetMapping
-    public ResponseEntity<List<PositionDto>> findAll() {
-        List<PositionDto> dtos = positionService.findAll();
+    public ResponseEntity<List<PositionDto>> listPositions() {
+        List<PositionDto> dtos = positionService.listPositions();
         return ResponseEntity.ok(dtos);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADM_PANEL','ROLE_MEMORANDO')")
     @GetMapping(value = "/min")
-    public ResponseEntity<List<PositionMinDto>> list() {
-        List<PositionMinDto> dtos = positionService.list();
+    public ResponseEntity<List<PositionMinDto>> listActivePositions() {
+        List<PositionMinDto> dtos = positionService.listActivePositions();
         return ResponseEntity.ok(dtos);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<PositionDto> findById(@PathVariable Long id) {
-        PositionDto dto = positionService.findById(id);
+    public ResponseEntity<PositionDto> getPosition(@PathVariable Long id) {
+        PositionDto dto = positionService.getPosition(id);
         return ResponseEntity.ok(dto);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
     @PostMapping
-    public ResponseEntity<List<PositionDto>> insert(@Valid @RequestBody PositionFormImputDto dto) {
-        List<PositionDto> dtos = positionService.insert(dto);
+    public ResponseEntity<List<PositionDto>> createPosition(@Valid @RequestBody PositionFormInputDto dto) {
+        List<PositionDto> dtos = positionService.createPosition(dto);
         return ResponseEntity.ok(dtos);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<List<PositionDto>> update(@PathVariable Long id, @Valid @RequestBody PositionFormImputDto dto) {
-        List<PositionDto> dtos = positionService.update(id, dto);
+    public ResponseEntity<List<PositionDto>> updatePosition(@PathVariable Long id, @Valid @RequestBody PositionFormInputDto dto) {
+        List<PositionDto> dtos = positionService.updatePosition(id, dto);
         return ResponseEntity.ok(dtos);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POSITION_PANEL')")
     @PutMapping(value = "/deactive/{id}")
-    public ResponseEntity<List<PositionDto>> deactive(@PathVariable Long id) {
-        List<PositionDto> dtos = positionService.deactive(id);
+    public ResponseEntity<List<PositionDto>> deactivatePosition(@PathVariable Long id) {
+        List<PositionDto> dtos = positionService.deactivate(id);
         return ResponseEntity.ok(dtos);
     }
 }
