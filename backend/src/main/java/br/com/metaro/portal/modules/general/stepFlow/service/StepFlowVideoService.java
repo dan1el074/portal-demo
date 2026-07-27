@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StepFlowVideoService {
+    private static final String EVIDENCE_VIDEO_PREFIX = "EVIDENCIA_";
     private final OrderRepository orderRepository;
     private final StepFlowVideoRepository stepFlowVideoRepository;
     private final VideoService videoService;
@@ -46,7 +47,7 @@ public class StepFlowVideoService {
                 .filter(step -> step.getStep().equals(order.getCurrentStep()))
                 .findFirst().orElseThrow(ResourceNotFoundException::new);
 
-        Video video = videoService.createPendingVideo(dto.getName());
+        Video video = videoService.createPendingVideo(EVIDENCE_VIDEO_PREFIX + dto.getName());
         currentStep.addVideo(video);
 
         return videoService.createUploadInstructions(video);

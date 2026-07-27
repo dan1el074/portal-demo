@@ -795,6 +795,39 @@
           white-space: nowrap;
         }
 
+        &__edit {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          min-width: 0;
+        }
+
+        &__edit-input {
+          width: 100%;
+          min-width: 0;
+          height: 28px;
+          padding: 3px 7px;
+          border: 1px solid #93c5fd;
+          border-radius: 4px;
+          background: var(--cui-body-bg);
+          color: var(--cui-body-color);
+          font-size: 13px;
+          outline: none;
+
+          &:focus {
+            border-color: $color-text-link;
+            box-shadow: 0 0 0 2px rgba($color-text-link, 0.12);
+          }
+        }
+
+        &__extension {
+          flex-shrink: 0;
+          margin-left: 2px;
+          color: $color-text-muted;
+          font-size: 12px;
+        }
+
+        &__edit-button,
         &__remove {
           flex-shrink: 0;
           display: flex;
@@ -808,16 +841,33 @@
           cursor: pointer;
           border-radius: 4px;
           padding: 0;
-          transition: color 150ms, 150ms;
-
-          &:hover {
-            color: $color-error;
-            background: rgba($color-error, 0.08);
-          }
+          transition: color 150ms, background 150ms;
 
           &:focus-visible {
             outline: 2px solid $color-text-link;
             outline-offset: 2px;
+          }
+        }
+
+        &__edit-button:hover {
+          color: $color-text-link;
+          background: rgba($color-text-link, 0.08);
+        }
+
+        &__edit-button.confirm:hover {
+          color: #2eb85c;
+          background: rgba(46, 184, 92, 0.08);
+        }
+
+        &__edit-button.cancel:hover {
+          color: $color-error;
+          background: rgba($color-error, 0.08);
+        }
+
+        &__remove {
+          &:hover {
+            color: $color-error;
+            background: rgba($color-error, 0.08);
           }
         }
       }
@@ -887,6 +937,62 @@
 
   svg {
     width: 14px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .sof-custom-offcanvas .sof-custom-body .upload-wrapper .drop-zone {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+
+    &:hover,
+    &:focus-visible,
+    &.drag-over {
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    &__content {
+      width: 100%;
+      height: 100%;
+      gap: 0;
+    }
+
+    &__content > svg,
+    &__text,
+    &__hint {
+      display: none;
+    }
+  }
+
+  .sof-custom-offcanvas .sof-custom-body .drop-zone__actions {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .sof-custom-offcanvas .sof-custom-body .drop-zone__btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    width: 100%;
+    max-width: none;
+    height: 110px;
+    border: 2px dashed var(--cui-border-color);
+    border-radius: 10px;
+    background: #f9fafb;
+    color: #3b82f6;
+    font-weight: 500;
+
+    &:hover,
+    &:focus-visible {
+      border-color: #93c5fd90;
+      background: #eff6ff;
+    }
   }
 }
 

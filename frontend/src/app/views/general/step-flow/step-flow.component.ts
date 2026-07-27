@@ -12,6 +12,7 @@ import { StepFlowTableComponent } from './../../../../components/table/step-flow
 import { StepFlowOffcanvasComponent } from '../../../../components/offcanvas/step-flow-offcanvas/step-flow-offcanvas.component';
 import { StepFlowInputOffcanvasComponent } from '../../../../components/offcanvas/step-flow-input-offcanvas/step-flow-input-offcanvas.component';
 import { NewStepFlowModalComponent } from '../../../../components/modal/step-flow/new-step-flow-modal/new-step-flow-modal.component';
+
 @Component({
   selector: 'app-step-flow',
   imports: [
