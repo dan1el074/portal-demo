@@ -7,13 +7,17 @@ import { finalize } from 'rxjs';
 import { Upload } from 'tus-js-client';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent, TemplateIdDirective } from '@coreui/angular';
 import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
+import { DeletableStepFlowMedia, DeleteStepFlowMediaModalComponent } from '../../modal/step-flow/delete-step-flow-media-modal/delete-step-flow-media-modal.component';
+import { UnsavedChangesStepFlowModalComponent } from '../../modal/step-flow/unsaved-changes-step-flow-modal/unsaved-changes-step-flow-modal.component';
 import { VideoModalComponent } from '../../modal/media/video-modal/video-modal.component';
 import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.directive';
 import { StepFlowVideosService } from './../../../app/services/step-flow-videos.service';
 import { BackNavigationService } from '../../../app/services/back-navigation.service';
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
+import { StepFlowImage } from '../../../app/interface/image.interface';
 import { environment } from '../../../environments/environment';
+import { EditableItem, QuantityStepFlowModalComponent } from '../../modal/step-flow/quantity-step-flow-modal/quantity-step-flow-modal.component';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -33,7 +37,10 @@ import { environment } from '../../../environments/environment';
     CurrencyMaskDirective,
     CancelStepFlowModalComponent,
     SpinnerComponent,
-    VideoModalComponent
+    VideoModalComponent,
+    QuantityStepFlowModalComponent,
+    DeleteStepFlowMediaModalComponent,
+    UnsavedChangesStepFlowModalComponent
   ],
   templateUrl: './step-flow-input-offcanvas.component.html',
   styleUrl: './step-flow-input-offcanvas.component.scss',
@@ -47,13 +54,24 @@ export class StepFlowInputOffcanvasComponent {
   @Output() reloadOrders = new EventEmitter<void>();
 
   protected order: StepFlowOrder | null = null;
+  protected loading: boolean = true;
   protected visible = false;
   protected apiUrl: string = environment.apiUrl;
   protected form!: FormGroup;
   protected itemsForm!: FormArray;
-  protected showCancelModel = false;
+  protected showCancelModal = false;
   protected adminStepControl = new FormControl<number | null>(null);
   protected saveLoading: boolean = false;
+  protected showEditQuantityModal = false;
+  protected editingItem: EditableItem | null = null;
+  protected showNextStepConfirmationModal = false;
+  protected mediaToDelete: DeletableStepFlowMedia | null = null;
+  protected deleteMediaLoading = false;
+  protected editingFileId: string | null = null;
+  protected editingFileName = '';
+  protected editingFileExtension = '';
+  private initialCurrentStepFormValue = '';
+  private initialProducedQuantities = new Map<number, number>();
 
   // file
   protected readonly isMobileDevice: boolean = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -63,9 +81,9 @@ export class StepFlowInputOffcanvasComponent {
   readonly acceptedVideoExtensions = '.mp4,.webm,.mov';
   readonly acceptedAllExtensions = this.acceptedExtensions + ',' + this.acceptedVideoExtensions;
   protected isDragOver = signal(false);
-  protected files = signal<UploadedFile[]>([]);
+  protected files = signal<Array<UploadedFile>>([]);
   protected hasFiles = computed(() => this.files().length > 0);
-  protected uploadingVideos = signal<UploadingVideo[]>([]);
+  protected uploadingVideos = signal<Array<UploadingVideo>>([]);
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
 
@@ -85,15 +103,17 @@ export class StepFlowInputOffcanvasComponent {
     });
 
     this.itemsForm = this.formBuilder.array([]);
+    this.captureFormInitialValue();
   }
 
-  protected get itemsFormControls(): FormGroup[] {
-    return this.itemsForm.controls as FormGroup[];
+  protected get itemsFormControls(): Array<FormGroup> {
+    return this.itemsForm.controls as Array<FormGroup>;
   }
 
   public open(id: number): void {
     this.visible = true;
     this.orderId = id;
+    this.resetForm();
     this.loadOrder();
     this.backNav.register(() => this.hide());
   }
@@ -101,20 +121,31 @@ export class StepFlowInputOffcanvasComponent {
   public close(): void {
     this.visible = false;
     this.toggleCancelModel(false);
+    this.showNextStepConfirmationModal = false;
+    this.resetDeleteMediaModal();
     this.backNav.unregister();
   }
 
   private hide(): void {
     this.visible = false;
     this.toggleCancelModel(false);
+    this.showNextStepConfirmationModal = false;
+    this.resetDeleteMediaModal();
   }
 
   private resetForm(): void {
-    this.form.reset();
+    this.form.reset({
+      carrier: '',
+      shippment: null,
+      comment: '',
+    });
     this.files.set([]);
+    this.cancelFileNameEdit();
+    this.captureFormInitialValue();
   }
 
   protected loadOrder(): void {
+    this.loading = true;
     this.order = null;
     this.itemsForm.clear();
 
@@ -122,6 +153,7 @@ export class StepFlowInputOffcanvasComponent {
       next: (data: StepFlowOrder) => {
         this.order = data;
         this.buildItemsForm(data.items);
+        this.loading = false;
         this.cdf.detectChanges();
 
         if (this.isAdmin) {
@@ -130,8 +162,9 @@ export class StepFlowInputOffcanvasComponent {
         }
       },
       error: () => {
-        this.cdf.detectChanges();
         this.toasterService.error("Erro ao carregar informações do pedido!");
+        this.loading = false;
+        this.cdf.detectChanges();
       },
     });
   }
@@ -153,9 +186,17 @@ export class StepFlowInputOffcanvasComponent {
         })
       );
     });
+
+    this.initialProducedQuantities = new Map(
+      items.map(item => [item.id, item.producedQuantity] as const)
+    );
   }
 
   protected onSubmit(): void {
+    if (!this.commitFileNameEdit()) {
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -296,7 +337,63 @@ export class StepFlowInputOffcanvasComponent {
   }
 
   protected onNextStep(): void {
+    if (this.hasUnsavedCurrentStepChanges()) {
+      this.showNextStepConfirmationModal = true;
+      return;
+    }
+
+    this.advanceToNextStep();
+  }
+
+  private hasUnsavedCurrentStepChanges(): boolean {
+    return this.getComparableFormValue() !== this.initialCurrentStepFormValue
+      || this.haveProducedQuantitiesChanged()
+      || this.files().length > 0;
+  }
+
+  private captureFormInitialValue(): void {
+    this.initialCurrentStepFormValue = this.getComparableFormValue();
+  }
+
+  private getComparableFormValue(): string {
+    const { carrier, shippment, comment } = this.form.getRawValue();
+
+    return JSON.stringify({
+      carrier: this.normalizeComparableValue(carrier),
+      shippment: this.normalizeComparableValue(shippment),
+      comment: this.normalizeComparableValue(comment),
+    });
+  }
+
+  private normalizeComparableValue(value: unknown): unknown {
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim();
+      return trimmedValue.length > 0 ? trimmedValue : null;
+    }
+
+    return value ?? null;
+  }
+
+  private haveProducedQuantitiesChanged(): boolean {
+    return this.itemsFormControls.some(itemGroup => {
+      const id = itemGroup.get('id')?.value as number;
+      const producedQuantity = itemGroup.get('producedQuantity')?.value as number;
+      return producedQuantity !== this.initialProducedQuantities.get(id);
+    });
+  }
+
+  protected onCloseNextStepConfirmationModal(): void {
+    this.showNextStepConfirmationModal = false;
+  }
+
+  protected onConfirmNextStep(): void {
+    this.showNextStepConfirmationModal = false;
+    this.advanceToNextStep();
+  }
+
+  private advanceToNextStep(): void {
     const id = this.order?.id as number;
+
     this.stepFlowService.nextStep(id).subscribe({
       next: () => {
         this.close();
@@ -308,25 +405,64 @@ export class StepFlowInputOffcanvasComponent {
     });
   }
 
-  protected onDeleteImage(id: number): void {
-    this.stepFlowService.deleteImageById(id).subscribe({
+  protected onDeleteImage(image: StepFlowImage): void {
+    this.openDeleteMediaModal(image.id, image.name, 'image');
+  }
+
+  protected onDeleteVideo(video: StepFlowVideo): void {
+    this.openDeleteMediaModal(video.id, video.name, 'video');
+  }
+
+  private openDeleteMediaModal(id: number, name: string, type: 'image' | 'video'): void {
+    this.mediaToDelete = { id, name, type };
+  }
+
+  protected onCloseDeleteMediaModal(): void {
+    if (!this.deleteMediaLoading) {
+      this.resetDeleteMediaModal();
+    }
+  }
+
+  protected onConfirmDeleteMedia(): void {
+    if (!this.mediaToDelete || this.deleteMediaLoading) {
+      return;
+    }
+
+    this.deleteMediaLoading = true;
+
+    if (this.mediaToDelete.type === 'image') {
+      this.deleteImage(this.mediaToDelete.id);
+      return;
+    }
+
+    this.deleteVideo(this.mediaToDelete.id);
+  }
+
+  private deleteImage(id: number): void {
+    this.stepFlowService.deleteImageById(id)
+      .pipe(finalize(() => this.finishDeleteMediaRequest()))
+      .subscribe({
       next: () => {
         if (!this.order) throw new Error("This order is null!");
 
         this.order.pictures = this.order?.pictures.filter(p => p.id != id);
+        this.resetDeleteMediaModal();
         this.cdf.detectChanges();
 
         this.toasterService.success("Imagem apagada com sucesso!");
       },
       error: () => this.toasterService.error("Erro ao deletar imagem!")
-    })
+    });
   }
 
-  protected onDeleteVideo(id: number): void {
-    this.stepFlowVideoService.deleteById(id).subscribe({
+  private deleteVideo(id: number): void {
+    this.stepFlowVideoService.deleteById(id)
+      .pipe(finalize(() => this.finishDeleteMediaRequest()))
+      .subscribe({
       next: () => {
         if (!this.order) throw new Error("This order is null!");
         this.order.videos = this.order.videos.filter(v => v.id !== id);
+        this.resetDeleteMediaModal();
         this.cdf.detectChanges();
         this.toasterService.success("Vídeo apagado com sucesso!");
       },
@@ -334,8 +470,17 @@ export class StepFlowInputOffcanvasComponent {
     });
   }
 
+  private finishDeleteMediaRequest(): void {
+    this.deleteMediaLoading = false;
+    this.cdf.detectChanges();
+  }
+
+  private resetDeleteMediaModal(): void {
+    this.mediaToDelete = null;
+  }
+
   protected toggleCancelModel(status: boolean): void {
-    this.showCancelModel = status;
+    this.showCancelModal = status;
     this.cdf.detectChanges();
   }
 
@@ -372,6 +517,36 @@ export class StepFlowInputOffcanvasComponent {
   protected onCloseVideoModal(): void {
     this.showVideoModal = false;
     this.selectedVideo = null;
+  }
+
+  protected onOpenEditQuantityModal(itemGroup: FormGroup): void {
+    this.editingItem = {
+      id: itemGroup.get('id')?.value,
+      code: itemGroup.get('code')?.value,
+      description: itemGroup.get('description')?.value,
+      quantity: itemGroup.get('quantity')?.value,
+      producedQuantity: itemGroup.get('producedQuantity')?.value ?? 0,
+    };
+    this.showEditQuantityModal = true;
+    this.cdf.detectChanges();
+  }
+
+  protected onCloseEditQuantityModal(): void {
+    this.showEditQuantityModal = false;
+    this.editingItem = null;
+  }
+
+  protected onSaveEditQuantity(newQuantity: number): void {
+    const control = this.itemsFormControls.find(
+      group => group.get('id')?.value === this.editingItem?.id
+    );
+
+    if (control) {
+      control.get('producedQuantity')?.setValue(newQuantity);
+      control.get('producedQuantity')?.markAsDirty();
+    }
+
+    this.onCloseEditQuantityModal();
   }
 
   // file input
@@ -417,9 +592,9 @@ export class StepFlowInputOffcanvasComponent {
   /*
    * Apenas seleciona/valida os arquivos (imagens e vídeos) e os mantém
    * pendentes na mesma lista. Nenhum upload é disparado aqui — isso só
-   * acontece quando o usuário clica em "Salvar" (ver onSubmit).
+   * acontece quando o usuário clica em "Salvar" (onSubmit).
    */
-  private processFiles(newFiles: File[]): void {
+  private processFiles(newFiles: Array<File>): void {
     const images = newFiles.filter(f => this.acceptedTypes.includes(f.type));
     const videos = newFiles.filter(f => this.acceptedVideoTypes.includes(f.type));
     const invalid = newFiles.filter(f =>
@@ -430,7 +605,7 @@ export class StepFlowInputOffcanvasComponent {
       this.toasterService.error('Use apenas PNG, JPEG, JPG, WEBP, MP4, WEBM ou MOV.');
     }
 
-    const mapped: UploadedFile[] = [...images, ...videos].map(f => ({
+    const mapped: Array<UploadedFile> = [...images, ...videos].map(f => ({
       id: this.generateId(),
       file: f,
       name: f.name,
@@ -453,19 +628,19 @@ export class StepFlowInputOffcanvasComponent {
 
     this.files.update(current => current.filter(f => f.kind !== 'video'));
 
-    pendingVideos.forEach(pending => this.uploadVideo(pending.file));
+    pendingVideos.forEach(pending => this.uploadVideo(pending.file, pending.name));
   }
 
-  private uploadVideo(file: File): void {
+  private uploadVideo(file: File, fileName: string): void {
     const tempId = this.generateId();
 
     this.uploadingVideos.update(current => [
       ...current,
-      { tempId, id: null, name: file.name, progress: 0 },
+      { tempId, id: null, name: fileName, progress: 0 },
     ]);
     this.cdf.detectChanges();
 
-    this.stepFlowVideoService.create(this.orderId, file.name).subscribe({
+    this.stepFlowVideoService.create(this.orderId, fileName).subscribe({
       next: (info) => {
         this.uploadingVideos.update(current =>
           current.map(v => (v.tempId === tempId ? { ...v, id: info.id } : v))
@@ -482,10 +657,10 @@ export class StepFlowInputOffcanvasComponent {
           },
           metadata: {
             filetype: file.type,
-            title: file.name,
+            title: fileName,
           },
           onError: () => {
-            this.toasterService.error(`Erro ao enviar o vídeo "${file.name}".`);
+            this.toasterService.error('Erro ao enviar o vídeo "' + fileName + '".');
             this.uploadingVideos.update(current => current.filter(v => v.tempId !== tempId));
             this.stepFlowVideoService.deleteById(info.id).subscribe();
             this.cdf.detectChanges();
@@ -527,6 +702,58 @@ export class StepFlowInputOffcanvasComponent {
 
   protected removeFile(id: string): void {
     this.files.update(current => current.filter(f => f.id !== id));
+
+    if (this.editingFileId === id) {
+      this.cancelFileNameEdit();
+    }
+  }
+
+  protected startFileNameEdit(file: UploadedFile): void {
+    if (!this.commitFileNameEdit()) {
+      return;
+    }
+
+    const extensionIndex = file.name.lastIndexOf('.');
+    const hasExtension = extensionIndex > 0;
+
+    this.editingFileId = file.id;
+    this.editingFileName = hasExtension ? file.name.slice(0, extensionIndex) : file.name;
+    this.editingFileExtension = hasExtension ? file.name.slice(extensionIndex) : '';
+  }
+
+  protected onFileNameInput(event: Event): void {
+    this.editingFileName = (event.target as HTMLInputElement).value;
+  }
+
+  protected saveFileNameEdit(): void {
+    this.commitFileNameEdit();
+  }
+
+  protected cancelFileNameEdit(): void {
+    this.editingFileId = null;
+    this.editingFileName = '';
+    this.editingFileExtension = '';
+  }
+
+  private commitFileNameEdit(): boolean {
+    if (!this.editingFileId) {
+      return true;
+    }
+
+    const name = this.editingFileName.trim();
+    if (!name) {
+      this.toasterService.warning('Informe um nome para o arquivo.');
+      return false;
+    }
+
+    const editedFileId = this.editingFileId;
+    const fullName = name + this.editingFileExtension;
+
+    this.files.update(current => current.map(file =>
+      file.id === editedFileId ? { ...file, name: fullName } : file
+    ));
+    this.cancelFileNameEdit();
+    return true;
   }
 
   private formatSize(bytes: number): string {

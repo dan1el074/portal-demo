@@ -1,4 +1,4 @@
-form {
+.config-form {
   display: flex;
   flex-direction: column;
   gap: 26px;
@@ -227,17 +227,13 @@ form {
   }
 }
 
-@media (max-width: 520px) {
-  form .avatar-container  {
-    .image-container {
-      height: 180px;
-      width: 180px;
-    }
+@media (max-width: 600px) {
+  .config-form {
+    padding: 0;
+  }
 
-    .delete-icon,
-    .icon-wrapper {
-      top: 150px;
-    }
+  .hide-on-mobile {
+    display: none;
   }
 }
 

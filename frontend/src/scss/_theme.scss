@@ -594,6 +594,11 @@ table {
       justify-content: center !important;
     }
   }
+
+  c-smart-pagination.step-flow-table .pagination {
+    justify-content: center !important;
+    margin-top: 12px;
+  }
 }
 
 .btn-primary {

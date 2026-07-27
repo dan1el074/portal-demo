@@ -4,7 +4,7 @@ import br.com.metaro.portal.core.dto.event.EventDto;
 import br.com.metaro.portal.core.dto.info.BirthdayDto;
 import br.com.metaro.portal.core.dto.info.HomeInfoDto;
 import br.com.metaro.portal.core.repositories.UserRepository;
-import br.com.metaro.portal.modules.general.memorando.entities.MemorandoStatus;
+import br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.repository.MemorandoRepository;
 import br.com.metaro.portal.modules.general.post.dto.PostDto;
 import br.com.metaro.portal.modules.general.post.repositories.PostRepository;

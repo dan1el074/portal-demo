@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.IIOImage;
@@ -23,9 +24,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +38,10 @@ import java.util.UUID;
 
 @Service
 public class PictureService {
+    private static DateTimeFormatter SERVER_FILE_TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmSSS");
+    private static char[] RANDOM_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
+    private static SecureRandom RANDOM = new SecureRandom();
+
     @Autowired
     private PictureRepository pictureRepository;
     @Autowired
@@ -92,16 +101,21 @@ public class PictureService {
         List<Picture> archives = new ArrayList<>();
         PictureType type = PictureType.STEP_FLOW;
 
-        String prefix = "IMAGEM_";
-        if (step.getStep().equals(StepType.FINAL_ASSEMBLY)) prefix = "EVIDENCIA_";
-        if (step.getStep().equals(StepType.SHIPPING)) prefix = "CANHOTO_";
+        String prefix = "IMAGEM";
+        if (step.getStep().equals(StepType.FINAL_ASSEMBLY)) prefix = "EVIDENCIA";
+        if (step.getStep().equals(StepType.SHIPPING)) prefix = "CANHOTO";
 
         /// salva arquivo no servidor
         for (MultipartFile file : files) {
-            String fileName = UUID.randomUUID().toString().replace("-","")+ "_" + type.name() + ".jpg";
-            String name = prefix + UUID.randomUUID().toString().replace("-","") + ".jpg";
-            Path filePath = Paths.get(serverPath, fileName);
-            saveCompressedImage(file, filePath);
+            String name = buildPictureName(prefix, file);
+            Path filePath = reserveUniqueServerPath(type);
+
+            try {
+                saveCompressedImage(file, filePath);
+            } catch (IOException | RuntimeException exception) {
+                Files.deleteIfExists(filePath);
+                throw exception;
+            }
 
             Picture archive = new Picture();
             archive.setName(name);
@@ -114,6 +128,47 @@ public class PictureService {
 
         /// salva entidade no banco
         return pictureRepository.saveAll(archives);
+    }
+
+    private String buildPictureName(String prefix, MultipartFile file) {
+        String originalName = StringUtils.getFilename(
+                StringUtils.cleanPath(StringUtils.hasText(file.getOriginalFilename())
+                        ? file.getOriginalFilename()
+                        : "imagem")
+        );
+        int extensionIndex = originalName.lastIndexOf('.');
+
+        if (extensionIndex > 0) {
+            originalName = originalName.substring(0, extensionIndex);
+        }
+
+        return prefix + "_" + originalName + ".jpg";
+    }
+
+    private Path reserveUniqueServerPath(PictureType type) throws IOException {
+        Path imageDirectory = Paths.get(serverPath);
+        Files.createDirectories(imageDirectory);
+
+        while (true) {
+            Path filePath = imageDirectory.resolve(buildServerFileName(type));
+
+            try {
+                return Files.createFile(filePath);
+            } catch (FileAlreadyExistsException ignored) {
+                // ignorado
+            }
+        }
+    }
+
+    private String buildServerFileName(PictureType type) {
+        String timestamp = LocalDateTime.now().format(SERVER_FILE_TIMESTAMP_FORMATTER);
+        StringBuilder randomSuffix = new StringBuilder(3);
+
+        for (int index = 0; index < 3; index++) {
+            randomSuffix.append(RANDOM_CHARACTERS[RANDOM.nextInt(RANDOM_CHARACTERS.length)]);
+        }
+
+        return type.name() + timestamp + randomSuffix + ".jpg";
     }
 
     @Transactional

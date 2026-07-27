@@ -10,6 +10,8 @@ import br.com.metaro.portal.modules.general.stepFlow.entities.*;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepository;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StatusCountsProjection;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StepCountProjection;
+import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
+import br.com.metaro.portal.util.erp.dto.ErpOrderItemDto;
 import br.com.metaro.portal.util.others.StringUtils;
 import br.com.metaro.portal.util.picture.PictureService;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -12,6 +12,7 @@ import { StepFlowTableComponent } from './../../../../components/table/step-flow
 import { StepFlowOffcanvasComponent } from '../../../../components/offcanvas/step-flow-offcanvas/step-flow-offcanvas.component';
 import { StepFlowInputOffcanvasComponent } from '../../../../components/offcanvas/step-flow-input-offcanvas/step-flow-input-offcanvas.component';
 import { NewStepFlowModalComponent } from '../../../../components/modal/step-flow/new-step-flow-modal/new-step-flow-modal.component';
+
 @Component({
   selector: 'app-step-flow',
   imports: [
@@ -41,6 +42,7 @@ export class StepFlowComponent implements OnInit {
   @ViewChild('stepFlowInputOffcanvas')stepFlowInputOffcanvas!: StepFlowInputOffcanvasComponent;
 
   protected isAdmin: boolean = false;
+  protected showMoney: boolean = true;
   protected isShipping: boolean = false;
   protected data!: Array<StepFlowData>;
   protected currentStepData!: Array<StepFlowData>;
@@ -258,6 +260,7 @@ export class StepFlowComponent implements OnInit {
     switch (this.user.position) {
       case 'Montagem Final':
         this.currentStepIndex = this.steps.findIndex(step => step.title == 'Montagem Final');
+        this.showMoney = false;
         break;
       case 'PCP':
         this.currentStepIndex = this.steps.findIndex(step => step.title == 'PCP');

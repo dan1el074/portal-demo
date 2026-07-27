@@ -3,7 +3,7 @@ package br.com.metaro.portal.core.repositories;
 import br.com.metaro.portal.core.entities.Notification;
 import br.com.metaro.portal.core.entities.NotificationType;
 import br.com.metaro.portal.core.repositories.projections.NotificationProjection;
-import br.com.metaro.portal.modules.general.memorando.entities.Memorando;
+import br.com.metaro.portal.modules.general.memorando.entity.Memorando;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

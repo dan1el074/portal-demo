@@ -1,0 +1,58 @@
+.custom-card {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 6px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.text {
+    background-color: rgba(var(--cui-emphasis-color-rgb), 0.06);
+
+    .blue {
+      color: rgb(var(--cui-link-color-rgb));
+    }
+  }
+
+  .flex-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 8px;
+
+    .input-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100px;
+
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        margin: 0;
+        -webkit-appearance: none;
+      }
+
+      input[type="number"] {
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+    }
+
+    button, input {
+      height: 60px;
+      text-align: center;
+      font-size: 25px;
+    }
+
+    button {
+      width: 60px;
+    }
+  }
+}
+
+.modal-title-icon {
+  margin-right: 12px;
+}
