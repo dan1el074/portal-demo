@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -30,8 +31,12 @@ public class OrderMinDto {
         client = entity.getClient();
         dueDate = entity.getDueDate() != null ? entity.getDueDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-";
         currentStep = entity.getCurrentStep().toString();
-        status = entity.getStatus().toString();
         progress = entity.getProgress();
+        status = entity.getStatus().toString();
+
+        if (entity.getDueDate() != null && entity.getDueDate().isBefore(LocalDate.now())) {
+            status = OrderStatus.LATE.toString();
+        }
 
         Integer producedQuantity = 0;
         Integer allQuantity = 0;
