@@ -42,9 +42,35 @@
         display: flex;
         font-weight: 600;
 
-        .sofd-step {
-          text-transform: uppercase;
-          color: var(--cui-medium-emphasis);
+        .sof-order {
+          color: #0369dd;
+        }
+
+        .sof-badge {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-left: 8px;
+          color: #0369dd;
+          background-color: #0369dd17;
+
+          &.late,
+          &.cancel {
+            color: #c5232a;
+            background-color: #c5232a17;
+          }
+
+          &.complete {
+            color: #009966;
+            background-color: #00996617;
+          }
+
+          .bullet {
+            width: 6px;
+            height: 6px;
+            border-radius: 3.40282e38px;
+            background-color: currentColor;
+          }
         }
       }
 
@@ -96,6 +122,7 @@
     }
 
     .sfod-info-main {
+      font-size: 16px;
       font-weight: 700;
     }
 

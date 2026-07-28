@@ -61,6 +61,10 @@ public class OrderDto {
         videos = new ArrayList<>();
         nextStep = "";
 
+        if (entity.getDueDate() != null && entity.getDueDate().isBefore(LocalDate.now())) {
+            status = OrderStatus.LATE.toString();
+        }
+
         if (!entity.getCurrentStep().equals(StepType.SHIPPING)) {
             nextStep = StepType.values()[entity.getCurrentStep().ordinal() + 1].toString();
         }
