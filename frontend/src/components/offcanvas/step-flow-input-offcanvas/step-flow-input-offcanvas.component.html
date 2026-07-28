@@ -463,7 +463,7 @@
           </div>
         }
 
-        @if (isAdmin || order.currentStep != "Montagem Final") {
+        @if (isAdmin && order.currentStep != "Montagem Final") {
           <div class="mb-3">
             <label cLabel for="setStage" class="custom-label">Escolher etapa</label>
             <select cSelect id="setStage" [formControl]="adminStepControl">
