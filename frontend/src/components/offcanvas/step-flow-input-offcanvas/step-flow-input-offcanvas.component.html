@@ -5,12 +5,16 @@
     <div class="sof-custom-header">
       <div class="sfo-info">
         <div class="sfo-status">
-          <span class="sofd-step">{{ order.currentStep }}</span>
+          <span class="sof-order">#{{ order.number }}</span>
+          <span class="badge sof-badge" [class.late]="order.status == 'Atrasado'" [class.cancel]="order.status == 'Cancelado'" [class.complete]="order.status == 'Concluído'">
+            <span class="bullet"></span>
+            {{ order.status }}
+          </span>
         </div>
         <button cButtonClose (click)="close()"></button>
       </div>
 
-      <div class="sfod-info-main">#{{ order.number }} - {{ order.client }}</div>
+      <div class="sfod-info-main">{{ order.client }}</div>
       <small class="sofd-info-data">
         @if (order.startDate) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -463,7 +467,7 @@
           </div>
         }
 
-        @if (isAdmin || order.currentStep != "Montagem Final") {
+        @if (isAdmin && order.currentStep != "Montagem Final") {
           <div class="mb-3">
             <label cLabel for="setStage" class="custom-label">Escolher etapa</label>
             <select cSelect id="setStage" [formControl]="adminStepControl">
