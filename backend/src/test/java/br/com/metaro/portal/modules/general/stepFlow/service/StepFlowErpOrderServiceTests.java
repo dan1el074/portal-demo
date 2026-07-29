@@ -1,5 +1,7 @@
 package br.com.metaro.portal.modules.general.stepFlow.service;
 
+import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import br.com.metaro.portal.modules.general.stepFlow.entities.Order;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderItem;
@@ -20,15 +22,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class StepFlowErpOrderServiceTests {
+    private UserService userService;
     private ErpOrderQueryService erpOrderQueryService;
     private OrderRepository orderRepository;
     private StepFlowErpOrderService service;
 
     @BeforeEach
     void setUp() {
+        userService = mock(UserService.class);
         erpOrderQueryService = mock(ErpOrderQueryService.class);
         orderRepository = mock(OrderRepository.class);
+
+        User authenticatedUser = new User();
+        when(userService.authenticate()).thenReturn(authenticatedUser);
+
         service = new StepFlowErpOrderService(
+                userService,
                 erpOrderQueryService,
                 orderRepository
         );
