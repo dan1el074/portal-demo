@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,9 +25,18 @@ class OrderRepositoryTests {
 
     @BeforeEach
     void setUp() {
-        orderRepository.save(order(100, "Zulu", StepType.PCP, OrderStatus.IN_PROGRESS));
-        orderRepository.save(order(300, "Alfa", StepType.PCP, OrderStatus.COMPLETED));
-        orderRepository.save(order(200, "Mike", StepType.FREIGHT, OrderStatus.IN_PROGRESS));
+        Order inProgress = order(100, "Zulu", StepType.PCP, OrderStatus.IN_PROGRESS);
+        inProgress.setDueDate(LocalDate.now().plusDays(1));
+        orderRepository.save(inProgress);
+
+        Order completed = order(300, "Alfa", StepType.PCP, OrderStatus.COMPLETED);
+        completed.setDueDate(LocalDate.now().plusDays(1));
+        orderRepository.save(completed);
+
+        Order overdue = order(200, "Mike", StepType.FREIGHT, OrderStatus.IN_PROGRESS);
+        overdue.setDueDate(LocalDate.now().minusDays(1));
+        orderRepository.save(overdue);
+
         orderRepository.flush();
     }
 
@@ -59,6 +69,38 @@ class OrderRepositoryTests {
         assertThat(result.getContent())
                 .extracting(Order::getNumber)
                 .containsExactly(300, 100);
+    }
+
+    @Test
+    void sortsByTheStatusDisplayedToTheUser() {
+        var pageable = PageRequest.of(0, 10, Sort.by("number"));
+
+        var ascending = orderRepository.searchOrderByEffectiveStatus(pageable, "", 1);
+        assertThat(ascending.getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(200, 100, 300);
+
+        var descending = orderRepository.searchOrderByEffectiveStatus(pageable, "", -1);
+        assertThat(descending.getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(300, 100, 200);
+    }
+
+    @Test
+    void sortsByTheDisplayedStatusWhenFilteringByStep() {
+        var pageable = PageRequest.of(0, 10, Sort.by("number"));
+
+        var result = orderRepository.searchOnlyStepOrderByEffectiveStatus(
+                pageable,
+                "",
+                StepType.PCP.name(),
+                OrderStatus.CANCELLED,
+                1
+        );
+
+        assertThat(result.getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(100, 300);
     }
 
     private java.util.List<Order> searchSortedBy(String property, Sort.Direction direction) {

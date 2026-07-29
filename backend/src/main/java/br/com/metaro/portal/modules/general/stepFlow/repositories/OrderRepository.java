@@ -72,6 +72,31 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
         SELECT o
         FROM Order o
+        WHERE
+            LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(o.currentStep) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
+        ORDER BY (
+            CASE
+                WHEN o.status = 'LATE'
+                    OR (o.dueDate IS NOT NULL AND o.dueDate < CURRENT_DATE) THEN 0
+                WHEN o.status = 'IN_PROGRESS' THEN 1
+                WHEN o.status = 'CANCELLED' THEN 2
+                WHEN o.status = 'COMPLETED' THEN 3
+                ELSE 4
+            END
+        ) * :direction
+    """)
+    public Page<Order> searchOrderByEffectiveStatus(
+            Pageable pageable,
+            @Param("search") String search,
+            @Param("direction") Integer direction
+    );
+
+    @Query("""
+        SELECT o
+        FROM Order o
         WHERE o.status <> :status
             AND LOWER(o.currentStep) = LOWER(:step)
             AND (
@@ -82,4 +107,33 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     """)
     public Page<Order> searchOnlyStep(Pageable pageable, @Param("search") String search, @Param("step") String step,
                                       @Param("status") OrderStatus status);
+
+    @Query("""
+        SELECT o
+        FROM Order o
+        WHERE o.status <> :status
+            AND LOWER(o.currentStep) = LOWER(:step)
+            AND (
+                LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
+            )
+        ORDER BY (
+            CASE
+                WHEN o.status = 'LATE'
+                    OR (o.dueDate IS NOT NULL AND o.dueDate < CURRENT_DATE) THEN 0
+                WHEN o.status = 'IN_PROGRESS' THEN 1
+                WHEN o.status = 'CANCELLED' THEN 2
+                WHEN o.status = 'COMPLETED' THEN 3
+                ELSE 4
+            END
+        ) * :direction
+    """)
+    public Page<Order> searchOnlyStepOrderByEffectiveStatus(
+            Pageable pageable,
+            @Param("search") String search,
+            @Param("step") String step,
+            @Param("status") OrderStatus status,
+            @Param("direction") Integer direction
+    );
 }
