@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { ButtonDirective, ContainerComponent } from '@coreui/angular';
+import { ContainerComponent } from '@coreui/angular';
 import { HomeService } from './../../services/home.service';
 import { UserService } from './../../services/user.service';
 import { PostService } from './../../services/post.service';
@@ -20,7 +20,6 @@ import { NewPost, PostCard } from '../../interface/post.interface';
   selector: 'app-home',
   imports: [
     ContainerComponent,
-    ButtonDirective,
     FilesComponent,
     EventComponent,
     PostComponent,
@@ -38,7 +37,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   protected user!: Me;
   protected fatalError = false;
   protected homeInfo!: HomeInfo;
-  protected isAdmin = false;
   protected canPost = false;
   protected showDeleteModel = false;
   protected idPostToDelete = 0;
@@ -72,10 +70,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.userService.user$.subscribe(user => {
       if (!user) return;
-
-      if (user.roles.findIndex(role => role.authority == 'ROLE_ADMIN') >= 0) {
-        this.isAdmin = true;
-      }
 
       if (user.roles.findIndex(role => role.authority == 'ROLE_POST') >= 0) {
         this.canPost = true;
@@ -141,13 +135,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.toasterService.error("Erro ao obter informações!");
         this.fatalError = true;
       }
-    });
-  }
-
-  protected clearCache(): void {
-    this.homeService.clearAllCache().subscribe({
-      next: () => this.toasterService.success("Cache limpo com sucesso!"),
-      error: () => this.toasterService.error("Erro ao limpar cache!")
     });
   }
 

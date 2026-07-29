@@ -9,6 +9,23 @@
       [userData]="userData"
       (editTask)="updateConfig($event)">
     </app-user-config-form>
+
+    @if (isAdmin) {
+      <c-card class="admin-settings border p-3">
+        <c-card-body>
+          <hr>
+          <span class="admin-section-title">ADMINISTRAÇÃO</span>
+
+          <p>Limpe os dados armazenados em cache pelo sistema.</p>
+
+          <div class="admin-button-container">
+            <button class="save-button" type="button" (click)="clearCache()">
+              Limpar cache
+            </button>
+          </div>
+        </c-card-body>
+      </c-card>
+    }
   } @else {
     <i>Carregando...</i>
   }

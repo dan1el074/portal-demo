@@ -210,7 +210,7 @@
                     <small>Imagem</small>
                   </div>
 
-                  <span class="sof-file-date">{{ image.createdAt | date: "dd/MM/yyyy" }}</span>
+                  <span class="sof-file-date">{{ image.createdAt | date: "dd/MM H:mm" }}</span>
 
                   @if (!image.isCurrentStep) {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -251,7 +251,7 @@
                     <small>Vídeo</small>
                   </div>
 
-                  <span class="sof-file-date">{{ video.createdAt | date: "dd/MM/yyyy" }}</span>
+                  <span class="sof-file-date">{{ video.createdAt | date: "dd/MM H:mm" }}</span>
 
                   @if (!video.isCurrentStep) {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

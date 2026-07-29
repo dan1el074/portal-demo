@@ -52,6 +52,7 @@ export class StepFlowComponent implements OnInit {
   protected currentStepIndex: number = - 1;
   protected loading: boolean = true;
   protected showNewModal: boolean = false;
+  protected workQueueSearch: string = '';
   private user!: Me | null;
 
   //smart table
@@ -168,6 +169,7 @@ export class StepFlowComponent implements OnInit {
 
   protected setCurrentStepIndex(index: number): void {
     this.currentStepData = [];
+    this.workQueueSearch = '';
     this.currentStepIndex = index;
 
     if (index == 0 && this.isAdmin) this.loadDashboard();
@@ -177,7 +179,11 @@ export class StepFlowComponent implements OnInit {
   protected searchForStatus(term: string): void {
     let text = term.toLowerCase();
 
-    if (text == 'total de pedidos') return
+    if (text == 'total de pedidos') {
+      this.onClearAll();
+      return;
+    }
+
     if (text == 'concluídos') text = 'concluído'
     if (text == 'em andamento') text = 'andamento'
     if (text == 'atrasados') text = 'atrasado'
@@ -239,6 +245,30 @@ export class StepFlowComponent implements OnInit {
 
   public openCurrentStepOrder(orderId: number) {
     this.stepFlowInputOffcanvas.open(orderId);
+  }
+
+  protected get filteredCurrentStepData(): Array<StepFlowData> {
+    const search = this.normalizeSearchValue(this.workQueueSearch);
+
+    if (!search) return this.currentStepData ?? [];
+
+    return (this.currentStepData ?? []).filter(item =>
+      [
+        item.number,
+        item.quantity,
+        item.client,
+        item.dueDate,
+        item.status
+      ].some(value => this.normalizeSearchValue(value).includes(search))
+    );
+  }
+
+  protected onWorkQueueSearch(event: Event): void {
+    this.workQueueSearch = (event.target as HTMLInputElement).value;
+  }
+
+  protected clearWorkQueueSearch(): void {
+    this.workQueueSearch = '';
   }
 
   private getStepAccess(): void {
@@ -360,5 +390,13 @@ export class StepFlowComponent implements OnInit {
     this.currentStepFilter = '';
     this.currentPage = 1;
     this.loadOrders();
+  }
+
+  private normalizeSearchValue(value: unknown): string {
+    return String(value ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLocaleLowerCase('pt-BR')
+      .trim();
   }
 }
