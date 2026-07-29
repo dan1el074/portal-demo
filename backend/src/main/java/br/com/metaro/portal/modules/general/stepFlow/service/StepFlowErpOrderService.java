@@ -10,7 +10,6 @@ import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepositor
 import br.com.metaro.portal.util.erp.ErpOrderQueryService;
 import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderItemDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +17,16 @@ import java.util.List;
 
 @Service
 public class StepFlowErpOrderService {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
     private final ErpOrderQueryService erpOrderQueryService;
     private final OrderRepository orderRepository;
 
-    public StepFlowErpOrderService(ErpOrderQueryService erpOrderQueryService, OrderRepository orderRepository) {
+    public StepFlowErpOrderService(
+            UserService userService,
+            ErpOrderQueryService erpOrderQueryService,
+            OrderRepository orderRepository
+    ) {
+        this.userService = userService;
         this.erpOrderQueryService = erpOrderQueryService;
         this.orderRepository = orderRepository;
     }
