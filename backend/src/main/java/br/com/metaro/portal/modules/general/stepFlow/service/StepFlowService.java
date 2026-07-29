@@ -18,7 +18,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +68,30 @@ public class StepFlowService {
         }
 
         Page<Order> entities;
+        Sort.Order statusSort = pageable.getSort().getOrderFor("status");
+
+        if (statusSort != null) {
+            Pageable remainingSortPageable = withoutStatusSort(pageable);
+            int direction = statusSort.isAscending() ? 1 : -1;
+
+            if (onlyStep != null) {
+                entities = orderRepository.searchOnlyStepOrderByEffectiveStatus(
+                        remainingSortPageable,
+                        translated != null ? translated : "",
+                        onlyStep,
+                        OrderStatus.CANCELLED,
+                        direction
+                );
+                return entities.map(OrderMinDto::new);
+            }
+
+            entities = orderRepository.searchOrderByEffectiveStatus(
+                    remainingSortPageable,
+                    translated != null ? translated : "",
+                    direction
+            );
+            return entities.map(OrderMinDto::new);
+        }
 
         if (onlyStep != null) {
             entities = orderRepository.searchOnlyStep(
@@ -79,6 +105,18 @@ public class StepFlowService {
 
         entities = orderRepository.search(pageable, translated != null ? translated : "");
         return entities.map(OrderMinDto::new);
+    }
+
+    private Pageable withoutStatusSort(Pageable pageable) {
+        List<Sort.Order> remainingOrders = pageable.getSort().stream()
+                .filter(order -> !order.getProperty().equals("status"))
+                .toList();
+
+        Sort remainingSort = remainingOrders.isEmpty()
+                ? Sort.by("number")
+                : Sort.by(remainingOrders);
+
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), remainingSort);
     }
 
     @Transactional(readOnly = true)
