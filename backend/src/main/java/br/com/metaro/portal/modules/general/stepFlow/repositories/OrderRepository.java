@@ -56,6 +56,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     """)
     public List<Order> findByNumber(Integer orderNumber, @Param("orderStatus") OrderStatus orderStatus);
 
+    public long countByNumber(Integer number);
+
     @Query("""
         SELECT o
         FROM Order o
@@ -64,7 +66,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             OR LOWER(o.currentStep) LIKE LOWER(CONCAT('%', :search, '%'))
             OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
             OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
-        ORDER BY o.number
     """)
     public Page<Order> search(Pageable pageable, @Param("search") String search);
 
@@ -78,7 +79,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                 OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
                 OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
             )
-        ORDER BY o.number
     """)
     public Page<Order> searchOnlyStep(Pageable pageable, @Param("search") String search, @Param("step") String step,
                                       @Param("status") OrderStatus status);

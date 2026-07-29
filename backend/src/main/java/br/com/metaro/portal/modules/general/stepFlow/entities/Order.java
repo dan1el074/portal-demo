@@ -24,6 +24,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer number;
+    @Column(nullable = false)
+    private Integer occurrence = 1;
     @Enumerated(EnumType.STRING)
     private StepType currentStep; // atualizar sempre que mexer no OrderStep
     @Enumerated(EnumType.STRING)
@@ -66,6 +68,13 @@ public class Order {
     public void addStep(OrderStep step) {
         steps.add(step);
         step.setOrder(this);
+    }
+
+    @Transient
+    public String getDisplayNumber() {
+        return occurrence != null && occurrence > 1
+                ? "%d-%d".formatted(number, occurrence)
+                : number.toString();
     }
 
     @Transient
