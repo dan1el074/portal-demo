@@ -5,3 +5,56 @@
 .ops-header {
   padding: 0 40px;
 }
+
+.admin-settings {
+  margin: 0 40px 40px;
+  overflow: initial;
+
+  .admin-section-title {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 37px;
+    padding-right: 20px;
+    background-color: var(--cui-body-bg);
+    color: var(--cui-medium-emphasis);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 20px 0;
+    color: var(--cui-secondary-color);
+  }
+
+  .admin-button-container {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .save-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #155dfb;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    transition: .1s;
+
+    &:hover {
+      background-color: #1447e6;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .ops-header {
+    padding: 0;
+  }
+
+  .admin-settings {
+    margin-right: 0;
+    margin-left: 0;
+  }
+}

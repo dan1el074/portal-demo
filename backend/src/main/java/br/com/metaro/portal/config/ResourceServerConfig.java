@@ -1,5 +1,6 @@
 package br.com.metaro.portal.config;
 
+import br.com.metaro.portal.config.ratelimit.RateLimitFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -40,9 +42,13 @@ public class ResourceServerConfig {
 
     @Bean
     @Order(3)
-    public SecurityFilterChain rsSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain rsSecurityFilterChain(
+            HttpSecurity http,
+            RateLimitFilter rateLimitFilter
+    ) throws Exception {
         http
             .securityMatcher("/**")
+            .addFilterAfter(rateLimitFilter, BearerTokenAuthenticationFilter.class)
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(

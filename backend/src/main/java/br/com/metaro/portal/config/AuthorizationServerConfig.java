@@ -3,6 +3,7 @@ package br.com.metaro.portal.config;
 import br.com.metaro.portal.config.customgrant.CustomPasswordAuthenticationConverter;
 import br.com.metaro.portal.config.customgrant.CustomPasswordAuthenticationProvider;
 import br.com.metaro.portal.config.customgrant.CustomUserAuthorities;
+import br.com.metaro.portal.config.ratelimit.RateLimitFilter;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -38,6 +39,7 @@ import org.springframework.security.oauth2.server.authorization.settings.OAuth2T
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -71,8 +73,12 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain asSecurityFilterChain(
+            HttpSecurity http,
+            RateLimitFilter rateLimitFilter
+    ) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        http.addFilterBefore(rateLimitFilter, SecurityContextHolderFilter.class);
 
         http.cors(cors -> {
             CorsConfiguration configuration = new CorsConfiguration();

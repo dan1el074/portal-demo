@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 public class OrderDto {
     private Long id;
-    private Integer number;
+    private String number;
     private String status;
     private String client;
     private String cnpj;
@@ -40,7 +40,7 @@ public class OrderDto {
 
     public OrderDto(Order entity) {
         id = entity.getId();
-        number = entity.getNumber();
+        number = entity.getDisplayNumber();
         status = entity.getStatus().toString();
         client = entity.getClient();
         cnpj = entity.getCnpj();

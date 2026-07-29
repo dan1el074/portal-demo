@@ -34,13 +34,10 @@ import java.util.stream.Collectors;
 public class StepFlowService {
     @Autowired
     private OrderRepository orderRepository;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private PictureService pictureService;
 
@@ -112,6 +109,7 @@ public class StepFlowService {
     public void create(ErpOrderDto erpOrder) {
         Order entity = new Order();
         snapshotErpInfo(entity, erpOrder);
+        setOrderOccurrence(entity);
         addAllSteps(entity);
 
         entity.setCurrentStep(StepType.FINAL_ASSEMBLY);
@@ -119,6 +117,11 @@ public class StepFlowService {
         entity.setShipment(0.0);
 
         this.orderRepository.save(entity);
+    }
+
+    private void setOrderOccurrence(Order order) {
+        long registeredOrders = orderRepository.countByNumber(order.getNumber());
+        order.setOccurrence(Math.toIntExact(registeredOrders + 1));
     }
 
     @Transactional

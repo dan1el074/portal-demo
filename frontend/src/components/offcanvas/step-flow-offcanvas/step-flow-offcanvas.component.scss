@@ -490,6 +490,8 @@
           justify-content: space-between;
           align-items: center;
           gap: 12px;
+          width: 100%;
+          min-width: 0;
           padding: 12px 16px;
           stroke: var(--cui-disabled);
           border-radius: 12px;
@@ -497,7 +499,6 @@
           font-size: 13px;
           text-decoration: none;
           transition: .1s;
-          overflow-x: hidden;
           cursor: pointer;
 
           &:hover {
@@ -507,6 +508,7 @@
 
           .step-icon {
             display: flex;
+            flex-shrink: 0;
             padding: 10px;
             border-radius: 10px;
             background-color: #2b7fff17;
@@ -521,10 +523,14 @@
           .sof-file-info {
             display: flex;
             flex-direction: column;
-            margin-right: auto;
+            flex: 1;
+            min-width: 0;
 
             span {
               font-weight: 600;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
               color: rgb(40, 91, 158);
             }
 
@@ -534,7 +540,13 @@
           }
 
           .sof-file-date {
+            flex-shrink: 0;
+            white-space: nowrap;
             color: var(--cui-medium-emphasis);
+          }
+
+          > svg {
+            flex-shrink: 0;
           }
         }
 

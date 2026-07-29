@@ -189,6 +189,10 @@ variáveis:
 | `CLIENT_ID` | Identificador OAuth2 | `myclientid` |
 | `CLIENT_SECRET` | Segredo OAuth2 | `myclientsecret` |
 | `JWT_DURATION` | Duração do token em segundos | `86400` |
+| `RATE_LIMIT_ENABLED` | Ativa a limitação de requisições | `true` |
+| `RATE_LIMIT_CAPACITY` | Requisições permitidas por identidade em cada período | `100` |
+| `RATE_LIMIT_REFILL_PERIOD` | Período de renovação do limite | `1m` |
+| `RATE_LIMIT_MAX_CLIENTS` | Máximo de identidades mantidas no cache local | `1000` |
 | `CORS_ORIGINS` | Origens permitidas pelo CORS | `http://localhost:4200` |
 | `IMAGE_PATH` | Diretório de imagens | Configuração local |
 | `FLYWAY_BASELINE_ON_MIGRATE` | Adoção de banco preexistente | `true` |
@@ -226,9 +230,32 @@ cd mobile
 O APK de produção deve ser assinado com a chave permanente da empresa. Não
 armazene o arquivo `.jks` nem sua senha no repositório.
 
+## Limitação de requisições
+
+A API aplica *rate limiting* para reduzir abuso, tentativas automatizadas de
+login e sobrecarga causada por excesso de requisições. Por padrão, cada
+identidade pode realizar até 100 requisições por minuto:
+
+- usuários autenticados são identificados pelo `userId` presente no JWT;
+- o endpoint de login e as rotas públicas são limitados pelo endereço IP;
+- usuários que compartilham uma VPN, proxy ou NAT mantêm limites independentes
+  depois da autenticação;
+- requisições `OPTIONS`, documentação OpenAPI, Swagger UI, WebSocket e console H2
+  não consomem o limite.
+
+Quando o limite é excedido, a API responde com `429 Too Many Requests`. A
+resposta inclui `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining` e
+`X-RateLimit-Reset`, permitindo que o cliente determine quando tentar novamente.
+
+Os contadores ficam em memória e são locais a cada instância do backend. Caso a
+aplicação passe a executar em múltiplas réplicas, configure também a limitação no
+gateway ou utilize um armazenamento compartilhado para manter o limite global.
+
 ## Segurança
 
 - Tokens JWT concedem acesso enquanto estiverem válidos; não os compartilhe.
+- A limitação de requisições complementa a autenticação e não substitui firewall,
+  monitoramento, bloqueio de origem ou proteção no gateway.
 - O acesso ao ERP deve ficar restrito à rede corporativa ou VPN.
 - O aplicativo Android ainda permite HTTP apenas para os domínios explicitamente
   configurados. A adoção de HTTPS é recomendada antes da distribuição externa.
