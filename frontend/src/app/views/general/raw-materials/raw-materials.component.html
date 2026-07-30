@@ -1,61 +1,409 @@
-<c-container breakpoint="lg" class="h-auto px-4" fluid>
-  <c-alert [dismissible]="true" color="info" fade>
-    Essa tela de apresentação ainda está em processo de desenvolvimento, informações meramente ilustrativas.
-  </c-alert>
+<c-container
+  [breakpoint]="currentView === 'operator' ? 'lg' : ''"
+  [fluid]="currentView !== 'operator'"
+  [class.wide-container]="currentView !== 'operator'"
+  class="h-auto px-4 inventory-page"
+>
+  <header class="inventory-header sfc-welcome">
+    <p class="ops-header">
+      <span class="ops-welcome">Gestão de Estoque</span>
+      <span class="ops-access-level">Controle de matérias-primas e insumos da fábrica</span>
+    </p>
 
-  <c-card class="border">
-    <c-card-body>
-      <h4 cCardTitle>Inventário de matérias primas</h4>
-
-      <c-tabs [activeItemKey]="0" class="header-space" >
-        <c-tabs-list variant="underline-border">
-
-          @for (tab of tabs; track tab.name; let i = $index) {
-            <button cTab [itemKey]="i" [disabled]="!tab.active">{{ tab.name }}</button>
-          }
-
-        </c-tabs-list>
-
-        <c-tabs-content>
-          <c-accordion class="accordion-body">
-            <c-accordion-item #item0="cAccordionItem" [visible]="false">
-              <ng-template cTemplateId="accordionHeaderTemplate">
-                <button (click)="item0.toggleItem()" [collapsed]="!item0.visible" cAccordionButton>Legenda</button>
-              </ng-template>
-              <ng-template cTemplateId="accordionBodyTemplate">
-                <div class="accordion-body">
-                  <span class="ok">
-                    <svg [cIcon]="icons.cilCheckCircle" size="xl"></svg>
-                    Dentro do previsto
-                  </span>
-                  <span class="warning">
-                    <svg [cIcon]="icons.cilWarning" size="xl"></svg>
-                    Acima máximo
-                  </span>
-                  <span class="danger">
-                    <svg [cIcon]="icons.cilXCircle" size="xl"></svg>
-                    Abaixo mínimo
-                  </span>
-                </div>
-              </ng-template>
-            </c-accordion-item>
-          </c-accordion>
-
-          @for (tab of tabs; track tab.name; let i = $index) {
-            @if (i == tabs.length - 1) {
-              <c-tab-panel class="p-3" [itemKey]="i" >
-                <app-raw-materials-table [data]="disableItems" [noMargin]="true"></app-raw-materials-table>
-              </c-tab-panel>
+    @if (isAdmin) {
+      <c-dropdown class="fix-dropdown">
+        <button cDropdownToggle [caret]="false" class="view-mode-btn">
+          <div class="view-mode-icon">
+            @switch (currentView) {
+              @case ('admin') {
+                <svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
+              }
+              @case ('operator') {
+                <svg viewBox="0 0 24 24"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 13v.01"></path><path d="M9 17v.01"></path></svg>
+              }
+              @default {
+                <svg viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7C3.78 7.6 7.7 5 12 5c4.3 0 8.22 2.6 9.94 6.65a1 1 0 0 1 0 .7C20.22 16.4 16.3 19 12 19c-4.3 0-8.22-2.6-9.94-6.65"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              }
             }
-            @else {
-              <c-tab-panel class="p-3 fix-position" [itemKey]="i" >
-                <app-raw-materials-table [data]="items[i]" [noMargin]="true"></app-raw-materials-table>
-              </c-tab-panel>
-            }
+          </div>
+          <div class="view-mode-text">
+            <span>Visualizando como</span>
+            {{ viewLabel() }}
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-mode-carret">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+        <div cDropdownMenu class="dropdown-step-container">
+          <span cDropdownItemPlain class="dropdown-step-type">Perfil de acesso</span>
+          @for (view of views; track view.value) {
+            <button cDropdownItem [class.custom-active]="view.value === currentView" (click)="setView(view.value)">
+              <div class="view-option-icon">
+                @switch (view.value) {
+                  @case ('admin') {
+                    <svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                  }
+                  @case ('operator') {
+                    <svg viewBox="0 0 24 24"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 13v.01"></path><path d="M9 17v.01"></path></svg>
+                  }
+                  @default {
+                    <svg viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7C3.78 7.6 7.7 5 12 5c4.3 0 8.22 2.6 9.94 6.65a1 1 0 0 1 0 .7C20.22 16.4 16.3 19 12 19c-4.3 0-8.22-2.6-9.94-6.65"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  }
+                }
+              </div>
+              <span class="dropdown-step-title">{{ view.label }}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.show]="view.value === currentView" class="active-icon">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            </button>
           }
+        </div>
+      </c-dropdown>
+    } @else {
+      <div class="fixed-view">
+        <small>Perfil de acesso</small>
+        <strong>{{ viewLabel() }}</strong>
+      </div>
+    }
+  </header>
 
-        </c-tabs-content>
-      </c-tabs>
+  @if (currentView !== 'operator') {
+    <section class="summary-grid" aria-label="Resumo do estoque">
+      <button class="summary-card low" (click)="filterByStatus('low')">
+        <span class="summary-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0"></path></svg>
+        </span>
+        <span><strong>{{ summary.low }}</strong><small>Itens abaixo do mínimo</small></span>
+      </button>
+      <button class="summary-card ok" (click)="filterByStatus('ok')">
+        <span class="summary-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"></path><path d="m22 10-7.5 7.5L13 16"></path></svg>
+        </span>
+        <span><strong>{{ summary.ok }}</strong><small>Itens com estoque OK</small></span>
+      </button>
+      <button class="summary-card high" (click)="filterByStatus('high')">
+        <span class="summary-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+        </span>
+        <span><strong>{{ summary.high }}</strong><small>Itens acima do máximo</small></span>
+      </button>
+    </section>
+  }
+
+  @if (currentView === 'admin') {
+    <section class="admin-tools">
+      <c-card class="tool-card">
+        <c-card-body>
+          <div class="tool-card-header">
+            <div class="tool-heading">
+              <span class="tool-icon">
+                <svg viewBox="0 0 24 24"><path d="M12.6 2.4 21.6 11a2 2 0 0 1 0 2.8l-7.8 7.8a2 2 0 0 1-2.8 0L2.4 13a2 2 0 0 1-.6-1.4V4a2 2 0 0 1 2-2h7.4a2 2 0 0 1 1.4.4"></path><circle cx="7" cy="7" r="1"></circle></svg>
+              </span>
+              <span class="tool-card-title">Categorias</span>
+            </div>
+            <span class="tool-card-description">Organize os produtos do estoque por categoria</span>
+          </div>
+          <div class="tool-card-content">
+            <div class="category-form">
+              <input [(ngModel)]="newCategoryName" (keyup.enter)="addCategory()" placeholder="Nome da nova categoria..." aria-label="Nome da nova categoria">
+              <button cButton color="primary" size="sm" [disabled]="!newCategoryName.trim()" (click)="addCategory()">
+                <span>＋</span> Adicionar
+              </button>
+            </div>
+            <div class="category-table-container">
+              <table class="category-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Modificado</th>
+                    <th aria-label="Ações"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (category of categories; track category.id) {
+                    <tr>
+                      <td class="category-id">{{ category.id }}</td>
+                      <td class="category-name">{{ category.name }}</td>
+                      <td class="category-updated">
+                        <strong>{{ category.updatedAt | date:'dd/MM/yyyy':'-0300' }}</strong>
+                        <small>{{ category.updatedAt | date:'HH:mm':'-0300' }}</small>
+                      </td>
+                      <td class="category-action">
+                        <button
+                          type="button"
+                          class="delete-category"
+                          (click)="deleteCategory(category)"
+                          [title]="'Apagar categoria ' + category.name"
+                          [attr.aria-label]="'Apagar categoria ' + category.name"
+                        >
+                          <svg viewBox="0 0 24 24">
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4h8v2"></path>
+                            <path d="M19 6l-1 14H6L5 6"></path>
+                            <path d="M10 11v5"></path>
+                            <path d="M14 11v5"></path>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            @if (categoryDeleteError) {
+              <p class="category-error">{{ categoryDeleteError }}</p>
+            }
+          </div>
+        </c-card-body>
+      </c-card>
+
+      <c-card class="tool-card">
+        <c-card-body>
+          <div class="tool-card-header">
+            <div class="tool-heading">
+              <span class="tool-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
+              </span>
+              <span class="tool-card-title">Controle de acesso</span>
+            </div>
+            <span class="tool-card-description">Defina quais categorias cada usuário pode consultar</span>
+          </div>
+          <div class="tool-card-content">
+            <div class="access-table-container">
+              <table class="access-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Permissões</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (user of users; track user.id) {
+                    <tr>
+                      <td class="category-id">{{ user.id }}</td>
+                      <td>
+                        <div class="access-name">
+                          <span class="avatar">{{ user.initials }}</span>
+                          <strong>{{ user.name }}</strong>
+                        </div>
+                      </td>
+                      <td class="access-permissions">{{ categoryNames(user) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <button type="button" class="manage-access" (click)="accessModalVisible = true">
+              Gerenciar permissões
+            </button>
+          </div>
+        </c-card-body>
+      </c-card>
+    </section>
+  }
+
+  <c-card class="inventory-table-card">
+    <div class="table-title">
+      <div>
+        <h2>{{ showInactive ? 'Itens desativados' : 'Itens do estoque' }}</h2>
+        <p>
+          {{ totalItems }} {{ totalItems === 1 ? 'item encontrado' : 'itens encontrados' }}
+          @if (currentView === 'operator' && !showInactive) {
+            <span> · clique em um item para atualizar o estoque</span>
+          }
+        </p>
+      </div>
+      @if (currentView === 'admin' && !showInactive) {
+        <button cButton color="primary" size="sm" class="primary-table-action" (click)="openItemModal()">
+          <span>＋</span> Novo item
+        </button>
+      }
+    </div>
+
+    <div class="stock-legend">
+      <strong>Legenda:</strong>
+      <span><i class="low"></i>Abaixo do mínimo</span>
+      <span><i class="ok"></i>Estoque OK</span>
+      <span><i class="high"></i>Acima do máximo</span>
+    </div>
+
+    <c-card-body class="table-body">
+      <app-raw-materials-table
+        [data]="data"
+        [categories]="categories"
+        [loading]="loadingTable"
+        [mode]="currentView"
+        [searchValue]="currentSearch"
+        [selectedCategory]="currentCategory"
+        [selectedStatus]="currentStatus"
+        [showInactive]="showInactive"
+        (openItem)="openTableItem($event)"
+        (sorterChange)="onSorterChange($event)"
+        (itemsPerPageChange)="onItemsPerPageChange($event)"
+        (filterChange)="onFilterChange($event)"
+        (categoryChange)="onCategoryChange($event)"
+        (statusChange)="onStatusChange($event)"
+        (inactiveChange)="onInactiveChange($event)"
+        (clearAll)="clearFilters()"
+      />
+      <c-smart-pagination
+        [activePage]="currentPage"
+        [pages]="totalPages"
+        (activePageChange)="onPageChange($event)"
+        class="step-flow-table"
+      />
     </c-card-body>
+
   </c-card>
 </c-container>
+
+<c-modal [visible]="itemModalVisible" (visibleChange)="itemModalVisible = $event" alignment="center" backdrop="static" size="lg">
+  <c-modal-header>
+    <h5 cModalTitle>{{ currentView === 'consultation' ? 'Visualizar matéria-prima' : (editingItem?.id ? 'Editar matéria-prima' : 'Nova matéria-prima') }}</h5>
+    <button cButtonClose (click)="itemModalVisible = false"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (editingItem) {
+      <fieldset class="item-form" [disabled]="currentView === 'consultation'">
+        <section class="form-section">
+          <h6>Dados do item</h6>
+          <div class="form-grid identification-grid">
+            <label>Código<input [(ngModel)]="editingItem.code" required></label>
+            <label class="description-field">Descrição do item<input [(ngModel)]="editingItem.name" required></label>
+            <label class="notes-field">Aplicação / observação<textarea [(ngModel)]="editingItem.description" rows="2"></textarea></label>
+            <label>Categoria
+              <select [(ngModel)]="editingItem.type">
+                @for (category of categories; track category.id) {
+                  <option [value]="category.name">{{ category.name }}</option>
+                }
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h6>Estoque e dimensões</h6>
+          <div class="form-grid stock-fields">
+            <label>Estoque atual<input type="number" min="0" [(ngModel)]="editingItem.currentStorage"></label>
+            <label>Estoque mínimo<input type="number" min="0" [(ngModel)]="editingItem.minStorage"></label>
+            <label>Estoque máximo<input type="number" min="0" [(ngModel)]="editingItem.maxStorage"></label>
+            <label>
+              Comprimento
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.length">
+                <span>mm</span>
+              </div>
+            </label>
+            <label>
+              Largura
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.width">
+                <span>mm</span>
+              </div>
+            </label>
+            <label>
+              Peso por mm
+              <input type="text" inputmode="decimal" [(ngModel)]="editingItem.weightPerMillimeter">
+            </label>
+            <div class="weight-preview">
+              <span>Peso calculado por unidade</span>
+              <strong>{{ calculatedUnitWeight(editingItem) | number:'1.2-4':'pt-BR' }} kg</strong>
+            </div>
+          </div>
+        </section>
+
+        @if (editingItem.id) {
+          <label class="active-control">
+            <input type="checkbox" [(ngModel)]="editingItem.active">
+            <span><strong>Item ativo</strong><small>Disponível nas consultas e operações</small></span>
+          </label>
+        }
+      </fieldset>
+    }
+  </c-modal-body>
+  <c-modal-footer>
+    @if (currentView === 'consultation') {
+      <button cButton color="secondary" (click)="itemModalVisible = false">Fechar</button>
+    } @else {
+      <button cButton color="secondary" variant="outline" (click)="itemModalVisible = false">Cancelar</button>
+      <button cButton color="primary" [disabled]="saving || !editingItem?.code || !editingItem?.name || !editingItem?.type" (click)="saveItem()">
+        {{ saving ? 'Salvando...' : 'Salvar' }}
+      </button>
+    }
+  </c-modal-footer>
+</c-modal>
+
+<c-modal [visible]="stockModalVisible" (visibleChange)="stockModalVisible = $event" alignment="center" backdrop="static">
+  <c-modal-header>
+    <h5 cModalTitle>Atualizar estoque · {{ stockTarget?.code }}</h5>
+    <button cButtonClose (click)="stockModalVisible = false"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (stockTarget) {
+      <div class="operator-info-grid">
+        <div class="operator-info-block">
+          <span>Descrição</span>
+          <strong>{{ stockTarget.name }}</strong>
+        </div>
+        <div class="operator-info-block">
+          <span>Categoria</span>
+          <strong>{{ stockTarget.type }}</strong>
+        </div>
+        <div class="operator-info-block conversion-block">
+          <span>Fator de conversão</span>
+          <strong>{{ calculatedUnitWeight(stockTarget) | number:'1.2-4':'pt-BR' }} kg/un</strong>
+          <small>largura x comprimento x peso por mm</small>
+        </div>
+      </div>
+      <div class="stock-editor">
+        <label>Quantidade em estoque</label>
+        <div>
+          <button type="button" (click)="changeStock(-1)" aria-label="Diminuir estoque">−</button>
+          <input type="number" min="0" [(ngModel)]="stockQuantity" (ngModelChange)="updateStockWeight()">
+          <button type="button" (click)="changeStock(1)" aria-label="Aumentar estoque">＋</button>
+        </div>
+        <small>Atual: <strong>{{ stockTarget.currentStorage | number:'1.0-2':'pt-BR' }}</strong></small>
+      </div>
+    }
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" variant="outline" (click)="stockModalVisible = false">Cancelar</button>
+    <button cButton color="primary" [disabled]="saving" (click)="saveStock()">{{ saving ? 'Salvando...' : 'Salvar' }}</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal [visible]="accessModalVisible" (visibleChange)="accessModalVisible = $event" alignment="center" backdrop="static" size="lg">
+  <c-modal-header>
+    <h5 cModalTitle>Permissões por categoria</h5>
+    <button cButtonClose (click)="accessModalVisible = false"></button>
+  </c-modal-header>
+  <c-modal-body>
+    <p class="access-help">Selecione as categorias que cada usuário poderá acessar na Gestão de Estoque.</p>
+    <div class="permission-grid">
+      @for (user of users; track user.id) {
+        <section>
+          <div class="permission-user"><span class="avatar">{{ user.initials }}</span><strong>{{ user.name }}</strong></div>
+          <div class="permission-options">
+            @for (category of categories; track category.id) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="userHasCategory(user, category.id)"
+                  (change)="toggleUserCategory(user, category.id)"
+                >
+                {{ category.name }}
+              </label>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" variant="outline" (click)="accessModalVisible = false">Cancelar</button>
+    <button cButton color="primary" [disabled]="saving" (click)="saveUserAccess()">{{ saving ? 'Salvando...' : 'Salvar permissões' }}</button>
+  </c-modal-footer>
+</c-modal>
