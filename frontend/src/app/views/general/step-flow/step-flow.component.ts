@@ -42,6 +42,7 @@ export class StepFlowComponent implements OnInit {
   @ViewChild('stepFlowInputOffcanvas')stepFlowInputOffcanvas!: StepFlowInputOffcanvasComponent;
 
   protected isAdmin: boolean = false;
+  protected isManager: boolean = false;
   protected showMoney: boolean = true;
   protected isShipping: boolean = false;
   protected data!: Array<StepFlowData>;
@@ -159,7 +160,7 @@ export class StepFlowComponent implements OnInit {
     this.getStepAccess();
     this.loadOrders();
 
-    if (this.isAdmin) this.loadDashboard();
+    if (this.isManager) this.loadDashboard();
     if (this.currentStepIndex > 0) this.loadCurrentStepOrders(this.currentStepIndex - 1);
   }
 
@@ -282,7 +283,8 @@ export class StepFlowComponent implements OnInit {
       this.isAdmin = true;
     }
 
-    if (this.user.roles.filter(role => role.authority == 'ROLE_STEP_FLOW_ADMIN').length) {
+    if (this.user.roles.filter(role => role.authority == 'ROLE_ADMIN' || role.authority == 'ROLE_STEP_FLOW_ADMIN').length) {
+      this.isManager = true;
       this.currentStepIndex = 0;
       return
     }
