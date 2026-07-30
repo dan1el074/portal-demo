@@ -485,6 +485,31 @@
         flex-direction: column;
         gap: 16px;
 
+        .sof-file-filter {
+          display: flex;
+          align-self: flex-start;
+          gap: 4px;
+          padding: 4px;
+          border-radius: 10px;
+          background-color: rgba(var(--cui-emphasis-color-rgb), 0.05);
+
+          button {
+            padding: 6px 12px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--cui-medium-emphasis);
+            font-size: 12px;
+            font-weight: 600;
+
+            &.active {
+              background-color: var(--cui-body-bg);
+              color: #155dfb;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+            }
+          }
+        }
+
         .sof-file-item {
           display: flex;
           justify-content: space-between;

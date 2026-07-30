@@ -19,9 +19,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
         SELECT
             COUNT(o) AS totalCount,
-            COALESCE(SUM(CASE WHEN o.status = 'IN_PROGRESS' THEN 1 ELSE 0 END), 0) AS progressCount,
+            COALESCE(SUM(CASE
+                WHEN o.status = 'IN_PROGRESS'
+                    AND (o.dueDate IS NULL OR o.dueDate >= CURRENT_DATE) THEN 1
+                ELSE 0
+            END), 0) AS progressCount,
             COALESCE(SUM(CASE WHEN o.status = 'COMPLETED' THEN 1 ELSE 0 END), 0) AS completeCount,
-            COALESCE(SUM(CASE WHEN o.status = 'LATE' THEN 1 ELSE 0 END), 0) AS lateCount
+            COALESCE(SUM(CASE
+                WHEN o.status = 'LATE'
+                    OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 1
+                ELSE 0
+            END), 0) AS lateCount
         FROM Order o
     """)
     public Optional<StatusCountsProjection> findCountByStatus();
@@ -64,7 +72,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         WHERE
             LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
             OR LOWER(o.currentStep) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(
+                CASE
+                    WHEN o.status = 'LATE'
+                        OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                    ELSE CAST(o.status AS string)
+                END
+            ) LIKE LOWER(CONCAT('%', :search, '%'))
             OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
     """)
     public Page<Order> search(Pageable pageable, @Param("search") String search);
@@ -75,12 +89,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         WHERE
             LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
             OR LOWER(o.currentStep) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(
+                CASE
+                    WHEN o.status = 'LATE'
+                        OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                    ELSE CAST(o.status AS string)
+                END
+            ) LIKE LOWER(CONCAT('%', :search, '%'))
             OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
         ORDER BY (
             CASE
                 WHEN o.status = 'LATE'
-                    OR (o.dueDate IS NOT NULL AND o.dueDate < CURRENT_DATE) THEN 0
+                    OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 0
                 WHEN o.status = 'IN_PROGRESS' THEN 1
                 WHEN o.status = 'CANCELLED' THEN 2
                 WHEN o.status = 'COMPLETED' THEN 3
@@ -101,7 +121,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND LOWER(o.currentStep) = LOWER(:step)
             AND (
                 LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
-                OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(
+                    CASE
+                        WHEN o.status = 'LATE'
+                            OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                        ELSE CAST(o.status AS string)
+                    END
+                ) LIKE LOWER(CONCAT('%', :search, '%'))
                 OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
             )
     """)
@@ -115,13 +141,19 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND LOWER(o.currentStep) = LOWER(:step)
             AND (
                 LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
-                OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(
+                    CASE
+                        WHEN o.status = 'LATE'
+                            OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                        ELSE CAST(o.status AS string)
+                    END
+                ) LIKE LOWER(CONCAT('%', :search, '%'))
                 OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
             )
         ORDER BY (
             CASE
                 WHEN o.status = 'LATE'
-                    OR (o.dueDate IS NOT NULL AND o.dueDate < CURRENT_DATE) THEN 0
+                    OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 0
                 WHEN o.status = 'IN_PROGRESS' THEN 1
                 WHEN o.status = 'CANCELLED' THEN 2
                 WHEN o.status = 'COMPLETED' THEN 3
