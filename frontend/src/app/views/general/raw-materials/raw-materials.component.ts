@@ -1,322 +1,355 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, AlertComponent, CardBodyComponent, CardComponent, CardTitleDirective, ContainerComponent, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
+import { SmartPaginationComponent } from '@coreui/angular-pro';
 import { RawMaterialsTableComponent } from '../../../../components/table/raw-materials-table/raw-materials-table.component';
-import { cilXCircle, cilCheckCircle, cilWarning } from '@coreui/icons';
-import { RawMaterialsTable } from '../../../interface/raw-materials.interface';
-import { IconDirective } from '@coreui/icons-angular';
+import { calculateRawMaterialUnitWeight, RawMaterialCategory, RawMaterialStockStatus, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess, RawMaterialView } from '../../../interface/raw-materials.interface';
+import { RawMaterialsService } from '../../../services/raw-materials.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-raw-materials',
   imports: [
     CommonModule,
+    FormsModule,
     ContainerComponent,
-    AlertComponent,
     CardComponent,
     CardBodyComponent,
-    CardTitleDirective,
-    Tabs2Module,
+    ButtonDirective,
+    DropdownComponent,
+    DropdownItemDirective,
+    DropdownItemPlainDirective,
+    DropdownMenuDirective,
+    DropdownToggleDirective,
+    ModalComponent,
+    ModalHeaderComponent,
+    ModalTitleDirective,
+    ModalBodyComponent,
+    ModalFooterComponent,
+    ButtonCloseDirective,
+    SmartPaginationComponent,
     RawMaterialsTableComponent,
-    AccordionComponent,
-    AccordionItemComponent,
-    TemplateIdDirective,
-    AccordionButtonDirective,
-    IconDirective
   ],
   templateUrl: './raw-materials.component.html',
   styleUrl: './raw-materials.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RawMaterialsComponent implements OnInit {
-  protected icons = { cilXCircle, cilCheckCircle, cilWarning };
-  protected tabs: Array<{name: string, active: boolean}> = [];
-  protected disableItems: Array<RawMaterialsTable> = [];
-  protected items: Array<Array<RawMaterialsTable>> = [];
-  protected allItems: Array<RawMaterialsTable> = [
-    {
-      id: 1,
-      code: '21805',
-      name: 'CH A36 #1,55 1200x3000mm GALV. Z275 MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 73,
-      currentStorageKg: 3208.79,
-      minStorage: 30,
-      minStorageKg: 1319.68,
-      maxStorage: 45,
-      maxStorageKg: 1978.02,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 2,
-      code: '18912',
-      name: 'CH A36 #1,50 1200x3000mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 18,
-      currentStorageKg: 791.21,
-      minStorage: 7,
-      minStorageKg: 307.69,
-      maxStorage: 11,
-      maxStorageKg: 461.54,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 3,
-      code: '32641',
-      name: 'CH A36 #2,00 1200x1390mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 31,
-      currentStorageKg: 827.33,
-      minStorage: 25,
-      minStorageKg: 667.20,
-      maxStorage: 38,
-      maxStorageKg: 1000.80,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 4,
-      code: '32614',
-      name: 'CH A36 #2,00 1200x1690mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 114,
-      currentStorageKg: 3699.07,
-      minStorage: 120,
-      minStorageKg: 3893.76,
-      maxStorage: 180,
-      maxStorageKg: 5840.64,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 5,
-      code: '18751',
-      name: 'CH A36 #2,00 1200x1855mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 66,
-      currentStorageKg: 2350.66,
-      minStorage: 80,
-      minStorageKg: 2849.28,
-      maxStorage: 120,
-      maxStorageKg: 4273.92,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 6,
-      code: '28691',
-      name: 'CH A36 #2,00 1200x1855mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 63,
-      currentStorageKg: 2727.65,
-      minStorage: 40,
-      minStorageKg: 1731.84,
-      maxStorage: 60,
-      maxStorageKg: 2597.76,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 7,
-      code: '21311',
-      name: 'CH A36 #2,00 1200x3000mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 20,
-      currentStorageKg: 1152.0,
-      minStorage: 10,
-      minStorageKg: 565.56,
-      maxStorage: 15,
-      maxStorageKg: 848.34,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 8,
-      code: '32615',
-      name: 'CH A36 #3,00 1200x1690mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 24,
-      currentStorageKg: 1168.13,
-      minStorage: 40,
-      minStorageKg: 1946.88,
-      maxStorage: 60,
-      maxStorageKg: 2920.32,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Chapas Finas',
-      active: true
-    },
-    {
-      id: 9,
-      code: '32641',
-      name: 'BARRA CHATA #2,00 1200x1390mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 31,
-      currentStorageKg: 827.33,
-      minStorage: 25,
-      minStorageKg: 667.20,
-      maxStorage: 38,
-      maxStorageKg: 1000.80,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
-    {
-      id: 10,
-      code: '32614',
-      name: 'BARRA CHATA #2,00 1200x1690mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 114,
-      currentStorageKg: 3699.07,
-      minStorage: 120,
-      minStorageKg: 3893.76,
-      maxStorage: 180,
-      maxStorageKg: 5840.64,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
-    {
-      id: 11,
-      code: '18751',
-      name: 'BARRA CHATA #2,00 1200x1855mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 66,
-      currentStorageKg: 2350.66,
-      minStorage: 80,
-      minStorageKg: 2849.28,
-      maxStorage: 120,
-      maxStorageKg: 4273.92,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
-    {
-      id: 12,
-      code: '28691',
-      name: 'BARRA CHATA #2,00 1200x1855mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 63,
-      currentStorageKg: 2727.65,
-      minStorage: 40,
-      minStorageKg: 1731.84,
-      maxStorage: 60,
-      maxStorageKg: 2597.76,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
-    {
-      id: 13,
-      code: '21311',
-      name: 'BARRA CHATA #2,00 1200x3000mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 20,
-      currentStorageKg: 1152.0,
-      minStorage: 10,
-      minStorageKg: 565.56,
-      maxStorage: 15,
-      maxStorageKg: 848.34,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
-    {
-      id: 14,
-      code: '32615',
-      name: 'BARRA CHATA #3,00 1200x1690mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 24,
-      currentStorageKg: 1168.13,
-      minStorage: 40,
-      minStorageKg: 1946.88,
-      maxStorage: 60,
-      maxStorageKg: 2920.32,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
-    {
-      id: 15,
-      code: '32641',
-      name: 'BARRA CHATA #2,00 1200x1390mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 31,
-      currentStorageKg: 827.33,
-      minStorage: 25,
-      minStorageKg: 667.20,
-      maxStorage: 38,
-      maxStorageKg: 1000.80,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
-    {
-      id: 16,
-      code: '32641',
-      name: 'BARRA CHATA #2,00 1200x1390mm MP',
-      description: 'Chapas de Proteção lateral de NDE e Mesas',
-      currentStorage: 31,
-      currentStorageKg: 827.33,
-      minStorage: 25,
-      minStorageKg: 667.20,
-      maxStorage: 38,
-      maxStorageKg: 1000.80,
-      updateAt: '2025-12-10T00:00:00Z',
-      user: 'Daniel Vargas',
-      type: 'Aços Longos',
-      active: true
-    },
+  protected isAdmin = false;
+  protected currentView: RawMaterialView = 'operator';
+  protected readonly views: Array<{ value: RawMaterialView; label: string; description: string }> = [
+    { value: 'admin', label: 'Administrador', description: 'Gestão completa' },
+    { value: 'operator', label: 'Operador', description: 'Atualização de estoque' },
+    { value: 'consultation', label: 'Consulta', description: 'Somente visualização' },
   ];
 
+  protected data: RawMaterialsTable[] = [];
+  protected categories: RawMaterialCategory[] = [];
+  protected users: RawMaterialUserAccess[] = [];
+  protected summary: RawMaterialSummary = { low: 0, ok: 0, high: 0 };
+  protected loadingTable = true;
+  protected currentPage = 1;
+  protected totalPages = 1;
+  protected totalItems = 0;
+  protected itemsPerPage = 10;
+  protected currentSearch = '';
+  protected currentCategory = '';
+  protected currentStatus: RawMaterialStockStatus = 'all';
+  protected showInactive = false;
+
+  protected itemModalVisible = false;
+  protected stockModalVisible = false;
+  protected accessModalVisible = false;
+  protected editingItem: RawMaterialsTable | null = null;
+  protected stockTarget: RawMaterialsTable | null = null;
+  protected stockQuantity = 0;
+  protected stockKg = 0;
+  protected newCategoryName = '';
+  protected categoryDeleteError = '';
+  protected saving = false;
+
+  private currentSort?: { column: string; state: 'asc' | 'desc' };
+  private searchTimer?: ReturnType<typeof setTimeout>;
+
+  constructor(
+    private rawMaterialsService: RawMaterialsService,
+    private userService: UserService,
+    private cdf: ChangeDetectorRef,
+  ) {}
+
   ngOnInit(): void {
-    this.updateData();
+    this.resolveAccess();
+    this.loadCategories();
+    this.loadUsers();
+    this.loadSummary();
+    this.loadItems();
   }
 
-  updateData() {
-    this.allItems.forEach(item => {
-      let tabIndex = this.tabs.findIndex(tab => tab.name == item.type);
+  protected setView(view: RawMaterialView): void {
+    if (!this.isAdmin) return;
+    this.currentView = view;
+    this.currentPage = 1;
+    this.currentSearch = '';
+    this.currentCategory = '';
+    this.currentStatus = 'all';
+    this.showInactive = false;
+    this.loadItems();
+  }
 
-      if (tabIndex == -1) {
-        this.tabs.push({ name: item.type, active: false });
-        tabIndex = this.tabs.length - 1;
+  protected filterByStatus(status: RawMaterialStockStatus): void {
+    this.currentStatus = status;
+    this.currentPage = 1;
+    this.loadItems();
+  }
 
-        this.items.push([]);
-      }
+  protected onFilterChange(value: string): void {
+    this.currentSearch = value;
+    this.currentPage = 1;
+    clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadItems(), 300);
+  }
 
-      if (!this.tabs[tabIndex].active) {
-        if (item.active) this.tabs[tabIndex].active = true;
-      }
+  protected onCategoryChange(value: string): void {
+    this.currentCategory = value;
+    this.currentPage = 1;
+    this.loadItems();
+  }
 
-      if (item.active) {
-        this.items[tabIndex].push(item);
-      } else {
-        this.disableItems.push(item);
-      }
+  protected onStatusChange(value: RawMaterialStockStatus): void {
+    this.currentStatus = value;
+    this.currentPage = 1;
+    this.loadItems();
+  }
+
+  protected onInactiveChange(value: boolean): void {
+    this.showInactive = value;
+    this.currentPage = 1;
+    this.loadItems();
+  }
+
+  protected onSorterChange(sorter: any): void {
+    this.currentSort = sorter?.state && sorter?.column
+      ? { column: sorter.column, state: sorter.state }
+      : undefined;
+    this.currentPage = 1;
+    this.loadItems();
+  }
+
+  protected onItemsPerPageChange(value: number): void {
+    this.itemsPerPage = value;
+    this.currentPage = 1;
+    this.loadItems();
+  }
+
+  protected onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadItems();
+  }
+
+  protected clearFilters(): void {
+    this.currentSearch = '';
+    this.currentCategory = '';
+    this.currentStatus = 'all';
+    this.showInactive = false;
+    this.currentSort = undefined;
+    this.currentPage = 1;
+    this.loadItems();
+  }
+
+  protected openItemModal(item?: RawMaterialsTable): void {
+    if (!this.isAdmin && !(this.currentView === 'consultation' && item)) return;
+    this.editingItem = item
+      ? { ...item }
+      : {
+          id: 0,
+          code: '',
+          name: '',
+          description: '',
+          type: this.categories[0]?.name ?? '',
+          currentStorage: 0,
+          currentStorageKg: 0,
+          minStorage: 0,
+          minStorageKg: 0,
+          maxStorage: 0,
+          maxStorageKg: 0,
+          length: '',
+          width: '',
+          weightPerMillimeter: '',
+          active: true,
+          updateAt: new Date().toISOString(),
+          user: this.userService.getCurrentUser()?.name ?? 'Administrador',
+        };
+    this.itemModalVisible = true;
+  }
+
+  protected saveItem(): void {
+    if (this.currentView === 'consultation' || !this.editingItem || !this.editingItem.code.trim() || !this.editingItem.name.trim() || !this.editingItem.type) return;
+    this.saving = true;
+    this.rawMaterialsService.saveItem(this.editingItem).subscribe(() => {
+      this.saving = false;
+      this.itemModalVisible = false;
+      this.loadItems();
+      this.loadSummary();
+      this.cdf.detectChanges();
     });
+  }
 
-    this.tabs.push({ name: 'Desabilitado', active: this.disableItems.length > 0 ? true : false });
+  protected openStockModal(item: RawMaterialsTable): void {
+    if (this.currentView !== 'operator') return;
+    this.stockTarget = { ...item };
+    this.stockQuantity = item.currentStorage;
+    this.stockKg = item.currentStorageKg;
+    this.stockModalVisible = true;
+  }
+
+  protected openTableItem(item: RawMaterialsTable): void {
+    if (this.currentView === 'admin' || this.currentView === 'consultation') {
+      this.openItemModal(item);
+      return;
+    }
+
+    if (this.currentView === 'operator') this.openStockModal(item);
+  }
+
+  protected changeStock(delta: number): void {
+    if (!this.stockTarget) return;
+    this.stockQuantity = Math.max(0, this.stockQuantity + delta);
+    this.updateStockWeight();
+  }
+
+  protected updateStockWeight(): void {
+    if (!this.stockTarget) return;
+    this.stockKg = Number((this.stockQuantity * this.calculatedUnitWeight(this.stockTarget)).toFixed(2));
+  }
+
+  protected calculatedUnitWeight(item: RawMaterialsTable): number {
+    return calculateRawMaterialUnitWeight(item);
+  }
+
+  protected saveStock(): void {
+    if (!this.stockTarget) return;
+    this.saving = true;
+    const user = this.userService.getCurrentUser()?.name ?? 'Operador';
+    this.rawMaterialsService.updateStock(this.stockTarget.id, this.stockQuantity, this.stockKg, user).subscribe(() => {
+      this.saving = false;
+      this.stockModalVisible = false;
+      this.loadItems();
+      this.loadSummary();
+      this.cdf.detectChanges();
+    });
+  }
+
+  protected addCategory(): void {
+    const name = this.newCategoryName.trim();
+    if (!name || this.categories.some(category => category.name.toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR'))) return;
+    this.rawMaterialsService.addCategory(name).subscribe(category => {
+      this.categories = [...this.categories, category];
+      this.newCategoryName = '';
+      this.categoryDeleteError = '';
+      this.cdf.detectChanges();
+    });
+  }
+
+  protected deleteCategory(category: RawMaterialCategory): void {
+    this.rawMaterialsService.deleteCategory(category.id).subscribe(deleted => {
+      if (!deleted) {
+        this.categoryDeleteError = `A categoria “${category.name}” possui itens vinculados e não pode ser apagada.`;
+        this.cdf.detectChanges();
+        return;
+      }
+
+      this.categories = this.categories.filter(current => current.id !== category.id);
+      this.users = this.users.map(user => ({
+        ...user,
+        categoryIds: user.categoryIds.filter(categoryId => categoryId !== category.id),
+      }));
+      this.categoryDeleteError = '';
+      this.cdf.detectChanges();
+    });
+  }
+
+  protected userHasCategory(user: RawMaterialUserAccess, categoryId: number): boolean {
+    return user.categoryIds.includes(categoryId);
+  }
+
+  protected toggleUserCategory(user: RawMaterialUserAccess, categoryId: number): void {
+    user.categoryIds = user.categoryIds.includes(categoryId)
+      ? user.categoryIds.filter(id => id !== categoryId)
+      : [...user.categoryIds, categoryId];
+  }
+
+  protected saveUserAccess(): void {
+    this.saving = true;
+    this.rawMaterialsService.updateUserAccess(this.users).subscribe(() => {
+      this.saving = false;
+      this.accessModalVisible = false;
+      this.cdf.detectChanges();
+    });
+  }
+
+  protected viewLabel(): string {
+    return this.views.find(view => view.value === this.currentView)?.label ?? '';
+  }
+
+  protected viewDescription(): string {
+    return this.views.find(view => view.value === this.currentView)?.description ?? '';
+  }
+
+  protected categoryNames(user: RawMaterialUserAccess): string {
+    if (user.categoryIds.length === this.categories.length) return 'Acesso a todas as categorias';
+    return this.categories
+      .filter(category => user.categoryIds.includes(category.id))
+      .map(category => category.name)
+      .join(', ') || 'Sem categorias';
+  }
+
+  private resolveAccess(): void {
+    const roles = this.userService.getCurrentUser()?.roles.map(role => role.authority) ?? [];
+    this.isAdmin = roles.length === 0 || roles.includes('ROLE_ADMIN') || roles.includes('ROLE_RAW_MATERIALS_ADMIN');
+    if (this.isAdmin) this.currentView = 'admin';
+    else if (roles.includes('ROLE_RAW_MATERIALS_CONSULTATION')) this.currentView = 'consultation';
+    else this.currentView = 'operator';
+  }
+
+  private loadItems(): void {
+    this.loadingTable = true;
+    this.rawMaterialsService.query({
+      page: this.currentPage - 1,
+      size: this.itemsPerPage,
+      search: this.currentSearch,
+      category: this.currentCategory,
+      status: this.currentStatus,
+      inactive: this.showInactive,
+      sortColumn: this.currentSort?.column,
+      sortDirection: this.currentSort?.state,
+    }).subscribe(result => {
+      this.data = result.content;
+      this.totalItems = result.totalElements;
+      this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage) || 1;
+      if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+      this.loadingTable = false;
+      this.cdf.detectChanges();
+    });
+  }
+
+  private loadSummary(): void {
+    this.rawMaterialsService.getSummary().subscribe(summary => {
+      this.summary = summary;
+      this.cdf.detectChanges();
+    });
+  }
+
+  private loadCategories(): void {
+    this.rawMaterialsService.getCategories().subscribe(categories => {
+      this.categories = categories;
+      this.cdf.detectChanges();
+    });
+  }
+
+  private loadUsers(): void {
+    this.rawMaterialsService.getUsers().subscribe(users => {
+      this.users = users;
+      this.cdf.detectChanges();
+    });
   }
 }

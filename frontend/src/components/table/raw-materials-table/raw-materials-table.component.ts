@@ -1,84 +1,107 @@
-import { IconDirective } from '@coreui/icons-angular';
-import { CommonModule, registerLocaleData  } from '@angular/common';
-import { AfterViewInit, Component, Input, OnChanges, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { ButtonDirective, ContainerComponent, ModalToggleDirective } from '@coreui/angular';
-import { RawMaterialModalComponent } from './../../modal/raw-materials/raw-material-modal/raw-material-modal.component';
-import { cilPencil, cilSearch } from '@coreui/icons';
-import { RawMaterialsTable } from '../../../app/interface/raw-materials.interface';
+import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { IColumn, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
+import {
+  getRawMaterialStockStatus,
+  RawMaterialCategory,
+  RawMaterialsTable,
+  RawMaterialStockStatus,
+  RawMaterialView,
+} from '../../../app/interface/raw-materials.interface';
 
 registerLocaleData(localePt);
 
 @Component({
   selector: 'app-raw-materials-table',
-  imports: [
-    CommonModule,
-    ContainerComponent,
-    IconDirective,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatFormFieldModule,
-    MatInputModule,
-    RawMaterialModalComponent,
-    ModalToggleDirective,
-    ButtonDirective
-  ],
+  imports: [CommonModule, FormsModule, SmartTableComponent, TemplateIdDirective],
   templateUrl: './raw-materials-table.component.html',
   styleUrl: './raw-materials-table.component.scss',
 })
-export class RawMaterialsTableComponent implements AfterViewInit, OnChanges {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @Input() data: Array<RawMaterialsTable> = [];
-  @Input() noMargin: boolean = false;
+export class RawMaterialsTableComponent implements OnChanges {
+  @Input() data: RawMaterialsTable[] = [];
+  @Input() categories: RawMaterialCategory[] = [];
+  @Input() loading = false;
+  @Input() mode: RawMaterialView = 'consultation';
+  @Input() searchValue = '';
+  @Input() selectedCategory = '';
+  @Input() selectedStatus: RawMaterialStockStatus = 'all';
+  @Input() showInactive = false;
 
-  protected displayedColumns: string[] = [
-    'code',
-    'name',
-    'currentStorage',
-    'currentStorageKg',
-    'minStorage',
-    'minStorageKg',
-    'maxStorage',
-    'maxStorageKg',
-    'updateAt',
-    'activated'
-  ];
-  protected dataSource = new MatTableDataSource<RawMaterialsTable>([]);
-  protected icons = { cilSearch, cilPencil };
+  @Output() openItem = new EventEmitter<RawMaterialsTable>();
+  @Output() sorterChange = new EventEmitter<any>();
+  @Output() itemsPerPageChange = new EventEmitter<number>();
+  @Output() filterChange = new EventEmitter<string>();
+  @Output() categoryChange = new EventEmitter<string>();
+  @Output() statusChange = new EventEmitter<RawMaterialStockStatus>();
+  @Output() inactiveChange = new EventEmitter<boolean>();
+  @Output() clearAll = new EventEmitter<void>();
 
-  ngOnChanges() {
-    if (this.data) {
-      this.dataSource.data = this.data;
-    }
-  }
+  protected columns: (IColumn | string)[] = [];
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
+  ngOnChanges(): void {
+    const common: IColumn[] = [
+      this.column('code', '#'),
+      this.column('name', 'Descrição'),
+    ];
 
-  applyFilter(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = value.trim().toLowerCase();
-  }
-
-  getColor(item: RawMaterialsTable): string {
-    if (item.currentStorage >= item.minStorage && item.currentStorage <= item.maxStorage) {
-      return 'success';
+    if (this.mode === 'operator') {
+      common.push(
+        this.column('currentStorage', 'Estoque'),
+        this.column('type', 'Categoria'),
+      );
+    } else {
+      common.push(
+        this.column('type', 'Categoria'),
+        this.column('currentStorage', 'Estoque'),
+      );
     }
 
-    if (item.currentStorage > item.maxStorage) {
-      return 'warning';
+    if (this.mode !== 'operator') {
+      common.push(
+        this.column('currentStorageKg', 'Estoque (kg)'),
+        this.column('minStorage', 'Estoque min'),
+        this.column('minStorageKg', 'Estoque min (kg)'),
+        this.column('maxStorage', 'Estoque max'),
+        this.column('maxStorageKg', 'Estoque max (kg)'),
+      );
     }
 
-    return 'danger'
+    common.push(this.column('updateAt', 'Modificado'));
+    this.columns = common;
   }
 
+  protected getStatus(item: RawMaterialsTable): Exclude<RawMaterialStockStatus, 'all'> {
+    return getRawMaterialStockStatus(item);
+  }
+
+  protected onRowClick(event: { item: RawMaterialsTable }): void {
+    if (this.mode === 'operator' && this.showInactive) return;
+    this.openItem.emit(event.item);
+  }
+
+  protected onClearAll(): void {
+    this.selectedCategory = '';
+    this.selectedStatus = 'all';
+    this.showInactive = false;
+    this.clearAll.emit();
+  }
+
+  private column(key: string, label: string, sorter = true): IColumn {
+    return {
+      key,
+      label,
+      _labelTemplateId: 'all',
+      _style: {
+        backgroundColor: this.mode === 'operator'
+          ? 'var(--cui-primary)'
+          : 'rgba(var(--cui-emphasis-color-rgb), 0.04)',
+        color: this.mode === 'operator' ? '#fff' : 'inherit',
+        whiteSpace: 'nowrap',
+      },
+      sorter: sorter ? () => 0 : false,
+      filter: false,
+    };
+  }
 }
