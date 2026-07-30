@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment';
 import { TruncatePipe } from '../../../app/pipes/truncate.pipe';
 import { BackNavigationService } from '../../../app/services/back-navigation.service';
 import { VideoModalComponent } from '../../modal/media/video-modal/video-modal.component';
+import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../../../app/interface/step-flow-media.interface';
 
 registerLocaleData(localePt);
 
@@ -41,6 +42,11 @@ export class StepFlowOffcanvasComponent {
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
   protected apiUrl = environment.apiUrl;
+  protected mediaFilter: StepFlowMediaFilter = 'all';
+
+  protected get filteredMedia(): Array<StepFlowMedia> {
+    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter);
+  }
 
   constructor(
     private stepFlowService: StepFlowService,
@@ -53,6 +59,7 @@ export class StepFlowOffcanvasComponent {
   public open(orderId: number): void {
     this.visible = true;
     this.orderId = orderId;
+    this.mediaFilter = 'all';
     this.getData();
     this.backNav.register(() => this.close());
   }
@@ -90,5 +97,9 @@ export class StepFlowOffcanvasComponent {
   protected onCloseVideoModal(): void {
     this.showVideoModal = false;
     this.selectedVideo = null;
+  }
+
+  protected setMediaFilter(filter: StepFlowMediaFilter): void {
+    this.mediaFilter = filter;
   }
 }

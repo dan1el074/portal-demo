@@ -3,6 +3,7 @@ package br.com.metaro.portal.modules.general.stepFlow.repositories;
 import br.com.metaro.portal.modules.general.stepFlow.entities.Order;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStatus;
 import br.com.metaro.portal.modules.general.stepFlow.entities.StepType;
+import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StatusCountsProjection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ class OrderRepositoryTests {
         orderRepository.save(inProgress);
 
         Order completed = order(300, "Alfa", StepType.PCP, OrderStatus.COMPLETED);
-        completed.setDueDate(LocalDate.now().plusDays(1));
+        completed.setDueDate(LocalDate.now().minusDays(1));
         orderRepository.save(completed);
 
         Order overdue = order(200, "Mike", StepType.FREIGHT, OrderStatus.IN_PROGRESS);
@@ -101,6 +102,61 @@ class OrderRepositoryTests {
         assertThat(result.getContent())
                 .extracting(Order::getNumber)
                 .containsExactly(100, 300);
+    }
+
+    @Test
+    void countsOverdueInProgressOrdersAsLate() {
+        StatusCountsProjection counts = orderRepository.findCountByStatus().orElseThrow();
+
+        assertThat(counts.getTotalCount()).isEqualTo(3);
+        assertThat(counts.getProgressCount()).isEqualTo(1);
+        assertThat(counts.getCompleteCount()).isEqualTo(1);
+        assertThat(counts.getLateCount()).isEqualTo(1);
+    }
+
+    @Test
+    void searchesByTheStatusDisplayedToTheUser() {
+        var pageable = PageRequest.of(0, 10, Sort.by("number"));
+
+        assertThat(orderRepository.search(pageable, OrderStatus.LATE.name()).getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(200);
+
+        assertThat(orderRepository.search(pageable, OrderStatus.IN_PROGRESS.name()).getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(100);
+
+        assertThat(orderRepository.searchOrderByEffectiveStatus(
+                pageable,
+                OrderStatus.IN_PROGRESS.name(),
+                1
+        ).getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(100);
+    }
+
+    @Test
+    void searchesByTheDisplayedStatusWhenFilteringByStep() {
+        var pageable = PageRequest.of(0, 10, Sort.by("number"));
+
+        assertThat(orderRepository.searchOnlyStep(
+                pageable,
+                OrderStatus.LATE.name(),
+                StepType.FREIGHT.name(),
+                OrderStatus.CANCELLED
+        ).getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(200);
+
+        assertThat(orderRepository.searchOnlyStepOrderByEffectiveStatus(
+                pageable,
+                OrderStatus.IN_PROGRESS.name(),
+                StepType.PCP.name(),
+                OrderStatus.CANCELLED,
+                1
+        ).getContent())
+                .extracting(Order::getNumber)
+                .containsExactly(100);
     }
 
     private java.util.List<Order> searchSortedBy(String property, Sort.Direction direction) {

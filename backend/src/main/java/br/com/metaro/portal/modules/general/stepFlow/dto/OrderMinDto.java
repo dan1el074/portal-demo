@@ -34,7 +34,9 @@ public class OrderMinDto {
         progress = entity.getProgress();
         status = entity.getStatus().toString();
 
-        if (entity.getDueDate() != null && entity.getDueDate().isBefore(LocalDate.now())) {
+        if (entity.getStatus().equals(OrderStatus.IN_PROGRESS)
+                && entity.getDueDate() != null
+                && entity.getDueDate().isBefore(LocalDate.now())) {
             status = OrderStatus.LATE.toString();
         }
 
