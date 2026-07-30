@@ -18,6 +18,7 @@ import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, 
 import { StepFlowImage } from '../../../app/interface/image.interface';
 import { environment } from '../../../environments/environment';
 import { EditableItem, QuantityStepFlowModalComponent } from '../../modal/step-flow/quantity-step-flow-modal/quantity-step-flow-modal.component';
+import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../../../app/interface/step-flow-media.interface';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -86,6 +87,11 @@ export class StepFlowInputOffcanvasComponent {
   protected uploadingVideos = signal<Array<UploadingVideo>>([]);
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
+  protected mediaFilter: StepFlowMediaFilter = 'all';
+
+  protected get filteredMedia(): Array<StepFlowMedia> {
+    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter);
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -113,6 +119,7 @@ export class StepFlowInputOffcanvasComponent {
   public open(id: number): void {
     this.visible = true;
     this.orderId = id;
+    this.mediaFilter = 'all';
     this.resetForm();
     this.loadOrder();
     this.backNav.register(() => this.hide());
@@ -411,6 +418,10 @@ export class StepFlowInputOffcanvasComponent {
 
   protected onDeleteVideo(video: StepFlowVideo): void {
     this.openDeleteMediaModal(video.id, video.name, 'video');
+  }
+
+  protected setMediaFilter(filter: StepFlowMediaFilter): void {
+    this.mediaFilter = filter;
   }
 
   private openDeleteMediaModal(id: number, name: string, type: 'image' | 'video'): void {

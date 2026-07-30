@@ -81,7 +81,7 @@
     @case (0) {
       <div class="sfc-resume">
         @for (item of resume; track item.id) {
-          <c-card class="step-card total" [class.pointer]="item.title != 'Total de pedidos'" [style]="'border-left: 4px solid ' + item.color" (click)="searchForStatus(item.title)">
+          <c-card class="step-card total pointer" [style]="'border-left: 4px solid ' + item.color" (click)="searchForStatus(item.title)">
             <c-card-body>
               <div class="title-container">
                 <h6>{{ item.title }}</h6>
@@ -167,6 +167,28 @@
         <span>Fila de Trabalho</span>
       </div>
 
+      <div class="work-queue-search">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <input
+          type="search"
+          aria-label="Pesquisar na fila de trabalho"
+          placeholder="Pesquisar pedido, cliente, data ou status..."
+          [value]="workQueueSearch"
+          (input)="onWorkQueueSearch($event)"
+        >
+        @if (workQueueSearch) {
+          <button type="button" aria-label="Limpar pesquisa" (click)="clearWorkQueueSearch()">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        }
+      </div>
+
       @if (!loading) {
         <div class="scroll">
           <table class="card-table">
@@ -181,7 +203,7 @@
             </thead>
             <tbody>
 
-              @for (item of currentStepData; track item.id) {
+              @for (item of filteredCurrentStepData; track item.id) {
                 <tr (click)="openCurrentStepOrder(item.id)">
                   <td>
                     <div class="custom-cell">
@@ -215,9 +237,16 @@
                   </td>
 
                   <td>
-                    <div class="badge" [class.late]="item.status == 'Atrasado'">
-                      <div class="bullet"></div>
-                      {{ item.status }}
+                    <div class="status-cell">
+                      <div
+                        class="badge"
+                        [class.late]="item.status == 'Atrasado' || item.status == 'Cancelado'"
+                        [class.in-progress]="item.status == 'Andamento'"
+                        [class.complete]="item.status == 'Concluído'"
+                      >
+                        <div class="bullet"></div>
+                        {{ item.status }}
+                      </div>
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m9 18 6-6-6-6"></path>
                       </svg>
@@ -225,7 +254,9 @@
                   </td>
                 </tr>
               } @empty {
-                <i class="custom-error">Nenhum pedido para tratar.</i>
+                <i class="custom-error">
+                  {{ workQueueSearch ? 'Nenhum pedido encontrado para a pesquisa.' : 'Nenhum pedido para tratar.' }}
+                </i>
               }
 
             </tbody>

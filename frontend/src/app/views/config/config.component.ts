@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { ContainerComponent } from '@coreui/angular';
+import { CardBodyComponent, CardComponent, ContainerComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
 import { UserConfigData } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
@@ -7,12 +7,15 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ErrorService } from '../../services/error.service';
+import { HomeService } from '../../services/home.service';
 
 @Component({
   selector: 'app-config',
   imports: [
     CommonModule,
     NgxSpinnerModule,
+    CardComponent,
+    CardBodyComponent,
     ContainerComponent,
     UserConfigFormComponent
   ],
@@ -26,9 +29,11 @@ export class ConfigComponent implements OnInit {
   protected userConfigForm!: UserConfigFormComponent;
   protected userData: UserConfigData | null = null;
   protected loaded = false;
+  protected isAdmin = false;
 
   constructor(
     private userService: UserService,
+    private homeService: HomeService,
     private toasterService: ToastrService,
     private errorService: ErrorService,
     private spinner: NgxSpinnerService,
@@ -37,6 +42,9 @@ export class ConfigComponent implements OnInit {
 
   public ngOnInit(): void {
     this.spinner.show("userConfigSpinner");
+    this.isAdmin = this.userService.getCurrentUser()?.roles.some(
+      role => role.authority === 'ROLE_ADMIN'
+    ) ?? false;
 
     this.userService.getUserConfig().subscribe({
       next: data =>  {
@@ -60,6 +68,13 @@ export class ConfigComponent implements OnInit {
         });
       },
       error: (error) => this.errorService.showError(error)
+    });
+  }
+
+  protected clearCache(): void {
+    this.homeService.clearAllCache().subscribe({
+      next: () => this.toasterService.success('Cache limpo com sucesso!'),
+      error: () => this.toasterService.error('Erro ao limpar cache!')
     });
   }
 }

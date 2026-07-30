@@ -19,9 +19,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
         SELECT
             COUNT(o) AS totalCount,
-            COALESCE(SUM(CASE WHEN o.status = 'IN_PROGRESS' THEN 1 ELSE 0 END), 0) AS progressCount,
+            COALESCE(SUM(CASE
+                WHEN o.status = 'IN_PROGRESS'
+                    AND (o.dueDate IS NULL OR o.dueDate >= CURRENT_DATE) THEN 1
+                ELSE 0
+            END), 0) AS progressCount,
             COALESCE(SUM(CASE WHEN o.status = 'COMPLETED' THEN 1 ELSE 0 END), 0) AS completeCount,
-            COALESCE(SUM(CASE WHEN o.status = 'LATE' THEN 1 ELSE 0 END), 0) AS lateCount
+            COALESCE(SUM(CASE
+                WHEN o.status = 'LATE'
+                    OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 1
+                ELSE 0
+            END), 0) AS lateCount
         FROM Order o
     """)
     public Optional<StatusCountsProjection> findCountByStatus();
@@ -56,17 +64,55 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     """)
     public List<Order> findByNumber(Integer orderNumber, @Param("orderStatus") OrderStatus orderStatus);
 
+    public long countByNumber(Integer number);
+
     @Query("""
         SELECT o
         FROM Order o
         WHERE
             LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
             OR LOWER(o.currentStep) LIKE LOWER(CONCAT('%', :search, '%'))
-            OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(
+                CASE
+                    WHEN o.status = 'LATE'
+                        OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                    ELSE CAST(o.status AS string)
+                END
+            ) LIKE LOWER(CONCAT('%', :search, '%'))
             OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
-        ORDER BY o.number
     """)
     public Page<Order> search(Pageable pageable, @Param("search") String search);
+
+    @Query("""
+        SELECT o
+        FROM Order o
+        WHERE
+            LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(o.currentStep) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(
+                CASE
+                    WHEN o.status = 'LATE'
+                        OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                    ELSE CAST(o.status AS string)
+                END
+            ) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
+        ORDER BY (
+            CASE
+                WHEN o.status = 'LATE'
+                    OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 0
+                WHEN o.status = 'IN_PROGRESS' THEN 1
+                WHEN o.status = 'CANCELLED' THEN 2
+                WHEN o.status = 'COMPLETED' THEN 3
+                ELSE 4
+            END
+        ) * :direction
+    """)
+    public Page<Order> searchOrderByEffectiveStatus(
+            Pageable pageable,
+            @Param("search") String search,
+            @Param("direction") Integer direction
+    );
 
     @Query("""
         SELECT o
@@ -75,11 +121,51 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND LOWER(o.currentStep) = LOWER(:step)
             AND (
                 LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
-                OR LOWER(o.status) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(
+                    CASE
+                        WHEN o.status = 'LATE'
+                            OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                        ELSE CAST(o.status AS string)
+                    END
+                ) LIKE LOWER(CONCAT('%', :search, '%'))
                 OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
             )
-        ORDER BY o.number
     """)
     public Page<Order> searchOnlyStep(Pageable pageable, @Param("search") String search, @Param("step") String step,
                                       @Param("status") OrderStatus status);
+
+    @Query("""
+        SELECT o
+        FROM Order o
+        WHERE o.status <> :status
+            AND LOWER(o.currentStep) = LOWER(:step)
+            AND (
+                LOWER(o.client) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR LOWER(
+                    CASE
+                        WHEN o.status = 'LATE'
+                            OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 'LATE'
+                        ELSE CAST(o.status AS string)
+                    END
+                ) LIKE LOWER(CONCAT('%', :search, '%'))
+                OR CAST(o.number AS string) LIKE CONCAT('%', :search, '%')
+            )
+        ORDER BY (
+            CASE
+                WHEN o.status = 'LATE'
+                    OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE) THEN 0
+                WHEN o.status = 'IN_PROGRESS' THEN 1
+                WHEN o.status = 'CANCELLED' THEN 2
+                WHEN o.status = 'COMPLETED' THEN 3
+                ELSE 4
+            END
+        ) * :direction
+    """)
+    public Page<Order> searchOnlyStepOrderByEffectiveStatus(
+            Pageable pageable,
+            @Param("search") String search,
+            @Param("step") String step,
+            @Param("status") OrderStatus status,
+            @Param("direction") Integer direction
+    );
 }

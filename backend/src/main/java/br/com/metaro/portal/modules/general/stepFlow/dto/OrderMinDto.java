@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 public class OrderMinDto {
     private Long id;
-    private Integer number;
+    private String number;
     private String quantity;
     private String client;
     private String dueDate;
@@ -26,7 +26,7 @@ public class OrderMinDto {
 
     public OrderMinDto(Order entity) {
         id = entity.getId();
-        number = entity.getNumber();
+        number = entity.getDisplayNumber();
         quantity = "-";
         client = entity.getClient();
         dueDate = entity.getDueDate() != null ? entity.getDueDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "-";
@@ -34,7 +34,9 @@ public class OrderMinDto {
         progress = entity.getProgress();
         status = entity.getStatus().toString();
 
-        if (entity.getDueDate() != null && entity.getDueDate().isBefore(LocalDate.now())) {
+        if (entity.getStatus().equals(OrderStatus.IN_PROGRESS)
+                && entity.getDueDate() != null
+                && entity.getDueDate().isBefore(LocalDate.now())) {
             status = OrderStatus.LATE.toString();
         }
 
