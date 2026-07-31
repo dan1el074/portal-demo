@@ -153,7 +153,7 @@
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 19.2px;
   margin-bottom: 0;
 }
 
@@ -217,8 +217,8 @@
 .admin-tools {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 25px 0;
+  gap: 19.2px;
+  margin: 19.2px 0 0;
 }
 
 .tool-card,
@@ -351,6 +351,13 @@ textarea {
   white-space: nowrap;
 }
 
+.category-edit-input {
+  min-width: 130px;
+  min-height: 30px;
+  padding: 4px 7px;
+  font-size: 12px;
+}
+
 .category-updated {
   white-space: nowrap;
 
@@ -368,12 +375,13 @@ textarea {
 }
 
 .category-action {
-  width: 46px;
+  width: 72px;
+  white-space: nowrap;
   text-align: right;
 }
 
-.delete-category {
-  display: grid;
+.category-action-button {
+  display: inline-grid;
   place-items: center;
   width: 30px;
   height: 30px;
@@ -383,9 +391,12 @@ textarea {
   background: transparent;
   color: var(--cui-medium-emphasis);
 
-  &:hover {
-    background: #c5232a17;
-    color: #c5232a;
+  + .category-action-button {
+    margin-left: 2px;
+  }
+
+  &:disabled {
+    opacity: .45;
   }
 
   svg {
@@ -396,6 +407,24 @@ textarea {
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+}
+
+.edit-category:hover,
+.save-category:hover {
+  background: rgba(var(--cui-primary-rgb), .1);
+  color: var(--cui-primary);
+}
+
+.cancel-category:hover {
+  background: rgba(var(--cui-emphasis-color-rgb), .08);
+  color: var(--cui-body-color);
+}
+
+.delete-category {
+  &:hover {
+    background: #c5232a17;
+    color: #c5232a;
   }
 }
 
@@ -486,7 +515,7 @@ textarea {
 
 .inventory-table-card {
   overflow: hidden;
-  margin: 8px 0;
+  margin: 19.2px 0 0;
 }
 
 .table-title {
@@ -554,9 +583,9 @@ textarea {
     border-radius: 3px;
   }
 
-  i.low { border-color: #d9797d; background: #c5232a17; }
-  i.ok { border-color: #60b698; background: #00996617; }
-  i.high { border-color: #d9ae5c; background: #d990001f; }
+  i.low { border-color: #d9797d; background: #d9797d; }
+  i.ok { border-color: #60b698; background: #60b698; }
+  i.high { border-color: #d9ae5c; background: #d9ae5c; }
 }
 
 .table-body {

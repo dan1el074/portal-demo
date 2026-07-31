@@ -1,15 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
-import {
-  calculateRawMaterialUnitWeight,
-  getRawMaterialStockStatus,
-  RawMaterialCategory,
-  RawMaterialFilters,
-  RawMaterialPagedResult,
-  RawMaterialSummary,
-  RawMaterialsTable,
-  RawMaterialUserAccess,
-} from '../interface/raw-materials.interface';
+import { calculateRawMaterialUnitWeight, getRawMaterialStockStatus, RawMaterialCategory, RawMaterialFilters, RawMaterialPagedResult, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess } from '../interface/raw-materials.interface';
 
 const createItem = (
   id: number,
@@ -172,6 +163,17 @@ export class RawMaterialsService {
       updatedAt: new Date().toISOString(),
     };
     this.categories.push(category);
+    return of({ ...category }).pipe(delay(80));
+  }
+
+  updateCategory(id: number, name: string): Observable<RawMaterialCategory | null> {
+    const category = this.categories.find(current => current.id === id);
+    const duplicated = this.categories.some(current => current.id !== id && this.normalize(current.name) === this.normalize(name));
+    if (!category || duplicated) return of(null).pipe(delay(80));
+
+    const previousName = category.name;
+    Object.assign(category, { name, updatedAt: new Date().toISOString() });
+    this.items = this.items.map(item => item.type === previousName ? { ...item, type: name } : item);
     return of({ ...category }).pipe(delay(80));
   }
 
