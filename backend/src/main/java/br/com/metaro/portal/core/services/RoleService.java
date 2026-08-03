@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RoleService {
@@ -19,27 +21,30 @@ public class RoleService {
     @Transactional(readOnly = true)
     public List<RoleGroupDto> findAll() {
         List<Role> roles = roleRepository.findAll();
-        List<RoleGroupDto> roleGroupDtos = new ArrayList<>();
+        Map<Long, RoleSummaryDto> nodes = new LinkedHashMap<>();
+        Map<String, List<RoleSummaryDto>> groups = new LinkedHashMap<>();
 
         for (Role role : roles) {
             if (role.getTitle() == null) continue;
-
-            boolean find = false;
-            for (RoleGroupDto currentGroup: roleGroupDtos) {
-                if (currentGroup.getTitle().equals(role.getParent())) {
-                    currentGroup.getChildrens().add(new RoleSummaryDto(role.getId(), role.getTitle()));
-                    find = true;
-                    break;
-                }
-            }
-
-            if (!find) {
-                List<RoleSummaryDto> summaryDtoList = new ArrayList<>();
-                summaryDtoList.add(new RoleSummaryDto(role.getId(), role.getTitle()));
-                roleGroupDtos.add(new RoleGroupDto(role.getParent(), summaryDtoList));
-            }
+            nodes.put(role.getId(), new RoleSummaryDto(role.getId(), role.getTitle()));
         }
 
-        return roleGroupDtos;
+        for (Role role : roles) {
+            RoleSummaryDto node = nodes.get(role.getId());
+            if (node == null) continue;
+
+            Role father = role.getFather();
+            RoleSummaryDto fatherNode = father == null ? null : nodes.get(father.getId());
+            if (fatherNode != null) {
+                fatherNode.getChildrens().add(node);
+                continue;
+            }
+
+            groups.computeIfAbsent(role.getParent(), key -> new ArrayList<>()).add(node);
+        }
+
+        return groups.entrySet().stream()
+                .map(entry -> new RoleGroupDto(entry.getKey(), entry.getValue()))
+                .toList();
     }
 }

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular';
-import { DatePickerComponent, MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent, FormPasswordDirective } from '@coreui/angular-pro';
+import { DatePickerComponent, FormPasswordDirective } from '@coreui/angular-pro';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, FormSelectDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormSelectDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
 import { passwordMatchValidator } from '../../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
@@ -12,6 +12,7 @@ import { PositionMin } from '../../../../app/interface/position.interface';
 import { UserEditData } from '../../../../app/interface/user.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
 import { ToastrService } from 'ngx-toastr';
+import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.component';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -19,14 +20,7 @@ import { ToastrService } from 'ngx-toastr';
     CommonModule,
     ReactiveFormsModule,
     ImageCropperComponent,
-    ColComponent,
-    RowComponent,
-    FormFloatingDirective,
-    FormLabelDirective,
     FormControlDirective,
-    FormCheckComponent,
-    FormCheckInputDirective,
-    FormCheckLabelDirective,
     FormSelectDirective,
     IconDirective,
     ButtonDirective,
@@ -36,11 +30,9 @@ import { ToastrService } from 'ngx-toastr';
     ButtonCloseDirective,
     ModalBodyComponent,
     ModalFooterComponent,
-    MultiSelectComponent,
-    MultiSelectOptionComponent,
-    MultiSelectOptgroupComponent,
     DatePickerComponent,
-    FormPasswordDirective
+    FormPasswordDirective,
+    RoleAccessTreeComponent
   ],
   templateUrl: './user-edit-form.component.html',
   styleUrl: './user-edit-form.component.scss',
@@ -104,8 +96,8 @@ export class UserEditFormComponent implements OnChanges {
 
     if (this.userData.pictureId) this.file = environment.apiUrl + '/images/' + this.userData.pictureId;
     if (this.userData.positionId > 0) this.editForm.get('position')?.setValue(this.userData.positionId);
-    if (this.userData.roles[0] == 2) this.editForm.get('roles')?.disable();
-    if (this.userData.roles[0] != 2) this.editForm.get('roles')?.setValue(this.userData.roles);
+    if (this.userData.roles.includes(2)) this.editForm.get('roles')?.disable();
+    else this.editForm.get('roles')?.setValue(this.userData.roles);
   }
 
   private parseDate(value: string | null): Date {
@@ -148,7 +140,7 @@ export class UserEditFormComponent implements OnChanges {
       return;
     }
 
-    this.editForm.get('picture')?.setErrors({ imageTooLarge: false });
+    this.editForm.get('picture')?.setErrors(null);
     this.imageChangedEvent = event;
     this.toggleModal();
   }
@@ -183,8 +175,8 @@ export class UserEditFormComponent implements OnChanges {
     this.modalReady = !this.modalReady;
 
     if (resetInput) {
-      const input = this.imageChangedEvent?.target as HTMLInputElement
-      input.value = "";
+      const input = this.imageChangedEvent?.target as HTMLInputElement | undefined;
+      if (input) input.value = '';
     }
   }
 
@@ -200,6 +192,11 @@ export class UserEditFormComponent implements OnChanges {
     this.file = '';
     this.editForm.get('picture')?.setValue(null);
     this.resetPicture = true;
+  }
+
+  protected onRolesChange(ids: number[]): void {
+    this.editForm.get('roles')?.setValue(ids);
+    this.editForm.get('roles')?.markAsDirty();
   }
 
   protected clearUserData(): void {

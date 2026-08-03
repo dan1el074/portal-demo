@@ -232,15 +232,7 @@ public class UserService implements UserDetailsService {
 
         for (Long roleId : rolesList) {
             Role role = roleRepository.findById(roleId).orElseThrow(ResourceNotFoundException::new);
-
-            if (
-                    role.getFather() != null && entity.getRoles().stream()
-                            .noneMatch(r -> r.getId().equals(role.getFather().getId()))
-            ) {
-                entity.addRole(role.getFather());
-            }
-
-            entity.addRole(role);
+            addRoleWithAncestors(entity, role);
         }
 
         Picture pictureToDelete = null;
@@ -330,15 +322,16 @@ public class UserService implements UserDetailsService {
 
         for (Long roleId : rolesList) {
             Role role = roleRepository.findById(roleId).orElseThrow(ResourceNotFoundException::new);
+            addRoleWithAncestors(entity, role);
+        }
+    }
 
-            if (
-                role.getFather() != null &&
-                entity.getRoles().stream().noneMatch(r -> r.getId().equals(role.getFather().getId()))
-            ) {
-                entity.addRole(role.getFather());
-            }
+    private void addRoleWithAncestors(User user, Role role) {
+        Role currentRole = role;
 
-            entity.addRole(role);
+        while (currentRole != null) {
+            user.addRole(currentRole);
+            currentRole = currentRole.getFather();
         }
     }
 

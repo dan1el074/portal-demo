@@ -31,7 +31,7 @@ public class Role implements GrantedAuthority {
     @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "father_id")
     private Role father;
 

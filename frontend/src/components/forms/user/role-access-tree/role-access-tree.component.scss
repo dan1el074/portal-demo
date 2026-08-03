@@ -1,0 +1,130 @@
+:host { display: block; }
+
+.access-tree {
+  display: grid;
+  gap: 22px;
+  user-select: none;
+}
+
+.access-tree.disabled { opacity: .68; }
+
+.access-section {
+  display: grid;
+  gap: 4px;
+}
+
+.group-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 5px;
+
+  strong {
+    color: var(--cui-medium-emphasis);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  small {
+    color: var(--cui-secondary-color);
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+
+.tool-list {
+  display: grid;
+  gap: 2px;
+}
+
+.tool {
+  padding: 7px 0;
+}
+
+.tool-control,
+.level-control {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: fit-content;
+  margin: 0;
+  color: var(--cui-body-color);
+  cursor: pointer;
+  text-transform: none;
+
+  input {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    margin: 0;
+    accent-color: #155dfb;
+  }
+}
+
+.tool-control {
+  min-height: 28px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.level-list {
+  display: grid;
+  gap: 8px;
+  margin: 7px 0 2px 25px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(var(--cui-primary-rgb), .18);
+  transform-origin: top left;
+  animation: reveal-access-levels .2s ease-out both;
+}
+
+.level-control {
+  min-height: 23px;
+  color: var(--cui-medium-emphasis);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.empty-access,
+.admin-note {
+  margin: 0;
+  color: var(--cui-secondary-color);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.empty-access {
+  padding: 14px 0;
+  text-align: center;
+}
+
+.admin-note {
+  padding: 9px 11px;
+  border-radius: 6px;
+  background: rgba(var(--cui-primary-rgb), .06);
+}
+
+@media (max-width: 560px) {
+  .group-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+@keyframes reveal-access-levels {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scaleY(.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-list { animation: none; }
+}

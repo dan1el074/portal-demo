@@ -1,7 +1,88 @@
-.edit {
-  cursor: pointer;
+:host { display: block; }
 
-  &:hover {
-      color: #285ea5;
+:host ::ng-deep .administration-smart-table {
+  input, select { border-radius: var(--cui-border-radius); }
+}
+
+.custom-header { font-size: 14px; font-weight: 600; }
+.custom-td { padding: 12px 16px; border-bottom: 1px solid var(--cui-border-color); font-size: 14px; }
+
+.identity-cell {
+  display: flex;
+  min-width: 210px;
+  align-items: center;
+  gap: 10px;
+
+  c-avatar {
+    --cui-avatar-width: 34px;
+    --cui-avatar-height: 34px;
+    box-sizing: border-box;
+    display: inline-flex;
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    inline-size: 34px;
+    min-inline-size: 34px;
+    max-inline-size: 34px;
+    block-size: 34px;
+    min-block-size: 34px;
+    max-block-size: 34px;
+    flex: 0 0 34px;
+    overflow: hidden;
+    border-radius: 50%;
+    aspect-ratio: 1;
   }
+  > span { display: flex; min-width: 0; flex-direction: column; }
+  strong { overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+  small { overflow: hidden; max-width: 240px; color: var(--cui-secondary-color); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+:host ::ng-deep .identity-cell c-avatar .avatar-img {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  border-radius: 50%;
+}
+
+.username-field { color: #0369dd; font-weight: 600; }
+.email-field { color: var(--cui-secondary-color); }
+
+.badge.simple {
+  display: inline-flex;
+  width: fit-content;
+  padding: 5px 8px;
+  background: rgba(var(--cui-emphasis-color-rgb), .05);
+  color: var(--cui-medium-emphasis);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.date-field {
+  display: flex;
+  min-width: 92px;
+  flex-direction: column;
+  white-space: nowrap;
+  font-size: 12px;
+
+  strong { font-weight: 600; }
+  span { color: var(--cui-secondary-color); font-size: 11px; }
+}
+
+.action-cell { display: flex; justify-content: flex-end; min-width: 32px; }
+.table-action { display: grid; width: 32px; height: 32px; place-items: center; padding: 0; border-color: var(--cui-border-color); background: transparent; color: var(--cui-secondary-color); }
+.table-action:hover { border-color: var(--cui-primary); background: rgba(var(--cui-primary-rgb), .07); color: var(--cui-primary); }
+.table-action.danger:hover { border-color: #c5232a; background: #c5232a17; color: #c5232a; }
+
+@media (max-width: 720px) {
+  .custom-td { padding: 10px 12px; }
 }

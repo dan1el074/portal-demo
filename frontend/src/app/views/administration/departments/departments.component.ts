@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, ContainerComponent, RowComponent, Tabs2Module } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, Tabs2Module } from '@coreui/angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { ToastrService } from 'ngx-toastr';
@@ -14,11 +14,8 @@ import { ErrorService } from '../../../services/error.service';
   selector: 'app-departments',
   imports: [
     ContainerComponent,
-    ColComponent,
-    RowComponent,
     CardComponent,
     CardBodyComponent,
-    CardTitleDirective,
     ButtonDirective,
     IconDirective,
     Tabs2Module,
@@ -31,13 +28,14 @@ import { ErrorService } from '../../../services/error.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepartmentsComponent implements OnInit {
-  protected activeDepartments!: Array<Position>;
-  protected inactiveDepartments!: Array<Position>;
+  protected activeDepartments: Array<Position> = [];
+  protected inactiveDepartments: Array<Position> = [];
   protected tabs: Array<string> = ['Todos', 'Desativados'];
   protected icons = { cilPlus, cilX };
   protected activeItemKey = 0;
   protected createDepartmentTab = false;
   protected editDepartmentTab = false;
+  protected tableResetKey = 0;
   protected editDepartmentData: Position = {
     id: 0,
     name: '',
@@ -74,6 +72,11 @@ export class DepartmentsComponent implements OnInit {
     const parsedKey = Number(key);
     if (Number.isNaN(parsedKey)) return;
     this.activeItemKey = parsedKey;
+  }
+
+  protected resetTableFilters(): void {
+    this.activeItemKey = 0;
+    this.tableResetKey++;
   }
 
   protected openUpdateTab(id: number): void {

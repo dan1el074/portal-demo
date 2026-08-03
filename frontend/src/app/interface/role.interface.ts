@@ -13,8 +13,9 @@ export interface GroupedRole {
 }
 
 export interface RoleSummary {
-  id: string;
+  id: number;
   authority: string;
+  childrens: Array<RoleSummary>;
 }
 
 export interface RoleGroup {
