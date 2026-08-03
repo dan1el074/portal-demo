@@ -1,84 +1,66 @@
-import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, PlaceholderAnimationDirective, PlaceholderDirective, TooltipDirective } from '@coreui/angular';
-import { cilSearch, cilPencil, cilX } from '@coreui/icons';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { AvatarComponent, ButtonDirective, ModalToggleDirective } from '@coreui/angular';
+import { IColumn, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
+import { IconDirective } from '@coreui/icons-angular';
+import { cilX } from '@coreui/icons';
 import { Position } from '../../../app/interface/position.interface';
 import { environment } from '../../../environments/environment';
 import { PositionDeleteModalComponent } from '../../modal/position/position-delete-modal/position-delete-modal.component';
 
 @Component({
   selector: 'app-department-table',
-  imports: [
-    CommonModule,
-    ContainerComponent,
-    IconDirective,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ButtonDirective,
-    ModalToggleDirective,
-    TooltipDirective,
-    AvatarComponent,
-    PositionDeleteModalComponent,
-    PlaceholderDirective,
-    PlaceholderAnimationDirective
-  ],
+  imports: [CommonModule, AvatarComponent, ButtonDirective, ModalToggleDirective, IconDirective, SmartTableComponent, TemplateIdDirective, PositionDeleteModalComponent],
   templateUrl: './department-table.component.html',
   styleUrl: './department-table.component.scss',
 })
-export class DepartmentTableComponent implements AfterViewInit, OnChanges {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @Input() data: Array<Position> = [];
-  @Input() noMargin: boolean = true;
-  @Input() hideDeactiveButton: boolean = false;
+export class DepartmentTableComponent implements OnChanges {
+  @Input() data: Position[] = [];
+  @Input() resetKey = 0;
+  @Input() noMargin = true;
+  @Input() hideDeactiveButton = false;
   @Output() updatePosition = new EventEmitter<number>();
   @Output() deactivePosition = new EventEmitter<number>();
 
-  protected apiUrl = environment.apiUrl;
-  protected displayedColumns: string[] = ['id', 'name', 'manangers', 'updatedAt', 'createdAt', 'buttons'];
-  protected dataSource = new MatTableDataSource<Position>([]);
-  protected icons = { cilSearch, cilPencil, cilX };
-  protected loadSearch = true;
+  protected readonly apiUrl = environment.apiUrl;
+  protected readonly icons = { cilX };
+  protected loading = true;
+  protected tableFilterValue = '';
+  protected columns: IColumn[] = [];
 
-  constructor (private cdr: ChangeDetectorRef) {}
-
-  ngOnChanges(): void {
-    this.loadSearch = true;
-
-    if (this.data) {
-      this.dataSource.data = this.data;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['resetKey'] && !changes['resetKey'].firstChange) {
+      this.tableFilterValue = '';
     }
 
-    setTimeout(() => {
-      this.loadSearch = false;
-      this.cdr.detectChanges();
-    }, 500);
+    this.columns = [
+      this.column('id', '#'),
+      this.column('name', 'Nome'),
+      this.column('manangers', 'Gestores', false),
+      this.column('updatedAt', 'Modificado'),
+      this.column('createdAt', 'Criado'),
+      ...(!this.hideDeactiveButton ? [this.column('actions', '', false)] : []),
+    ];
+    this.loading = true;
+    queueMicrotask(() => this.loading = false);
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  protected openDepartment(event: { item: Position }): void {
+    this.updatePosition.emit(event.item.id);
   }
 
-  applyFilter(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = value.trim().toLowerCase();
-  }
-
-  editPosition(id: number): void {
-    this.updatePosition.emit(id);
-  }
-
-  deactivatePosition(id: number) {
+  protected deactivatePosition(id: number): void {
     this.deactivePosition.emit(id);
+  }
+
+  private column(key: string, label: string, sorter = true): IColumn {
+    return {
+      key,
+      label,
+      _labelTemplateId: 'all',
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
+      sorter: sorter ? () => 0 : false,
+      filter: false,
+    };
   }
 }

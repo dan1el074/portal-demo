@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, ContainerComponent, RowComponent, Tabs2Module } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, Tabs2Module } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { ToastrService } from 'ngx-toastr';
@@ -20,12 +20,9 @@ import { UserTable } from '../../../interface/user.interface';
   imports: [
     ContainerComponent,
     IconDirective,
-    RowComponent,
     ButtonDirective,
-    ColComponent,
     CardComponent,
     CardBodyComponent,
-    CardTitleDirective,
     Tabs2Module,
     UserTableComponent,
     UserFormComponent,
@@ -39,12 +36,13 @@ export class UsersComponent implements OnInit {
   protected tabs: Array<string> = ['Todos', 'Desativados'];
   protected activeUsers: Array<UserTable> = [];
   protected inactiveUsers: Array<UserTable> = [];
-  protected positions!: Array<PositionMin>;
+  protected positions: Array<PositionMin> = [];
   protected icons = { cilPlus, cilX };
   protected activeItemKey = 0;
-  protected allRoles!: Array<RoleGroup>;
+  protected allRoles: Array<RoleGroup> = [];
   protected newUserTab = false;
   protected editUserTab = false;
+  protected tableResetKey = 0;
   protected editUserData: UserEditData = {
     id: 0,
     pictureId: null,
@@ -103,6 +101,11 @@ export class UsersComponent implements OnInit {
     const parsedKey = Number(key);
     if (Number.isNaN(parsedKey)) return;
     this.activeItemKey = parsedKey;
+  }
+
+  protected resetTableFilters(): void {
+    this.activeItemKey = 0;
+    this.tableResetKey++;
   }
 
   protected toggleNewUserTab(status = !this.newUserTab): void {

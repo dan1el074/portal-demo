@@ -65,6 +65,8 @@ export class RawMaterialsComponent implements OnInit {
   protected stockQuantity = 0;
   protected stockKg = 0;
   protected newCategoryName = '';
+  protected editingCategoryId: number | null = null;
+  protected editingCategoryName = '';
   protected categoryDeleteError = '';
   protected saving = false;
 
@@ -246,6 +248,36 @@ export class RawMaterialsComponent implements OnInit {
       this.categories = [...this.categories, category];
       this.newCategoryName = '';
       this.categoryDeleteError = '';
+      this.cdf.detectChanges();
+    });
+  }
+
+  protected startCategoryEdit(category: RawMaterialCategory): void {
+    this.editingCategoryId = category.id;
+    this.editingCategoryName = category.name;
+    this.categoryDeleteError = '';
+  }
+
+  protected cancelCategoryEdit(): void {
+    this.editingCategoryId = null;
+    this.editingCategoryName = '';
+  }
+
+  protected saveCategoryEdit(category: RawMaterialCategory): void {
+    const name = this.editingCategoryName.trim();
+    if (!name) return;
+    this.rawMaterialsService.updateCategory(category.id, name).subscribe(updated => {
+      if (!updated) {
+        this.categoryDeleteError = 'Já existe uma categoria com esse nome.';
+        this.cdf.detectChanges();
+        return;
+      }
+
+      if (this.currentCategory === category.name) this.currentCategory = updated.name;
+      this.categories = this.categories.map(current => current.id === updated.id ? updated : current);
+      this.cancelCategoryEdit();
+      this.categoryDeleteError = '';
+      this.loadItems();
       this.cdf.detectChanges();
     });
   }

@@ -1,56 +1,85 @@
-<c-container breakpoint="lg" class="h-auto px-4" fluid>
-  <c-row>
-    <c-col xs="12">
-      <c-card class="border">
-        <c-card-body>
-          <h4 cCardTitle>Usuários</h4>
+<c-container class='h-auto px-4 administration-page' fluid>
+  <header class='administration-header'>
+    <p class='ops-header'>
+      <span class='ops-welcome'>Gestão de usuários</span>
+      <span class='ops-access-level'>Gerencie contas, cargos e permissões de acesso ao portal</span>
+    </p>
+  </header>
 
-          <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
-            <c-tabs-list variant="underline-border">
-              <button cTab [itemKey]="0">Todos</button>
-              <button cTab [itemKey]="1" [class.no-select]="inactiveUsers.length <= 0" [disabled]="inactiveUsers.length <= 0">Desativados</button>
-              <button cTab [itemKey]="2" [class.hide]="!newUserTab" class="close-button">
-                Novo
-                <div (click)="toggleNewUserTab(false)">
-                  <svg [cIcon]="icons.cilX" class="close-icon"></svg>
-                </div>
-              </button>
-              <button cTab [itemKey]="3" [class.hide]="!editUserTab" class="close-button">
-                {{ editUserData.name }}
-                <div (click)="toggleEditUserTab(false)">
-                  <svg [cIcon]="icons.cilX" class="close-icon"></svg>
-                </div>
-              </button>
-            </c-tabs-list>
-            <c-tabs-content>
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="0">
-                <button cButton color="primary" (click)="toggleNewUserTab(true)">
-                  <svg [cIcon]="icons.cilPlus" size="md"></svg>
-                  Novo usuário
-                </button>
-                <app-user-table [data]="activeUsers" [noMargin]="true" (deactivateTask)="deactivateUser($event)" (updateUser)="updateUserTask($event)"></app-user-table>
-              </c-tab-panel>
+  <section class='summary-grid' aria-label='Resumo dos usuários'>
+    <button type='button' class='summary-card total' (click)='resetTableFilters()'>
+      <span class='summary-copy'><span class='summary-title'>Total</span><strong>{{ activeUsers.length + inactiveUsers.length }}</strong><small>Usuários cadastrados</small></span>
+      <span class='summary-icon'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'></path><circle cx='9' cy='7' r='4'></circle><path d='M22 21v-2a4 4 0 0 0-3-3.87'></path><path d='M16 3.13a4 4 0 0 1 0 7.75'></path></svg></span>
+    </button>
+    <button type='button' class='summary-card active' [class.selected]='activeItemKey === 0' (click)='activeItemKey = 0'>
+      <span class='summary-copy'><span class='summary-title'>Ativos</span><strong>{{ activeUsers.length }}</strong><small>Contas ativas</small></span>
+      <span class='summary-icon'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M20 6 9 17l-5-5'></path></svg></span>
+    </button>
+    <button type='button' class='summary-card inactive' [class.selected]='activeItemKey === 1' (click)='activeItemKey = 1'>
+      <span class='summary-copy'><span class='summary-title'>Desativados</span><strong>{{ inactiveUsers.length }}</strong><small>Contas desativadas</small></span>
+      <span class='summary-icon'><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><path d='m15 9-6 6'></path><path d='m9 9 6 6'></path></svg></span>
+    </button>
+  </section>
+  <c-card class='management-card border'>
+    <div class='management-card-header'>
+      <div>
+        <h2>
+          @switch (activeItemKey) {
+            @case (1) { Usuários desativados }
+            @case (2) { Novo usuário }
+            @case (3) { Editar usuário }
+            @default { Usuários ativos }
+          }
+        </h2>
+        <p>
+          @switch (activeItemKey) {
+            @case (1) { {{ inactiveUsers.length }} contas desativadas }
+            @case (2) { Cadastre os dados pessoais e defina os acessos iniciais }
+            @case (3) { Atualize os dados e permissões de {{ editUserData.name }} }
+            @default { {{ activeUsers.length }} usuários encontrados }
+          }
+        </p>
+      </div>
+      @if (activeItemKey === 0 || activeItemKey === 1) {
+        <button cButton color='primary' class='primary-action' (click)='toggleNewUserTab(true)'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M5 12h14'></path><path d='M12 5v14'></path></svg>
+          Novo usuário
+        </button>
+      }
+    </div>
 
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="1">
-                <button cButton color="primary" (click)="toggleNewUserTab(true)">
-                  <svg [cIcon]="icons.cilPlus" size="md"></svg>
-                  Novo usuário
-                </button>
-                <app-user-table [data]="inactiveUsers" [hideDeactiveButton]="true" [noMargin]="true" (deactivateTask)="deactivateUser($event)" (updateUser)="updateUserTask($event)"></app-user-table>
-              </c-tab-panel>
+    <c-card-body>
+      <c-tabs [activeItemKey]='activeItemKey' (activeItemKeyChange)='onTabChange($event)' class='section-tabs'>
+        <c-tabs-list variant='underline-border'>
+          <button cTab [itemKey]='0'>Ativos <span class='tab-count'>{{ activeUsers.length }}</span></button>
+          <button cTab [itemKey]='1'>Desativados <span class='tab-count'>{{ inactiveUsers.length }}</span></button>
+          @if (newUserTab) {
+            <button cTab [itemKey]='2' class='close-tab'>Novo <span class='tab-close' role='button' tabindex='0' aria-label='Fechar cadastro' (click)='$event.stopPropagation(); toggleNewUserTab(false)'><svg [cIcon]='icons.cilX'></svg></span></button>
+          }
+          @if (editUserTab) {
+            <button cTab [itemKey]='3' class='close-tab'>{{ editUserData.name }} <span class='tab-close' role='button' tabindex='0' aria-label='Fechar edição' (click)='$event.stopPropagation(); toggleEditUserTab(false)'><svg [cIcon]='icons.cilX'></svg></span></button>
+          }
+        </c-tabs-list>
 
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="2" [class.hide]="!newUserTab">
-                <app-user-form [roles]="allRoles" [positions]="positions" [show]="newUserTab" (createTask)="onCreateUser($event)" (exitTask)="toggleNewUserTab(false)"></app-user-form>
-              </c-tab-panel>
-
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="3" [class.hide]="!editUserTab">
-                <app-user-edit-form [roles]="allRoles" [positions]="positions" [userData]="editUserData" (editTask)="onUpdateUser($event)" (exitTask)="toggleEditUserTab(false)"></app-user-edit-form>
-              </c-tab-panel>
-            </c-tabs-content>
-          </c-tabs>
-
-        </c-card-body>
-      </c-card>
-    </c-col>
-  </c-row>
+        <c-tabs-content>
+          <c-tab-panel class='content-panel remove-outline' [itemKey]='0'>
+            <app-user-table [data]='activeUsers' [resetKey]='tableResetKey' [noMargin]='true' (deactivateTask)='deactivateUser($event)' (updateUser)='updateUserTask($event)'></app-user-table>
+          </c-tab-panel>
+          <c-tab-panel class='content-panel remove-outline' [itemKey]='1'>
+            <app-user-table [data]='inactiveUsers' [resetKey]='tableResetKey' [hideDeactiveButton]='true' [noMargin]='true' (deactivateTask)='deactivateUser($event)' (updateUser)='updateUserTask($event)'></app-user-table>
+          </c-tab-panel>
+          @if (newUserTab) {
+            <c-tab-panel class='form-panel remove-outline' [itemKey]='2'>
+              <app-user-form [roles]='allRoles' [positions]='positions' [show]='newUserTab' (createTask)='onCreateUser($event)' (exitTask)='toggleNewUserTab(false)'></app-user-form>
+            </c-tab-panel>
+          }
+          @if (editUserTab) {
+            <c-tab-panel class='form-panel remove-outline' [itemKey]='3'>
+              <app-user-edit-form [roles]='allRoles' [positions]='positions' [userData]='editUserData' (editTask)='onUpdateUser($event)' (exitTask)='toggleEditUserTab(false)'></app-user-edit-form>
+            </c-tab-panel>
+          }
+        </c-tabs-content>
+      </c-tabs>
+    </c-card-body>
+  </c-card>
 </c-container>

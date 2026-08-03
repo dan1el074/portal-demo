@@ -1,158 +1,55 @@
-<mat-form-field appearance="outline" class="search" [class.no-margin]="noMargin">
-  <span matPrefix>
-    <svg [cIcon]="icons.cilSearch" size="lg"></svg>
-  </span>
+<c-smart-table
+  [items]='data'
+  [loading]='loading'
+  [pagination]='true'
+  [itemsPerPage]='10'
+  [itemsPerPageSelect]='true'
+  [itemsPerPageOptions]='[10, 20, 30]'
+  [columnSorter]='true'
+  [columns]='columns'
+  [tableFilter]='true'
+  [tableFilterValue]='tableFilterValue'
+  [tableProps]='{ hover: true, responsive: true }'
+  [tableBodyProps]="{ align: 'middle' }"
+  itemsPerPageLabel='Itens por página'
+  tableFilterLabel=''
+  tableFilterPlaceholder='Buscar...'
+  noItemsLabel='Nenhum usuário encontrado.'
+  (tableFilterValueChange)='tableFilterValue = $event'
+  (rowClick)='openUser($event)'
+  header
+  clickableRows
+  class='step-flow-table administration-smart-table'
+>
+  <ng-template cTemplateId='columnLabel_all' let-column>
+    <span class='custom-header'>{{ column.label }}</span>
+  </ng-template>
 
-  <input matInput (keyup)="applyFilter($event)" placeholder="Buscar">
-</mat-form-field>
-
-<c-container class="scroll-x" fluid>
-  @if (loadSearch) {
-    <div class="loading-overlay">
-      <table class="table stripe table-placeholder">
-        <thead>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:50px;" cPlaceholder></span></div></th>
-            <th><div cPlaceholderAnimation="glow"><span style="width:60px;" cPlaceholder></span></div></th>
-            <th><div cPlaceholderAnimation="glow"><span style="width:50px;" cPlaceholder></span></div></th>
-            <th><div cPlaceholderAnimation="glow"><span style="width:50px;" cPlaceholder></span></div></th>
-            <th><div cPlaceholderAnimation="glow"><span style="width:75px;" cPlaceholder></span></div></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-          <tr>
-            <th><div cPlaceholderAnimation="glow"><span style="width:180px;" cPlaceholder></span></div></th>
-            <td><div cPlaceholderAnimation="glow"><span style="width:110px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:130px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:220px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:80px;" cPlaceholder></span></div></td>
-            <td><div cPlaceholderAnimation="glow"><span style="width:70px;" cPlaceholder></span></div></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  }
-
-  <table mat-table [dataSource]="dataSource" matSort class="table stripe">
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
-      <td mat-cell *matCellDef="let user">
-        <span (click)="editUser(user.id)" class="edit">
-          <c-avatar [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'" />
-          {{ user.name }}
-        </span>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="username">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuário</th>
-      <td mat-cell *matCellDef="let user">{{ user.username }}</td>
-    </ng-container>
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Cargo</th>
-      <td mat-cell *matCellDef="let user">{{ user.position }}</td>
-    </ng-container>
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>E-mail</th>
-      <td mat-cell *matCellDef="let user">{{ user.email }}</td>
-    </ng-container>
-    <ng-container matColumnDef="updateAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Modificado</th>
-      <td mat-cell *matCellDef="let user">{{ user.updateAt | date: "dd/MM/yyyy" : '-0300' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="activated">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let user" class="btn-container multiple">
-        <button cButton (click)="editUser(user.id)" color="secondary" class="custom-btn">
-          <svg [cIcon]="icons.cilPencil" size="sm"></svg>
-        </button>
-
-        @if (!hideDeactiveButton) {
-          <button cButton cModalToggle="staticBackdropModal-{{ user.id }}" color="secondary" class="custom-btn delete">
-            <svg [cIcon]="icons.cilX" size="sm"></svg>
-          </button>
-
-          <app-user-delete-modal (deactivateTask)="deactivateUser($event)" [user]="user"></app-user-delete-modal>
+  <ng-template cTemplateId='tableData' let-columnName='columnName' let-item='item' let-tdContent='tdContent'>
+    <td class='custom-td'>
+      @switch (columnName) {
+        @case ('name') {
+          <div class='identity-cell'>
+            <c-avatar [src]="item.pictureId ? apiUrl + '/images/' + item.pictureId : './assets/images/avatars/default.png'"></c-avatar>
+            <span><strong>{{ item.name }}</strong><small>{{ item.email }}</small></span>
+          </div>
         }
-
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let user; columns: displayedColumns"></tr>
-  </table>
-</c-container>
-
-<mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" class="pagination"></mat-paginator>
+        @case ('username') { <span class='username-field'>{{ item.username }}</span> }
+        @case ('position') { <span class='badge simple'>{{ item.position || 'Sem cargo' }}</span> }
+        @case ('email') { <span class='email-field'>{{ item.email }}</span> }
+        @case ('updateAt') {
+          <div class='date-field'><strong>{{ item.updateAt | date:'dd/MM/yyyy':'-0300' }}</strong><span>{{ item.updateAt | date:'HH:mm':'-0300' }}</span></div>
+        }
+        @case ('actions') {
+          @if (!hideDeactiveButton) {
+            <div class='action-cell' (click)='$event.stopPropagation()'>
+              <button cButton type='button' cModalToggle='staticBackdropModal-{{ item.id }}' color='secondary' class='table-action danger' aria-label='Desativar usuário'><svg [cIcon]='icons.cilX' size='sm'></svg></button>
+              <app-user-delete-modal (deactivateTask)='deactivateUser($event)' [user]='item'></app-user-delete-modal>
+            </div>
+          }
+        }
+        @default { {{ tdContent }} }
+      }
+    </td>
+  </ng-template>
+</c-smart-table>

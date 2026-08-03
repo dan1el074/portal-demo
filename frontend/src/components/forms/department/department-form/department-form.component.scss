@@ -1,68 +1,24 @@
-form {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 20px 40px 0;
+@use '../../user/user-form/user-form.component';
 
-  h4 {
-    text-align: start;
-  }
+.department-form { max-width: 900px; margin: 0 auto; }
+.single-column { grid-template-columns: 1fr; }
+.manager-select { display: block; width: 100%; }
 
-  .username {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-
-    h3 {
-      margin-bottom: 0;
-
-      span {
-        color: var(--cui-secondary-color);
-        font-size: 19px;
-        padding-top: 4px;
-        margin-top: 0px;
-      }
-    }
-  }
-
-  .text-danger {
-    text-align: center;
-    margin-top: 4px;
-  }
-
-  input {
-    border-radius: 4px;
-  }
-
-  select {
-    border-radius: 4px;
-    padding: 16px 12px;
-
-    option:first-child {
-      display: none;
-    }
-  }
-
-  .button-container {
-    display: flex;
-    justify-content: right;
-    gap: 8px;
-  }
-
-  .fix-margin {
-    margin-top: 16px;
-  }
-
+:host ::ng-deep .manager-select .form-multi-select-input-group {
+  align-items: center;
+  min-height: 46px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-@media (max-width: 720px) {
-  form {
-    padding: 20px 0 0;
+:host ::ng-deep .manager-select .form-multi-select-selection {
+  align-items: center;
+  min-height: 44px;
+  font-weight: 400;
+  text-transform: none;
+}
 
-    c-row.row {
-      flex-direction: column;
-    }
-  }
+:host ::ng-deep .manager-select .form-multi-select-options {
+  padding: 8px;
+  font-size: 14px;
 }

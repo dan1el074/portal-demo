@@ -94,10 +94,8 @@ export class RawMaterialsTableComponent implements OnChanges {
       label,
       _labelTemplateId: 'all',
       _style: {
-        backgroundColor: this.mode === 'operator'
-          ? 'var(--cui-primary)'
-          : 'rgba(var(--cui-emphasis-color-rgb), 0.04)',
-        color: this.mode === 'operator' ? '#fff' : 'inherit',
+        backgroundColor: 'var(--cui-primary)',
+        color: '#fff',
         whiteSpace: 'nowrap',
       },
       sorter: sorter ? () => 0 : false,
