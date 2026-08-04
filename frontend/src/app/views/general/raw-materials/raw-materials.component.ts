@@ -437,7 +437,9 @@ export class RawMaterialsComponent implements OnInit {
       sortColumn: this.currentSort?.column,
       sortDirection: this.currentSort?.state,
     }).subscribe(result => {
-      this.data = result.content;
+      this.data = this.currentSort?.state === 'desc'
+        ? [...result.content].reverse()
+        : result.content;
       this.totalItems = result.totalElements;
       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage) || 1;
       if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
