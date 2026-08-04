@@ -3,6 +3,7 @@
   [fluid]="currentView !== 'operator'"
   [class.wide-container]="currentView !== 'operator'"
   [class.operator-view]="currentView === 'operator'"
+  [class.fixed-profile-view]="!canSwitchViews"
   class="h-auto px-4 inventory-page"
 >
   <header class="inventory-header sfc-welcome">
@@ -11,7 +12,7 @@
       <span class="ops-access-level">Controle de matérias-primas e insumos da fábrica</span>
     </p>
 
-    @if (isAdmin) {
+    @if (canSwitchViews) {
       <c-dropdown class="fix-dropdown">
         <button cDropdownToggle [caret]="false" class="view-mode-btn">
           <div class="view-mode-icon">
@@ -233,6 +234,7 @@
                             class="avatar"
                             [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'"
                             [alt]="'Foto de ' + user.name"
+                            (error)="useDefaultAvatar($event)"
                           >
                           <strong>{{ user.name }}</strong>
                         </div>
@@ -349,7 +351,18 @@
           <div class="form-grid stock-fields">
             <label>Estoque atual<input type="number" min="0" [(ngModel)]="editingItem.currentStorage"></label>
             <label>Estoque mínimo<input type="number" min="0" [(ngModel)]="editingItem.minStorage"></label>
-            <label>Estoque máximo<input type="number" min="0" [(ngModel)]="editingItem.maxStorage"></label>
+            <label>
+              Estoque máximo
+              <input
+                type="number"
+                [min]="editingItem.minStorage"
+                [(ngModel)]="editingItem.maxStorage"
+                [class.invalid-input]="hasInvalidStockRange()"
+              >
+              @if (hasInvalidStockRange()) {
+                <small class="form-field-error">O estoque máximo deve ser igual ou maior que o mínimo.</small>
+              }
+            </label>
             <label>
               Comprimento
               <div class="field-with-unit">
@@ -399,7 +412,7 @@
       <button cButton color="secondary" (click)="closeItemModal()">Fechar</button>
     } @else {
       <button cButton color="secondary" variant="outline" (click)="closeItemModal()">Cancelar</button>
-      <button cButton color="primary" [disabled]="saving || !editingItem?.code || !editingItem?.name || !editingItem?.type" (click)="saveItem()">
+      <button cButton color="primary" [disabled]="saving || hasInvalidStockRange() || !editingItem?.code || !editingItem?.name || !editingItem?.type" (click)="saveItem()">
         {{ saving ? 'Salvando...' : 'Salvar' }}
       </button>
     }
@@ -460,6 +473,7 @@
               class="avatar"
               [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'"
               [alt]="'Foto de ' + user.name"
+              (error)="useDefaultAvatar($event)"
             >
             <strong>{{ user.name }}</strong>
           </div>
