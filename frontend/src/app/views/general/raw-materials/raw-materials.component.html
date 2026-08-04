@@ -2,11 +2,12 @@
   [breakpoint]="currentView === 'operator' ? 'lg' : ''"
   [fluid]="currentView !== 'operator'"
   [class.wide-container]="currentView !== 'operator'"
+  [class.operator-view]="currentView === 'operator'"
   class="h-auto px-4 inventory-page"
 >
   <header class="inventory-header sfc-welcome">
     <p class="ops-header">
-      <span class="ops-welcome">Gestão de Estoque</span>
+      <span class="ops-welcome">Inventário de Matérias Primas</span>
       <span class="ops-access-level">Controle de matérias-primas e insumos da fábrica</span>
     </p>
 
@@ -62,8 +63,20 @@
       </c-dropdown>
     } @else {
       <div class="fixed-view">
-        <small>Perfil de acesso</small>
-        <strong>{{ viewLabel() }}</strong>
+        <div class="view-mode-icon">
+          @switch (currentView) {
+            @case ('operator') {
+              <svg viewBox="0 0 24 24"><path d="M3 21h18"></path><path d="M5 21V7l8-4v18"></path><path d="M19 21V11l-6-4"></path><path d="M9 9v.01"></path><path d="M9 13v.01"></path><path d="M9 17v.01"></path></svg>
+            }
+            @default {
+              <svg viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7C3.78 7.6 7.7 5 12 5c4.3 0 8.22 2.6 9.94 6.65a1 1 0 0 1 0 .7C20.22 16.4 16.3 19 12 19c-4.3 0-8.22-2.6-9.94-6.65"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            }
+          }
+        </div>
+        <div class="fixed-view-text">
+          <small>Perfil de acesso</small>
+          <strong>{{ viewLabel() }}</strong>
+        </div>
       </div>
     }
   </header>
@@ -210,7 +223,11 @@
                       <td class="category-id">{{ user.id }}</td>
                       <td>
                         <div class="access-name">
-                          <span class="avatar">{{ user.initials }}</span>
+                          <img
+                            class="avatar"
+                            [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'"
+                            [alt]="'Foto de ' + user.name"
+                          >
                           <strong>{{ user.name }}</strong>
                         </div>
                       </td>
@@ -227,6 +244,15 @@
         </c-card-body>
       </c-card>
     </section>
+  }
+
+  @if (currentView !== 'operator') {
+    <div class="stock-legend">
+      <strong>Legenda:</strong>
+      <span><i class="low"></i>Abaixo do mínimo</span>
+      <span><i class="ok"></i>Estoque OK</span>
+      <span><i class="high"></i>Acima do máximo</span>
+    </div>
   }
 
   <c-card class="inventory-table-card">
@@ -247,30 +273,34 @@
       }
     </div>
 
-    <div class="stock-legend">
-      <strong>Legenda:</strong>
-      <span><i class="low"></i>Abaixo do mínimo</span>
-      <span><i class="ok"></i>Estoque OK</span>
-      <span><i class="high"></i>Acima do máximo</span>
-    </div>
+    <c-tabs [activeItemKey]="activeInventoryTab" (activeItemKeyChange)="onInventoryTabChange($event)" class="inventory-tabs">
+      <c-tabs-list variant="underline-border">
+        @for (category of categories; track category.id) {
+          <button
+            cTab
+            [itemKey]="'category-' + category.id"
+            [disabled]="!canAccessCategory(category)"
+          >
+            {{ category.name }}
+          </button>
+        }
+        <button cTab itemKey="inactive" [disabled]="!canAccessInactive()">Desativados</button>
+      </c-tabs-list>
+    </c-tabs>
 
     <c-card-body class="table-body">
       <app-raw-materials-table
         [data]="data"
-        [categories]="categories"
         [loading]="loadingTable"
         [mode]="currentView"
         [searchValue]="currentSearch"
-        [selectedCategory]="currentCategory"
         [selectedStatus]="currentStatus"
         [showInactive]="showInactive"
         (openItem)="openTableItem($event)"
         (sorterChange)="onSorterChange($event)"
         (itemsPerPageChange)="onItemsPerPageChange($event)"
         (filterChange)="onFilterChange($event)"
-        (categoryChange)="onCategoryChange($event)"
         (statusChange)="onStatusChange($event)"
-        (inactiveChange)="onInactiveChange($event)"
         (clearAll)="clearFilters()"
       />
       <c-smart-pagination
@@ -284,10 +314,10 @@
   </c-card>
 </c-container>
 
-<c-modal [visible]="itemModalVisible" (visibleChange)="itemModalVisible = $event" alignment="center" backdrop="static" size="lg">
+<c-modal [visible]="itemModalVisible" (visibleChange)="onItemModalVisibleChange($event)" alignment="center" backdrop="static" size="lg">
   <c-modal-header>
     <h5 cModalTitle>{{ currentView === 'consultation' ? 'Visualizar matéria-prima' : (editingItem?.id ? 'Editar matéria-prima' : 'Nova matéria-prima') }}</h5>
-    <button cButtonClose (click)="itemModalVisible = false"></button>
+    <button cButtonClose (click)="closeItemModal()"></button>
   </c-modal-header>
   <c-modal-body>
     @if (editingItem) {
@@ -297,7 +327,7 @@
           <div class="form-grid identification-grid">
             <label>Código<input [(ngModel)]="editingItem.code" required></label>
             <label class="description-field">Descrição do item<input [(ngModel)]="editingItem.name" required></label>
-            <label class="notes-field">Aplicação / observação<textarea [(ngModel)]="editingItem.description" rows="2"></textarea></label>
+            <label class="notes-field">Aplicação / observação<textarea [(ngModel)]="editingItem.description"></textarea></label>
             <label>Categoria
               <select [(ngModel)]="editingItem.type">
                 @for (category of categories; track category.id) {
@@ -317,24 +347,34 @@
             <label>
               Comprimento
               <div class="field-with-unit">
-                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.length">
-                <span>mm</span>
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.length" (blur)="formatDimensionField('length')">
+                <span class="unit-tooltip" data-tooltip="Metro" tabindex="0">m</span>
               </div>
             </label>
             <label>
               Largura
               <div class="field-with-unit">
-                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.width">
-                <span>mm</span>
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.width" (blur)="formatDimensionField('width')">
+                <span class="unit-tooltip" data-tooltip="Metro" tabindex="0">m</span>
               </div>
             </label>
             <label>
-              Peso por mm
-              <input type="text" inputmode="decimal" [(ngModel)]="editingItem.weightPerMillimeter">
+              Espessura
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.thickness" (blur)="formatDimensionField('thickness')">
+                <span class="unit-tooltip" data-tooltip="Milímetro" tabindex="0">mm</span>
+              </div>
+            </label>
+            <label>
+              Peso por m²
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.weightPerSquareMeter" (blur)="formatDimensionField('weightPerSquareMeter')">
+                <span class="unit-tooltip weight-unit" data-tooltip="Quilograma por metro quadrado" tabindex="0">kg/m²</span>
+              </div>
             </label>
             <div class="weight-preview">
               <span>Peso calculado por unidade</span>
-              <strong>{{ calculatedUnitWeight(editingItem) | number:'1.2-4':'pt-BR' }} kg</strong>
+              <strong>{{ calculatedUnitWeight(editingItem) | number:'1.3-3':'pt-BR' }} kg</strong>
             </div>
           </div>
         </section>
@@ -350,9 +390,9 @@
   </c-modal-body>
   <c-modal-footer>
     @if (currentView === 'consultation') {
-      <button cButton color="secondary" (click)="itemModalVisible = false">Fechar</button>
+      <button cButton color="secondary" (click)="closeItemModal()">Fechar</button>
     } @else {
-      <button cButton color="secondary" variant="outline" (click)="itemModalVisible = false">Cancelar</button>
+      <button cButton color="secondary" variant="outline" (click)="closeItemModal()">Cancelar</button>
       <button cButton color="primary" [disabled]="saving || !editingItem?.code || !editingItem?.name || !editingItem?.type" (click)="saveItem()">
         {{ saving ? 'Salvando...' : 'Salvar' }}
       </button>
@@ -360,10 +400,10 @@
   </c-modal-footer>
 </c-modal>
 
-<c-modal [visible]="stockModalVisible" (visibleChange)="stockModalVisible = $event" alignment="center" backdrop="static">
+<c-modal [visible]="stockModalVisible" (visibleChange)="onStockModalVisibleChange($event)" alignment="center" backdrop="static">
   <c-modal-header>
     <h5 cModalTitle>Atualizar estoque · {{ stockTarget?.code }}</h5>
-    <button cButtonClose (click)="stockModalVisible = false"></button>
+    <button cButtonClose (click)="closeStockModal()"></button>
   </c-modal-header>
   <c-modal-body>
     @if (stockTarget) {
@@ -394,7 +434,7 @@
     }
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="secondary" variant="outline" (click)="stockModalVisible = false">Cancelar</button>
+    <button cButton color="secondary" variant="outline" (click)="closeStockModal()">Cancelar</button>
     <button cButton color="primary" [disabled]="saving" (click)="saveStock()">{{ saving ? 'Salvando...' : 'Salvar' }}</button>
   </c-modal-footer>
 </c-modal>
@@ -409,7 +449,14 @@
     <div class="permission-grid">
       @for (user of users; track user.id) {
         <section>
-          <div class="permission-user"><span class="avatar">{{ user.initials }}</span><strong>{{ user.name }}</strong></div>
+          <div class="permission-user">
+            <img
+              class="avatar"
+              [src]="user.pictureId ? apiUrl + '/images/' + user.pictureId : './assets/images/avatars/default.png'"
+              [alt]="'Foto de ' + user.name"
+            >
+            <strong>{{ user.name }}</strong>
+          </div>
           <div class="permission-options">
             @for (category of categories; track category.id) {
               <label>

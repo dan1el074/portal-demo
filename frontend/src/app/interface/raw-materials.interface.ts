@@ -18,7 +18,8 @@ export interface RawMaterialsTable {
   user: string;
   length?: string;
   width?: string;
-  weightPerMillimeter?: string;
+  thickness?: string;
+  weightPerSquareMeter?: string;
 }
 
 export interface RawMaterialCategory {
@@ -31,7 +32,7 @@ export interface RawMaterialCategory {
 export interface RawMaterialUserAccess {
   id: number;
   name: string;
-  initials: string;
+  pictureId: number | null;
   categoryIds: number[];
 }
 
@@ -40,6 +41,7 @@ export interface RawMaterialFilters {
   size: number;
   search?: string;
   category?: string;
+  allowedCategories?: string[];
   status?: RawMaterialStockStatus;
   inactive?: boolean;
   sortColumn?: string;
@@ -58,12 +60,26 @@ export interface RawMaterialSummary {
 }
 
 export function getRawMaterialStockStatus(item: RawMaterialsTable): Exclude<RawMaterialStockStatus, 'all'> {
+  if (item.minStorage <= 0 && item.maxStorage <= 0) return 'ok';
   if (item.currentStorage < item.minStorage) return 'low';
   if (item.currentStorage > item.maxStorage) return 'high';
   return 'ok';
 }
 
 export function calculateRawMaterialUnitWeight(item: RawMaterialsTable): number {
-  const parse = (value?: string): number => Number((value ?? '').trim().replace(',', '.')) || 0;
-  return parse(item.length) * parse(item.width) * parse(item.weightPerMillimeter);
+  return parseRawMaterialDecimal(item.length)
+    * parseRawMaterialDecimal(item.width)
+    * parseRawMaterialDecimal(item.weightPerSquareMeter);
+}
+
+export function parseRawMaterialDecimal(value?: string | number): number {
+  return Number(String(value ?? '').trim().replace(',', '.')) || 0;
+}
+
+export function formatRawMaterialDecimal(value?: string | number): string {
+  return parseRawMaterialDecimal(value).toLocaleString('pt-BR', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+    useGrouping: false,
+  });
 }

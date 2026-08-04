@@ -1,7 +1,7 @@
 <c-container class='h-auto px-4 administration-page' fluid>
   <header class='administration-header'>
     <p class='ops-header'>
-      <span class='ops-welcome'>Gestão de departamentos</span>
+      <span class='ops-welcome'>Gestão de Departamentos</span>
       <span class='ops-access-level'>Organize os setores e seus responsáveis dentro da empresa</span>
     </p>
   </header>
@@ -11,11 +11,11 @@
       <span class='summary-copy'><span class='summary-title'>Total</span><strong>{{ activeDepartments.length + inactiveDepartments.length }}</strong><small>Departamentos cadastrados</small></span>
       <span class='summary-icon'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M10 12h4'></path><path d='M10 8h4'></path><path d='M14 21v-3a2 2 0 0 0-4 0v3'></path><path d='M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2'></path><path d='M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16'></path></svg></span>
     </button>
-    <button type='button' class='summary-card active' [class.selected]='activeItemKey === 0' (click)='activeItemKey = 0'>
+    <button type='button' class='summary-card active' [class.selected]='activeItemKey === 0' (click)='onTabChange(0)'>
       <span class='summary-copy'><span class='summary-title'>Ativos</span><strong>{{ activeDepartments.length }}</strong><small>Departamentos ativos</small></span>
       <span class='summary-icon'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M20 6 9 17l-5-5'></path></svg></span>
     </button>
-    <button type='button' class='summary-card inactive' [class.selected]='activeItemKey === 1' (click)='activeItemKey = 1'>
+    <button type='button' class='summary-card inactive' [class.selected]='activeItemKey === 1' (click)='onTabChange(1)'>
       <span class='summary-copy'><span class='summary-title'>Desativados</span><strong>{{ inactiveDepartments.length }}</strong><small>Departamentos desativados</small></span>
       <span class='summary-icon'><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><path d='m15 9-6 6'></path><path d='m9 9 6 6'></path></svg></span>
     </button>

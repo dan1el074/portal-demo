@@ -104,6 +104,8 @@
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; }
 .form-grid label { display: flex; min-width: 0; flex-direction: column; gap: 4px; margin: 0 0 0 4px; color: var(--cui-medium-emphasis); font-size: 13px; font-weight: 600; text-transform: uppercase; }
 .form-grid label.wide { grid-column: 1 / -1; }
+.form-grid .form-field { display: flex; min-width: 0; flex-direction: column; gap: 4px; margin: 0 0 0 4px; }
+.form-grid .form-field > label { display: block; margin: 0; }
 .form-grid input, .form-grid select { box-sizing: border-box; height: 46px; min-height: 46px; padding: 10px 12px; border-radius: 4px; font-size: 14px; font-weight: 400; text-transform: none; }
 .form-grid select { padding: 8px 12px; }
 

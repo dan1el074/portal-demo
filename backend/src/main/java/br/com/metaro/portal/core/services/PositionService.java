@@ -52,6 +52,7 @@ public class PositionService {
     public List<PositionDto> createPosition(PositionFormInputDto dto) {
         Position position = new Position();
         position.setManangers(new HashSet<>());
+        position.setIsLocked(false);
         position.setCreatedAt(Instant.now());
         copyDtoToEntity(dto, position);
 
@@ -72,7 +73,7 @@ public class PositionService {
     public List<PositionDto> updatePosition(Long id, PositionFormInputDto dto) {
         Position position = positionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if (position.getIsLocked() && !dto.getName().equals(position.getName())) {
+        if (Boolean.TRUE.equals(position.getIsLocked()) && !dto.getName().equals(position.getName())) {
             throw new UnprocessableEntityException("Esse departamento não pode ser renomeado porque é usado em alguma ferramenta do sistema!");
         }
 

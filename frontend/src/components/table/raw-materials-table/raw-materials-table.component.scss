@@ -11,8 +11,6 @@
   margin-bottom: 8px;
 }
 
-.inventory-select,
-.inactive-filter,
 .status-filter button {
   min-height: 38px;
   border: 1px solid var(--cui-border-color);
@@ -21,16 +19,9 @@
   font-size: 13px;
 }
 
-.inventory-select {
-  min-width: 170px;
-  padding: 6px 30px 6px 12px;
-  border-radius: var(--cui-border-radius);
-  cursor: pointer;
-}
-
 .status-filter {
   display: flex;
-  border-radius: var(--cui-border-radius);
+  margin-left: 12px;
 
   button {
     padding: 6px 11px;
@@ -38,12 +29,12 @@
     border-radius: 0;
 
     &:first-child {
-      border-radius: var(--cui-border-radius) 0 0 var(--cui-border-radius);
+      border-radius: 12px 0 0 12px;
     }
 
     &:last-child {
       border-right: 1px solid var(--cui-border-color);
-      border-radius: 0 var(--cui-border-radius) var(--cui-border-radius) 0;
+      border-radius: 0 12px 12px 0;
     }
 
     &.active {
@@ -51,20 +42,6 @@
       background: #285ea5;
       color: #fff;
     }
-  }
-}
-
-.inactive-filter {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 11px;
-  border-radius: var(--cui-border-radius);
-
-  &.active {
-    border-color: #285ea5;
-    background: #285ea5;
-    color: #fff;
   }
 }
 
@@ -89,6 +66,11 @@
   select {
     border-radius: var(--cui-border-radius);
   }
+}
+
+:host ::ng-deep .raw-materials-wide-search c-smart-table-filter input {
+  width: 256px;
+  max-width: calc(100vw - 64px);
 }
 
 .custom-header {
@@ -186,7 +168,4 @@
     margin: 8px 0 0;
   }
 
-  .inventory-select {
-    flex: 1;
-  }
 }

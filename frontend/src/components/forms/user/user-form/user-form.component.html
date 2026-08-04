@@ -30,7 +30,10 @@
         <label class='wide'>Nome completo<input cFormControl formControlName='name' [valid]="!showErrors ? undefined : createForm.get('name')?.invalid ? false : undefined" type='text' placeholder='Nome e sobrenome'></label>
         <label>Departamento<select cSelect formControlName='position' [class.is-invalid]="showErrors && createForm.get('position')?.invalid"><option [ngValue]='null' disabled>Selecione</option>@for (item of positions; track item.id) { <option [ngValue]='item.id'>{{ item.name }}</option> }</select></label>
         <label>E-mail<input cFormControl formControlName='email' [valid]="!showErrors ? undefined : createForm.get('email')?.invalid ? false : undefined" type='email' placeholder='nome@empresa.com.br'></label>
-        <label>Nascimento<c-date-picker [calendarDate]='birthDate' placeholder='Selecione' formControlName='birthDate' [valid]="!showErrors ? undefined : createForm.get('birthDate')?.invalid ? false : undefined"></c-date-picker></label>
+        <div class='form-field user-date-field'>
+          <label for='newUserBirthDate'>Nascimento</label>
+          <c-date-picker id='newUserBirthDate' [calendarDate]='birthDate' placeholder='Selecione' formControlName='birthDate' [valid]="!showErrors ? undefined : createForm.get('birthDate')?.invalid ? false : undefined"></c-date-picker>
+        </div>
       </div>
   </section>
 

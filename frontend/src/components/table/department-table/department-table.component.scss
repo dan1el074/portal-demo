@@ -2,6 +2,11 @@
 :host ::ng-deep .administration-smart-table {
   input, select { border-radius: var(--cui-border-radius); }
 }
+
+:host ::ng-deep .administration-wide-search c-smart-table-filter input {
+  width: 256px;
+  max-width: calc(100vw - 64px);
+}
 .custom-header { font-size: 14px; font-weight: 600; }
 .custom-td { padding: 12px 16px; border-bottom: 1px solid var(--cui-border-color); font-size: 14px; }
 .id-field { color: var(--cui-secondary-color); font-weight: 600; }
