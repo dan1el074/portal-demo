@@ -1,4 +1,4 @@
--- Dados locais de demonstracao. Não é carregado em producao.
+-- Dados locais de demonstracao. Não é carregado em produção.
 INSERT INTO tb_param (id, name, content) VALUES (1, 'memorandoCount', '174');
 
 INSERT INTO tb_post (content, is_warning, created_at, updated_at) VALUES ('<strong>Sobre nossa energia emocional:</strong><br><strong>- Gratidão:</strong> Aprecie as qualidades dos outros e veja o lado bom em cada situação. Seja grato por tudo e todos, sempre fazendo o que é certo!<br><strong>- Ambiente estimulante: </strong> Crie um ambiente leve, positivo e criativo. Para nós, é essencial trabalharmos em um lugar agradável!<br><strong>- Franqueza: </strong> Aja com franqueza e mostre seus sentimentos de maneira aberta e amigável!<br>Nós acreditamos que estamos criando a melhor empresa para se trabalhar! 🚀', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -61,15 +61,15 @@ INSERT INTO tb_position_manangers (position_id, mananger_id) VALUES (10, 1);
 INSERT INTO tb_position_manangers (position_id, mananger_id) VALUES (11, 1);
 INSERT INTO tb_position_manangers (position_id, mananger_id) VALUES (19, 1);
 
-INSERT INTO tb_role (id, authority) VALUES (1, 'ROLE_USER');
-INSERT INTO tb_role (id, authority) VALUES (2, 'ROLE_ADMIN');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (3, 'ROLE_ADM_PANEL', 'Usuários', '/users', 'Administração','/administration');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (4, 'ROLE_POSITION_PANEL', 'Departamentos', '/departments', 'Administração','/administration');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (5, 'ROLE_RAW_MATERIALS', 'Matérias primas', '/raw-materials', 'Geral','/general');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (6, 'ROLE_MEMORANDO', 'Memorando', '/memorando', 'Geral', '/general');
-INSERT INTO tb_role (id, authority, title, parent) VALUES (7, 'ROLE_POST', 'Postagens', 'Administração');
-INSERT INTO tb_role (id, authority, title, title_url, parent, parent_url) VALUES (8, 'ROLE_STEP_FLOW', 'Fluxo de etapas', '/step-flow', 'Geral', '/general');
-INSERT INTO tb_role (id, authority, title, parent, father_id) VALUES (9, 'ROLE_STEP_FLOW_ADMIN', 'Fluxo de etapas - Admin', 'Geral', 8);
+INSERT INTO tb_role (authority) VALUES ('ROLE_USER');
+INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
+INSERT INTO tb_role (authority, title, title_url, parent, parent_url) VALUES ('ROLE_ADM_PANEL', 'Usuários', '/users', 'Administração','/administration');
+INSERT INTO tb_role (authority, title, title_url, parent, parent_url) VALUES ('ROLE_POSITION_PANEL', 'Departamentos', '/departments', 'Administração','/administration');
+INSERT INTO tb_role (authority, title, title_url, parent, parent_url) VALUES ('ROLE_RAW_MATERIALS', 'Matérias primas', '/raw-materials', 'Geral','/general');
+INSERT INTO tb_role (authority, title, title_url, parent, parent_url) VALUES ('ROLE_MEMORANDO', 'Memorando', '/memorando', 'Geral', '/general');
+INSERT INTO tb_role (authority, title, parent) VALUES ('ROLE_POST', 'Postagens', 'Administração');
+INSERT INTO tb_role (authority, title, title_url, parent, parent_url) VALUES ('ROLE_STEP_FLOW', 'Fluxo de etapas', '/step-flow', 'Geral', '/general');
+INSERT INTO tb_role (authority, title, parent, father_id) VALUES ('ROLE_STEP_FLOW_ADMIN', 'Fluxo de etapas - Admin', 'Geral', 8);
 
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1,2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,1);

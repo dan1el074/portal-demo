@@ -504,12 +504,23 @@
           </button>
         </div>
       </form>
+
+      @if (order.currentStep == "Montagem Final") {
+        <ng-container *ngTemplateOutlet="offcanvasFooter; context: { inline: true }" />
+      }
     </div>
   }  @else {
     <i class="custom-error">Carregando!</i>
   }
 
-  <div class="sofd-footer">
+  <ng-container *ngTemplateOutlet="offcanvasFooter; context: { inline: false }" />
+
+  <ng-template #offcanvasFooter let-inline="inline">
+  <div
+    class="sofd-footer"
+    [class.in-flow]="inline"
+    [class.montage-persistent]="!inline && order?.currentStep == 'Montagem Final'"
+  >
     @if (order) {
       @if (order.nextStep) {
         <div>
@@ -534,6 +545,7 @@
       </button>
     }
   </div>
+  </ng-template>
 </div>
 
 <app-cancel-step-flow-modal [visible]="showCancelModal" [orderNumber]="order ? order.number : 0 " (close)="toggleCancelModel(false)" (cancelTask)="onCancel($event)"></app-cancel-step-flow-modal>

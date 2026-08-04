@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
-import { ButtonDirective, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
+import { FormControlDirective } from '@coreui/angular';
 import { cilPencil, cilX } from '@coreui/icons';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from './../../../../app/services/user.service';
@@ -12,13 +12,7 @@ import { UserGroup } from '../../../../app/interface/user.interface';
   selector: 'app-department-edit-form',
   imports: [
     ReactiveFormsModule,
-    FormFloatingDirective,
-    FormLabelDirective,
     FormControlDirective,
-    FormCheckComponent,
-    FormCheckInputDirective,
-    FormCheckLabelDirective,
-    ButtonDirective,
     MultiSelectComponent,
     MultiSelectOptionComponent,
     MultiSelectOptgroupComponent,

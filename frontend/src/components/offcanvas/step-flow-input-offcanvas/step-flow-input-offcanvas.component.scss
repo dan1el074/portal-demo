@@ -938,6 +938,11 @@
     font-size: 13px;
     font-weight: 600;
 
+    &.in-flow {
+      display: none;
+      flex-shrink: 0;
+    }
+
     svg {
       width: 16px;
       stroke: #fff;
@@ -968,6 +973,21 @@
     &.image {
       font-size: 13px;
       font-weight: 400;
+    }
+  }
+}
+
+@media (max-width: 989.98px) {
+  .sof-custom-offcanvas {
+    .sofd-footer {
+      &.in-flow {
+        display: flex;
+        margin: 16px -20px -16px;
+      }
+
+      &.montage-persistent {
+        display: none;
+      }
     }
   }
 }

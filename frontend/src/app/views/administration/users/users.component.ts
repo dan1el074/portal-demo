@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, ContainerComponent, RowComponent, Tabs2Module } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, Tabs2Module } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { ToastrService } from 'ngx-toastr';
@@ -14,18 +14,16 @@ import { PositionMin } from '../../../interface/position.interface';
 import { RoleGroup } from './../../../interface/role.interface';
 import { UserEditData } from './../../../interface/user.interface';
 import { UserTable } from '../../../interface/user.interface';
+import { BackNavigationService } from '../../../services/back-navigation.service';
 
 @Component({
   selector: 'app-users',
   imports: [
     ContainerComponent,
     IconDirective,
-    RowComponent,
     ButtonDirective,
-    ColComponent,
     CardComponent,
     CardBodyComponent,
-    CardTitleDirective,
     Tabs2Module,
     UserTableComponent,
     UserFormComponent,
@@ -39,12 +37,15 @@ export class UsersComponent implements OnInit {
   protected tabs: Array<string> = ['Todos', 'Desativados'];
   protected activeUsers: Array<UserTable> = [];
   protected inactiveUsers: Array<UserTable> = [];
-  protected positions!: Array<PositionMin>;
+  protected positions: Array<PositionMin> = [];
   protected icons = { cilPlus, cilX };
   protected activeItemKey = 0;
-  protected allRoles!: Array<RoleGroup>;
+  protected allRoles: Array<RoleGroup> = [];
   protected newUserTab = false;
   protected editUserTab = false;
+  protected tableResetKey = 0;
+  private formHistoryActive = false;
+  private historyCloseTargetTab = 0;
   protected editUserData: UserEditData = {
     id: 0,
     pictureId: null,
@@ -64,7 +65,8 @@ export class UsersComponent implements OnInit {
     private roleService: RoleService,
     private errorService: ErrorService,
     private toasterService: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private backNav: BackNavigationService
   ) {}
 
   public ngOnInit(): void {
@@ -102,12 +104,34 @@ export class UsersComponent implements OnInit {
     if (key === undefined) return;
     const parsedKey = Number(key);
     if (Number.isNaN(parsedKey)) return;
+
+    if (parsedKey <= 1 && (this.newUserTab || this.editUserTab)) {
+      this.closeFormTabs(parsedKey);
+      return;
+    }
+
     this.activeItemKey = parsedKey;
   }
 
+  protected resetTableFilters(): void {
+    if (this.newUserTab || this.editUserTab) {
+      this.closeFormTabs(0);
+    } else {
+      this.activeItemKey = 0;
+    }
+    this.tableResetKey++;
+  }
+
   protected toggleNewUserTab(status = !this.newUserTab): void {
-    this.newUserTab = status;
-    status ? this.activeItemKey = 2 : this.activeItemKey = 0;
+    if (status) {
+      this.editUserTab = false;
+      this.newUserTab = true;
+      this.activeItemKey = 2;
+      this.registerFormHistory();
+      return;
+    }
+
+    this.closeFormTabs();
   }
 
   protected onCreateUser(data: FormData): void {
@@ -122,8 +146,49 @@ export class UsersComponent implements OnInit {
   }
 
   protected toggleEditUserTab(status: boolean): void {
-    this.editUserTab = status;
-    status ? this.activeItemKey = 3 : this.activeItemKey = 0;
+    if (status) {
+      this.newUserTab = false;
+      this.editUserTab = true;
+      this.activeItemKey = 3;
+      this.registerFormHistory();
+      return;
+    }
+
+    this.closeFormTabs();
+  }
+
+  private registerFormHistory(): void {
+    if (this.formHistoryActive) return;
+
+    this.formHistoryActive = true;
+    this.historyCloseTargetTab = 0;
+    this.backNav.register(() => {
+      const targetTab = this.historyCloseTargetTab;
+      this.formHistoryActive = false;
+      this.historyCloseTargetTab = 0;
+      this.resetFormTabs(targetTab);
+    });
+  }
+
+  private closeFormTabs(targetTab = 0): void {
+    const shouldRemoveHistory = this.formHistoryActive;
+    this.formHistoryActive = false;
+    this.historyCloseTargetTab = targetTab;
+    this.resetFormTabs(targetTab);
+
+    if (shouldRemoveHistory) {
+      this.backNav.unregister();
+    } else {
+      this.historyCloseTargetTab = 0;
+    }
+  }
+
+  private resetFormTabs(targetTab = 0): void {
+    this.newUserTab = false;
+    this.editUserTab = false;
+    this.activeItemKey = targetTab;
+    this.clearUserEdit();
+    this.cdr.detectChanges();
   }
 
   protected updateUserTask(id: number): void {

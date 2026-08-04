@@ -1,6 +1,6 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="needs-validation">
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="needs-validation" autocomplete="on">
   <div [cFormFloating]="true" class="mb-3">
-    <input cFormControl [valid]="valid" formControlName="username" id="pmusername" type="username" placeholder="Usuário" autofocus required />
+    <input cFormControl [valid]="valid" formControlName="username" id="pmusername" name="username" type="text" placeholder="Usuário" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus required />
     <label cLabel for="pmusername">Usuário</label>
   </div>
   <div cFormFloating class="fix-eye">

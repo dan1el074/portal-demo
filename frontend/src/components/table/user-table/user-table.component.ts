@@ -1,83 +1,66 @@
-import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { AvatarComponent, ButtonDirective, ContainerComponent, ModalToggleDirective, PlaceholderAnimationDirective, PlaceholderDirective } from '@coreui/angular';
-import { cilSearch, cilPencil, cilX } from '@coreui/icons';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { AvatarComponent, ButtonDirective, ModalToggleDirective } from '@coreui/angular';
+import { IColumn, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
+import { IconDirective } from '@coreui/icons-angular';
+import { cilX } from '@coreui/icons';
 import { UserTable } from '../../../app/interface/user.interface';
 import { UserDeleteModalComponent } from '../../modal/user/user-delete-modal/user-delete-modal.component';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-user-table',
-  imports: [
-    CommonModule,
-    AvatarComponent,
-    ContainerComponent,
-    IconDirective,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ButtonDirective,
-    ModalToggleDirective,
-    UserDeleteModalComponent,
-    PlaceholderDirective,
-    PlaceholderAnimationDirective
-  ],
+  imports: [CommonModule, AvatarComponent, ButtonDirective, ModalToggleDirective, IconDirective, SmartTableComponent, TemplateIdDirective, UserDeleteModalComponent],
   templateUrl: './user-table.component.html',
   styleUrl: './user-table.component.scss',
 })
-export class UserTableComponent implements AfterViewInit, OnChanges {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @Input() data: Array<UserTable> = [];
-  @Input() noMargin: boolean = false;
-  @Input() hideDeactiveButton: boolean = false;
+export class UserTableComponent implements OnChanges {
+  @Input() data: UserTable[] = [];
+  @Input() resetKey = 0;
+  @Input() noMargin = false;
+  @Input() hideDeactiveButton = false;
   @Output() updateUser = new EventEmitter<number>();
   @Output() deactivateTask = new EventEmitter<number>();
 
-  protected apiUrl = environment.apiUrl;
-  protected displayedColumns: string[] = ['name', 'username', 'position', 'email', 'updateAt', 'activated'];
-  protected dataSource = new MatTableDataSource<UserTable>([]);
-  protected icons = { cilSearch, cilPencil, cilX };
-  protected loadSearch = true;
+  protected readonly apiUrl = environment.apiUrl;
+  protected readonly icons = { cilX };
+  protected loading = true;
+  protected tableFilterValue = '';
+  protected columns: IColumn[] = [];
 
-  constructor (private cdr: ChangeDetectorRef) {}
-
-  ngOnChanges(): void {
-    this.loadSearch = true;
-
-    if (this.data) {
-      this.dataSource.data = this.data;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['resetKey'] && !changes['resetKey'].firstChange) {
+      this.tableFilterValue = '';
     }
 
-    setTimeout(() => {
-      this.loadSearch = false;
-      this.cdr.detectChanges();
-    }, 500);
+    this.columns = [
+      this.column('name', 'Nome'),
+      this.column('username', 'Usuário'),
+      this.column('position', 'Cargo'),
+      this.column('email', 'E-mail'),
+      this.column('updateAt', 'Modificado'),
+      ...(!this.hideDeactiveButton ? [this.column('actions', '', false)] : []),
+    ];
+    this.loading = true;
+    queueMicrotask(() => this.loading = false);
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  protected openUser(event: { item: UserTable }): void {
+    this.updateUser.emit(event.item.id);
   }
 
-  applyFilter(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = value.trim().toLowerCase();
-  }
-
-  editUser(id: number): void {
-    this.updateUser.emit(id);
-  }
-
-  deactivateUser(id: number) {
+  protected deactivateUser(id: number): void {
     this.deactivateTask.emit(id);
+  }
+
+  private column(key: string, label: string, sorter = true): IColumn {
+    return {
+      key,
+      label,
+      _labelTemplateId: 'all',
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
+      sorter: sorter ? () => 0 : false,
+      filter: false,
+    };
   }
 }

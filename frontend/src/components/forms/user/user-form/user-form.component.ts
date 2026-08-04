@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular';
-import { DatePickerComponent, MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent, FormPasswordDirective } from '@coreui/angular-pro';
+import { DatePickerComponent, FormPasswordDirective } from '@coreui/angular-pro';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonCloseDirective, ButtonDirective, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormSelectDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
 import { passwordMatchValidator } from '../../../../app/config/validators';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { PositionMin } from '../../../../app/interface/position.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
 import { ToastrService } from 'ngx-toastr';
+import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.component';
 
 @Component({
   selector: 'app-user-form',
@@ -17,14 +18,8 @@ import { ToastrService } from 'ngx-toastr';
     CommonModule,
     ReactiveFormsModule,
     ImageCropperComponent,
-    FormFloatingDirective,
-    FormLabelDirective,
     FormControlDirective,
-    RowComponent,
-    ColComponent,
-    FormCheckComponent,
-    FormCheckInputDirective,
-    FormCheckLabelDirective,
+    FormSelectDirective,
     IconDirective,
     ButtonDirective,
     ModalComponent,
@@ -33,11 +28,9 @@ import { ToastrService } from 'ngx-toastr';
     ButtonCloseDirective,
     ModalBodyComponent,
     ModalFooterComponent,
-    MultiSelectComponent,
-    MultiSelectOptionComponent,
-    MultiSelectOptgroupComponent,
     DatePickerComponent,
-    FormPasswordDirective
+    FormPasswordDirective,
+    RoleAccessTreeComponent
   ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
@@ -67,13 +60,13 @@ export class UserFormComponent implements OnChanges {
   ) {
     this.createForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
-      position: [0, [Validators.required]],
+      position: [null, [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       birthDate: [null, [Validators.required]],
       username: [ '', [Validators.required, Validators.minLength(6), Validators.pattern(/^[a-zA-Z0-9.-]+$/)]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)]],
       repeatPassword: ['', [Validators.required]],
-      roles: [[1,4,7]],
+      roles: [[]],
       supportToken: [null],
       picture: [null as Blob | null],
       disabled: [false]
@@ -120,7 +113,7 @@ export class UserFormComponent implements OnChanges {
       return;
     }
 
-    this.createForm.get('picture')?.setErrors({ imageTooLarge: false });
+    this.createForm.get('picture')?.setErrors(null);
     this.imageChangedEvent = event;
     this.toggleModal();
   }
@@ -154,8 +147,8 @@ export class UserFormComponent implements OnChanges {
     this.modalReady = !this.modalReady;
 
     if (resetInput) {
-      const input = this.imageChangedEvent?.target as HTMLInputElement
-      input.value = "";
+      const input = this.imageChangedEvent?.target as HTMLInputElement | undefined;
+      if (input) input.value = '';
     }
   }
 
@@ -164,8 +157,15 @@ export class UserFormComponent implements OnChanges {
   }
 
   removePicture(): void {
+    if (this.fileInput?.nativeElement) this.fileInput.nativeElement.value = '';
     this.file = '';
+    this.resetImageCropper();
     this.createForm.get('picture')?.setValue(null);
+  }
+
+  protected onRolesChange(ids: number[]): void {
+    this.createForm.get('roles')?.setValue(ids);
+    this.createForm.get('roles')?.markAsDirty();
   }
 
   onExit(): void {

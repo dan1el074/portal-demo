@@ -1,5 +1,171 @@
-button.btn-tooltip {
-  background-color: transparent;
-  border: none;
-  outline: none;
+:host {
+  display: block;
+}
+
+.inventory-filter-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+  margin-bottom: 8px;
+}
+
+.status-filter button {
+  min-height: 38px;
+  border: 1px solid var(--cui-border-color);
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
+  font-size: 13px;
+}
+
+.status-filter {
+  display: flex;
+  margin-left: 12px;
+
+  button {
+    padding: 6px 11px;
+    border-right: 0;
+    border-radius: 0;
+
+    &:first-child {
+      border-radius: 12px 0 0 12px;
+    }
+
+    &:last-child {
+      border-right: 1px solid var(--cui-border-color);
+      border-radius: 0 12px 12px 0;
+    }
+
+    &.active {
+      border-color: #285ea5;
+      background: #285ea5;
+      color: #fff;
+    }
+  }
+}
+
+.clear-filter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: var(--cui-border-radius);
+  background: transparent;
+  color: var(--cui-secondary-color);
+
+  &:hover {
+    color: var(--cui-danger);
+  }
+}
+
+:host ::ng-deep .raw-materials-smart-table {
+  input,
+  select {
+    border-radius: var(--cui-border-radius);
+  }
+}
+
+:host ::ng-deep .raw-materials-wide-search c-smart-table-filter input {
+  width: 256px;
+  max-width: calc(100vw - 64px);
+}
+
+.custom-header {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.custom-td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--cui-border-color);
+  font-size: 14px;
+
+  &.inactive-row {
+    opacity: .5;
+  }
+}
+
+.centered-stock-cell {
+  text-align: center;
+}
+
+.code-field,
+.number-field {
+  white-space: nowrap;
+}
+
+.code-field {
+  font-weight: 700;
+  color: inherit;
+}
+
+.description-field {
+  display: inline-block;
+  min-width: 230px;
+  max-width: 390px;
+  white-space: normal;
+}
+
+.category-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  white-space: nowrap;
+  color: var(--cui-medium-emphasis);
+  background-color: rgba(var(--cui-emphasis-color-rgb), .04);
+  font-size: 12px;
+}
+
+.stock-status-cell {
+  &[data-stock-status='low'] {
+    color: #b4232a;
+    background-color: #c5232a17 !important;
+    box-shadow: inset 0 0 0 9999px #c5232a17 !important;
+  }
+
+  &[data-stock-status='ok'] {
+    color: #00875a;
+    background-color: #00996617 !important;
+    box-shadow: inset 0 0 0 9999px #00996617 !important;
+  }
+
+  &[data-stock-status='high'] {
+    color: #986000;
+    background-color: #d990001f !important;
+    box-shadow: inset 0 0 0 9999px #d990001f !important;
+  }
+
+  .stock-value {
+    font-weight: 600;
+  }
+}
+
+.date-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  white-space: nowrap;
+  font-size: 12px;
+
+  strong {
+    font-weight: 600;
+  }
+
+  span {
+    color: var(--cui-secondary-color);
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .inventory-filter-bar {
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 8px 0 0;
+  }
+
 }

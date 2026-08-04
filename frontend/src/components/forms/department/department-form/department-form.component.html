@@ -1,30 +1,23 @@
-<form [formGroup]="createForm" (ngSubmit)="onSubmit()" autocomplete="off">
-  <h4 class="mb-4">Editar departamento</h4>
+<form [formGroup]='createForm' (ngSubmit)='onSubmit()' autocomplete='off' class='profile-form department-form'>
+  <section class='form-section'>
+    <div class='section-heading'><span>DADOS DO DEPARTAMENTO</span></div>
+    <div class='form-grid single-column'>
+      <label>Nome do departamento<input cFormControl formControlName='name' [valid]="!showErrors ? undefined : createForm.get('name')?.invalid ? false : undefined" type='text' placeholder='Ex.: Engenharia'></label>
+      <label>Gestores
+        <c-multi-select multiple selectionType='text' [valid]="!showErrors ? undefined : createForm.get('manangers')?.invalid ? false : undefined" placeholder='Selecione os gestores' [selectAll]='false' formControlName='manangers' class='manager-select'>
+          @for (userGroup of users; track userGroup.title) {
+            <c-multi-select-optgroup [label]='userGroup.title'>
+              @for (user of userGroup.childrens; track user.id) { <c-multi-select-option [value]='user.id'>{{ user.name }}</c-multi-select-option> }
+            </c-multi-select-optgroup>
+          }
+        </c-multi-select>
+      </label>
+    </div>
+  </section>
 
-  <div [cFormFloating]="true" class="mb-3">
-    <input cFormControl formControlName="name" [valid]="!showErrors ? undefined: createForm.get('name')?.errors != null ? false : undefined" id="name2" type="text" placeholder="Nome" />
-    <label cLabel for="name2">Nome</label>
-  </div>
+  <section class='form-section compact-section'>
+    <label class='status-control'><input type='checkbox' formControlName='disabled'><span><strong>Departamento desativado</strong><small>Oculta o setor das operações sem remover seu histórico.</small></span></label>
+  </section>
 
-  <c-multi-select multiple selectionType="text" [valid]="!showErrors ? undefined: createForm.get('manangers')?.errors != null ? false : undefined" placeholder="Gestores" [selectAll]="false" formControlName="manangers" class="custom-select mb-3">
-    @for (userGroup of users; track userGroup.title) {
-      <c-multi-select-optgroup [label]="userGroup.title">
-        @for (user of userGroup.childrens; track user.id) {
-          <c-multi-select-option [value]="user.id">
-            {{ user.name }}
-          </c-multi-select-option>
-        }
-      </c-multi-select-optgroup>
-    }
-  </c-multi-select>
-
-  <c-form-check>
-    <input cFormCheckInput formControlName="disabled" id="checkOne2" type="checkbox" />
-    <label cFormCheckLabel for="checkOne2">Desativar departamento</label>
-  </c-form-check>
-
-  <div class="button-container">
-    <button cButton (click)="onExit()" color="secondary">Cancelar</button>
-    <button cButton type="submit" color="primary">Salvar</button>
-  </div>
+  <div class='form-actions'><button type='button' class='discard-button' (click)='onExit()'>Descartar alterações</button><button type='submit' class='save-button'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7z'></path><path d='M17 21v-8H7v8'></path><path d='M7 3v5h8'></path></svg>Criar departamento</button></div>
 </form>

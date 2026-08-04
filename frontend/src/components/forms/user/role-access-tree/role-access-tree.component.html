@@ -1,0 +1,48 @@
+<div class='access-tree' [class.disabled]='disabled'>
+  @for (group of groups; track group.title) {
+    <section class='access-section'>
+      <div class='group-heading'>
+        <strong>{{ group.title }}</strong>
+      </div>
+
+      <div class='tool-list'>
+        @for (tool of group.childrens; track tool.id) {
+          <div class='tool'>
+            <label class='tool-control'>
+              <input
+                type='checkbox'
+                [checked]='isToolEnabled(tool)'
+                [disabled]='disabled'
+                (change)='toggleTool(tool, $any($event.target).checked)'
+              >
+              <span>{{ tool.authority }}</span>
+            </label>
+
+            @if (hasLevels(tool) && isToolEnabled(tool)) {
+              <div class='level-list' role='radiogroup' [attr.aria-label]="'Nível de acesso de ' + tool.authority">
+                @for (level of levels(tool); track level.role.id) {
+                  <label class='level-control' [style.margin-left.px]='level.depth * 18'>
+                    <input
+                      type='radio'
+                      [name]="'access-level-' + tool.id"
+                      [checked]='isLevelSelected(tool, level)'
+                      [disabled]='disabled'
+                      (change)='selectLevel(tool, level)'
+                    >
+                    <span>{{ levelName(level) }}</span>
+                  </label>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  } @empty {
+    <div class='empty-access'>Nenhum acesso configurado.</div>
+  }
+
+  @if (disabled) {
+    <p class='admin-note'>Administradores possuem acesso integral e não podem ter permissões individuais alteradas.</p>
+  }
+</div>

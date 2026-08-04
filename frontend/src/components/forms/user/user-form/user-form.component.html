@@ -1,159 +1,60 @@
-<form [formGroup]="createForm" (ngSubmit)="onSubmit()" autocomplete="off">
-  <h4 class="mb-4">Novo usuário</h4>
-
-  <c-row class="align-items-start">
-    <c-col>
-      <div class="avatar-container">
-        <div class="image-container" [class.shadow]="file" *ngIf="file; else placeholder"
-        [ngStyle]="{backgroundImage: 'url(' + file + ')'}">
-        </div>
-
-        <ng-template #placeholder>
-          <div class="image-container avatar-placeholder"></div>
-        </ng-template>
-
-        <label for="fileInput">
-          <div class="icon-wrapper">
-            <input #fileInput id="fileInput" type="file" accept="image/*" (change)="onFileChange($event)" />
-            <svg [cIcon]="icons.cilPencil" size="lg" title="List Icon"></svg>
-          </div>
+<form [formGroup]='createForm' (ngSubmit)='onSubmit()' autocomplete='off' class='profile-form'>
+  <section class='profile-section'>
+      <div class='avatar-container'>
+        @if (file) { <div class='image-container has-file' [ngStyle]="{ backgroundImage: 'url(' + file + ')' }"></div> }
+        @else { <div class='image-container avatar-placeholder'></div> }
+        <label for='newUserPicture' class='avatar-edit'>
+          <input #fileInput id='newUserPicture' type='file' accept='image/*' (change)='onFileChange($event)'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z'></path><circle cx='12' cy='13' r='3'></circle></svg>
         </label>
-
-        @if (file) {
-          <button type="button" class="delete-icon" (click)="removePicture()" type="button">
-            <svg [cIcon]="icons.cilX" size="lg" title="List Icon"></svg>
-          </button>
-        }
       </div>
 
-      @if (createForm.get('picture')?.errors?.['invalidImageType']) {
-        <div class="text-danger">
-          Apenas imagens são permitidas
+      <div class='profile-name'><strong>{{ createForm.get('name')?.value || 'Nome Sobrenome' }}</strong><span>{{ getPositionName(createForm.get('position')?.value) || 'Departamento' }}</span></div>
+      <div class='avatar-actions'>
+        <label for='newUserPicture' class='photo-button'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z'></path><circle cx='12' cy='13' r='3'></circle></svg>Alterar foto</label>
+        @if (file) { <button type='button' class='photo-button remove' (click)='removePicture()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M10 11v6'></path><path d='M14 11v6'></path><path d='M3 6h18'></path><path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6'></path><path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'></path></svg>Remover</button> }
+      </div>
+      <span class='file-info'>PNG, JPEG, JPG, WEBP · máx. 2 MB</span>
+      @if (createForm.get('picture')?.errors?.['imageTooLarge']) { <div class='text-danger centered'>A imagem deve ter no máximo 2 MB.</div> }
+      @if (createForm.get('picture')?.errors?.['invalidFormat']) { <div class='text-danger centered'>Formato de imagem inválido.</div> }
+  </section>
+
+  <c-modal [visible]='modalReady' (visibleChange)='handleModalChange($event)' backdrop='static' alignment='center'>
+    <c-modal-header><svg [cIcon]='icons.cilPencil' class='modal-title-icon' size='lg'></svg><h5 cModalTitle>Nova imagem</h5><button type='button' (click)='toggleModal(true)' cButtonClose></button></c-modal-header>
+    <c-modal-body><image-cropper [imageChangedEvent]='imageChangedEvent' [maintainAspectRatio]='true' [aspectRatio]='1 / 1' [resizeToWidth]='256' format='png' (imageCropped)='imageCropped($event)'></image-cropper></c-modal-body>
+    <c-modal-footer><button type='button' cButton color='secondary' (click)='toggleModal(true)'>Cancelar</button><button type='button' cButton color='primary' (click)='processImage()'>Aplicar</button></c-modal-footer>
+  </c-modal>
+  <section class='form-section'>
+      <div class='section-heading'><span>DADOS CADASTRAIS</span><small>Informações pessoais e vínculo interno</small></div>
+      <div class='form-grid'>
+        <label class='wide'>Nome completo<input cFormControl formControlName='name' [valid]="!showErrors ? undefined : createForm.get('name')?.invalid ? false : undefined" type='text' placeholder='Nome e sobrenome'></label>
+        <label>Departamento<select cSelect formControlName='position' [class.is-invalid]="showErrors && createForm.get('position')?.invalid"><option [ngValue]='null' disabled>Selecione</option>@for (item of positions; track item.id) { <option [ngValue]='item.id'>{{ item.name }}</option> }</select></label>
+        <label>E-mail<input cFormControl formControlName='email' [valid]="!showErrors ? undefined : createForm.get('email')?.invalid ? false : undefined" type='email' placeholder='nome@empresa.com.br'></label>
+        <div class='form-field user-date-field'>
+          <label for='newUserBirthDate'>Nascimento</label>
+          <c-date-picker id='newUserBirthDate' [calendarDate]='birthDate' placeholder='Selecione' formControlName='birthDate' [valid]="!showErrors ? undefined : createForm.get('birthDate')?.invalid ? false : undefined"></c-date-picker>
         </div>
-      }
-      @if (createForm.get('picture')?.errors?.['imageTooLarge']) {
-        <div class="text-danger">
-          A imagem deve ter no máximo 2MB
-        </div>
-      }
-      @if (createForm.get('picture')?.errors?.['invalidFormat']) {
-        <div class="text-danger">
-          Formato inválido
-        </div>
-      }
+      </div>
+  </section>
 
-      <c-modal id="modal" [visible]="modalReady" (visibleChange)="handleModalChange($event)" backdrop="static" alignment="center">
-        <c-modal-header>
-          <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
-          <h5 cModalTitle>Nova imagem</h5>
-          <button (click)="toggleModal(true)" cButtonClose></button>
-        </c-modal-header>
+  <section class='form-section'>
+      <div class='section-heading'><span>CREDENCIAIS</span><small>Dados usados para entrar no portal</small></div>
+      <div class='form-grid'>
+        <label>Nome de usuário<input cFormControl formControlName='username' [valid]="!showErrors ? undefined : createForm.get('username')?.invalid ? false : undefined" type='text' placeholder='nome.sobrenome' autocomplete='new-username'></label>
+        <label>Token de suporte<input cFormControl formControlName='supportToken' type='text' placeholder='Opcional'></label>
+        <label>Senha<input cFormPassword formControlName='password' [valid]="!showErrors ? undefined : createForm.get('password')?.invalid ? false : undefined" type='password' placeholder='Mínimo 8 caracteres' autocomplete='new-password'></label>
+        <label>Confirmar senha<input cFormPassword formControlName='repeatPassword' [valid]="!showErrors ? undefined : createForm.hasError('passwordMismatch') ? false : undefined" type='password' placeholder='Repita a senha' autocomplete='new-password'></label>
+      </div>
+      @if (createForm.hasError('passwordMismatch') && createForm.touched) { <div class='text-danger'>As senhas não coincidem.</div> }
+  </section>
 
-        <c-modal-body>
-          <image-cropper
-            [imageChangedEvent]="imageChangedEvent"
-            [maintainAspectRatio]="true"
-            [aspectRatio]="1 / 1"
-            [resizeToWidth]="256"
-            format="png"
-            (imageCropped)="imageCropped($event)">
-          </image-cropper>
-        </c-modal-body>
+  <section class='form-section access-form-section'>
+      <div class='section-heading'><span>ACESSOS</span><small>Selecione ferramentas e subníveis; os níveis pai são vinculados automaticamente</small></div>
+      <app-role-access-tree [groups]='roles' [selectedIds]="createForm.get('roles')?.value ?? []" (selectedIdsChange)='onRolesChange($event)'></app-role-access-tree>
+  </section>
 
-        <c-modal-footer>
-          <button cButton color="secondary" (click)="toggleModal(true)">
-            Cancelar
-          </button>
-          <button cButton color="primary" (click)="processImage()">Salvar</button>
-        </c-modal-footer>
-      </c-modal>
-
-      <div class="username">
-        <h3>{{ createForm.get('name')?.value ? createForm.get('name')?.value : 'Nome Sobrenome' }}</h3>
-        <h3><span>{{ createForm.get('position')?.value != 0 ? getPositionName(createForm.get('position')?.value) : '' }}</span></h3>
-      </div>
-    </c-col>
-
-    <c-col>
-      <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="name" [valid]="!showErrors ? undefined : createForm.get('name')?.errors != null ? false : undefined" id="name" type="text" placeholder="Nome" />
-        <label cLabel for="name">Nome</label>
-      </div>
-      <div cFormFloating class="mb-3">
-        <select cSelect formControlName="position" [class.is-invalid]="!showErrors ? false : createForm.get('position')?.errors != null ? true : false" id="position" class="form-select">
-          <option disabled></option>
-          @for (item of positions; track item.id) {
-            <option [value]="item.id" >{{ item.name }}</option>
-          } @empty {
-            <option disabled>Lista vazia</option>
-          }
-        </select>
-        <label cLabel for="position" [class.fix-float]="createForm.get('position')?.value == 0">Departamento</label>
-      </div>
-      <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="email" [valid]="!showErrors ? undefined : createForm.get('email')?.errors != null ? false : undefined" id="email" type="email" placeholder="E-mail" />
-        <label cLabel for="email">E-mail</label>
-      </div>
-      <div cFormFloating class="mb-3">
-        <c-date-picker [calendarDate]="birthDate" placeholder="Selecione" formControlName="birthDate" [valid]="!showErrors ? undefined : createForm.get('birthDate')?.errors != null ? false : undefined" class="fix-calendar"></c-date-picker>
-        <label cLabel class="fix-floating-label">Nascimento</label>
-      </div>
-      <div cFormFloating class="mb-3">
-        <input cFormControl formControlName="username" [valid]="!showErrors ? undefined : createForm.get('username')?.errors != null ? false : undefined" id="nUN" type="text" placeholder="Nome de usuário" autocomplete="new-username" />
-        <label cLabel for="nUN">Nome de usuário</label>
-      </div>
-      <div cFormFloating class="mb-3">
-        <input
-          cFormPassword
-          formControlName="password"
-          [valid]="!showErrors ? undefined : createForm.get('password')?.errors != null ? false : undefined"
-          type="password"
-          placeholder="Senha"
-          autocomplete="new-password"
-          floatingLabel="Senha"
-        />
-      </div>
-      <div cFormFloating class="mb-3">
-        <input
-          cFormPassword
-          formControlName="repeatPassword"
-          [valid]="!showErrors ? undefined : createForm.get('password')?.errors != null ? false : createForm.hasError('passwordMismatch') ? false : undefined"
-          id="repeatPassword"
-          type="password"
-          placeholder="Repetir senha"
-          autocomplete="new-password"
-          floatingLabel="Repetir senha"
-        />
-      </div>
-      @if (createForm.hasError('passwordMismatch') && createForm.touched) {
-        <div class="text-danger">
-          As senhas não coincidem
-        </div>
-      }
-      <c-multi-select multiple placeholder="Acessos" [selectAll]="false" formControlName="roles" class="custom-select">
-        @for (role of roles; track role.title) {
-          <c-multi-select-optgroup [label]="role.title">
-            @for (option of role.childrens; track option.id) {
-              <c-multi-select-option [value]="option.id">
-                {{ option.authority }}
-              </c-multi-select-option>
-            }
-          </c-multi-select-optgroup>
-        }
-      </c-multi-select>
-      <div cFormFloating class="mb-3 fix-margin">
-        <input cFormControl formControlName="supportToken" id="supportToken" type="text" placeholder="Token" />
-        <label cLabel for="supportToken">Token de suporte</label>
-      </div>
-      <c-form-check>
-        <input cFormCheckInput formControlName="disabled" id="checkOne" type="checkbox" />
-        <label cFormCheckLabel for="checkOne">Desativar usuário</label>
-      </c-form-check>
-    </c-col>
-  </c-row>
-
-  <div class="button-container">
-    <button cButton (click)="onExit()" color="secondary">Cancelar</button>
-    <button cButton type="submit" color="primary">Criar</button>
-  </div>
+  <section class='form-section compact-section'>
+      <label class='status-control'><input type='checkbox' formControlName='disabled'><span><strong>Usuário desativado</strong><small>Impede o acesso ao portal sem excluir o cadastro.</small></span></label>
+  </section>
+  <div class='form-actions'><button type='button' class='discard-button' (click)='onExit()'>Descartar alterações</button><button type='submit' class='save-button'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7z'></path><path d='M17 21v-8H7v8'></path><path d='M7 3v5h8'></path></svg>Criar usuário</button></div>
 </form>
