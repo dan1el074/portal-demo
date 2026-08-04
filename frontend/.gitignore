@@ -43,6 +43,8 @@ testem.log
 /src/environments/environment.ts
 /src/environments/environment.development.ts
 /src/environments/environment.prod.ts
+/src/app/generated/build-version.ts
+/src/assets/app-version.json
 
 # System files
 .DS_Store

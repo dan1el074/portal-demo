@@ -1,7 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { ContainerComponent } from '@coreui/angular';
+import { ButtonDirective, ContainerComponent } from '@coreui/angular';
+import { EMPTY, Subscription, catchError, interval, startWith, switchMap } from 'rxjs';
 import { HomeService } from './../../services/home.service';
 import { UserService } from './../../services/user.service';
 import { PostService } from './../../services/post.service';
@@ -15,10 +17,16 @@ import { DeletePostModalComponent } from '../../../components/modal/post/delete-
 import { HomeInfo } from '../../interface/home.interface';
 import { Me } from '../../interface/user.interface';
 import { NewPost, PostCard } from '../../interface/post.interface';
+import { BUILD_VERSION } from '../../generated/build-version';
+
+interface PublishedAppVersion {
+  version: string;
+}
 
 @Component({
   selector: 'app-home',
   imports: [
+    ButtonDirective,
     ContainerComponent,
     FilesComponent,
     EventComponent,
@@ -42,6 +50,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   protected idPostToDelete = 0;
   protected showEditModel = false;
   protected idPostToEdit = 0;
+  protected updateAvailable = false;
+  private publishedVersion?: string;
+  private versionCheckSubscription?: Subscription;
 
   // carregar mais posts
   private _sentinel!: ElementRef;
@@ -61,11 +72,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     private toasterService: ToastrService,
     private userService: UserService,
     private postService: PostService,
+    private http: HttpClient,
     private spinner: NgxSpinnerService,
     private cdf: ChangeDetectorRef
   ) {}
 
   public ngOnInit(): void {
+    this.watchApplicationVersion();
     this.updateData();
 
     this.userService.user$.subscribe(user => {
@@ -85,6 +98,31 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.observer?.disconnect();
+    this.versionCheckSubscription?.unsubscribe();
+  }
+
+  private watchApplicationVersion(): void {
+    this.versionCheckSubscription = interval(5 * 60 * 1000).pipe(
+      startWith(0),
+      switchMap(() => this.http.get<PublishedAppVersion>(
+        `/assets/app-version.json?v=${Date.now()}`
+      ).pipe(catchError(() => EMPTY)))
+    ).subscribe(({ version }) => {
+      this.publishedVersion = version;
+      this.updateAvailable = version !== BUILD_VERSION;
+      this.cdf.detectChanges();
+    });
+  }
+
+  protected async updateApplication(): Promise<void> {
+    if ('caches' in window) {
+      const cacheNames = await window.caches.keys();
+      await Promise.all(cacheNames.map(cacheName => window.caches.delete(cacheName)));
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('_appVersion', this.publishedVersion ?? Date.now().toString());
+    window.location.replace(url.toString());
   }
 
   private setupIntersectionObserver(): void {
