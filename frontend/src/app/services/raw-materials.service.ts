@@ -159,6 +159,60 @@ export class RawMaterialsService {
     createItem(88, '41917', 'PALETE DE MADEIRA 1500X2800X130', 9, 0, 0, 0, 0, 0, 'Pallet'),
     createItem(89, '2265', 'PALETE DE MADEIRA 1200X2700X130', 30, 0, 0, 0, 0, 0, 'Pallet'),
     createItem(90, '33903', 'PALETE DE MADEIRA 3700X1200 NDE', 2, 0, 0, 0, 0, 0, 'Pallet'),
+    createItem(91, '23668', 'BARRA AÇO SAE 1020 Ø63,5mm L6000mm MP', 5, 745.8, 1, 149.16, 2, 298.32, 'Aços Longos'),
+    createItem(92, '7481', 'BARRA CHATA 1"x3/16" L6000mm', 20, 114, 20, 114, 30, 228, 'Aços Longos'),
+    createItem(93, '13298', 'BARRA CHATA 1.1/2"x3/16" L6000mm', 3, 25.56, 5, 42.6, 8, 85.2, 'Aços Longos'),
+    createItem(94, '10445', 'BARRA CHATA 2"x3/16" L6000mm', 30, 342, 30, 342, 45, 684, 'Aços Longos'),
+    createItem(95, '31035', 'BARRA CHATA 4"x1/4" L6000mm', 40, 1240.008, 40, 1240.008, 60, 2480.016, 'Aços Longos'),
+    createItem(96, '11809', 'BARRA CHATA 4"x3/8" L6000mm', 80, 3648, 50, 2280, 75, 4560, 'Aços Longos'),
+    createItem(97, '3859', 'BARRA CHATA SAE 1020 4"x1/2" L6000mm', 35, 2127.3, 5, 303.9, 8, 607.8, 'Aços Longos'),
+    createItem(98, '1058', 'BARRA LAMINADA AÇO SAE 1045 Ø3/4"', 10, 134.22, 30, 402.66, 45, 805.32, 'Aços Longos'),
+    createItem(99, '290', 'BARRA REDONDA SAE 1020 3/8" L6000mm', 20, 67.2, 20, 67.2, 30, 134.4, 'Aços Longos'),
+    createItem(100, '1822', 'BARRA REDONDA SAE 1020 Ø1/2" L6000mm', 14, 84, 10, 60, 15, 120, 'Aços Longos'),
+    createItem(101, '8999', 'BARRA TREFILADA AÇO SAE 1045 Ø1.1/2" L6000mm', 2, 107.412, 1, 53.706, 2, 107.412, 'Aços Longos'),
+    createItem(102, '24473', 'BARRA TREFILADA AÇO SAE 1045 Ø1.1/4" L6000mm', 6, 223.776, 1, 37.296, 2, 74.592, 'Aços Longos'),
+    createItem(103, '24405', 'BARRA TREFILADA AÇO SAE 1045 Ø1.3/4" L6000mm', 10, 731.04, 1, 73.104, 2, 146.208, 'Aços Longos'),
+    createItem(104, '24475', 'BARRA TREFILADA AÇO SAE 1045 Ø2" L6000mm', 3, 286.434, 1, 95.478, 2, 190.956, 'Aços Longos'),
+    createItem(105, '7672', 'BARRA TREFILADA AÇO SAE 1045 Ø20mm L6000mm', 84, 1242.864, 20, 295.92, 30, 591.84, 'Aços Longos'),
+    createItem(106, '7038', 'BARRA TREFILADA AÇO SAE 1045 Ø25mm L6000mm', 112, 2589.216, 70, 1618.26, 105, 3236.52, 'Aços Longos'),
+    createItem(107, '23609', 'BARRA TREFILADA AÇO SAE 1045 Ø40mm L6000mm MP', 13, 757.38, 4, 233.04, 6, 466.08, 'Aços Longos'),
+    createItem(108, '22266', 'BARRA TREFILADA AÇO SAE 1045 Ø5/8" L6000mm', 30, 279.9, 1, 9.33, 2, 18.66, 'Aços Longos'),
+    createItem(109, '34444', 'CANT 1"x3/16" L6000mm MP', 20, 207.6, 8, 83.04, 12, 166.08, 'Aços Longos'),
+    createItem(110, '6605', 'CANT 1.1/4"x3/16" L6000mm', 20, 264, 20, 264, 30, 528, 'Aços Longos'),
+    createItem(111, '39068', 'CANTONEIRA 2"x1/4" L6000mm MP', 30, 855, 20, 570, 30, 1140, 'Aços Longos'),
+    createItem(112, '4591', 'CANTONEIRA 2.1/2"x1/4" L6000mm', 4, 146.4, 2, 73.2, 3, 146.4, 'Aços Longos'),
+    createItem(113, '14450', 'CANTONEIRA 2.1/2"x3/16" L6000mm', 12, 325.44, 3, 81.36, 5, 162.72, 'Aços Longos'),
+    createItem(114, '4100', 'CANTONEIRA SAE 1020 4"x1/4" L6000mm', 80, 4708.8, 90, 5297.4, 135, 10594.8, 'Aços Longos'),
+    createItem(115, '5082', 'TB A53 #1,20 20x20 L6000mm', 30, 777.6, 2, 51.84, 3, 103.68, 'Aços Longos'),
+    createItem(116, '3858', 'TB A53 #2,00 40x40 L6000mm', 200, 2892, 170, 2458.2, 255, 4916.4, 'Aços Longos'),
+    createItem(117, '3183', 'TB A53 #2,00 50x100 L6000mm', 32, 883.2, 65, 1794, 98, 3588, 'Aços Longos'),
+    createItem(118, '5346', 'TB A53 #2,00 50x50 L6000mm', 64, 1163.52, 80, 1454.4, 120, 2908.8, 'Aços Longos'),
+    createItem(119, '37236', 'TB A53 #2,00 80x80 L6000mm', 3, 88.38, 5, 147.3, 8, 294.6, 'Aços Longos'),
+    createItem(120, '13517', 'TB A53 #3,00  80x80 L6000mm', 40, 2172, 16, 868.8, 24, 1737.6, 'Aços Longos'),
+    createItem(121, '37569', 'TB A53 #3,00 100x100 L6000mm MP', 3, 166.14, 2, 110.76, 3, 221.52, 'Aços Longos'),
+    createItem(122, '6606', 'TB A53 #3,00 50x100 L6000mm', 36, 1475.28, 20, 819.6, 30, 1639.2, 'Aços Longos'),
+    createItem(123, '4833', 'TB A53 #3,00 50x50 L6000mm MP', 131, 3474.12, 8, 212.16, 12, 424.32, 'Aços Longos'),
+    createItem(124, '36022', 'TB A53 #3,00 60x60 L6000mm', 35, 777, 10, 222, 15, 444, 'Aços Longos'),
+    createItem(125, '36017', 'TB A53 #3,00 70x70 L6000mm', 8, 307.2, 10, 384, 15, 768, 'Aços Longos'),
+    createItem(126, '39932', 'TB A53 #3,00 90x90 L6000mm MP', 0, 0, 2, 93.6, 3, 187.2, 'Aços Longos'),
+    createItem(127, '45699', 'TB A53 #3,75 40x80 L6000mm MP', 50, 1986, 12, 482.4, 18, 964.8, 'Aços Longos'),
+    createItem(128, '39575', 'TB A53 #4,75 60x100 L6000mm MP', 9, 799.74, 3, 266.58, 5, 533.16, 'Aços Longos'),
+    createItem(129, '45698', 'TB A53 #3,75 80x160 L6000mm MP', 15, 1232.1, 30, 2379.6, 45, 4759.2, 'Aços Longos'),
+    createItem(130, '9406', 'TB A53 #4,75 100x100 L6000mm', 15, 1288.8, 6, 515.52, 9, 1031.04, 'Aços Longos'),
+    createItem(131, '8681', 'TB A53 #4,75 50x100 L6000mm', 32, 2035.2, 18, 1144.8, 27, 2289.6, 'Aços Longos'),
+    createItem(132, '9056', 'TB A53 #4,75 60x60 L6000mm', 10, 502.2, 3, 150.66, 5, 301.32, 'Aços Longos'),
+    createItem(133, '5049', 'TB A53 #4,75 80x120 L6000mm', 7, 601.44, 4, 343.68, 6, 687.36, 'Aços Longos'),
+    createItem(134, '13598', 'TB A53 #6,30 80x120 L6000mm MP', 1, 111.18, 1, 111.18, 2, 222.36, 'Aços Longos'),
+    createItem(135, '34630', 'TB A53 #6,35 150x150 L6000mm MP', 1, 171.72, 1, 171.72, 2, 343.44, 'Aços Longos'),
+    createItem(136, '31761', 'TB A53 Ø1"x1,50 L6000mm MP', 50, 300, 10, 60, 15, 120, 'Aços Longos'),
+    createItem(137, '3879', 'TB A53 Ø1.1/2"x1,50 L6000mm', 15, 121.5, 50, 405, 75, 810, 'Aços Longos'),
+    createItem(138, '31554', 'TB A53 Ø1.1/2"x3,00 L6000mm', 57, 912.0114, 40, 640.008, 60, 1280.016, 'Aços Longos'),
+    createItem(139, '8359', 'TB A53 Ø1/2"x1,50 L6000mm MP', 12, 28.8, 2, 12, 3, 24, 'Aços Longos'),
+    createItem(140, '5052', 'TB A53 Ø114,3x6,02 L6000mm', 2, 201.6, 1, 100.8, 2, 201.6, 'Aços Longos'),
+    createItem(141, '6116', 'TB RED SCH 40 COM COSTURA Ø26,7x3,00 L6000mm', 70, 705.6, 35, 352.8, 53, 705.6, 'Aços Longos'),
+    createItem(142, '5919', 'TB RED SCH 40 COM COSTURA Ø33,4x3,38 L6000mm', 84, 1290.24, 40, 614.4, 60, 1228.8, 'Aços Longos'),
+    createItem(143, '23671', 'TB RED SCH Ø48,3x3,75 L6000mm MP', 2, 48.6, 1, 24.3, 2, 48.6, 'Aços Longos'),
+    createItem(144, '9030', 'TB A53 #4,75 80x80 L6000mm MP', 24, 1634.4, 8, 544.8, 12, 1089.6, 'Aços Longos'),
   ];
 
   private categories: RawMaterialCategory[] = [
@@ -169,8 +223,8 @@ export class RawMaterialsService {
 
   private users: RawMaterialUserAccess[] = [
     { id: 3, name: 'Aline Moterle', pictureId: 3, categoryIds: [1, 2, 3] },
-    { id: 4, name: 'Carlos Fronza', pictureId: 4, categoryIds: [1, 2, 3] },
-    { id: 2, name: 'Enzo Bazzi', pictureId: 2, categoryIds: [1, 2] },
+    { id: 4, name: 'Carlos Fronza', pictureId: 6, categoryIds: [1, 2, 3] },
+    { id: 2, name: 'Enzo Bazzi', pictureId: 56, categoryIds: [1, 2] },
     { id: 5, name: 'Juliano Bortoletti', pictureId: 5, categoryIds: [1, 3] },
   ];
 
@@ -191,6 +245,11 @@ export class RawMaterialsService {
         const right = b[filters.sortColumn as keyof RawMaterialsTable] ?? '';
         return String(left).localeCompare(String(right), 'pt-BR', { numeric: true }) * direction;
       });
+    } else {
+      result = [...result].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', {
+        numeric: true,
+        sensitivity: 'base',
+      }));
     }
 
     const start = filters.page * filters.size;
