@@ -41,6 +41,7 @@ import { BackNavigationService } from '../../../services/back-navigation.service
 export class RawMaterialsComponent implements OnInit {
   protected readonly apiUrl = environment.apiUrl;
   protected isAdmin = false;
+  protected canSwitchViews = false;
   protected currentView: RawMaterialView = 'operator';
   protected readonly views: Array<{ value: RawMaterialView; label: string; description: string }> = [
     { value: 'admin', label: 'Administrador', description: 'Gestão completa' },
@@ -94,7 +95,7 @@ export class RawMaterialsComponent implements OnInit {
   }
 
   protected setView(view: RawMaterialView): void {
-    if (!this.isAdmin) return;
+    if (!this.canSwitchViews) return;
     this.currentView = view;
     this.currentPage = 1;
     this.currentSearch = '';
@@ -176,8 +177,6 @@ export class RawMaterialsComponent implements OnInit {
   protected clearFilters(): void {
     this.currentSearch = '';
     this.currentStatus = 'all';
-    this.showInactive = false;
-    this.selectDefaultCategory();
     this.currentSort = undefined;
     this.currentPage = 1;
     this.loadItems();
@@ -227,7 +226,7 @@ export class RawMaterialsComponent implements OnInit {
   }
 
   protected saveItem(): void {
-    if (this.currentView === 'consultation' || !this.editingItem || !this.editingItem.code.trim() || !this.editingItem.name.trim() || !this.editingItem.type) return;
+    if (this.currentView === 'consultation' || !this.editingItem || this.hasInvalidStockRange() || !this.editingItem.code.trim() || !this.editingItem.name.trim() || !this.editingItem.type) return;
     this.editingItem = this.formatItemDimensions(this.editingItem);
     this.saving = true;
     this.rawMaterialsService.saveItem(this.editingItem).subscribe(() => {
@@ -280,6 +279,10 @@ export class RawMaterialsComponent implements OnInit {
 
   protected calculatedUnitWeight(item: RawMaterialsTable): number {
     return calculateRawMaterialUnitWeight(item);
+  }
+
+  protected hasInvalidStockRange(): boolean {
+    return !!this.editingItem && Number(this.editingItem.maxStorage) < Number(this.editingItem.minStorage);
   }
 
   private formatItemDimensions(item: RawMaterialsTable): RawMaterialsTable {
@@ -405,9 +408,17 @@ export class RawMaterialsComponent implements OnInit {
       .join(', ') || 'Sem categorias';
   }
 
+  protected useDefaultAvatar(event: Event): void {
+    const image = event.target as HTMLImageElement;
+    if (image.dataset['fallbackApplied']) return;
+    image.dataset['fallbackApplied'] = 'true';
+    image.src = 'assets/images/avatars/default.png';
+  }
+
   private resolveAccess(): void {
     const roles = this.userService.getCurrentUser()?.roles.map(role => role.authority) ?? [];
-    this.isAdmin = roles.length === 0 || roles.includes('ROLE_ADMIN') || roles.includes('ROLE_RAW_MATERIALS_ADMIN');
+    this.canSwitchViews = roles.includes('ROLE_ADMIN');
+    this.isAdmin = this.canSwitchViews || roles.includes('ROLE_RAW_MATERIALS_ADMIN');
     if (this.isAdmin) this.currentView = 'admin';
     else if (roles.includes('ROLE_RAW_MATERIALS_CONSULTATION')) this.currentView = 'consultation';
     else this.currentView = 'operator';
