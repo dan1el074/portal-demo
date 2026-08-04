@@ -9,6 +9,7 @@ import { DepartmentFormComponent } from '../../../../components/forms/department
 import { DepartmentEditFormComponent } from '../../../../components/forms/department/department-edit-form/department-edit-form.component';
 import { Position, PositionFormImput } from '../../../interface/position.interface';
 import { ErrorService } from '../../../services/error.service';
+import { BackNavigationService } from '../../../services/back-navigation.service';
 
 @Component({
   selector: 'app-departments',
@@ -36,6 +37,8 @@ export class DepartmentsComponent implements OnInit {
   protected createDepartmentTab = false;
   protected editDepartmentTab = false;
   protected tableResetKey = 0;
+  private formHistoryActive = false;
+  private historyCloseTargetTab = 0;
   protected editDepartmentData: Position = {
     id: 0,
     name: '',
@@ -49,7 +52,8 @@ export class DepartmentsComponent implements OnInit {
     private departmentService: PostitionService,
     private errorService: ErrorService,
     private toasterService: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private backNav: BackNavigationService
   ) { }
 
   public ngOnInit(): void {
@@ -71,11 +75,21 @@ export class DepartmentsComponent implements OnInit {
     if (key === undefined) return;
     const parsedKey = Number(key);
     if (Number.isNaN(parsedKey)) return;
+
+    if (parsedKey <= 1 && (this.createDepartmentTab || this.editDepartmentTab)) {
+      this.closeFormTabs(parsedKey);
+      return;
+    }
+
     this.activeItemKey = parsedKey;
   }
 
   protected resetTableFilters(): void {
-    this.activeItemKey = 0;
+    if (this.createDepartmentTab || this.editDepartmentTab) {
+      this.closeFormTabs(0);
+    } else {
+      this.activeItemKey = 0;
+    }
     this.tableResetKey++;
   }
 
@@ -91,8 +105,15 @@ export class DepartmentsComponent implements OnInit {
   }
 
   protected toggleEditDepartmentTab(status: boolean): void {
-    this.editDepartmentTab = status;
-    status ? this.activeItemKey = 3 : this.activeItemKey = 0;
+    if (status) {
+      this.createDepartmentTab = false;
+      this.editDepartmentTab = true;
+      this.activeItemKey = 3;
+      this.registerFormHistory();
+      return;
+    }
+
+    this.closeFormTabs();
   }
 
   protected onUpdate(form: {id: number, data: PositionFormImput}): void {
@@ -113,8 +134,48 @@ export class DepartmentsComponent implements OnInit {
   }
 
   protected toggleCreateDepartmentTab(status: boolean): void {
-    this.createDepartmentTab = status;
-    status ? this.activeItemKey = 2 : this.activeItemKey = 0;
+    if (status) {
+      this.editDepartmentTab = false;
+      this.createDepartmentTab = true;
+      this.activeItemKey = 2;
+      this.registerFormHistory();
+      return;
+    }
+
+    this.closeFormTabs();
+  }
+
+  private registerFormHistory(): void {
+    if (this.formHistoryActive) return;
+
+    this.formHistoryActive = true;
+    this.historyCloseTargetTab = 0;
+    this.backNav.register(() => {
+      const targetTab = this.historyCloseTargetTab;
+      this.formHistoryActive = false;
+      this.historyCloseTargetTab = 0;
+      this.resetFormTabs(targetTab);
+    });
+  }
+
+  private closeFormTabs(targetTab = 0): void {
+    const shouldRemoveHistory = this.formHistoryActive;
+    this.formHistoryActive = false;
+    this.historyCloseTargetTab = targetTab;
+    this.resetFormTabs(targetTab);
+
+    if (shouldRemoveHistory) {
+      this.backNav.unregister();
+    } else {
+      this.historyCloseTargetTab = 0;
+    }
+  }
+
+  private resetFormTabs(targetTab = 0): void {
+    this.createDepartmentTab = false;
+    this.editDepartmentTab = false;
+    this.activeItemKey = targetTab;
+    this.cdr.detectChanges();
   }
 
   protected onCreate(data: PositionFormImput): void {

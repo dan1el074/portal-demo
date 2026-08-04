@@ -24,7 +24,7 @@ public class Position {
     @EqualsAndHashCode.Include
     private Long id;
     private String name;
-    private Boolean isLocked;
+    private Boolean isLocked = false;
     private Boolean activated;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updatedAt;
@@ -45,8 +45,4 @@ public class Position {
 
     @OneToMany(mappedBy = "departmentSigned")
     private List<Signature> memorandoSignatures = new ArrayList<>();
-
-    // TODO: não deixar que mudem os nomes dos departamentos usados nos módulos,
-    //  criar novo atributo e fazer essa verificação ao editar, emitindo um erro
-    //  visível ao usuário como POP-UP ao tentar fazer isso!
 }

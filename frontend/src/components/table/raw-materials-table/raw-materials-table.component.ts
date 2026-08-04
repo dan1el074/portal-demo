@@ -1,11 +1,9 @@
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { IColumn, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
 import {
   getRawMaterialStockStatus,
-  RawMaterialCategory,
   RawMaterialsTable,
   RawMaterialStockStatus,
   RawMaterialView,
@@ -15,17 +13,15 @@ registerLocaleData(localePt);
 
 @Component({
   selector: 'app-raw-materials-table',
-  imports: [CommonModule, FormsModule, SmartTableComponent, TemplateIdDirective],
+  imports: [CommonModule, SmartTableComponent, TemplateIdDirective],
   templateUrl: './raw-materials-table.component.html',
   styleUrl: './raw-materials-table.component.scss',
 })
 export class RawMaterialsTableComponent implements OnChanges {
   @Input() data: RawMaterialsTable[] = [];
-  @Input() categories: RawMaterialCategory[] = [];
   @Input() loading = false;
   @Input() mode: RawMaterialView = 'consultation';
   @Input() searchValue = '';
-  @Input() selectedCategory = '';
   @Input() selectedStatus: RawMaterialStockStatus = 'all';
   @Input() showInactive = false;
 
@@ -33,9 +29,7 @@ export class RawMaterialsTableComponent implements OnChanges {
   @Output() sorterChange = new EventEmitter<any>();
   @Output() itemsPerPageChange = new EventEmitter<number>();
   @Output() filterChange = new EventEmitter<string>();
-  @Output() categoryChange = new EventEmitter<string>();
   @Output() statusChange = new EventEmitter<RawMaterialStockStatus>();
-  @Output() inactiveChange = new EventEmitter<boolean>();
   @Output() clearAll = new EventEmitter<void>();
 
   protected columns: (IColumn | string)[] = [];
@@ -82,9 +76,7 @@ export class RawMaterialsTableComponent implements OnChanges {
   }
 
   protected onClearAll(): void {
-    this.selectedCategory = '';
     this.selectedStatus = 'all';
-    this.showInactive = false;
     this.clearAll.emit();
   }
 

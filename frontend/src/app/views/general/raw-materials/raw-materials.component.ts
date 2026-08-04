@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, Tabs2Module } from '@coreui/angular';
 import { SmartPaginationComponent } from '@coreui/angular-pro';
+import { forkJoin } from 'rxjs';
 import { RawMaterialsTableComponent } from '../../../../components/table/raw-materials-table/raw-materials-table.component';
-import { calculateRawMaterialUnitWeight, RawMaterialCategory, RawMaterialStockStatus, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess, RawMaterialView } from '../../../interface/raw-materials.interface';
+import { calculateRawMaterialUnitWeight, formatRawMaterialDecimal, RawMaterialCategory, RawMaterialStockStatus, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess, RawMaterialView } from '../../../interface/raw-materials.interface';
 import { RawMaterialsService } from '../../../services/raw-materials.service';
 import { UserService } from '../../../services/user.service';
+import { environment } from '../../../../environments/environment';
+import { BackNavigationService } from '../../../services/back-navigation.service';
 
 @Component({
   selector: 'app-raw-materials',
@@ -28,6 +31,7 @@ import { UserService } from '../../../services/user.service';
     ModalBodyComponent,
     ModalFooterComponent,
     ButtonCloseDirective,
+    Tabs2Module,
     SmartPaginationComponent,
     RawMaterialsTableComponent,
   ],
@@ -35,6 +39,7 @@ import { UserService } from '../../../services/user.service';
   styleUrl: './raw-materials.component.scss',
 })
 export class RawMaterialsComponent implements OnInit {
+  protected readonly apiUrl = environment.apiUrl;
   protected isAdmin = false;
   protected currentView: RawMaterialView = 'operator';
   protected readonly views: Array<{ value: RawMaterialView; label: string; description: string }> = [
@@ -56,6 +61,7 @@ export class RawMaterialsComponent implements OnInit {
   protected currentCategory = '';
   protected currentStatus: RawMaterialStockStatus = 'all';
   protected showInactive = false;
+  protected activeInventoryTab = '';
 
   protected itemModalVisible = false;
   protected stockModalVisible = false;
@@ -72,19 +78,19 @@ export class RawMaterialsComponent implements OnInit {
 
   private currentSort?: { column: string; state: 'asc' | 'desc' };
   private searchTimer?: ReturnType<typeof setTimeout>;
+  private formHistoryActive: 'item' | 'stock' | null = null;
 
   constructor(
     private rawMaterialsService: RawMaterialsService,
     private userService: UserService,
     private cdf: ChangeDetectorRef,
+    private backNav: BackNavigationService,
   ) {}
 
   ngOnInit(): void {
     this.resolveAccess();
-    this.loadCategories();
-    this.loadUsers();
     this.loadSummary();
-    this.loadItems();
+    this.loadInventoryAccess();
   }
 
   protected setView(view: RawMaterialView): void {
@@ -92,10 +98,41 @@ export class RawMaterialsComponent implements OnInit {
     this.currentView = view;
     this.currentPage = 1;
     this.currentSearch = '';
-    this.currentCategory = '';
     this.currentStatus = 'all';
     this.showInactive = false;
+    this.selectDefaultCategory();
     this.loadItems();
+  }
+
+  protected onInventoryTabChange(key: string | number | undefined): void {
+    if (key === undefined) return;
+    const tab = String(key);
+
+    if (tab === 'inactive') {
+      if (!this.canAccessInactive()) return;
+      this.activeInventoryTab = tab;
+      this.currentCategory = '';
+      this.showInactive = true;
+    } else if (tab.startsWith('category-')) {
+      const categoryId = Number(tab.replace('category-', ''));
+      const category = this.categories.find(item => item.id === categoryId);
+      if (!category || !this.canAccessCategory(category)) return;
+      this.activeInventoryTab = tab;
+      this.currentCategory = category.name;
+      this.showInactive = false;
+    } else return;
+
+    this.currentPage = 1;
+    this.loadItems();
+  }
+
+  protected canAccessCategory(category: RawMaterialCategory): boolean {
+    if (this.isAdmin || this.currentView !== 'operator') return true;
+    return this.currentOperatorAccess()?.categoryIds.includes(category.id) ?? false;
+  }
+
+  protected canAccessInactive(): boolean {
+    return this.isAdmin;
   }
 
   protected filterByStatus(status: RawMaterialStockStatus): void {
@@ -111,20 +148,8 @@ export class RawMaterialsComponent implements OnInit {
     this.searchTimer = setTimeout(() => this.loadItems(), 300);
   }
 
-  protected onCategoryChange(value: string): void {
-    this.currentCategory = value;
-    this.currentPage = 1;
-    this.loadItems();
-  }
-
   protected onStatusChange(value: RawMaterialStockStatus): void {
     this.currentStatus = value;
-    this.currentPage = 1;
-    this.loadItems();
-  }
-
-  protected onInactiveChange(value: boolean): void {
-    this.showInactive = value;
     this.currentPage = 1;
     this.loadItems();
   }
@@ -150,9 +175,9 @@ export class RawMaterialsComponent implements OnInit {
 
   protected clearFilters(): void {
     this.currentSearch = '';
-    this.currentCategory = '';
     this.currentStatus = 'all';
     this.showInactive = false;
+    this.selectDefaultCategory();
     this.currentSort = undefined;
     this.currentPage = 1;
     this.loadItems();
@@ -161,7 +186,7 @@ export class RawMaterialsComponent implements OnInit {
   protected openItemModal(item?: RawMaterialsTable): void {
     if (!this.isAdmin && !(this.currentView === 'consultation' && item)) return;
     this.editingItem = item
-      ? { ...item }
+      ? this.formatItemDimensions({ ...item })
       : {
           id: 0,
           code: '',
@@ -174,22 +199,40 @@ export class RawMaterialsComponent implements OnInit {
           minStorageKg: 0,
           maxStorage: 0,
           maxStorageKg: 0,
-          length: '',
-          width: '',
-          weightPerMillimeter: '',
+          length: '0,000',
+          width: '0,000',
+          thickness: '0,000',
+          weightPerSquareMeter: '0,000',
           active: true,
           updateAt: new Date().toISOString(),
           user: this.userService.getCurrentUser()?.name ?? 'Administrador',
         };
     this.itemModalVisible = true;
+    this.registerFormHistory('item');
+  }
+
+  protected onItemModalVisibleChange(visible: boolean): void {
+    if (!visible && this.itemModalVisible) this.closeItemModal();
+  }
+
+  protected closeItemModal(): void {
+    this.itemModalVisible = false;
+    this.editingItem = null;
+    this.unregisterFormHistory('item');
+  }
+
+  protected formatDimensionField(field: 'length' | 'width' | 'thickness' | 'weightPerSquareMeter'): void {
+    if (!this.editingItem) return;
+    this.editingItem[field] = formatRawMaterialDecimal(this.editingItem[field]);
   }
 
   protected saveItem(): void {
     if (this.currentView === 'consultation' || !this.editingItem || !this.editingItem.code.trim() || !this.editingItem.name.trim() || !this.editingItem.type) return;
+    this.editingItem = this.formatItemDimensions(this.editingItem);
     this.saving = true;
     this.rawMaterialsService.saveItem(this.editingItem).subscribe(() => {
       this.saving = false;
-      this.itemModalVisible = false;
+      this.closeItemModal();
       this.loadItems();
       this.loadSummary();
       this.cdf.detectChanges();
@@ -202,6 +245,17 @@ export class RawMaterialsComponent implements OnInit {
     this.stockQuantity = item.currentStorage;
     this.stockKg = item.currentStorageKg;
     this.stockModalVisible = true;
+    this.registerFormHistory('stock');
+  }
+
+  protected onStockModalVisibleChange(visible: boolean): void {
+    if (!visible && this.stockModalVisible) this.closeStockModal();
+  }
+
+  protected closeStockModal(): void {
+    this.stockModalVisible = false;
+    this.stockTarget = null;
+    this.unregisterFormHistory('stock');
   }
 
   protected openTableItem(item: RawMaterialsTable): void {
@@ -228,13 +282,23 @@ export class RawMaterialsComponent implements OnInit {
     return calculateRawMaterialUnitWeight(item);
   }
 
+  private formatItemDimensions(item: RawMaterialsTable): RawMaterialsTable {
+    return {
+      ...item,
+      length: formatRawMaterialDecimal(item.length),
+      width: formatRawMaterialDecimal(item.width),
+      thickness: formatRawMaterialDecimal(item.thickness),
+      weightPerSquareMeter: formatRawMaterialDecimal(item.weightPerSquareMeter),
+    };
+  }
+
   protected saveStock(): void {
     if (!this.stockTarget) return;
     this.saving = true;
     const user = this.userService.getCurrentUser()?.name ?? 'Operador';
     this.rawMaterialsService.updateStock(this.stockTarget.id, this.stockQuantity, this.stockKg, user).subscribe(() => {
       this.saving = false;
-      this.stockModalVisible = false;
+      this.closeStockModal();
       this.loadItems();
       this.loadSummary();
       this.cdf.detectChanges();
@@ -291,6 +355,10 @@ export class RawMaterialsComponent implements OnInit {
       }
 
       this.categories = this.categories.filter(current => current.id !== category.id);
+      if (this.activeInventoryTab === `category-${category.id}`) {
+        this.selectDefaultCategory();
+        this.loadItems();
+      }
       this.users = this.users.map(user => ({
         ...user,
         categoryIds: user.categoryIds.filter(categoryId => categoryId !== category.id),
@@ -350,6 +418,7 @@ export class RawMaterialsComponent implements OnInit {
       size: this.itemsPerPage,
       search: this.currentSearch,
       category: this.currentCategory,
+      allowedCategories: this.allowedCategoryNames(),
       status: this.currentStatus,
       inactive: this.showInactive,
       sortColumn: this.currentSort?.column,
@@ -371,17 +440,59 @@ export class RawMaterialsComponent implements OnInit {
     });
   }
 
-  private loadCategories(): void {
-    this.rawMaterialsService.getCategories().subscribe(categories => {
+  private loadInventoryAccess(): void {
+    forkJoin({
+      categories: this.rawMaterialsService.getCategories(),
+      users: this.rawMaterialsService.getUsers(),
+    }).subscribe(({ categories, users }) => {
       this.categories = categories;
+      this.users = users;
+      this.selectDefaultCategory();
+      this.loadItems();
       this.cdf.detectChanges();
     });
   }
 
-  private loadUsers(): void {
-    this.rawMaterialsService.getUsers().subscribe(users => {
-      this.users = users;
+  private currentOperatorAccess(): RawMaterialUserAccess | undefined {
+    const currentUserId = this.userService.getCurrentUser()?.id;
+    return this.users.find(user => user.id === currentUserId);
+  }
+
+  private allowedCategoryNames(): string[] | undefined {
+    if (this.isAdmin || this.currentView !== 'operator') return undefined;
+    const categoryIds = this.currentOperatorAccess()?.categoryIds ?? [];
+    return this.categories
+      .filter(category => categoryIds.includes(category.id))
+      .map(category => category.name);
+  }
+
+  private selectDefaultCategory(): void {
+    const category = this.categories.find(item => this.canAccessCategory(item));
+    this.activeInventoryTab = category ? `category-${category.id}` : '';
+    this.currentCategory = category?.name ?? '';
+    this.showInactive = false;
+  }
+
+  private registerFormHistory(form: 'item' | 'stock'): void {
+    if (this.formHistoryActive) return;
+    this.formHistoryActive = form;
+    this.backNav.register(() => {
+      const activeForm = this.formHistoryActive;
+      this.formHistoryActive = null;
+      if (activeForm === 'item') {
+        this.itemModalVisible = false;
+        this.editingItem = null;
+      } else if (activeForm === 'stock') {
+        this.stockModalVisible = false;
+        this.stockTarget = null;
+      }
       this.cdf.detectChanges();
     });
+  }
+
+  private unregisterFormHistory(form: 'item' | 'stock'): void {
+    if (this.formHistoryActive !== form) return;
+    this.formHistoryActive = null;
+    this.backNav.unregister();
   }
 }
