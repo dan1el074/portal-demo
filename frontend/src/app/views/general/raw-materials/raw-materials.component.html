@@ -129,7 +129,10 @@
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Nome</th>
+                    <th class="name-sort-indicator" title="Ordenado alfabeticamente pelo nome" aria-label="Nome, ordenado de A a Z">
+                      Nome
+                      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 14 4-4 4 4"></path></svg>
+                    </th>
                     <th>Modificado</th>
                     <th aria-label="Ações"></th>
                   </tr>
@@ -137,7 +140,7 @@
                 <tbody>
                   @for (category of categories; track category.id) {
                     <tr>
-                      <td class="category-id">{{ category.id }}</td>
+                      <td class="category-id">{{ category.id | number:'2.0-0' }}</td>
                       <td class="category-name">
                         @if (editingCategoryId === category.id) {
                           <input
@@ -213,14 +216,17 @@
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Nome</th>
+                    <th class="name-sort-indicator" title="Ordenado alfabeticamente pelo nome" aria-label="Nome, ordenado de A a Z">
+                      Nome
+                      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 14 4-4 4 4"></path></svg>
+                    </th>
                     <th>Permissões</th>
                   </tr>
                 </thead>
                 <tbody>
                   @for (user of users; track user.id) {
                     <tr>
-                      <td class="category-id">{{ user.id }}</td>
+                      <td class="category-id">{{ user.id | number:'2.0-0' }}</td>
                       <td>
                         <div class="access-name">
                           <img

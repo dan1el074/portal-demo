@@ -309,7 +309,7 @@ export class RawMaterialsComponent implements OnInit {
     const name = this.newCategoryName.trim();
     if (!name || this.categories.some(category => category.name.toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR'))) return;
     this.rawMaterialsService.addCategory(name).subscribe(category => {
-      this.categories = [...this.categories, category];
+      this.categories = this.sortCategories([...this.categories, category]);
       this.newCategoryName = '';
       this.categoryDeleteError = '';
       this.cdf.detectChanges();
@@ -338,7 +338,9 @@ export class RawMaterialsComponent implements OnInit {
       }
 
       if (this.currentCategory === category.name) this.currentCategory = updated.name;
-      this.categories = this.categories.map(current => current.id === updated.id ? updated : current);
+      this.categories = this.sortCategories(
+        this.categories.map(current => current.id === updated.id ? updated : current),
+      );
       this.cancelCategoryEdit();
       this.categoryDeleteError = '';
       this.loadItems();
@@ -445,7 +447,7 @@ export class RawMaterialsComponent implements OnInit {
       categories: this.rawMaterialsService.getCategories(),
       users: this.rawMaterialsService.getUsers(),
     }).subscribe(({ categories, users }) => {
-      this.categories = categories;
+      this.categories = this.sortCategories(categories);
       this.users = users;
       this.selectDefaultCategory();
       this.loadItems();
@@ -471,6 +473,13 @@ export class RawMaterialsComponent implements OnInit {
     this.activeInventoryTab = category ? `category-${category.id}` : '';
     this.currentCategory = category?.name ?? '';
     this.showInactive = false;
+  }
+
+  private sortCategories(categories: RawMaterialCategory[]): RawMaterialCategory[] {
+    return [...categories].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', {
+      numeric: true,
+      sensitivity: 'base',
+    }));
   }
 
   private registerFormHistory(form: 'item' | 'stock'): void {
