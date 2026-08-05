@@ -22,6 +22,8 @@ REQUIRED_VARIABLES=(
     BACKUP_ROOT
     LOG_ROOT
     BACKEND_HEALTH_URL
+    BACKEND_HEALTH_TIMEOUT
+    BACKEND_HEALTH_INTERVAL
     FRONTEND_HEALTH_URL
 )
 
@@ -31,6 +33,16 @@ for VARIABLE in "${REQUIRED_VARIABLES[@]}"; do
         exit 1
     }
 done
+
+[[ "$BACKEND_HEALTH_TIMEOUT" =~ ^[1-9][0-9]*$ ]] || {
+    echo "BACKEND_HEALTH_TIMEOUT inválido"
+    exit 1
+}
+
+[[ "$BACKEND_HEALTH_INTERVAL" =~ ^[1-9][0-9]*$ ]] || {
+    echo "BACKEND_HEALTH_INTERVAL inválido"
+    exit 1
+}
 
 [[ "$BACKUP_ROOT" == "/home/metaro/backup" ]] || {
     echo "Diretório de backups não permitido: $BACKUP_ROOT"
@@ -366,16 +378,30 @@ sudo systemctl start "$APP_SERVICE"
 APP_STOPPED=false
 
 BACKEND_READY=false
+BACKEND_HEALTH_DEADLINE=$((SECONDS + BACKEND_HEALTH_TIMEOUT))
+BACKEND_HEALTH_NEXT_STATUS=$((SECONDS + 30))
 
-for ATTEMPT in $(seq 1 60); do
+rollback_message "Aguardando o backend por até ${BACKEND_HEALTH_TIMEOUT}s"
+
+while (( SECONDS < BACKEND_HEALTH_DEADLINE )); do
     if systemctl is-active --quiet "$APP_SERVICE" &&
        curl --fail --silent --output /dev/null \
+           --connect-timeout 1 --max-time 2 \
            "$BACKEND_HEALTH_URL"; then
         BACKEND_READY=true
         break
     fi
 
-    sleep 2
+    if (( SECONDS >= BACKEND_HEALTH_NEXT_STATUS )); then
+        echo "Backend ainda está inicializando ($((BACKEND_HEALTH_TIMEOUT - BACKEND_HEALTH_DEADLINE + SECONDS))s decorridos)..."
+        BACKEND_HEALTH_NEXT_STATUS=$((BACKEND_HEALTH_NEXT_STATUS + 30))
+    fi
+
+    BACKEND_HEALTH_REMAINING=$((BACKEND_HEALTH_DEADLINE - SECONDS))
+    (( BACKEND_HEALTH_REMAINING > 0 )) || break
+    (( BACKEND_HEALTH_REMAINING < BACKEND_HEALTH_INTERVAL )) &&
+        sleep "$BACKEND_HEALTH_REMAINING" ||
+        sleep "$BACKEND_HEALTH_INTERVAL"
 done
 
 [[ "$BACKEND_READY" == "true" ]] ||
