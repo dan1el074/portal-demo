@@ -53,14 +53,30 @@ export class UserTableComponent implements OnChanges {
     this.deactivateTask.emit(id);
   }
 
-  private column(key: string, label: string, sorter = true): IColumn {
+  private column(key: keyof UserTable | 'actions', label: string, sorter = true): IColumn {
     return {
       key,
       label,
       _labelTemplateId: 'all',
       _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
-      sorter: sorter ? () => 0 : false,
+      sorter: sorter ? (first, second) => this.compareColumn(first as UserTable, second as UserTable, key as keyof UserTable) : false,
       filter: false,
     };
+  }
+
+  private compareColumn(first: UserTable, second: UserTable, key: keyof UserTable): number {
+    if (key === 'updateAt') {
+      return this.dateValue(first[key]) - this.dateValue(second[key]);
+    }
+
+    return String(first[key] ?? '').localeCompare(String(second[key] ?? ''), 'pt-BR', {
+      numeric: true,
+      sensitivity: 'base',
+    });
+  }
+
+  private dateValue(value: UserTable['updateAt']): number {
+    const timestamp = value ? new Date(value).getTime() : 0;
+    return Number.isNaN(timestamp) ? 0 : timestamp;
   }
 }

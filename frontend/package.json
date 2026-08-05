@@ -1,14 +1,19 @@
 {
   "name": "portal-metaro",
-  "version": "1.2.2",
+  "version": "1.3.1",
   "config": {
     "theme": "default"
   },
   "scripts": {
     "ng": "ng",
+    "generate:version": "node scripts/generate-app-version.mjs",
+    "prestart": "npm run generate:version",
     "start": "ng serve -o",
+    "prebuild": "npm run generate:version",
     "build": "ng build",
+    "prewatch": "npm run generate:version",
     "watch": "ng build --watch --configuration development",
+    "pretest": "npm run generate:version",
     "test": "ng test"
   },
   "private": true,

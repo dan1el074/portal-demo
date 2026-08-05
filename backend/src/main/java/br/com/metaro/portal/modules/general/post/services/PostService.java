@@ -10,7 +10,6 @@ import br.com.metaro.portal.modules.general.post.entities.Post;
 import br.com.metaro.portal.modules.general.post.repositories.PostRepository;
 import br.com.metaro.portal.util.picture.Picture;
 import br.com.metaro.portal.util.picture.PictureService;
-import br.com.metaro.portal.util.picture.PictureType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +79,7 @@ public class PostService {
         User me = userService.authenticate();
         post.setAuthor(me);
 
-        if (dto.getIsWarning().equals("true")) post.setIsWarning(true);
+        if (dto.getIsWarning() != null && dto.getIsWarning().equals("true")) post.setIsWarning(true);
         if (!dto.getText().isEmpty()) post.setContent(formatPostContent(dto.getText()));
 
         post = postRepository.save(post);

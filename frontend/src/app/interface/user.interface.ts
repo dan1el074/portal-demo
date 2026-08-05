@@ -1,6 +1,5 @@
 import { Picture } from './image.interface';
 import { Role } from './role.interface';
-import { Notification } from './notification.interface';
 import { PositionMin } from './position.interface';
 
 export interface Credential {
@@ -114,4 +113,9 @@ export interface HomeCardStat {
   iconPath: string;
   iconColor: string;
   iconBg: string;
+}
+
+export type LoginResponse = {
+  authenticated: boolean;
+  expires_in: number;
 }

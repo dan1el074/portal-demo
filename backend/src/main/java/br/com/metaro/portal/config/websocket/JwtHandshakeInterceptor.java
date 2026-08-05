@@ -11,6 +11,7 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
@@ -63,6 +64,18 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     ) { }
 
     private String extractToken(ServerHttpRequest request) {
+        String cookieHeader = request.getHeaders().getFirst("Cookie");
+        if (cookieHeader != null) {
+            String cookieToken = Arrays.stream(cookieHeader.split(";"))
+                    .map(String::trim)
+                    .filter(value -> value.startsWith("portal_access_token="))
+                    .map(value -> value.substring("portal_access_token=".length()))
+                    .findFirst()
+                    .orElse(null);
+            if (cookieToken != null && !cookieToken.isBlank()) return cookieToken;
+        }
+
+        // Compatibilidade temporaria com clientes antigos.
         URI uri = request.getURI();
         String query = uri.getQuery();
 

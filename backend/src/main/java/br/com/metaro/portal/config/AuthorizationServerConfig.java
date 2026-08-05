@@ -48,6 +48,7 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,6 +63,9 @@ public class AuthorizationServerConfig {
     @Value("${security.jwt.duration}")
     private Integer jwtDurationSeconds;
 
+    @Value("${cors.origins}")
+    private String corsOrigins;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -75,7 +79,9 @@ public class AuthorizationServerConfig {
     @Order(2)
     public SecurityFilterChain asSecurityFilterChain(
             HttpSecurity http,
-            RateLimitFilter rateLimitFilter
+            RateLimitFilter rateLimitFilter,
+            CookieTokenResponseHandler cookieTokenResponseHandler,
+            CookieBearerTokenResolver cookieBearerTokenResolver
     ) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.addFilterBefore(rateLimitFilter, SecurityContextHolderFilter.class);
@@ -83,7 +89,7 @@ public class AuthorizationServerConfig {
         http.cors(cors -> {
             CorsConfiguration configuration = new CorsConfiguration();
             configuration.setAllowCredentials(true);
-            configuration.addAllowedOriginPattern("*");
+            configuration.setAllowedOriginPatterns(Arrays.asList(corsOrigins.split(",")));
             configuration.addAllowedHeader("*");
             configuration.addAllowedMethod("*");
 
@@ -96,11 +102,14 @@ public class AuthorizationServerConfig {
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .tokenEndpoint(tokenEndpoint -> tokenEndpoint
                         .accessTokenRequestConverter(new CustomPasswordAuthenticationConverter())
+                        .accessTokenResponseHandler(cookieTokenResponseHandler)
                         .authenticationProvider(new CustomPasswordAuthenticationProvider(
                                 authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder, userRepository
                         )));
 
-        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+        http.oauth2ResourceServer(oauth2 -> oauth2
+                .bearerTokenResolver(cookieBearerTokenResolver)
+                .jwt(Customizer.withDefaults()));
 
         return http.build();
     }
