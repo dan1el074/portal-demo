@@ -8,7 +8,7 @@ export class BackNavigationService {
 
   private readonly platformId = inject(PLATFORM_ID);
 
-  private stack: CloseHandler[] = [];
+  private stack: Array<CloseHandler> = [];
   private listenerAttached = false;
 
   register(onBack: CloseHandler): void {

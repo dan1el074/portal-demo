@@ -44,7 +44,8 @@ public class ResourceServerConfig {
     @Order(3)
     public SecurityFilterChain rsSecurityFilterChain(
             HttpSecurity http,
-            RateLimitFilter rateLimitFilter
+            RateLimitFilter rateLimitFilter,
+            CookieBearerTokenResolver cookieBearerTokenResolver
     ) throws Exception {
         http
             .securityMatcher("/**")
@@ -59,10 +60,13 @@ public class ResourceServerConfig {
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                 .requestMatchers("/api/request-access").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
                 .requestMatchers("/api/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
-            .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()))
+            .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
+                .bearerTokenResolver(cookieBearerTokenResolver)
+                .jwt(Customizer.withDefaults()))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
@@ -87,7 +91,7 @@ public class ResourceServerConfig {
         corsConfig.setAllowedOriginPatterns(Arrays.asList(origins));
         corsConfig.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH"));
         corsConfig.setAllowCredentials(true);
-        corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-XSRF-TOKEN"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);

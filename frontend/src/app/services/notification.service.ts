@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
@@ -13,47 +13,22 @@ export class NotificationService {
   constructor(private http: HttpClient) {}
 
   public getMyNotifications(): Observable<Notification[]> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<Array<Notification>>(this.api, { headers });
+    return this.http.get<Array<Notification>>(this.api);
   }
 
   public getUnreadCount(): Observable<{ unreadCount: number }> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<{ unreadCount: number }>(this.api + "/unread-count", { headers });
+    return this.http.get<{ unreadCount: number }>(this.api + "/unread-count");
   }
 
   public markAsViewed(id: number): Observable<void> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.patch<void>(this.api + '/' + id + '/view', {}, { headers });
+    return this.http.patch<void>(this.api + '/' + id + '/view', {});
   }
 
   public markAllAsViewed(): Observable<void> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.put<void>(this.api + '/all/view', {}, { headers });
+    return this.http.put<void>(this.api + '/all/view', {});
   }
 
   public delete(id: number): Observable<void> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.delete<void>(`${this.api}/${id}`, { headers });
+    return this.http.delete<void>(`${this.api}/${id}`);
   }
 }

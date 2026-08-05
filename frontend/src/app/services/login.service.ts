@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthGuard } from '../config/authGuard';
 import { NotificationWebSocketService } from './websocket.service';
-import { RequestAccess } from '../interface/user.interface';
-
-type LoginResponse = {
-  access_token: string
-}
+import { LoginResponse, RequestAccess } from '../interface/user.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -27,30 +23,17 @@ export class LoginService {
   ) {}
 
   public login(username: string, password: string): Observable<LoginResponse> {
-    const body = new HttpParams()
-      .set('username', username)
-      .set('password', password)
-      .set('grant_type', 'password');
-
+    const body = new HttpParams().set('username', username).set('password', password).set('grant_type', 'password');
     const basicAuth = btoa(`${this.clientId}:${this.clientSecret}`);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${basicAuth}`,
-    });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded', Authorization: `Basic ${basicAuth}` });
 
-    return this.http
-      .post<LoginResponse>(this.api, body.toString(), { headers })
-      .pipe(
-          tap((value) => {
-            localStorage.setItem('auth-token', value.access_token);
-          })
-      );
+    return this.http.post<LoginResponse>(this.api, body.toString(), { headers });
   }
 
   public logout(): void {
-    localStorage.removeItem('auth-token');
     this.authGuardService.clearUser();
     this.websocket.disconnect();
+    this.http.post<void>(environment.apiUrl + '/api/auth/logout', {}).subscribe();
   }
 
   public logoutAndRedirect(): void {

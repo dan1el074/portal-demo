@@ -22,7 +22,7 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<List<PostDto>> getFeed(
-            @RequestParam(required = false) Long lastId,
+            @RequestParam Long lastId,
             @RequestParam(defaultValue = "4") int limit) {
         List<PostDto> feed = postService.getFeed(lastId, limit);
         return ResponseEntity.ok(feed);

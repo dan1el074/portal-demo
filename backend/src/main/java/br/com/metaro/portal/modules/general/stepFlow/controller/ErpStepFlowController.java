@@ -1,7 +1,7 @@
 package br.com.metaro.portal.modules.general.stepFlow.controller;
 
-import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.modules.general.stepFlow.service.StepFlowErpOrderService;
+import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
