@@ -16,19 +16,12 @@ export class AuthGuard {
   ) {}
 
   public canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
-    if (!this.isAuthenticated()) {
-      this.clearUser();
-      this.router.navigate(['/login']);
-      return false;
-    }
-
     const requiredRoles: string[] = route.data?.['roles'];
-    if (!requiredRoles || requiredRoles.length === 0) {
-      return true;
-    }
-
-    return this.getUser().pipe(
+    return this.userService.getUserData().pipe(
+      tap((user) => this.userService.setUser(user)),
       map((user) => {
+        if (!requiredRoles || requiredRoles.length === 0) return true;
+
         const userRoles = user.roles.map((role) => role.authority);
 
         const hasRole = requiredRoles.some(role =>
@@ -46,10 +39,6 @@ export class AuthGuard {
         return of(false);
       })
     );
-  }
-
-  public isAuthenticated(): boolean {
-    return !!localStorage.getItem('auth-token');
   }
 
   public getUser(): Observable<Me> {
@@ -72,7 +61,6 @@ export class AuthGuard {
 
   public clearUser() {
     this.userService.clearUser();
-    localStorage.removeItem('auth-token');
   }
 
   private showError(status: number) {

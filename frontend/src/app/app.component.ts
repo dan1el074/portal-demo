@@ -24,6 +24,8 @@ export class AppComponent implements OnInit {
   readonly #iconSetService = inject(IconSetService);
 
   constructor() {
+    // Remove o JWT deixado por versoes anteriores da aplicacao.
+    localStorage.removeItem('auth-token');
     this.#titleService.setTitle(this.title);
     this.#iconSetService.icons = { cilHome, cilChartPie, cilNewspaper, cilCalendar, cilSettings, cilCursor, cilFork, cilCommentBubble, cibFacebook, cibTwitter, cibLinkedin, cibGoogle, cilUserFemale, cilUser };
     this.#colorModeService.localStorageItemName.set('theme');

@@ -129,9 +129,6 @@ export class DefaultLayoutComponent implements OnInit {
   }
 
   private connectWebsocket(): void {
-    const token = localStorage.getItem('auth-token');
-    if (!token) return;
-
     this.notificationService.getMyNotifications().subscribe(list => {
       this.wsService.setInitialNotifications(list);
     });
@@ -140,7 +137,7 @@ export class DefaultLayoutComponent implements OnInit {
       this.wsService.setInitialUnreadCount(res.unreadCount);
     });
 
-    this.wsService.connect(token);
+    this.wsService.connect();
   }
 
   private checkFirstAccess(): void {

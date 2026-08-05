@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Me, UserData, UserGroup, UserMinData } from './../interface/user.interface';
@@ -15,13 +15,6 @@ export class UserService {
   constructor(private http: HttpClient) {
     const storageUser = localStorage.getItem('user');
     if (storageUser) this.userSubject.next(JSON.parse(storageUser));
-  }
-
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('auth-token');
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
   }
 
   /**
@@ -52,84 +45,39 @@ export class UserService {
   *  Requisições da API
   */
 
-  public getUserData(): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<Me>(this.api + '/me', { headers });
+  public getUserData(): Observable<Me> {
+    return this.http.get<Me>(this.api + '/me');
   }
 
   public getUserConfig(): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<void>(this.api + '/config', { headers });
+    return this.http.get<void>(this.api + '/config');
   }
 
   public findAll(): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<Array<UserMinData>>(this.api, { headers });
+    return this.http.get<Array<UserMinData>>(this.api);
   }
 
   public listByPositionName(): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<Array<UserGroup>>(this.api + '/group', { headers });
+    return this.http.get<Array<UserGroup>>(this.api + '/group');
   }
 
   public findById(id: number): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.get<UserData>(this.api + '/' + id, { headers });
+    return this.http.get<UserData>(this.api + '/' + id);
   }
 
   public insert(data: FormData): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.post<Array<UserMinData>>(this.api, data, { headers });
+    return this.http.post<Array<UserMinData>>(this.api, data);
   }
 
   public update(id: number, data: FormData): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.put<Array<UserMinData>>(this.api + '/' + id, data, { headers });
+    return this.http.put<Array<UserMinData>>(this.api + '/' + id, data);
   }
 
   public updateConfig(data: FormData): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.put<void>(this.api + '/config', data, { headers });
+    return this.http.put<void>(this.api + '/config', data);
   }
 
   public deactivateUser(id: number): Observable<any> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.put<Array<UserMinData>>(this.api + '/deactivate-user/' + id, null, { headers });
+    return this.http.put<Array<UserMinData>>(this.api + '/deactivate-user/' + id, null);
   }
 }

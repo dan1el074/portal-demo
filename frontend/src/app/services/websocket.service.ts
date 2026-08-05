@@ -9,10 +9,8 @@ import { Notification, NotificationSocketMessage } from './../interface/notifica
 })
 export class NotificationWebSocketService {
   private socket: WebSocket | null = null;
-  private currentToken: string | null = null;
   private reconnectTimeout: any = null;
   private manualDisconnect = false;
-
   public notifications = signal<Notification[]>([]);
   public unreadCount = signal<number>(0);
 
@@ -22,8 +20,7 @@ export class NotificationWebSocketService {
     private ngZone: NgZone
   ) {}
 
-  public connect(token: string) {
-    this.currentToken = token;
+  public connect() {
     this.manualDisconnect = false;
 
     if (this.reconnectTimeout) {
@@ -31,20 +28,12 @@ export class NotificationWebSocketService {
       this.reconnectTimeout = null;
     }
 
-    if (!token || this.isTokenExpired(token)) {
-      this.handleUnauthorized();
-      return;
-    }
-
-    if (this.socket && (
-      this.socket.readyState === WebSocket.OPEN ||
-      this.socket.readyState === WebSocket.CONNECTING
-    )) {
+    if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       return;
     }
 
     const wsBaseUrl = environment.apiUrl.replace(/^http/, 'ws');
-    const wsUrl = `${wsBaseUrl}/ws/notifications?token=${token}`;
+    const wsUrl = `${wsBaseUrl}/ws/notifications`;
 
     this.socket = new WebSocket(wsUrl);
 
@@ -93,17 +82,10 @@ export class NotificationWebSocketService {
       console.warn('WebSocket fechado');
       this.socket = null;
 
-      if (this.manualDisconnect) {
-        return;
-      }
-
-      if (!this.currentToken || this.isTokenExpired(this.currentToken)) {
-        this.handleUnauthorized();
-        return;
-      }
+      if (this.manualDisconnect) return;
 
       this.reconnectTimeout = setTimeout(() => {
-        this.connect(this.currentToken!);
+        this.connect();
       }, 3000);
     };
 
@@ -114,7 +96,6 @@ export class NotificationWebSocketService {
 
   public disconnect() {
     this.manualDisconnect = true;
-    this.currentToken = null;
 
     if (this.reconnectTimeout) {
       clearTimeout(this.reconnectTimeout);
@@ -163,25 +144,9 @@ export class NotificationWebSocketService {
     this.unreadCount.set(unread);
   }
 
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const exp = payload.exp;
-
-      if (!exp) {
-        return true;
-      }
-
-      const nowInSeconds = Math.floor(Date.now() / 1000);
-      return exp <= nowInSeconds;
-    } catch {
-      return true;
-    }
-  }
-
   private handleUnauthorized(): void {
     this.disconnect();
-    localStorage.removeItem('auth-token');
+    localStorage.removeItem('user');
     this.router.navigateByUrl('/login');
   }
 }

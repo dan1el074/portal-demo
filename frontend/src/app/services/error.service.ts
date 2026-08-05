@@ -13,12 +13,11 @@ export class ErrorService {
     }
 
     if (error.error.status == 500) {
-      let err: Error = { error: "Erro de servidor, contate o administrador!", path: "", status: 500, timestamp: "" };
-      this.commumError(err);
+      this.toastr.error("Erro de servidor, contate o administrador!");
       return;
     }
 
-    this.commumError(error.error);
+    this.toastr.error(error.error.error);
   }
 
   private notAcceptableError(error: CustomError) {
@@ -38,9 +37,5 @@ export class ErrorService {
     message += "</ul>";
 
     this.toastr.error(message, '', { enableHtml: true });
-  }
-
-  private commumError(error: Error): void {
-    this.toastr.error(error.error);
   }
 }

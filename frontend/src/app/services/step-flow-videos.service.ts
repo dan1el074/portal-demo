@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { StepFlowVideoUploadInfo } from '../interface/step-flow.interface';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -13,29 +13,14 @@ export class StepFlowVideosService {
   constructor(private http: HttpClient) {}
 
   public create(orderId: number, name: string): Observable<StepFlowVideoUploadInfo> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.post<StepFlowVideoUploadInfo>(`${this.api}/${orderId}/video`, { name }, { headers });
+    return this.http.post<StepFlowVideoUploadInfo>(`${this.api}/${orderId}/video`, { name });
   }
 
   public complete(id: number): Observable<void> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.put<void>(`${this.api}/video/${id}/complete`, null, { headers });
+    return this.http.put<void>(`${this.api}/video/${id}/complete`, null);
   }
 
   public deleteById(id: number): Observable<void> {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return this.http.delete<void>(`${this.api}/video/${id}`, { headers });
+    return this.http.delete<void>(`${this.api}/video/${id}`);
   }
 }

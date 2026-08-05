@@ -2,9 +2,9 @@ package br.com.metaro.portal.util.smb.projects.dto;
 
 import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.connection.Connection;
+import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
-import com.hierynomus.smbj.session.Session;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
