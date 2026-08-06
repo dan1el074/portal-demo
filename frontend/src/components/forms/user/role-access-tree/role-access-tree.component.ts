@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ChangeDetectionStrategy } from '@angular/core';
 import { RoleGroup, RoleSummary } from '../../../../app/interface/role.interface';
 
 interface AccessLevel {
@@ -13,6 +13,7 @@ interface AccessLevel {
   selector: 'app-role-access-tree',
   imports: [CommonModule],
   templateUrl: './role-access-tree.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './role-access-tree.component.scss',
 })
 export class RoleAccessTreeComponent implements OnChanges {

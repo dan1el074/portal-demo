@@ -14,6 +14,13 @@ describe('EventComponent', () => {
 
     fixture = TestBed.createComponent(EventComponent);
     component = fixture.componentInstance;
+    component.event = {
+      id: 1,
+      title: 'Evento',
+      picture: { id: 1 },
+      eventDate: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
     fixture.detectChanges();
   });
 

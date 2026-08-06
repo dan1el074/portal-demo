@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InternalCommunicationComponent } from './internal-communication.component';
+import { MemorandoComponent } from './memorando.component';
 
-describe('InternalCommunicationComponent', () => {
-  let component: InternalCommunicationComponent;
-  let fixture: ComponentFixture<InternalCommunicationComponent>;
+describe('MemorandoComponent', () => {
+  let component: MemorandoComponent;
+  let fixture: ComponentFixture<MemorandoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InternalCommunicationComponent]
+      imports: [MemorandoComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(InternalCommunicationComponent);
+    fixture = TestBed.createComponent(MemorandoComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

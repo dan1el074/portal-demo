@@ -4,11 +4,75 @@
 
 @use '@angular/material' as mat;
 @use "@coreui/chartjs/scss/coreui-chartjs";
-@use "ngx-toastr/toastr";
 @use "ngx-spinner/animations/ball-clip-rotate";
 @use "theme";
 @use "custom";
 @import url('https://fonts.googleapis.com/css2?family=Bad+Script&display=swap');
+
+.app-toast-container {
+  position: fixed;
+  z-index: 1090;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  width: min(22rem, calc(100vw - 2rem));
+  gap: .75rem;
+  pointer-events: none;
+}
+
+.app-toast {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  min-height: 4rem;
+  padding: .875rem 2.75rem .875rem 1rem;
+  border-radius: .375rem;
+  color: #fff;
+  background: #2f353a;
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2);
+  pointer-events: auto;
+}
+
+.app-toast--success { background: #2eb85c; }
+.app-toast--error { background: #e55353; }
+.app-toast--warning { background: #f9b115; color: #1f2933; }
+.app-toast--info { background: #3399ff; }
+
+.app-toast__title,
+.app-toast__message {
+  display: block;
+}
+
+.app-toast__close {
+  position: absolute;
+  top: .5rem;
+  right: .625rem;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  opacity: .75;
+  cursor: pointer;
+}
+
+.app-toast__progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: .25rem;
+  background: rgba(255, 255, 255, .65);
+  transform-origin: left;
+  animation-name: app-toast-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes app-toast-progress {
+  to { transform: scaleX(0); }
+}
 
 html {
   @include mat.theme((

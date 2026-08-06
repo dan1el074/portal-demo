@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import {
   ButtonCloseDirective,
   ButtonDirective,
@@ -29,6 +29,7 @@ export interface DeletableStepFlowMedia {
     SpinnerComponent,
   ],
   templateUrl: './delete-step-flow-media-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './delete-step-flow-media-modal.component.scss',
 })
 export class DeleteStepFlowMediaModalComponent {

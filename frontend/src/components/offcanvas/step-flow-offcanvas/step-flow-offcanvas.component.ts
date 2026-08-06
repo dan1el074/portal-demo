@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, LOCALE_ID, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, LOCALE_ID, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, OffcanvasService, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { StepFlowOrder, StepFlowVideo } from '../../../app/interface/step-flow.interface';
@@ -33,6 +33,7 @@ registerLocaleData(localePt);
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],
   templateUrl: './step-flow-offcanvas.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './step-flow-offcanvas.component.scss',
 })
 export class StepFlowOffcanvasComponent {

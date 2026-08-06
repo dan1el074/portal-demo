@@ -14,6 +14,7 @@ describe('RawMaterialModalComponent', () => {
 
     fixture = TestBed.createComponent(RawMaterialModalComponent);
     component = fixture.componentInstance;
+    component.item = { currentStorage: 0 } as any;
     fixture.detectChanges();
   });
 

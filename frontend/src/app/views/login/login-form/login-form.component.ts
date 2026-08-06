@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormControlDirective, FormFloatingDirective } from '@coreui/angular';
 import { FormPasswordDirective } from '@coreui/angular-pro';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -17,6 +17,7 @@ export interface Credential {
     ReactiveFormsModule
   ],
   templateUrl: './login-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './login-form.component.scss',
 })
 export class LoginFormComponent {

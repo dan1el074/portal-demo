@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AvatarComponent, CardBodyComponent, CardComponent } from '@coreui/angular';
 import { Me } from '../../../../app/interface/user.interface';
 import { PostCard } from '../../../../app/interface/post.interface';
@@ -9,6 +9,7 @@ import { NewPostModalComponent } from '../../../modal/post/new-post-modal/new-po
   selector: 'app-new-post',
   imports: [CardComponent, CardBodyComponent, AvatarComponent, NewPostModalComponent],
   templateUrl: './new-post.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './new-post.component.scss',
 })
 export class NewPostComponent {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, ModalToggleDirective } from '@coreui/angular';
 import { cilPencil } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
@@ -18,6 +18,7 @@ import { UserTable } from '../../../../app/interface/user.interface';
     IconDirective
   ],
   templateUrl: './user-delete-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-delete-modal.component.scss',
 })
 export class UserDeleteModalComponent {

@@ -1,5 +1,5 @@
 import { CardBodyComponent, CardComponent, CardHeaderComponent, CardTextDirective, CardTitleDirective, TabDirective, TabPanelComponent, TabsComponent, TabsContentComponent, TabsListComponent } from '@coreui/angular';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoTableCard } from '../../../app/interface/todo.interface';
 
@@ -19,6 +19,7 @@ import { TodoTableCard } from '../../../app/interface/todo.interface';
     TabsComponent
   ],
   templateUrl: './todo.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './todo.component.scss',
 })
 export class TodoComponent {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { UserService } from '../services/user.service';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { Me } from '../interface/user.interface';
 
 @Injectable({

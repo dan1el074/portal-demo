@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonCloseDirective, CarouselComponent, CarouselControlComponent, CarouselIndicatorsComponent, CarouselInnerComponent, CarouselItemComponent, ModalBodyComponent, ModalComponent, ModalToggleDirective } from '@coreui/angular';
 import { PostCard } from '../../../../app/interface/post.interface';
 import { RouterLink } from '@angular/router';
@@ -21,6 +21,7 @@ import { environment } from '../../../../environments/environment';
     RouterLink
   ],
   templateUrl: './image.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './image.component.scss',
 })
 export class ImageComponent implements OnInit, OnChanges {

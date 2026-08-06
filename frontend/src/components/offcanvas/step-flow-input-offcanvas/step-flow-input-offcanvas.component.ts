@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { finalize } from 'rxjs';
 import { Upload } from 'tus-js-client';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent, TemplateIdDirective } from '@coreui/angular';
@@ -44,6 +44,7 @@ import { getSortedStepFlowMedia, matchesStepFlowMediaSearch, StepFlowMedia, Step
     UnsavedChangesStepFlowModalComponent
   ],
   templateUrl: './step-flow-input-offcanvas.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './step-flow-input-offcanvas.component.scss',
 })
 export class StepFlowInputOffcanvasComponent {

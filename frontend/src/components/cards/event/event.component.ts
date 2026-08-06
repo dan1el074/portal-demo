@@ -1,6 +1,6 @@
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
-import { Component, EventEmitter, Input, LOCALE_ID, Output } from '@angular/core';
+import { Component, EventEmitter, Input, LOCALE_ID, Output, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardImgDirective, CardTextDirective, CardTitleDirective, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPencil, cilTrash } from '@coreui/icons';
@@ -14,6 +14,7 @@ registerLocaleData(localePt);
   imports: [CommonModule, CardComponent, CardImgDirective, CardBodyComponent, CardTitleDirective, CardTextDirective, ButtonDirective, DropdownComponent, DropdownToggleDirective, DropdownMenuDirective, DropdownItemDirective, IconDirective],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],
   templateUrl: './event.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event.component.scss'
 })
 export class EventComponent {

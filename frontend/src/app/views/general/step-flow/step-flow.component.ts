@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownDividerDirective, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective } from '@coreui/angular';
 import { IItem, SmartPaginationComponent } from '@coreui/angular-pro';
 import { UserService } from './../../../services/user.service';
@@ -35,6 +35,7 @@ import { NewStepFlowModalComponent } from '../../../../components/modal/step-flo
     TruncatePipe
   ],
   templateUrl: './step-flow.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './step-flow.component.scss',
 })
 export class StepFlowComponent implements OnInit {

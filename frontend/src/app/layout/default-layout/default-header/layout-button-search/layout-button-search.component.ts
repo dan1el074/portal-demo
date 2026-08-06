@@ -1,9 +1,10 @@
-import { Component, EventEmitter, HostListener, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-layout-button-search',
   imports: [],
   templateUrl: './layout-button-search.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './layout-button-search.component.scss',
 })
 export class LayoutButtonSearchComponent {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormDirective, FormTextDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, ModalToggleDirective } from '@coreui/angular';
 import { cilPencil } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
@@ -25,6 +25,7 @@ import { RawMaterialsTable } from '../../../../app/interface/raw-materials.inter
     ButtonDirective
   ],
   templateUrl: './raw-material-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './raw-material-modal.component.scss',
 })
 export class RawMaterialModalComponent implements OnInit {

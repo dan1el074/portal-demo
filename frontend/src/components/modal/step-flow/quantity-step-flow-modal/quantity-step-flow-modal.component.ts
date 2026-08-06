@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { IconDirective } from '@coreui/icons-angular';
@@ -30,6 +30,7 @@ export interface EditableItem {
     FormTextDirective
   ],
   templateUrl: './quantity-step-flow-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './quantity-step-flow-modal.component.scss',
 })
 export class QuantityStepFlowModalComponent implements OnChanges {

@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AvatarComponent, ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, TooltipDirective } from '@coreui/angular';
 import { LoadingButtonComponent } from '@coreui/angular-pro';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { Me } from '../../../../app/interface/user.interface';
 import { PostCard } from '../../../../app/interface/post.interface';
 import { environment } from '../../../../environments/environment';
@@ -13,6 +13,7 @@ interface PreviewItem { url: string; existingId?: number; file?: File; }
   selector: 'app-new-post-modal',
   imports: [FormsModule, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, TooltipDirective, AvatarComponent, LoadingButtonComponent],
   templateUrl: './new-post-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './new-post-modal.component.scss',
 })
 export class NewPostModalComponent implements OnChanges {

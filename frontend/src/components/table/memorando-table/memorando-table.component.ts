@@ -1,6 +1,6 @@
 import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AvatarComponent, BadgeComponent, ButtonDirective, ContainerComponent, PlaceholderAnimationDirective, PlaceholderDirective, TooltipDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilSearch, cilPencil, cilX, cilExternalLink } from '@coreui/icons';
@@ -34,6 +34,7 @@ import { RouterLink } from '@angular/router';
     PlaceholderAnimationDirective
   ],
   templateUrl: './memorando-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './memorando-table.component.scss',
 })
 export class MemorandoTableComponent implements AfterViewInit, OnChanges {
