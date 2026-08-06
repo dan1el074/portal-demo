@@ -192,44 +192,28 @@
           </div>
 
           <div class="sof-file-container">
-            <div class="sof-file-filter" role="group" aria-label="Filtrar arquivos por tipo">
-              <button type="button" [class.active]="mediaFilter === 'all'" [attr.aria-pressed]="mediaFilter === 'all'" (click)="setMediaFilter('all')">Todos</button>
-              <button type="button" [class.active]="mediaFilter === 'video'" [attr.aria-pressed]="mediaFilter === 'video'" (click)="setMediaFilter('video')">Vídeos</button>
-              <button type="button" [class.active]="mediaFilter === 'image'" [attr.aria-pressed]="mediaFilter === 'image'" (click)="setMediaFilter('image')">Fotos</button>
+            <div class="sof-file-toolbar">
+              <div class="sof-file-filter" role="group" aria-label="Filtrar arquivos por tipo">
+                <button type="button" [class.active]="mediaFilter === 'all'" [attr.aria-pressed]="mediaFilter === 'all'" (click)="setMediaFilter('all')">Todos</button>
+                <button type="button" [class.active]="mediaFilter === 'video'" [attr.aria-pressed]="mediaFilter === 'video'" (click)="setMediaFilter('video')">Vídeos</button>
+                <button type="button" [class.active]="mediaFilter === 'image'" [attr.aria-pressed]="mediaFilter === 'image'" (click)="setMediaFilter('image')">Fotos</button>
+              </div>
+              <div class="sof-file-search" [class.expanded]="mediaSearchOpen">
+                @if (mediaSearchOpen) {
+                  <input #mediaSearchInput type="search" [(ngModel)]="mediaSearch" placeholder="Buscar arquivo..." aria-label="Buscar arquivos pelo nome" autocomplete="off" (keydown.escape)="toggleMediaSearch()" />
+                }
+                <button type="button" class="sof-file-search-toggle" [attr.aria-expanded]="mediaSearchOpen" [attr.aria-label]="mediaSearchOpen ? 'Fechar busca de arquivos' : 'Buscar arquivos'" [title]="mediaSearchOpen ? 'Fechar busca' : 'Buscar arquivos'" (click)="toggleMediaSearch()">
+                  @if (mediaSearchOpen) {
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                  }
+                </button>
+              </div>
             </div>
 
-            @for (media of filteredMedia; track media.type + '-' + media.id) {
-              <div class="sof-file-item">
-                @if (media.type === 'image') {
-                  <a class="sof-file-item-box" [href]="apiUrl + '/images/' + media.id" target="_blank">
-                    <ng-container *ngTemplateOutlet="editableFileContent; context: { $implicit: media, type: 'Imagem' }"></ng-container>
-                  </a>
-
-                  @if (media.isCurrentStep) {
-                    <button type="button" class="sof-file-trash-icon" (click)="onDeleteImage(media)" aria-label="Excluir imagem">
-                      <ng-container *ngTemplateOutlet="trashIcon"></ng-container>
-                    </button>
-                  }
-                } @else {
-                  <div class="sof-file-item-box" (click)="onOpenVideoModal(media)" role="button" tabindex="0">
-                    <ng-container *ngTemplateOutlet="editableFileContent; context: { $implicit: media, type: 'Vídeo' }"></ng-container>
-                  </div>
-
-                  @if (media.isCurrentStep) {
-                    <button type="button" class="sof-file-trash-icon" (click)="onDeleteVideo(media)" aria-label="Excluir vídeo">
-                      <ng-container *ngTemplateOutlet="trashIcon"></ng-container>
-                    </button>
-                  }
-                }
-              </div>
-            } @empty {
-              @if (mediaFilter === 'image' || !uploadingVideos().length) {
-                <i class="custom-error image">Nenhum arquivo encontrado para este filtro.</i>
-              }
-            }
-
             @if (mediaFilter !== 'image') {
-              @for (uploading of uploadingVideos(); track uploading.tempId) {
+              @for (uploading of filteredUploadingVideos; track uploading.tempId) {
                 <div class="sof-file-item uploading">
                   <div class="sof-file-item-box">
                     <div class="step-icon">
@@ -252,9 +236,55 @@
                 </div>
               }
             }
+
+            @for (media of filteredMedia; track media.type + '-' + media.id) {
+              <div class="sof-file-item">
+                @if (media.type === 'image') {
+                  <a class="sof-file-item-box media-preview-card" [href]="apiUrl + '/images/' + media.id" target="_blank">
+                    <ng-container *ngTemplateOutlet="editableFileContent; context: { $implicit: media, type: 'Imagem' }"></ng-container>
+                  </a>
+
+                  @if (media.isCurrentStep) {
+                    <button type="button" class="sof-file-trash-icon" (click)="onDeleteImage(media)" aria-label="Excluir imagem">
+                      <ng-container *ngTemplateOutlet="trashIcon"></ng-container>
+                    </button>
+                  }
+                } @else {
+                  <div class="sof-file-item-box media-preview-card" (click)="onOpenVideoModal(media)" role="button" tabindex="0">
+                    <ng-container *ngTemplateOutlet="editableFileContent; context: { $implicit: media, type: 'Vídeo' }"></ng-container>
+                  </div>
+
+                  @if (media.isCurrentStep) {
+                    <button type="button" class="sof-file-trash-icon" (click)="onDeleteVideo(media)" aria-label="Excluir vídeo">
+                      <ng-container *ngTemplateOutlet="trashIcon"></ng-container>
+                    </button>
+                  }
+                }
+              </div>
+            } @empty {
+              @if (mediaFilter === 'image' || !filteredUploadingVideos.length) {
+                <i class="custom-error image">{{ mediaSearch ? 'Nenhum arquivo encontrado para esta busca.' : 'Nenhum arquivo encontrado para este filtro.' }}</i>
+              }
+            }
+
           </div>
 
           <ng-template #editableFileContent let-media let-type="type">
+            <div class="sof-media-preview" [class.video]="media.type === 'video'">
+              @if (media.type === 'image') {
+                <img [src]="apiUrl + '/images/' + media.id" alt="" (error)="onPreviewError($event)">
+              } @else {
+                <span class="sof-media-fallback" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                    <path d="m10 9 5 3-5 3z"></path>
+                  </svg>
+                </span>
+                @if (media.status === 'READY') {
+                  <img [src]="apiUrl + '/api/step-flow/video/' + media.id + '/preview?animated=true'" loading="lazy" alt="" (error)="onPreviewError($event)" />
+                }
+              }
+            </div>
             <div class="step-icon">
               @if (media.type === 'image') {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">

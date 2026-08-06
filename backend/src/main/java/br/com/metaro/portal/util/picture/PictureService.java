@@ -181,6 +181,13 @@ public class PictureService {
     }
 
     @Transactional
+    public Picture replace(Long id, MultipartFile file) throws IOException {
+        Picture picture = pictureRepository.findById(id).orElseThrow(RuntimeException::new);
+        saveCompressedImage(file, Paths.get(picture.getPath()));
+        return picture;
+    }
+
+    @Transactional
     public void deleteCheckingReferences(Long id, Long excludingUserId) throws IOException {
         boolean referenced = pictureRepository
                 .existsUserReference(id, excludingUserId) || pictureRepository.existsEventReference(id);

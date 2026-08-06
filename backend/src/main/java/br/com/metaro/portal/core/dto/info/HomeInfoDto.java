@@ -18,6 +18,7 @@ public class HomeInfoDto {
     private Long openMemorandos;
     private List<FileDto> files;
     private EventDto event;
+    private List<EventDto> events;
     private List<BirthdayDto> monthBirthdays;
     private List<BirthdayDto> todayBirthdays;
     private List<PostDto> feed;

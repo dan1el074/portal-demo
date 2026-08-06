@@ -43,6 +43,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     public List<StepCountProjection> findCountByStep(@Param("status") OrderStatus status);
 
     @Query("""
+        SELECT o.currentStep AS step, COUNT(o) AS count
+        FROM Order o
+        WHERE o.status = 'LATE'
+            OR (o.status = 'IN_PROGRESS' AND o.dueDate < CURRENT_DATE)
+        GROUP BY o.currentStep
+    """)
+    public List<StepCountProjection> findLateCountByStep();
+
+    @Query("""
         SELECT o
         FROM Order o
         JOIN o.steps s

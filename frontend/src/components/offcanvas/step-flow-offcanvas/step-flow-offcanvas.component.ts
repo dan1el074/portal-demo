@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, LOCALE_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, LOCALE_ID, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, OffcanvasService, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
@@ -6,6 +6,7 @@ import { StepFlowService } from '../../../app/services/step-flow.service';
 import { StepFlowOrder, StepFlowVideo } from '../../../app/interface/step-flow.interface';
 import localePt from '@angular/common/locales/pt';
 import { CommonModule, NgTemplateOutlet, registerLocaleData } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 import { TruncatePipe } from '../../../app/pipes/truncate.pipe';
 import { BackNavigationService } from '../../../app/services/back-navigation.service';
@@ -27,6 +28,7 @@ registerLocaleData(localePt);
     AccordionButtonDirective,
     TruncatePipe,
     NgTemplateOutlet,
+    FormsModule,
     VideoModalComponent
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],
@@ -34,6 +36,7 @@ registerLocaleData(localePt);
   styleUrl: './step-flow-offcanvas.component.scss',
 })
 export class StepFlowOffcanvasComponent {
+  @ViewChild('mediaSearchInput') mediaSearchInput?: ElementRef<HTMLInputElement>;
   @Input() isAdmin!: boolean;
   @Input() showMoney!: boolean;
   protected order: StepFlowOrder | null = null;
@@ -43,9 +46,11 @@ export class StepFlowOffcanvasComponent {
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
   protected apiUrl = environment.apiUrl;
   protected mediaFilter: StepFlowMediaFilter = 'all';
+  protected mediaSearch = '';
+  protected mediaSearchOpen = false;
 
   protected get filteredMedia(): Array<StepFlowMedia> {
-    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter);
+    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter, this.mediaSearch);
   }
 
   constructor(
@@ -60,6 +65,8 @@ export class StepFlowOffcanvasComponent {
     this.visible = true;
     this.orderId = orderId;
     this.mediaFilter = 'all';
+    this.mediaSearch = '';
+    this.mediaSearchOpen = false;
     this.getData();
     this.backNav.register(() => this.close());
   }
@@ -99,7 +106,22 @@ export class StepFlowOffcanvasComponent {
     this.selectedVideo = null;
   }
 
+  protected onPreviewError(event: Event): void {
+    (event.target as HTMLImageElement).hidden = true;
+  }
+
   protected setMediaFilter(filter: StepFlowMediaFilter): void {
     this.mediaFilter = filter;
+  }
+
+  protected toggleMediaSearch(): void {
+    if (this.mediaSearchOpen) {
+      this.mediaSearchOpen = false;
+      this.mediaSearch = '';
+      return;
+    }
+
+    this.mediaSearchOpen = true;
+    setTimeout(() => this.mediaSearchInput?.nativeElement.focus());
   }
 }

@@ -1,26 +1,4 @@
 <c-container breakpoint="lg" class="h-auto px-4" fluid>
-  @if (updateAvailable) {
-    <section class="update-alert" role="alert" aria-live="polite">
-      <div class="update-alert-icon" aria-hidden="true">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-          <path d="M21 3v5h-5"></path>
-          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-          <path d="M8 16H3v5"></path>
-        </svg>
-      </div>
-
-      <div class="update-alert-content">
-        <strong>Uma nova versão do Portal está disponível</strong>
-        <span>Atualize a página para carregar as melhorias mais recentes.</span>
-      </div>
-
-      <button cButton class="update-alert-action" color="primary" type="button" (click)="updateApplication()">
-        Atualizar agora
-      </button>
-    </section>
-  }
-
   @if (fatalError) {
     <p>Erro ao carregar informações</p>
   } @else {
@@ -47,14 +25,30 @@
             <app-birthdays [monthBirthdays]="homeInfo.monthBirthdays" [todayBirthdays]="homeInfo.todayBirthdays"></app-birthdays>
           }
 
-          @if (homeInfo.event) {
-            <app-event [event]="homeInfo.event" class="card sticky-card"></app-event>
+          @if (homeInfo.events.length) {
+            <app-event [event]="homeInfo.events[0]" [canEdit]="canPost" (editTask)="editEvent($event)" (deleteTask)="toggleDeleteEventModal($event, true)" class="card sticky-card"></app-event>
+
+            @if (homeInfo.events.length > 1) {
+              <div class="additional-events" aria-label="Próximos eventos">
+                <h2>Mais eventos</h2>
+                @for (event of homeInfo.events.slice(1); track event.id) {
+                  <app-event [event]="event" [canEdit]="canPost" [compact]="true" (editTask)="editEvent($event)" (deleteTask)="toggleDeleteEventModal($event, true)"></app-event>
+                }
+              </div>
+            }
+          } @else if (homeInfo.event) {
+            <app-event [event]="homeInfo.event" [canEdit]="canPost" (editTask)="editEvent($event)" (deleteTask)="toggleDeleteEventModal($event, true)" class="card sticky-card"></app-event>
           }
         </div>
 
         <div class="home right">
           @if (canPost) {
-            <app-new-post (publishTask)="insertPost($event)" [user]="user"></app-new-post>
+            <app-new-post
+              (publishTask)="insertPost($event)"
+              (editPostTask)="editPost($event)"
+              (eventTask)="openEventModal()"
+              [user]="user"
+            ></app-new-post>
           }
 
           @for (post of homeInfo.feed; track post.id) {
@@ -79,3 +73,5 @@
 </c-container>
 
 <app-delete-post-modal [visible]="showDeleteModel" [id]="idPostToDelete" (closeTask)="toggleDeleteModal(0, false)" (deleteTask)="deletePost($event)"></app-delete-post-modal>
+<app-new-event-modal [visible]="showEventModal" [editingEvent]="editingEvent" (closeTask)="closeEventModal()" (publishTask)="saveEvent($event)"></app-new-event-modal>
+<app-delete-post-modal [visible]="showDeleteEventModal" [id]="idEventToDelete" label="evento" (closeTask)="toggleDeleteEventModal(0, false)" (deleteTask)="deleteEvent($event)"></app-delete-post-modal>

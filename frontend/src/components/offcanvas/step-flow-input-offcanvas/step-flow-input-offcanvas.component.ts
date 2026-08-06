@@ -18,7 +18,7 @@ import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, 
 import { StepFlowImage } from '../../../app/interface/image.interface';
 import { environment } from '../../../environments/environment';
 import { EditableItem, QuantityStepFlowModalComponent } from '../../modal/step-flow/quantity-step-flow-modal/quantity-step-flow-modal.component';
-import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../../../app/interface/step-flow-media.interface';
+import { getSortedStepFlowMedia, matchesStepFlowMediaSearch, StepFlowMedia, StepFlowMediaFilter } from '../../../app/interface/step-flow-media.interface';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -48,6 +48,7 @@ import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../.
 })
 export class StepFlowInputOffcanvasComponent {
   @ViewChild('filesSection') filesSection?: ElementRef<HTMLDivElement>;
+  @ViewChild('mediaSearchInput') mediaSearchInput?: ElementRef<HTMLInputElement>;
   @Input() orderId!: number;
   @Input() isAdmin!: boolean;
   @Input() steps!: Array<Step>;
@@ -88,9 +89,15 @@ export class StepFlowInputOffcanvasComponent {
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
   protected mediaFilter: StepFlowMediaFilter = 'all';
+  protected mediaSearch = '';
+  protected mediaSearchOpen = false;
 
   protected get filteredMedia(): Array<StepFlowMedia> {
-    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter);
+    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter, this.mediaSearch);
+  }
+
+  protected get filteredUploadingVideos(): Array<UploadingVideo> {
+    return this.uploadingVideos().filter(video => matchesStepFlowMediaSearch(video.name, this.mediaSearch));
   }
 
   constructor(
@@ -120,6 +127,8 @@ export class StepFlowInputOffcanvasComponent {
     this.visible = true;
     this.orderId = id;
     this.mediaFilter = 'all';
+    this.mediaSearch = '';
+    this.mediaSearchOpen = false;
     this.resetForm();
     this.loadOrder();
     this.backNav.register(() => this.hide());
@@ -424,6 +433,17 @@ export class StepFlowInputOffcanvasComponent {
     this.mediaFilter = filter;
   }
 
+  protected toggleMediaSearch(): void {
+    if (this.mediaSearchOpen) {
+      this.mediaSearchOpen = false;
+      this.mediaSearch = '';
+      return;
+    }
+
+    this.mediaSearchOpen = true;
+    setTimeout(() => this.mediaSearchInput?.nativeElement.focus());
+  }
+
   private openDeleteMediaModal(id: number, name: string, type: 'image' | 'video'): void {
     this.mediaToDelete = { id, name, type };
   }
@@ -523,6 +543,10 @@ export class StepFlowInputOffcanvasComponent {
   protected onOpenVideoModal(video: StepFlowVideo): void {
     this.selectedVideo = { ...video, safeUrl: this.sanitizer.bypassSecurityTrustResourceUrl(video.viewUrl) };
     this.showVideoModal = true;
+  }
+
+  protected onPreviewError(event: Event): void {
+    (event.target as HTMLImageElement).hidden = true;
   }
 
   protected onCloseVideoModal(): void {

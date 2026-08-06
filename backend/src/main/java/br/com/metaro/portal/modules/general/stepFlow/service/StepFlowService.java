@@ -140,7 +140,14 @@ public class StepFlowService {
                 .map(step -> stepMap.getOrDefault(step, 0))
                 .toList();
 
-        return new StepFlowInfoDto(total, progress, complete, late, stepsCount);
+        Map<StepType, Integer> lateStepMap = orderRepository.findLateCountByStep().stream().collect(Collectors
+                .toMap(StepCountProjection::getStep, row -> row.getCount().intValue()));
+
+        List<Integer> stepsLateCount = Arrays.stream(StepType.values())
+                .map(step -> lateStepMap.getOrDefault(step, 0))
+                .toList();
+
+        return new StepFlowInfoDto(total, progress, complete, late, stepsCount, stepsLateCount);
     }
 
     @Transactional

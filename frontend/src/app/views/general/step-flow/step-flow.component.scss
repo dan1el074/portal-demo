@@ -211,6 +211,8 @@
 
       .badges {
         display: flex;
+        flex-direction: column;
+        align-items: center;
         gap: 4px;
         margin-top: 12px;
 
@@ -556,6 +558,17 @@
         transform: rotate(0) !important;
       }
     }
+  }
+}
+
+@media (max-width: 991.98px) {
+  :host c-container { padding-right: 12px !important; padding-left: 12px !important; }
+
+  .sfc-resume .step-card .card-body { padding: 12px; }
+
+  .sfc-card {
+    .sfc-header,
+    .sfc-table { padding-right: 12px; padding-left: 12px; }
   }
 }
 

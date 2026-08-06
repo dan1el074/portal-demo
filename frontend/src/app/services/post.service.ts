@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { NewPost, PostCard } from '../interface/post.interface';
+import { PostCard } from '../interface/post.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +25,7 @@ export class PostService {
     return this.http.delete<void>(this.api + `/${id}`);
   }
 
-  public update(id: number, data: NewPost): Observable<any> {
+  public update(id: number, data: FormData): Observable<any> {
     return this.http.put<void>(this.api + `/${id}`, data);
   }
 }

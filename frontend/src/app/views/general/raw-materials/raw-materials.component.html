@@ -270,7 +270,7 @@
         <p>
           {{ totalItems }} {{ totalItems === 1 ? 'item encontrado' : 'itens encontrados' }}
           @if (currentView === 'operator' && !showInactive) {
-            <span> · clique em um item para atualizar o estoque</span>
+            <span class="operator-update-hint"> · clique em um item para atualizar o estoque</span>
           }
         </p>
       </div>

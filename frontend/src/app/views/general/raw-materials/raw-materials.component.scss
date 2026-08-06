@@ -127,6 +127,7 @@
   align-items: center;
   gap: 8px;
   min-width: 150px;
+  margin-bottom: 20px;
   padding: 10px 12px;
   border: 1px solid var(--cui-border-color);
   border-radius: 10px;
@@ -581,7 +582,12 @@ textarea {
   c-tabs-list {
     overflow-x: auto;
     padding: 0 20px;
-    scrollbar-width: thin;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   button[cTab] {
@@ -1013,4 +1019,29 @@ textarea {
   .permission-grid section {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 768px) {
+  .operator-update-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .stock-legend {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .inventory-page { padding-right: 12px !important; padding-left: 12px !important; }
+
+  .summary-card { padding: 12px; }
+
+  .tool-card-header,
+  .tool-card-content,
+  .table-title,
+  .table-body { padding-right: 12px; padding-left: 12px; }
 }

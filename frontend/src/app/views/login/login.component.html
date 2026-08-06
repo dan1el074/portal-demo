@@ -1,4 +1,19 @@
 <main>
+  @if (updateAvailable) {
+    <section class="login-update" role="alert" aria-live="polite">
+      <div class="login-update-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5"></path>
+        </svg>
+      </div>
+      <div class="login-update-copy">
+        <strong>Nova versão disponível</strong>
+        <span>Atualize antes de entrar para usar a versão mais recente.</span>
+      </div>
+      <button type="button" class="login-update-action" (click)="updateApplication()">Atualizar</button>
+    </section>
+  }
+
   <div class="container" [class.right-panel-active]="togglePage">
     <div class="form-container sign-up-container">
       <h1>Solicitar Acesso</h1>
