@@ -5,7 +5,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from '@app/services/toast.service';
 import { finalize } from 'rxjs';
 import { Upload } from 'tus-js-client';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent, TemplateIdDirective } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent } from '@coreui/angular';
 import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
 import { DeletableStepFlowMedia, DeleteStepFlowMediaModalComponent } from '../../modal/step-flow/delete-step-flow-media-modal/delete-step-flow-media-modal.component';
 import { UnsavedChangesStepFlowModalComponent } from '../../modal/step-flow/unsaved-changes-step-flow-modal/unsaved-changes-step-flow-modal.component';
@@ -16,9 +16,10 @@ import { BackNavigationService } from '../../../app/services/back-navigation.ser
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
 import { StepFlowImage } from '../../../app/interface/image.interface';
-import { environment } from '../../../environments/environment';
 import { EditableItem, QuantityStepFlowModalComponent } from '../../modal/step-flow/quantity-step-flow-modal/quantity-step-flow-modal.component';
-import { getSortedStepFlowMedia, matchesStepFlowMediaSearch, StepFlowMedia, StepFlowMediaFilter } from '../../../app/interface/step-flow-media.interface';
+import { StepFlowHistoryComponent } from './history/step-flow-history.component';
+import { StepFlowEditableMediaComponent } from './editable-media/step-flow-editable-media.component';
+import { StepFlowUploadComponent } from './upload/step-flow-upload.component';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -26,10 +27,6 @@ import { getSortedStepFlowMedia, matchesStepFlowMediaSearch, StepFlowMedia, Step
     CommonModule,
     ButtonDirective,
     ButtonCloseDirective,
-    AccordionComponent,
-    AccordionItemComponent,
-    TemplateIdDirective,
-    AccordionButtonDirective,
     ReactiveFormsModule,
     FormsModule,
     FormSelectDirective,
@@ -39,6 +36,9 @@ import { getSortedStepFlowMedia, matchesStepFlowMediaSearch, StepFlowMedia, Step
     CancelStepFlowModalComponent,
     SpinnerComponent,
     VideoModalComponent,
+    StepFlowHistoryComponent,
+    StepFlowEditableMediaComponent,
+    StepFlowUploadComponent,
     QuantityStepFlowModalComponent,
     DeleteStepFlowMediaModalComponent,
     UnsavedChangesStepFlowModalComponent
@@ -49,7 +49,6 @@ import { getSortedStepFlowMedia, matchesStepFlowMediaSearch, StepFlowMedia, Step
 })
 export class StepFlowInputOffcanvasComponent {
   @ViewChild('filesSection') filesSection?: ElementRef<HTMLDivElement>;
-  @ViewChild('mediaSearchInput') mediaSearchInput?: ElementRef<HTMLInputElement>;
   @Input() orderId!: number;
   @Input() isAdmin!: boolean;
   @Input() steps!: Array<Step>;
@@ -59,7 +58,6 @@ export class StepFlowInputOffcanvasComponent {
   protected order: StepFlowOrder | null = null;
   protected loading: boolean = true;
   protected visible = false;
-  protected apiUrl: string = environment.apiUrl;
   protected form!: FormGroup;
   protected itemsForm!: FormArray;
   protected showCancelModal = false;
@@ -89,17 +87,6 @@ export class StepFlowInputOffcanvasComponent {
   protected uploadingVideos = signal<Array<UploadingVideo>>([]);
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
-  protected mediaFilter: StepFlowMediaFilter = 'all';
-  protected mediaSearch = '';
-  protected mediaSearchOpen = false;
-
-  protected get filteredMedia(): Array<StepFlowMedia> {
-    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter, this.mediaSearch);
-  }
-
-  protected get filteredUploadingVideos(): Array<UploadingVideo> {
-    return this.uploadingVideos().filter(video => matchesStepFlowMediaSearch(video.name, this.mediaSearch));
-  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -127,9 +114,6 @@ export class StepFlowInputOffcanvasComponent {
   public open(id: number): void {
     this.visible = true;
     this.orderId = id;
-    this.mediaFilter = 'all';
-    this.mediaSearch = '';
-    this.mediaSearchOpen = false;
     this.resetForm();
     this.loadOrder();
     this.backNav.register(() => this.hide());
@@ -430,21 +414,6 @@ export class StepFlowInputOffcanvasComponent {
     this.openDeleteMediaModal(video.id, video.name, 'video');
   }
 
-  protected setMediaFilter(filter: StepFlowMediaFilter): void {
-    this.mediaFilter = filter;
-  }
-
-  protected toggleMediaSearch(): void {
-    if (this.mediaSearchOpen) {
-      this.mediaSearchOpen = false;
-      this.mediaSearch = '';
-      return;
-    }
-
-    this.mediaSearchOpen = true;
-    setTimeout(() => this.mediaSearchInput?.nativeElement.focus());
-  }
-
   private openDeleteMediaModal(id: number, name: string, type: 'image' | 'video'): void {
     this.mediaToDelete = { id, name, type };
   }
@@ -477,7 +446,10 @@ export class StepFlowInputOffcanvasComponent {
       next: () => {
         if (!this.order) throw new Error("This order is null!");
 
-        this.order.pictures = this.order?.pictures.filter(p => p.id != id);
+        this.order = {
+          ...this.order,
+          pictures: this.order.pictures.filter(picture => picture.id !== id),
+        };
         this.resetDeleteMediaModal();
         this.cdf.detectChanges();
 
@@ -493,7 +465,10 @@ export class StepFlowInputOffcanvasComponent {
       .subscribe({
       next: () => {
         if (!this.order) throw new Error("This order is null!");
-        this.order.videos = this.order.videos.filter(v => v.id !== id);
+        this.order = {
+          ...this.order,
+          videos: this.order.videos.filter(video => video.id !== id),
+        };
         this.resetDeleteMediaModal();
         this.cdf.detectChanges();
         this.toasterService.success("Vídeo apagado com sucesso!");
@@ -544,10 +519,6 @@ export class StepFlowInputOffcanvasComponent {
   protected onOpenVideoModal(video: StepFlowVideo): void {
     this.selectedVideo = { ...video, safeUrl: this.sanitizer.bypassSecurityTrustResourceUrl(video.viewUrl) };
     this.showVideoModal = true;
-  }
-
-  protected onPreviewError(event: Event): void {
-    (event.target as HTMLImageElement).hidden = true;
   }
 
   protected onCloseVideoModal(): void {

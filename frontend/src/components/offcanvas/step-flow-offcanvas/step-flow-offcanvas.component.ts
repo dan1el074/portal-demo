@@ -1,17 +1,16 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, LOCALE_ID, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, LOCALE_ID, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from '@app/services/toast.service';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, OffcanvasService, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { StepFlowOrder, StepFlowVideo } from '../../../app/interface/step-flow.interface';
 import localePt from '@angular/common/locales/pt';
-import { CommonModule, NgTemplateOutlet, registerLocaleData } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { environment } from '../../../environments/environment';
-import { TruncatePipe } from '../../../app/pipes/truncate.pipe';
+import { CommonModule, registerLocaleData } from '@angular/common';
 import { BackNavigationService } from '../../../app/services/back-navigation.service';
 import { VideoModalComponent } from '../../modal/media/video-modal/video-modal.component';
-import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../../../app/interface/step-flow-media.interface';
+import { StepFlowTimelineComponent } from './timeline/step-flow-timeline.component';
+import { StepFlowOrderItemsComponent } from './order-items/step-flow-order-items.component';
+import { StepFlowMediaListComponent } from './media-list/step-flow-media-list.component';
 
 registerLocaleData(localePt);
 
@@ -26,10 +25,10 @@ registerLocaleData(localePt);
     AccordionItemComponent,
     TemplateIdDirective,
     AccordionButtonDirective,
-    TruncatePipe,
-    NgTemplateOutlet,
-    FormsModule,
-    VideoModalComponent
+    VideoModalComponent,
+    StepFlowTimelineComponent,
+    StepFlowOrderItemsComponent,
+    StepFlowMediaListComponent,
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],
   templateUrl: './step-flow-offcanvas.component.html',
@@ -37,7 +36,6 @@ registerLocaleData(localePt);
   styleUrl: './step-flow-offcanvas.component.scss',
 })
 export class StepFlowOffcanvasComponent {
-  @ViewChild('mediaSearchInput') mediaSearchInput?: ElementRef<HTMLInputElement>;
   @Input() isAdmin!: boolean;
   @Input() showMoney!: boolean;
   protected order: StepFlowOrder | null = null;
@@ -45,14 +43,6 @@ export class StepFlowOffcanvasComponent {
   protected visible = false;
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
-  protected apiUrl = environment.apiUrl;
-  protected mediaFilter: StepFlowMediaFilter = 'all';
-  protected mediaSearch = '';
-  protected mediaSearchOpen = false;
-
-  protected get filteredMedia(): Array<StepFlowMedia> {
-    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter, this.mediaSearch);
-  }
 
   constructor(
     private stepFlowService: StepFlowService,
@@ -65,9 +55,6 @@ export class StepFlowOffcanvasComponent {
   public open(orderId: number): void {
     this.visible = true;
     this.orderId = orderId;
-    this.mediaFilter = 'all';
-    this.mediaSearch = '';
-    this.mediaSearchOpen = false;
     this.getData();
     this.backNav.register(() => this.close());
   }
@@ -107,22 +94,4 @@ export class StepFlowOffcanvasComponent {
     this.selectedVideo = null;
   }
 
-  protected onPreviewError(event: Event): void {
-    (event.target as HTMLImageElement).hidden = true;
-  }
-
-  protected setMediaFilter(filter: StepFlowMediaFilter): void {
-    this.mediaFilter = filter;
-  }
-
-  protected toggleMediaSearch(): void {
-    if (this.mediaSearchOpen) {
-      this.mediaSearchOpen = false;
-      this.mediaSearch = '';
-      return;
-    }
-
-    this.mediaSearchOpen = true;
-    setTimeout(() => this.mediaSearchInput?.nativeElement.focus());
-  }
 }

@@ -42,6 +42,10 @@ module.exports = function(config) {
       Chrome_Custom: {
         base: 'Chrome',
         flags: ['--disable-search-engine-choice-screen']
+      },
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--disable-gpu', '--disable-dev-shm-usage', '--no-sandbox']
       }
     },
     singleRun: false,

@@ -10,6 +10,7 @@ import { RawMaterialsService } from '../../../services/raw-materials.service';
 import { UserService } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment';
 import { BackNavigationService } from '../../../services/back-navigation.service';
+import { RawMaterialsOverviewComponent } from '../../../../components/raw-materials/raw-materials-overview/raw-materials-overview.component';
 
 @Component({
   selector: 'app-raw-materials',
@@ -34,6 +35,7 @@ import { BackNavigationService } from '../../../services/back-navigation.service
     Tabs2Module,
     SmartPaginationComponent,
     RawMaterialsTableComponent,
+    RawMaterialsOverviewComponent,
   ],
   templateUrl: './raw-materials.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -1,0 +1,223 @@
+app-step-flow-timeline { display: block; height: 100%; }
+
+.sof-custom-offcanvas {
+  .sof-custom-body {
+    .sof-custom-tab {
+
+      .timeline-item {
+        position: relative;
+        display: flex;
+        gap: 16px;
+        border-left: 2px solid var(--cui-border-color);
+        padding-left: 26px;
+
+        .sof-icon {
+          display: flex;
+          position: absolute;
+          left: -15px;
+          top: 28px;
+          border: 2px solid var(--cui-border-color);
+          background-color: var(--cui-body-bg);
+          border-radius: 20px;
+          padding: 3px;
+
+          &.first { top: 0; }
+
+          &.complete svg {
+            stroke: #009966;
+          }
+
+          &.in-progress svg {
+            stroke: #155dfb;
+          }
+
+          &.late svg {
+            stroke: #e7000b;
+          }
+
+          &.default svg {
+            stroke: #90a1b9;
+          }
+
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        .timeline-box {
+          margin-bottom: 16px;
+          border-radius: 12px;
+          width: 100%;
+
+          &.complete {
+            border: 1px solid #00996670;
+            background-color: #00996617;
+
+            .step-icon {
+              background-color: #00996620;
+
+              svg {
+                stroke: #009966;
+              }
+            }
+          }
+
+          &.in-progress {
+            border: 1px solid #0369dd70;
+            background-color: #0369dd17;
+
+            .step-icon {
+              background-color: #0369dd20;
+
+              svg {
+                stroke: #0369dd;
+              }
+            }
+          }
+
+          &.late {
+            border: 1px solid #c5232a70;
+            background-color: #c5232a17;
+
+            .step-icon {
+              background-color: #c5232a20;
+
+              svg {
+                stroke: #c5232a;
+              }
+            }
+          }
+
+          &.default {
+            border: 1px solid #90a1b980;
+
+            .step-icon {
+              background-color: #90a1b920;
+
+              svg {
+                stroke: #90a1b9;
+              }
+            }
+          }
+
+          .timeline-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px dashed var(--cui-border-color);
+
+            .timeline-step-identity {
+              display: flex;
+              min-width: 0;
+              align-items: center;
+              margin-right: auto;
+            }
+
+            .step-icon {
+              display: flex;
+              padding: 9px 7px 7px 7px;
+              border-radius: 10px;
+            }
+
+            .timeline-box-title {
+              margin-left: 12px;
+              margin-right: auto;
+
+              .timeline-box-title-department {
+                font-size: 13px;
+                font-weight: 700;
+              }
+
+              .timeline-box-title-user {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 12px;
+                color: var(--cui-medium-emphasis);
+
+                svg {
+                  stroke: var(--cui-medium-emphasis);
+                  width: 14px;
+                }
+              }
+            }
+
+            .timeline-box-dates {
+              font-size: 12px;
+              text-align: end;
+
+              div {
+                display: flex;
+                justify-content: end;
+                gap: 4px;
+
+                span {
+                  color: var(--cui-medium-emphasis);
+                }
+              }
+            }
+          }
+
+          .timeline-box-log-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 16px 20px;
+            font-size: 12px;
+
+            &.default {
+              color: var(--cui-medium-emphasis);
+            }
+
+            .timeline-box-log {
+              display: flex;
+              gap: 12px;
+
+              .timeline-box-log-text {
+                hyphens: auto;
+                overflow-wrap: break-word;
+                word-break: normal;
+                -webkit-hyphens: auto;
+                -ms-hyphens: auto;
+              }
+
+              .timeline-box-log-instant {
+                display: flex;
+                gap: 4px;
+
+                span {
+                  color: var(--cui-medium-emphasis);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .timeline-obs {
+        margin-top: 8px;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #fee685;
+        background-color: #fee68517;
+        font-size: 13px;
+
+        .timeline-obs-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 8px;
+          font-weight: 600;
+          text-transform: uppercase;
+
+          svg {
+            stroke: #e0c24b;
+            width: 16px;
+          }
+        }
+      }
+    }
+  }
+}
