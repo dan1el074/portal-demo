@@ -9,6 +9,7 @@ export interface HomeInfo {
   openMemorandos: number;
   files: Array<FileCard>;
   event: EventCard;
+  events: Array<EventCard>;
   monthBirthdays: Array<Birthday>;
   todayBirthdays: Array<Birthday>;
   feed: Array<PostCard>;

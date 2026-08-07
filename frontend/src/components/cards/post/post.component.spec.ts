@@ -14,6 +14,15 @@ describe('PostComponent', () => {
 
     fixture = TestBed.createComponent(PostComponent);
     component = fixture.componentInstance;
+    component.post = {
+      id: 1,
+      author: { id: 1, name: 'Usuário', position: { id: 1, name: 'Cargo' }, picture: null },
+      createdAt: new Date().toISOString(),
+      content: null,
+      isWarning: false,
+      pictures: []
+    };
+    component.canPost = false;
     fixture.detectChanges();
   });
 

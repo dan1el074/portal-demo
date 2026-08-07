@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CardBodyComponent, CardComponent, CardLinkDirective, CardTitleDirective } from '@coreui/angular';
 import { cilCopy } from '@coreui/icons';
@@ -17,6 +17,7 @@ import { FileService } from '../../../app/services/file.service';
     RouterLink
   ],
   templateUrl: './files.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './files.component.scss',
 })
 export class FilesComponent {

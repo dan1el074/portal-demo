@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -54,6 +56,35 @@ public class PostService {
         Post post = new Post();
         post = rulesForInsert(dto, post);
         return new PostDto(post);
+    }
+
+    @CacheEvict(value = "homeInfo", allEntries = true)
+    @Transactional
+    public PostDto update(Long id, PostInsertDto dto) throws IOException {
+        Post post = postRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        post.setContent(dto.getText() == null || dto.getText().isBlank() ? null : formatPostContent(dto.getText()));
+        post.setIsWarning("true".equals(dto.getIsWarning()));
+        post.setUpdatedAt(Instant.now());
+
+        if (dto.getRetainedImageIds() != null) {
+            Set<Long> retainedIds = Set.of(dto.getRetainedImageIds());
+            List<Picture> removedPictures = post.getPictures().stream()
+                    .filter(picture -> !retainedIds.contains(picture.getId()))
+                    .collect(Collectors.toList());
+
+            for (Picture picture : removedPictures) {
+                post.getPictures().remove(picture);
+                pictureService.delete(picture.getId());
+                entityManager.detach(picture);
+            }
+        }
+
+        if (dto.getImages() != null && dto.getImages().length > 0) {
+            List<MultipartFile> files = List.of(dto.getImages());
+            post.getPictures().addAll(pictureService.savePostImages(files, post));
+        }
+
+        return new PostDto(postRepository.save(post));
     }
 
     @CacheEvict(value = "homeInfo", allEntries = true)

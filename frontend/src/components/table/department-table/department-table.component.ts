@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { AvatarComponent, ButtonDirective, ModalToggleDirective } from '@coreui/angular';
 import { IColumn, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
 import { IconDirective } from '@coreui/icons-angular';
@@ -12,6 +12,7 @@ import { PositionDeleteModalComponent } from '../../modal/position/position-dele
   selector: 'app-department-table',
   imports: [CommonModule, AvatarComponent, ButtonDirective, ModalToggleDirective, IconDirective, SmartTableComponent, TemplateIdDirective, PositionDeleteModalComponent],
   templateUrl: './department-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './department-table.component.scss',
 })
 export class DepartmentTableComponent implements OnChanges {

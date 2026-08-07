@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
 
@@ -18,6 +18,7 @@ import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelD
     FormLabelDirective,
   ],
   templateUrl: './cancel-step-flow-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './cancel-step-flow-modal.component.scss',
 })
 export class CancelStepFlowModalComponent {

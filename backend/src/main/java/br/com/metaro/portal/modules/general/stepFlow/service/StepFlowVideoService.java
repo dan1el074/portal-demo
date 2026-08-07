@@ -61,6 +61,12 @@ public class StepFlowVideoService {
         videoService.markAsReady(video);
     }
 
+    @Transactional(readOnly = true)
+    public String getPreviewUrl(Long id, boolean animated) {
+        Video video = findStepFlowVideo(id);
+        return videoService.getPreviewUrl(video, animated);
+    }
+
     @Transactional
     public void deleteVideo(Long id) {
         User me = userService.authenticate();

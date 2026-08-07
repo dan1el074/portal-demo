@@ -15,14 +15,14 @@
 
       @if (ready) {
         <ng-container>
-        <c-carousel [activeIndex]="index" [interval]="0" [wrap]="false">
+        <c-carousel class="img-carousel" [activeIndex]="index" [animate]="false" [interval]="0" [wrap]="false" (itemChange)="selectSlide($event)">
           <button [cModalToggle]="'modal-' + post.id" class="modal-img-btn" cButtonClose></button>
           <c-carousel-indicators />
           <c-carousel-inner>
 
-            @for (slide of slides; track slide.id) {
-              <c-carousel-item>
-                <img [src]="slide.src" class="d-block w-100" loading="lazy" />
+            @for (slide of slides; track slide.id; let slideIndex = $index) {
+              <c-carousel-item [class.current-slide]="slideIndex === index">
+                <img [src]="slide.src" alt="" decoding="async" loading="eager" />
               </c-carousel-item>
             }
 

@@ -1,4 +1,47 @@
 c-card {
+  position: relative;
+
+  .event-options {
+    position: absolute;
+    z-index: 2;
+    top: 12px;
+    right: 12px;
+
+    .option-btn { display: grid; width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 2px 8px rgb(0 0 0 / 18%); place-items: center; }
+    [cDropdownItem] { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    [cDropdownItem] svg { width: 16px; }
+  }
+
+  &.compact {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    min-height: 82px;
+
+    > img { grid-column: 1; width: 84px; height: 100%; min-height: 82px; object-fit: cover; border-radius: var(--cui-card-inner-border-radius) 0 0 var(--cui-card-inner-border-radius) !important; }
+    c-card-body { display: flex; grid-column: 2; min-width: 0; padding: 10px 14px; flex-direction: column; justify-content: center; }
+    h6 { overflow: hidden; margin-bottom: 4px; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+    p { margin: 0; font-size: 13px; }
+
+    &.editable { grid-template-columns: 84px minmax(0, 1fr) 42px; }
+  }
+
+  .compact-actions {
+    display: flex;
+    grid-column: 3;
+    grid-row: 1;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 3px;
+    margin: 10px 0;
+    border-left: 1px solid var(--cui-border-color);
+
+    button { display: grid; width: 28px; height: 28px; padding: 6px; color: var(--cui-secondary-color); border: 0; border-radius: 6px; place-items: center; }
+    button:hover { color: var(--cui-primary); background: color-mix(in srgb, var(--cui-primary) 10%, transparent); }
+    button.delete-action:hover { color: var(--cui-danger); background: color-mix(in srgb, var(--cui-danger) 10%, transparent); }
+    svg { width: 15px; height: 15px; }
+  }
+
   .date {
     position: absolute;
     left: 20px;

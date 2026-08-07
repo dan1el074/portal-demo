@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, ContainerComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPrint } from '@coreui/icons';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { AuthGuard } from '../../../../config/authGuard';
 import { MemorandoService } from './../../../../services/memorando.service';
 import { NotificationWebSocketService } from '../../../../services/websocket.service';

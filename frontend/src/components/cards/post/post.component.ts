@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvatarComponent, ButtonDirective, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, ModalToggleDirective, RowComponent } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
@@ -32,6 +32,7 @@ import { environment } from '../../../environments/environment';
     ButtonDirective,
     IconDirective
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [{ provide: CarouselConfig, useClass: CarouselCustomConfig }],
 })
 export class PostComponent {

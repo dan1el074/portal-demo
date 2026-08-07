@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, Tabs2Module } from '@coreui/angular';
 import { SmartPaginationComponent } from '@coreui/angular-pro';
@@ -10,6 +10,7 @@ import { RawMaterialsService } from '../../../services/raw-materials.service';
 import { UserService } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment';
 import { BackNavigationService } from '../../../services/back-navigation.service';
+import { RawMaterialsOverviewComponent } from '../../../../components/raw-materials/raw-materials-overview/raw-materials-overview.component';
 
 @Component({
   selector: 'app-raw-materials',
@@ -34,8 +35,10 @@ import { BackNavigationService } from '../../../services/back-navigation.service
     Tabs2Module,
     SmartPaginationComponent,
     RawMaterialsTableComponent,
+    RawMaterialsOverviewComponent,
   ],
   templateUrl: './raw-materials.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './raw-materials.component.scss',
 })
 export class RawMaterialsComponent implements OnInit {

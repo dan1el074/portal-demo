@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormControlDirective, FormFloatingDirective } from '@coreui/angular';
 import { RequestAccess } from '../../../interface/user.interface';
@@ -11,6 +11,7 @@ import { RequestAccess } from '../../../interface/user.interface';
     ReactiveFormsModule
   ],
   templateUrl: './signup-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './signup-form.component.scss',
 })
 export class SignupFormComponent {

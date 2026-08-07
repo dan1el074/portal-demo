@@ -166,6 +166,13 @@
     flex-wrap: wrap;
     width: 100%;
     margin: 8px 0 0;
+
+    &.search-only {
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
+      width: auto;
+      margin: 0 0 8px 6px;
+    }
   }
 
 }

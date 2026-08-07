@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
 import { FormControlDirective } from '@coreui/angular';
 import { cilPencil, cilX } from '@coreui/icons';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { UserService } from './../../../../app/services/user.service';
 import { Position, PositionFormImput } from '../../../../app/interface/position.interface';
 import { UserGroup } from '../../../../app/interface/user.interface';
@@ -18,6 +18,7 @@ import { UserGroup } from '../../../../app/interface/user.interface';
     MultiSelectOptgroupComponent,
   ],
   templateUrl: './department-edit-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './department-edit-form.component.scss',
 })
 export class DepartmentEditFormComponent implements OnInit, OnChanges {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { IColumn, IItem, SmartTableComponent, TemplateIdDirective, TooltipDirective } from '@coreui/angular-pro';
 import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
     TooltipDirective
   ],
   templateUrl: './step-flow-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './step-flow-table.component.scss',
 })
 export class StepFlowTableComponent {

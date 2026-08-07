@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, SpinnerComponent } from '@coreui/angular';
 import { StepFlowService } from '../../../../app/services/step-flow.service';
 import { StepFlowOrderInfo, StepFlowOrderItem } from '../../../../app/interface/step-flow.interface';
@@ -26,6 +26,7 @@ import { TruncatePipe } from '../../../../app/pipes/truncate.pipe';
     TruncatePipe
   ],
   templateUrl: './new-step-flow-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './new-step-flow-modal.component.scss',
 })
 export class NewStepFlowModalComponent {

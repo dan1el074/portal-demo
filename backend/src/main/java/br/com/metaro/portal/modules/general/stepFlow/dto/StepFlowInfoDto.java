@@ -15,4 +15,5 @@ public class StepFlowInfoDto {
     private Integer progressCount;
     private Integer lateCount;
     private List<Integer> stepsCount;
+    private List<Integer> stepsLateCount;
 }

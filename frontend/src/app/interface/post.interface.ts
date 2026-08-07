@@ -5,7 +5,7 @@ export interface PostCard {
   id: number;
   author: UserSummary,
   createdAt: string,
-  content: string,
+  content: string | null,
   isWarning: boolean,
   pictures: Array<Picture>,
 }

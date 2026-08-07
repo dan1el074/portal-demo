@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
 import { cilPencil } from '@coreui/icons';
@@ -21,6 +21,7 @@ import { IconDirective } from '@coreui/icons-angular';
     FormControlDirective
   ],
   templateUrl: './new-memorando-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './new-memorando-modal.component.scss',
 })
 export class NewMemorandoModalComponent implements OnChanges {

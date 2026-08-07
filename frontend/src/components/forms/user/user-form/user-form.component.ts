@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular';
 import { DatePickerComponent, FormPasswordDirective } from '@coreui/angular-pro';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormSelectDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
 import { passwordMatchValidator } from '../../../../app/config/validators';
@@ -9,7 +9,7 @@ import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { PositionMin } from '../../../../app/interface/position.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.component';
 
 @Component({
@@ -33,6 +33,7 @@ import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.co
     RoleAccessTreeComponent
   ],
   templateUrl: './user-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-form.component.scss',
 })
 export class UserFormComponent implements OnChanges {

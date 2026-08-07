@@ -1,9 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ToastrService } from 'ngx-toastr';
-import { ButtonDirective, ContainerComponent } from '@coreui/angular';
-import { EMPTY, Subscription, catchError, interval, startWith, switchMap } from 'rxjs';
+import { ToastrService } from '@app/services/toast.service';
+import { ContainerComponent } from '@coreui/angular';
 import { HomeService } from './../../services/home.service';
 import { UserService } from './../../services/user.service';
 import { PostService } from './../../services/post.service';
@@ -16,17 +14,14 @@ import { NewPostComponent } from './../../../components/cards/post/new-post/new-
 import { DeletePostModalComponent } from '../../../components/modal/post/delete-post-modal/delete-post-modal.component';
 import { HomeInfo } from '../../interface/home.interface';
 import { Me } from '../../interface/user.interface';
-import { NewPost, PostCard } from '../../interface/post.interface';
-import { BUILD_VERSION } from '../../generated/build-version';
-
-interface PublishedAppVersion {
-  version: string;
-}
+import { PostCard } from '../../interface/post.interface';
+import { EventService } from '../../services/event.service';
+import { EventCard } from '../../interface/event.interface';
+import { NewEventModalComponent } from '../../../components/modal/event/new-event-modal/new-event-modal.component';
 
 @Component({
   selector: 'app-home',
   imports: [
-    ButtonDirective,
     ContainerComponent,
     FilesComponent,
     EventComponent,
@@ -35,6 +30,7 @@ interface PublishedAppVersion {
     BirthdaysComponent,
     NewPostComponent,
     DeletePostModalComponent
+    ,NewEventModalComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -42,18 +38,17 @@ interface PublishedAppVersion {
 })
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild(NewPostComponent) newPost!: NewPostComponent;
+  @ViewChild(NewEventModalComponent) eventModal!: NewEventModalComponent;
   protected user!: Me;
   protected fatalError = false;
   protected homeInfo!: HomeInfo;
   protected canPost = false;
   protected showDeleteModel = false;
   protected idPostToDelete = 0;
-  protected showEditModel = false;
-  protected idPostToEdit = 0;
-  protected updateAvailable = false;
-  private publishedVersion?: string;
-  private versionCheckSubscription?: Subscription;
-
+  protected showEventModal = false;
+  protected editingEvent: EventCard | null = null;
+  protected showDeleteEventModal = false;
+  protected idEventToDelete = 0;
   // carregar mais posts
   private _sentinel!: ElementRef;
   protected loadingMore = false;
@@ -72,13 +67,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     private toasterService: ToastrService,
     private userService: UserService,
     private postService: PostService,
-    private http: HttpClient,
+    private eventService: EventService,
     private spinner: NgxSpinnerService,
     private cdf: ChangeDetectorRef
   ) {}
 
   public ngOnInit(): void {
-    this.watchApplicationVersion();
     this.updateData();
 
     this.userService.user$.subscribe(user => {
@@ -98,31 +92,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.observer?.disconnect();
-    this.versionCheckSubscription?.unsubscribe();
-  }
-
-  private watchApplicationVersion(): void {
-    this.versionCheckSubscription = interval(5 * 60 * 1000).pipe(
-      startWith(0),
-      switchMap(() => this.http.get<PublishedAppVersion>(
-        `/assets/app-version.json?v=${Date.now()}`
-      ).pipe(catchError(() => EMPTY)))
-    ).subscribe(({ version }) => {
-      this.publishedVersion = version;
-      this.updateAvailable = version !== BUILD_VERSION;
-      this.cdf.detectChanges();
-    });
-  }
-
-  protected async updateApplication(): Promise<void> {
-    if ('caches' in window) {
-      const cacheNames = await window.caches.keys();
-      await Promise.all(cacheNames.map(cacheName => window.caches.delete(cacheName)));
-    }
-
-    const url = new URL(window.location.href);
-    url.searchParams.set('_appVersion', this.publishedVersion ?? Date.now().toString());
-    window.location.replace(url.toString());
   }
 
   private setupIntersectionObserver(): void {
@@ -166,6 +135,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private updateData(): void {
     this.homeService.getHomeInfo().subscribe({
       next: (data) => {
+        data.events = data.events?.length ? data.events : data.event ? [data.event] : [];
         this.homeInfo = data;
         this.cdf.detectChanges();
       },
@@ -177,11 +147,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   protected toggleEditModal(id: number, status: boolean): void {
-    this.toasterService.info("Isso será implementado nas próximas atualizações.");
-
-    // this.showEditModel = status;
-    // if (status) this.idPostToEdit = id;
+    if (!status) return;
+    const post = this.homeInfo.feed.find(item => item.id === id);
+    if (post) this.newPost.editPost(post);
   }
+
+  protected editEvent(event: EventCard): void {
+    this.editingEvent = event;
+    this.showEventModal = true;
+  }
+
+  protected openEventModal(): void { this.editingEvent = null; this.showEventModal = true; }
+  protected closeEventModal(): void { this.showEventModal = false; this.editingEvent = null; }
+  protected toggleDeleteEventModal(id: number, visible: boolean): void { this.idEventToDelete = id; this.showDeleteEventModal = visible; }
 
   protected toggleDeleteModal(id: number, status: boolean): void {
     this.showDeleteModel = status;
@@ -191,7 +169,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   protected insertPost(post: FormData): void {
     this.postService.insert(post).subscribe({
       next: () => {
-        this.newPost.stopLoad()
+        this.newPost.finishSubmit()
         this.toasterService.success("Publicação enviada com sucesso!")
         this.updateData();
       },
@@ -202,14 +180,57 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected editPost(id: number, post: NewPost): void {
-    this.postService.update(id, post).subscribe({
+  protected editPost(submission: { id: number; data: FormData }): void {
+    this.postService.update(submission.id, submission.data).subscribe({
       next: () => {
-        this.showEditModel = false;
-        this.toasterService.success("Post deletado com sucesso!");
+        this.newPost.finishSubmit();
+        this.toasterService.success("Post editado com sucesso!");
         this.updateData();
       },
-      error: () => this.toasterService.error("Erro ao deletar post!")
+      error: () => {
+        this.newPost.stopLoad();
+        this.toasterService.error("Erro ao editar post!");
+      }
+    });
+  }
+
+  protected insertEvent(data: FormData): void {
+    this.eventService.insert(data).subscribe({
+      next: () => {
+        this.eventModal.finishSubmit();
+        this.toasterService.success("Evento criado com sucesso!");
+        this.updateData();
+      },
+      error: () => {
+        this.eventModal.stopLoad();
+        this.toasterService.error("Erro ao criar evento!");
+      }
+    });
+  }
+
+  protected updateEvent(submission: { id: number; data: FormData }): void {
+    this.eventService.update(submission.id, submission.data).subscribe({
+      next: () => {
+        this.eventModal.finishSubmit();
+        this.toasterService.success("Evento editado com sucesso!");
+        this.updateData();
+      },
+      error: () => {
+        this.eventModal.stopLoad();
+        this.toasterService.error("Erro ao editar evento!");
+      }
+    });
+  }
+
+  protected saveEvent(submission: { id?: number; data: FormData }): void {
+    if (submission.id) this.updateEvent({ id: submission.id, data: submission.data });
+    else this.insertEvent(submission.data);
+  }
+
+  protected deleteEvent(id: number): void {
+    this.eventService.delete(id).subscribe({
+      next: () => { this.showDeleteEventModal = false; this.toasterService.success('Evento apagado com sucesso!'); this.updateData(); },
+      error: () => this.toasterService.error('Erro ao apagar evento!')
     });
   }
 

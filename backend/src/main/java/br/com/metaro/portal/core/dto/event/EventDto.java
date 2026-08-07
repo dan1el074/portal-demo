@@ -15,12 +15,14 @@ public class EventDto {
     private Long id;
     private String title;
     private Instant eventDate;
+    private Instant updatedAt;
     private PictureMinDto picture;
 
     public EventDto(EventProjection projection) {
         this.id = projection.getId();
         this.title = projection.getTitle();
         this.eventDate = projection.getEventDate();
+        this.updatedAt = projection.getUpdatedAt();
         this.picture = projection.getPictureId() != null ? new PictureMinDto(projection.getPictureId()) : null;
     }
 }

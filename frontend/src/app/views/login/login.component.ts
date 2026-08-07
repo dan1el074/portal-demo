@@ -1,11 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
+import { EMPTY, Subscription, catchError, interval, startWith, switchMap } from 'rxjs';
 import { LoginService } from '../../services/login.service';
+import { BUILD_VERSION } from '../../generated/build-version';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { SignupFormComponent } from './signup-form/signup-form.component';
 import { Credential, RequestAccess } from './../../interface/user.interface';
+
+interface PublishedAppVersion {
+  version: string;
+}
 
 @Component({
   selector: 'app-login',
@@ -14,14 +21,18 @@ import { Credential, RequestAccess } from './../../interface/user.interface';
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   @ViewChild('loginFormComp') loginFormComp!: LoginFormComponent;
   @ViewChild('signFormComp') signFormComp!: SignupFormComponent;
   togglePage = false;
+  protected updateAvailable = false;
+  private publishedVersion?: string;
+  private versionCheckSubscription?: Subscription;
 
   constructor(
     private router: Router,
     private loginService: LoginService,
+    private http: HttpClient,
     private toasterService: ToastrService,
     private spinner: NgxSpinnerService,
     private cdr: ChangeDetectorRef,
@@ -32,7 +43,36 @@ export class LoginComponent implements OnInit {
     document.documentElement.setAttribute('data-coreui-theme', 'light');
     this.loginService.logout();
     sessionStorage.setItem('first-access', 'true');
+    this.watchApplicationVersion();
     setTimeout(() => console.clear(), 200);
+  }
+
+  public ngOnDestroy(): void {
+    this.versionCheckSubscription?.unsubscribe();
+  }
+
+  private watchApplicationVersion(): void {
+    this.versionCheckSubscription = interval(5 * 60 * 1000).pipe(
+      startWith(0),
+      switchMap(() => this.http.get<PublishedAppVersion>(
+        `/assets/app-version.json?v=${Date.now()}`
+      ).pipe(catchError(() => EMPTY)))
+    ).subscribe(({ version }) => {
+      this.publishedVersion = version;
+      this.updateAvailable = version !== BUILD_VERSION;
+      this.cdr.detectChanges();
+    });
+  }
+
+  protected async updateApplication(): Promise<void> {
+    if ('caches' in window) {
+      const cacheNames = await window.caches.keys();
+      await Promise.all(cacheNames.map(cacheName => window.caches.delete(cacheName)));
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('_appVersion', this.publishedVersion ?? Date.now().toString());
+    window.location.replace(url.toString());
   }
 
   protected async onLogin(credentials: Credential): Promise<void> {

@@ -49,6 +49,7 @@ public class InfoService {
         List<FileDto> filesDto = fileRepository.findTop3ForHome();
 
         EventDto eventDto = eventService.getEvent();
+        List<EventDto> eventsDto = eventService.getEvents();
 
         LocalDate today = LocalDate.now();
         List<BirthdayDto> allBirthdays = userRepository.findBirthdaysOfCurrentMonth()
@@ -80,7 +81,7 @@ public class InfoService {
                 })
                 .toList();
 
-        return new HomeInfoDto(upcomingEvents, 16L, openMemorandos, filesDto, eventDto, monthBirthdaysDto,
+        return new HomeInfoDto(upcomingEvents, 16L, openMemorandos, filesDto, eventDto, eventsDto, monthBirthdaysDto,
                 todayBirthdaysDto, feedDto);
     }
 
