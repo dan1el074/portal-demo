@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -25,16 +26,38 @@ class PictureServiceTests {
     Path imageDirectory;
 
     private PictureService pictureService;
+    private PictureRepository pictureRepository;
 
     @BeforeEach
     void setUp() {
-        PictureRepository pictureRepository = mock(PictureRepository.class);
+        pictureRepository = mock(PictureRepository.class);
         when(pictureRepository.saveAll(anyList()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         pictureService = new PictureService();
         ReflectionTestUtils.setField(pictureService, "pictureRepository", pictureRepository);
         ReflectionTestUtils.setField(pictureService, "serverPath", imageDirectory.toString());
+    }
+
+    @Test
+    void shouldCreateAndPersistSmallThumbnailInSiblingDirectory() throws Exception {
+        Path originalPath = imageDirectory.resolve("STEP_FLOW_original.jpg");
+        BufferedImage original = new BufferedImage(800, 400, BufferedImage.TYPE_INT_RGB);
+        ImageIO.write(original, "jpg", originalPath.toFile());
+
+        Picture picture = new Picture();
+        picture.setId(1L);
+        picture.setPath(originalPath.toString());
+        when(pictureRepository.findById(1L)).thenReturn(Optional.of(picture));
+
+        Path thumbnailPath = pictureService.getOrCreateThumbnail(1L);
+        BufferedImage thumbnail = ImageIO.read(thumbnailPath.toFile());
+
+        assertThat(thumbnailPath.getParent()).isEqualTo(imageDirectory.resolveSibling("thumbs"));
+        assertThat(thumbnailPath.getFileName()).hasToString(originalPath.getFileName().toString());
+        assertThat(thumbnail.getWidth()).isEqualTo(240);
+        assertThat(thumbnail.getHeight()).isEqualTo(120);
+        assertThat(picture.getThumb()).isEqualTo(thumbnailPath.toString());
     }
 
     @Test

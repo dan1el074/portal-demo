@@ -17,8 +17,7 @@ export class AuthGuard {
 
   public canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     const requiredRoles: string[] = route.data?.['roles'];
-    return this.userService.getUserData().pipe(
-      tap((user) => this.userService.setUser(user)),
+    return this.getUser().pipe(
       map((user) => {
         if (!requiredRoles || requiredRoles.length === 0) return true;
 

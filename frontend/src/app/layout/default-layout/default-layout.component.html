@@ -6,8 +6,8 @@
     </c-sidebar-brand>
   </c-sidebar-header>
 
-  <ng-scrollbar pointerEventsMethod="scrollbar" visibility="hover">
-    <c-sidebar-nav [navItems]="navItems" dropdownMode="close" compact />
+  <ng-scrollbar orientation="vertical" pointerEventsMethod="scrollbar" visibility="hover">
+    <c-sidebar-nav [navItems]="navItems" dropdownMode="path" compact />
   </ng-scrollbar>
 
   @if (!sidebar1.narrow) {

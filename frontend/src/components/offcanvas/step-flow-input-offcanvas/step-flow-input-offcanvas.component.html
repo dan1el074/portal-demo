@@ -272,7 +272,7 @@
           <ng-template #editableFileContent let-media let-type="type">
             <div class="sof-media-preview" [class.video]="media.type === 'video'">
               @if (media.type === 'image') {
-                <img [src]="apiUrl + '/images/' + media.id" alt="" (error)="onPreviewError($event)">
+                <img [src]="apiUrl + '/images/' + media.id + '/thumb'" loading="lazy" alt="" (error)="onPreviewError($event)">
               } @else {
                 <span class="sof-media-fallback" aria-hidden="true">
                   <svg viewBox="0 0 24 24">

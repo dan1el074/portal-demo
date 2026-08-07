@@ -786,6 +786,18 @@
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 @media (max-width: 621px) {
   .sof-custom-offcanvas {
     width: 100%;
@@ -801,7 +813,7 @@
       }
 
       .timeline-item {
-        display: block;
+        // display: block;
         padding-left: 18px;
 
         .sof-icon {
@@ -890,10 +902,6 @@
           }
 
           .timeline-box-log-container {
-            gap: 0;
-            padding: 4px 16px 10px;
-            font-size: 13px;
-
             .timeline-box-log {
               min-width: 0;
               flex-direction: column;

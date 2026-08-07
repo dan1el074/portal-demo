@@ -23,6 +23,7 @@ public class Picture {
     private Long id;
     private String name;
     private String path;
+    private String thumb;
     @Enumerated(EnumType.STRING)
     private PictureType type;
     private String size;

@@ -26,16 +26,16 @@
           }
 
           @if (homeInfo.events.length) {
-            @if (homeInfo.events.length > 1) {
+            <app-event [event]="homeInfo.events[0]" [canEdit]="canPost" (editTask)="editEvent($event)" (deleteTask)="toggleDeleteEventModal($event, true)" class="card sticky-card"></app-event>
+
+            @if (homeInfo.events.length > 1 && canPost) {
               <div class="additional-events" aria-label="Próximos eventos">
-                <h2>Eventos</h2>
+                <h2>Mais eventos</h2>
                 @for (event of homeInfo.events.slice(1); track event.id) {
                   <app-event [event]="event" [canEdit]="canPost" [compact]="true" (editTask)="editEvent($event)" (deleteTask)="toggleDeleteEventModal($event, true)"></app-event>
                 }
               </div>
             }
-
-            <app-event [event]="homeInfo.events[0]" [canEdit]="canPost" (editTask)="editEvent($event)" (deleteTask)="toggleDeleteEventModal($event, true)" class="card sticky-card"></app-event>
           } @else if (homeInfo.event) {
             <app-event [event]="homeInfo.event" [canEdit]="canPost" (editTask)="editEvent($event)" (deleteTask)="toggleDeleteEventModal($event, true)" class="card sticky-card"></app-event>
           }

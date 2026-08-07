@@ -40,6 +40,10 @@ export class ImageComponent implements OnInit, OnChanges {
     if (changes['post']) this.buildSlides();
   }
 
+  protected selectSlide(index: number): void {
+    this.index = index;
+  }
+
   private buildSlides(): void {
     this.slides = [];
     for(let i=0; i<this.post.pictures.length; i++) {

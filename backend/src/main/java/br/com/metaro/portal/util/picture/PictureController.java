@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 public class PictureController {
     @Autowired
     private PictureRepository pictureRepository;
+    @Autowired
+    private PictureService pictureService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Resource> getImage(@PathVariable Long id) throws IOException {
@@ -32,6 +34,21 @@ public class PictureController {
 
         if (!resource.exists()) {
             throw new RuntimeException("Arquivo não encontrado no disco");
+        }
+
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(10, TimeUnit.DAYS))
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(resource);
+    }
+
+    @GetMapping("/{id}/thumb")
+    public ResponseEntity<Resource> getThumbnail(@PathVariable Long id) throws IOException {
+        Path path = pictureService.getOrCreateThumbnail(id);
+        Resource resource = new UrlResource(path.toUri());
+
+        if (!resource.exists()) {
+            throw new RuntimeException("Thumbnail não encontrada no disco");
         }
 
         return ResponseEntity.ok()
