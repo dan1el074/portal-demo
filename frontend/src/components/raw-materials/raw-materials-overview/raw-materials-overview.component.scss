@@ -1,13 +1,21 @@
 
+:host {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 19.2px;
   margin-bottom: 0;
 }
 
 .summary-card {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 14px;
   padding: 16px 18px;
@@ -46,6 +54,7 @@
 
   > span:last-child {
     display: flex;
+    min-width: 0;
     flex-direction: column;
   }
 
@@ -58,6 +67,7 @@
     margin-top: 8px;
     color: var(--cui-medium-emphasis);
     font-size: 13px;
+    overflow-wrap: anywhere;
   }
 
   &.low {
@@ -83,8 +93,14 @@
   margin: 19.2px 0 0;
 }
 
+.admin-tools > * {
+  min-width: 0;
+}
+
 .tool-card,
 .inventory-table-card {
+  min-width: 0;
+  overflow: hidden;
   border: 1px solid var(--cui-border-color);
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
@@ -103,6 +119,7 @@
 }
 
 .tool-card-content {
+  min-width: 0;
   padding: 20px;
 }
 
@@ -141,6 +158,7 @@
 .tool-card-description {
   color: var(--cui-medium-emphasis);
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .category-form {
@@ -182,7 +200,10 @@ textarea {
 
 .category-table-container,
 .access-table-container {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
   border: 1px solid var(--cui-border-color);
   border-radius: var(--cui-border-radius);
 }
@@ -190,6 +211,7 @@ textarea {
 .category-table,
 .access-table {
   width: 100%;
+  min-width: 500px;
   margin: 0;
   border-collapse: collapse;
   font-size: 13px;
@@ -403,5 +425,48 @@ textarea {
     border-color: var(--cui-primary);
     background: rgba(var(--cui-primary-rgb), .06);
     color: var(--cui-primary);
+  }
+}
+
+@media (max-width: 991.98px) {
+  .summary-card {
+    padding: 12px;
+  }
+
+  .tool-card-header,
+  .tool-card-content {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-tools {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-form {
+    align-items: stretch;
+    flex-direction: column;
+
+    button {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+
+  .tool-card-header,
+  .tool-card-content {
+    padding-right: 10px;
+    padding-left: 10px;
   }
 }

@@ -1,5 +1,15 @@
 :host {
   display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+:host ::ng-deep .table-responsive {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
 }
 
 .inventory-filter-bar {
@@ -104,7 +114,7 @@
 
 .description-field {
   display: inline-block;
-  min-width: 230px;
+  min-width: min(230px, 70vw);
   max-width: 390px;
   white-space: normal;
 }
@@ -162,6 +172,28 @@
 }
 
 @media (max-width: 760px) {
+  :host ::ng-deep .raw-materials-smart-table > .row.my-2.mx-0 {
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    > .col-auto {
+      min-width: 0;
+    }
+
+    > .col-auto:first-child {
+      width: 100%;
+      flex: 1 1 100%;
+    }
+
+    c-smart-table-filter,
+    c-smart-table-filter input {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
   .inventory-filter-bar {
     flex-wrap: wrap;
     width: 100%;
@@ -173,6 +205,21 @@
       width: auto;
       margin: 0 0 8px 6px;
     }
+  }
+
+  .status-filter {
+    max-width: calc(100% - 46px);
+    margin-left: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .custom-td {
+    padding: 10px 12px;
   }
 
 }
