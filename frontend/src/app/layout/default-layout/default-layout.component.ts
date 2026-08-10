@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
-import { INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
+import { INavData, ShadowOnScrollDirective, SidebarBrandComponent, SidebarComponent, SidebarFooterComponent, SidebarHeaderComponent, SidebarNavComponent, SidebarService, SidebarToggleDirective, SidebarTogglerDirective} from '@coreui/angular';
 import { Me } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { NotificationService } from '../../services/notification.service';
@@ -27,7 +27,6 @@ import { navItems } from './_nav';
     DefaultHeaderComponent,
     NgScrollbar,
     RouterOutlet,
-    RouterLink,
     ShadowOnScrollDirective,
     LayoutSearchModalComponent,
     LayoutAlertModalComponent
@@ -57,6 +56,8 @@ export class DefaultLayoutComponent implements OnInit {
     private userService: UserService,
     private notificationService: NotificationService,
     private wsService: NotificationWebSocketService,
+    private sidebarService: SidebarService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -165,5 +166,12 @@ export class DefaultLayoutComponent implements OnInit {
   protected toggleSearchModal(status: boolean): void {
     this.showSearchModal = status;
     this.cdr.detectChanges();
+  }
+
+  protected goHome(): void {
+    if (window.matchMedia('(max-width: 991px)').matches) {
+      this.sidebarService.toggle({ id: 'sidebar1', visible: false });
+    }
+    void this.router.navigate(['/home']);
   }
 }

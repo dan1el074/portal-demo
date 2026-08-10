@@ -1,16 +1,16 @@
-<c-card class="border">
-  <img cCardImg="top" [src]="apiUrl + '/images/' + event.picture.id" />
-  <div class="date">
-    <div class="month">{{ event.eventDate | date: "MMM" : '-0300' }}</div>
-    <div class="day">{{ event.eventDate | date: "dd" : '-0300' }}</div>
-  </div>
-
-  <c-card-body>
-    <h6 cCardTitle>{{ event.title }}</h6>
-    <p cCardText>
-      <small class="text-medium-emphasis">
-        {{ event.eventDate | date: "dd MMM, y 'às' HH:mm" : '-0300' }}
-      </small>
-      </p>
-  </c-card-body>
+<c-card class="border" [class.compact]="compact" [class.editable]="compact && canEdit">
+  @if (canEdit && compact) {
+    <div class="compact-actions" aria-label="Ações do evento">
+      <button cButton color="transparent" type="button" aria-label="Editar evento" title="Editar" (click)="editTask.emit(event)"><svg [cIcon]="icons.cilPencil"></svg></button>
+      <button cButton color="transparent" type="button" class="delete-action" aria-label="Apagar evento" title="Apagar" (click)="deleteTask.emit(event.id)"><svg [cIcon]="icons.cilTrash"></svg></button>
+    </div>
+  } @else if (canEdit) {
+    <c-dropdown alignment="end" class="event-options">
+      <button [caret]="false" cButton cDropdownToggle class="p-0 option-btn" color="light" aria-label="Opções do evento"><svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true"><g fill-rule="evenodd" transform="translate(-446 -350)"><path d="M458 360a2 2 0 1 1-4 0 2 2 0 0 1 4 0m6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0m-12 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0"></path></g></svg></button>
+      <ul cDropdownMenu><li cDropdownItem (click)="editTask.emit(event)"><svg [cIcon]="icons.cilPencil"></svg> Editar</li><li cDropdownItem (click)="deleteTask.emit(event.id)"><svg [cIcon]="icons.cilTrash"></svg> Apagar</li></ul>
+    </c-dropdown>
+  }
+  <img cCardImg="top" [src]="apiUrl + '/images/' + event.picture.id + '?v=' + event.updatedAt" [alt]="event.title" />
+  @if (!compact) { <div class="date"><div class="month">{{ monthLabel(event.eventDate) }}</div><div class="day">{{ event.eventDate | date: 'dd' : '-0300' }}</div></div> }
+  <c-card-body><h6 cCardTitle>{{ event.title }}</h6><p cCardText><small class="text-medium-emphasis">{{ event.eventDate | date: "dd MMM, y 'às' HH:mm" : '-0300' }}</small></p></c-card-body>
 </c-card>

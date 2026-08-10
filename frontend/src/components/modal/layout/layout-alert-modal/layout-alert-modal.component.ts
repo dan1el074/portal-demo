@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent } from '@coreui/angular';
 import { PendingIssues } from '../../../../app/interface/user.interface';
 
@@ -12,6 +12,7 @@ import { PendingIssues } from '../../../../app/interface/user.interface';
     ButtonDirective
   ],
   templateUrl: './layout-alert-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './layout-alert-modal.component.scss',
 })
 export class LayoutAlertModalComponent {

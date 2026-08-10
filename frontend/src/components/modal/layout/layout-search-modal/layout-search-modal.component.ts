@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonCloseDirective, ColDirective, ModalBodyComponent, ModalComponent, ModalHeaderComponent, PlaceholderAnimationDirective, PlaceholderDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
@@ -20,6 +20,7 @@ import { FileService } from '../../../../app/services/file.service';
     ColDirective
   ],
   templateUrl: './layout-search-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './layout-search-modal.component.scss',
 })
 export class LayoutSearchModalComponent implements OnDestroy, OnChanges {

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping(value = "/api/step-flow")
 public class StepFlowVideoController {
@@ -31,6 +33,16 @@ public class StepFlowVideoController {
     public ResponseEntity<Void> completeVideoUpload(@PathVariable Long id) {
         stepFlowVideoService.completeVideoUpload(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/video/{id}/preview")
+    public ResponseEntity<Void> previewVideo(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean animated
+    ) {
+        return ResponseEntity.status(302)
+                .location(URI.create(stepFlowVideoService.getPreviewUrl(id, animated)))
+                .build();
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")

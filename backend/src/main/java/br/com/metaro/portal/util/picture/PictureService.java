@@ -38,6 +38,7 @@ import java.util.UUID;
 
 @Service
 public class PictureService {
+    private static final int THUMB_MAX_SIZE = 240;
     private static DateTimeFormatter SERVER_FILE_TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmSSS");
     private static char[] RANDOM_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
     private static SecureRandom RANDOM = new SecureRandom();
@@ -177,7 +178,81 @@ public class PictureService {
                 .orElseThrow(RuntimeException::new);
 
         Files.deleteIfExists(Paths.get(picture.getPath()));
+        if (StringUtils.hasText(picture.getThumb())) {
+            Files.deleteIfExists(Paths.get(picture.getThumb()));
+        }
         pictureRepository.deleteDirectlyById(id);
+    }
+
+    @Transactional
+    public Picture replace(Long id, MultipartFile file) throws IOException {
+        Picture picture = pictureRepository.findById(id).orElseThrow(RuntimeException::new);
+        saveCompressedImage(file, Paths.get(picture.getPath()));
+
+        if (StringUtils.hasText(picture.getThumb())) {
+            Files.deleteIfExists(Paths.get(picture.getThumb()));
+            picture.setThumb(null);
+        }
+
+        return picture;
+    }
+
+    @Transactional
+    public synchronized Path getOrCreateThumbnail(Long id) throws IOException {
+        Picture picture = pictureRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Imagem não encontrada"));
+
+        Path thumbnailPath = StringUtils.hasText(picture.getThumb())
+                ? Paths.get(picture.getThumb())
+                : buildThumbnailPath(picture);
+
+        if (!Files.isRegularFile(thumbnailPath)) {
+            createThumbnail(Paths.get(picture.getPath()), thumbnailPath);
+        }
+
+        if (!thumbnailPath.toString().equals(picture.getThumb())) {
+            picture.setThumb(thumbnailPath.toString());
+            pictureRepository.save(picture);
+        }
+
+        return thumbnailPath;
+    }
+
+    private Path buildThumbnailPath(Picture picture) throws IOException {
+        Path originalPath = Paths.get(picture.getPath());
+        Path imageDirectory = originalPath.getParent();
+
+        if (imageDirectory == null) {
+            throw new IOException("Caminho da imagem não possui diretório");
+        }
+
+        Path thumbnailDirectory = imageDirectory.resolveSibling("thumbs");
+        Files.createDirectories(thumbnailDirectory);
+        return thumbnailDirectory.resolve(originalPath.getFileName());
+    }
+
+    private void createThumbnail(Path source, Path destination) throws IOException {
+        BufferedImage original = ImageIO.read(source.toFile());
+
+        if (original == null) {
+            throw new IOException("Arquivo não é uma imagem válida");
+        }
+
+        double scale = Math.min(1d, (double) THUMB_MAX_SIZE / Math.max(original.getWidth(), original.getHeight()));
+        int width = Math.max(1, (int) Math.round(original.getWidth() * scale));
+        int height = Math.max(1, (int) Math.round(original.getHeight() * scale));
+        BufferedImage thumbnail = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = thumbnail.createGraphics();
+
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, width, height);
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.drawImage(original, 0, 0, width, height, null);
+        graphics.dispose();
+
+        Files.createDirectories(destination.getParent());
+        writeJpeg(thumbnail, destination, 0.65f);
     }
 
     @Transactional
@@ -227,11 +302,14 @@ public class PictureService {
             imageToSave = convertToRgb(imageToSave);
         }
 
+        writeJpeg(imageToSave, destination, 0.75f);
+    }
+
+    private void writeJpeg(BufferedImage image, Path destination, float quality) throws IOException {
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
 
-
         if (!writers.hasNext()) {
-            throw new IllegalStateException("Nenhum ImageWriter WebP encontrado. Verifique a dependência.");
+            throw new IllegalStateException("Nenhum ImageWriter JPEG encontrado. Verifique a dependência.");
         }
 
         ImageWriter writer = writers.next();
@@ -242,10 +320,10 @@ public class PictureService {
 
             if (param.canWriteCompressed()) {
                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                param.setCompressionQuality(0.75f);
+                param.setCompressionQuality(quality);
             }
 
-            writer.write(null, new IIOImage(imageToSave, null, null), param);
+            writer.write(null, new IIOImage(image, null, null), param);
         } finally {
             writer.dispose();
         }

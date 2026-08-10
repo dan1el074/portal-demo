@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonModule, CardModule } from '@coreui/angular';
 import { HomeCardStat } from './../../../app/interface/user.interface';
 import { RouterLink } from '@angular/router';
@@ -14,6 +14,7 @@ import { NotificationWebSocketService } from '../../../app/services/websocket.se
     RouterLink
   ],
   templateUrl: './hello.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './hello.component.scss',
 })
 export class HelloComponent {

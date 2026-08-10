@@ -6,6 +6,9 @@
       "@angular/localize"
     ],
     "paths": {
+      "@app/*": [
+        "./src/app/*"
+      ],
       "@docs-components/*": [
         "./src/components/*"
       ]
@@ -16,5 +19,13 @@
   ],
   "include": [
     "src/**/*.d.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }

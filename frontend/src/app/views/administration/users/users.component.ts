@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@
 import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, Tabs2Module } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilX } from '@coreui/icons';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { UserFormComponent } from '../../../../components/forms/user/user-form/user-form.component';
 import { UserEditFormComponent } from '../../../../components/forms/user/user-edit-form/user-edit-form.component';
 import { UserTableComponent } from '../../../../components/table/user-table/user-table.component';

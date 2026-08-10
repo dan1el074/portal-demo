@@ -122,6 +122,9 @@
                     @if (step.count) {
                       <div class="badge info">{{ step.count }} ativos</div>
                     }
+                    @if (step.lateCount) {
+                      <div class="badge danger">{{ step.lateCount }} atrasados</div>
+                    }
                   </div>
                 </div>
               }

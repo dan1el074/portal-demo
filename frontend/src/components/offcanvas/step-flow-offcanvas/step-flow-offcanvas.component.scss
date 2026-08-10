@@ -1,3 +1,4 @@
+
 .custom-offcanvas-backdrop.active {
   position: fixed;
   top: 0;
@@ -11,18 +12,19 @@
 .sof-custom-offcanvas {
   position: fixed;
   top: 0;
-  right: -620px;
-  width: 620px;
+  right: 0;
+  width: min(620px, 100vw);
   height: 100vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background-color: var(--cui-body-bg);
-  transition: .4s;
+  transform: translateX(100%);
+  transition: transform .4s;
   z-index: 1045;
 
   &.visible {
-    transform: translate(-620px, 0);
+    transform: translateX(0);
   }
 
   .sof-custom-header {
@@ -140,16 +142,43 @@
       flex-direction: column;
 
       .nav {
+        overflow-x: auto;
         font-weight: 700;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar { display: none; }
 
         button {
           margin-left: 4px;
           margin-right: 4px;
+          white-space: nowrap;
         }
 
         button:first-child {
           margin-left: 16px;
         }
+      }
+
+      c-tabs-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      c-tab-panel {
+        flex: 1;
+        height: 0;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .sof-tab-panel {
+        box-sizing: border-box;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
       }
 
       .sof-scroll-container,
@@ -161,7 +190,7 @@
       }
 
       .timeline-container {
-        padding-left: 10px;
+        padding-left: 0;
       }
 
       .sof-scroll {
@@ -170,433 +199,7 @@
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-gutter: stable;
-        padding: 18px;
-      }
-
-      .timeline-item {
-        position: relative;
-        display: flex;
-        gap: 16px;
-        border-left: 2px solid var(--cui-border-color);
-        padding-left: 26px;
-
-        .sof-icon {
-          display: flex;
-          position: absolute;
-          left: -15px;
-          top: 28px;
-          border: 2px solid var(--cui-border-color);
-          background-color: var(--cui-body-bg);
-          border-radius: 20px;
-          padding: 3px;
-
-          &.first {
-            top: 0;
-          }
-
-          &.complete svg {
-            stroke: #009966;
-          }
-
-          &.in-progress svg {
-            stroke: #155dfb;
-          }
-
-          &.late svg {
-            stroke: #e7000b;
-          }
-
-          &.default svg {
-            stroke: #90a1b9;
-          }
-
-          svg {
-            width: 18px;
-            height: 18px;
-          }
-        }
-
-        .timeline-box {
-          margin-bottom: 16px;
-          border-radius: 12px;
-          width: 100%;
-
-          &.complete {
-            border: 1px solid #00996670;
-            background-color: #00996617;
-
-            .step-icon {
-              background-color: #00996620;
-
-              svg {
-                stroke: #009966;
-              }
-            }
-          }
-
-          &.in-progress {
-            border: 1px solid #0369dd70;
-            background-color: #0369dd17;
-
-            .step-icon {
-              background-color: #0369dd20;
-
-              svg {
-                stroke: #0369dd;
-              }
-            }
-          }
-
-          &.late {
-            border: 1px solid #c5232a70;
-            background-color: #c5232a17;
-
-            .step-icon {
-              background-color: #c5232a20;
-
-              svg {
-                stroke: #c5232a;
-              }
-            }
-          }
-
-          &.default {
-            border: 1px solid #90a1b980;
-
-            .step-icon {
-              background-color: #90a1b920;
-
-              svg {
-                stroke: #90a1b9;
-              }
-            }
-          }
-
-          .timeline-box-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px dashed var(--cui-border-color);
-
-            .timeline-step-identity {
-              display: flex;
-              min-width: 0;
-              align-items: center;
-              margin-right: auto;
-            }
-
-            .step-icon {
-              display: flex;
-              padding: 9px 7px 7px 7px;
-              border-radius: 10px;
-            }
-
-            .timeline-box-title {
-              margin-left: 12px;
-              margin-right: auto;
-
-              .timeline-box-title-department {
-                font-size: 13px;
-                font-weight: 700;
-              }
-
-              .timeline-box-title-user {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 12px;
-                color: var(--cui-medium-emphasis);
-
-                svg {
-                  stroke: var(--cui-medium-emphasis);
-                  width: 14px;
-                }
-              }
-            }
-
-            .timeline-box-dates {
-              font-size: 12px;
-              text-align: end;
-
-              div {
-                display: flex;
-                justify-content: end;
-                gap: 4px;
-
-                span {
-                  color: var(--cui-medium-emphasis);
-                }
-              }
-            }
-          }
-
-          .timeline-box-log-container {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding: 16px 20px;
-            font-size: 12px;
-
-            &.default {
-              color: var(--cui-medium-emphasis);
-            }
-
-            .timeline-box-log {
-              display: flex;
-              gap: 12px;
-
-              .timeline-box-log-text {
-                hyphens: auto;
-                overflow-wrap: break-word;
-                word-break: normal;
-                -webkit-hyphens: auto;
-                -ms-hyphens: auto;
-              }
-
-              .timeline-box-log-instant {
-                display: flex;
-                gap: 4px;
-
-                span {
-                  color: var(--cui-medium-emphasis);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      .timeline-obs {
-        margin-top: 8px;
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid #fee685;
-        background-color: #fee68517;
-        font-size: 13px;
-
-        .timeline-obs-title {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 8px;
-          font-weight: 600;
-          text-transform: uppercase;
-
-          svg {
-            stroke: #e0c24b;
-            width: 16px;
-          }
-        }
-      }
-
-      .sof-table-container {
-        overflow: hidden;
-        border-radius: 12px;
-        border: 1px solid var(--cui-border-color);
-        margin-bottom: 16px;
-
-        .sof-table {
-          width: 100%;
-          padding: 20px;
-
-          thead {
-            background-color: rgba(var(--cui-emphasis-color-rgb), 0.04);
-
-            th {
-              padding: 10px 16px;
-              text-transform: uppercase;
-              font-weight: 600;
-              font-size: 13px;
-              color: var(--cui-medium-emphasis);
-            }
-          }
-
-          tbody {
-            td {
-              padding: 12px 16px;
-              font-size: 13px;
-
-              &.t-order {
-                color: var(--cui-medium-emphasis);
-              }
-
-              &.t-description {
-                display: flex;
-                flex-direction: column;
-
-                small {
-                  font-size: 12px;
-                  color: var(--cui-medium-emphasis);
-                }
-              }
-
-              &.t-money {
-                font-weight: 700;
-                text-align: start;
-              }
-            }
-          }
-        }
-
-        .sof-table-total {
-          td {
-            display: flex;
-            justify-content: space-between;
-          }
-          .sof-total {
-            background-color: rgba(var(--cui-emphasis-color-rgb), 0.04);
-
-            td {
-              font-weight: 700;
-
-              .sof-total-value {
-                font-size: 15px;
-                color: #0369dd;
-              }
-            }
-          }
-        }
-
-        &.sof-table-scroll {
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          white-space: nowrap;
-
-          .sof-table {
-            min-width: 500px;
-
-            thead th {
-              white-space: nowrap;
-            }
-
-            tbody td {
-              &.t-description {
-                white-space: normal;
-
-                small {
-                  white-space: nowrap;
-                }
-              }
-
-              &.t-money {
-                white-space: nowrap;
-              }
-            }
-          }
-        }
-      }
-
-      .sof-file-container {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-
-        .sof-file-filter {
-          display: flex;
-          align-self: flex-start;
-          gap: 4px;
-          padding: 4px;
-          border-radius: 10px;
-          background-color: rgba(var(--cui-emphasis-color-rgb), 0.05);
-
-          button {
-            padding: 6px 12px;
-            border: 0;
-            border-radius: 7px;
-            background: transparent;
-            color: var(--cui-medium-emphasis);
-            font-size: 12px;
-            font-weight: 600;
-
-            &.active {
-              background-color: var(--cui-body-bg);
-              color: #155dfb;
-              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-            }
-          }
-        }
-
-        .sof-file-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 12px;
-          width: 100%;
-          min-width: 0;
-          padding: 12px 16px;
-          stroke: var(--cui-disabled);
-          border-radius: 12px;
-          border: 1px solid var(--cui-border-color);
-          font-size: 13px;
-          text-decoration: none;
-          transition: .1s;
-          cursor: pointer;
-
-          &:hover {
-            background-color: rgba(var(--cui-emphasis-color-rgb), 0.02);
-            stroke: #155dfb;
-          }
-
-          .step-icon {
-            display: flex;
-            flex-shrink: 0;
-            padding: 10px;
-            border-radius: 10px;
-            background-color: #2b7fff17;
-            width: fit-content;
-            height: fit-content;
-
-            svg {
-              stroke: #2b7fff;
-            }
-          }
-
-          .sof-file-info {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 0;
-
-            span {
-              font-weight: 600;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              color: rgb(40, 91, 158);
-            }
-
-            small {
-              color: var(--cui-medium-emphasis);
-            }
-          }
-
-          .sof-file-date {
-            flex-shrink: 0;
-            white-space: nowrap;
-            color: var(--cui-medium-emphasis);
-          }
-
-          > svg {
-            flex-shrink: 0;
-          }
-        }
-
-        .sof-file-add-btn {
-          background-color: transparent;
-          border: none;
-          color: #2b7fff;
-          font-size: 13px;
-          font-weight: 600;
-
-          &:hover {
-            color: #1447e6;
-          }
-
-          svg {
-            width: 16px;
-          }
-        }
+        padding: 0;
       }
     }
 
@@ -615,32 +218,43 @@
       .refresh-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
-
-        &:hover svg {
-          transform: rotate(180deg);
-        }
+        gap: 4px;
+        margin-left: auto;
+        font-size: 13px;
 
         svg {
-          stroke: #fff;
           width: 16px;
-          transition: .3s;
+          padding-top: 2px;
+          stroke: #fff;
         }
       }
 
-      svg {
-        width: 16px;
-        stroke: var(--cui-medium-emphasis);
+      .current-step {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+
+        svg {
+          width: 16px;
+          flex: 0 0 16px;
+          stroke: var(--cui-medium-emphasis);
+        }
+
+        .current-step-label {
+          color: var(--cui-medium-emphasis);
+        }
+
+        strong {
+          color: var(--cui-body-color);
+        }
       }
 
       span {
         color: var(--cui-medium-emphasis);
       }
 
-      button {
-        margin-left: auto;
-        font-size: 13px;
-      }
     }
   }
 
@@ -659,171 +273,35 @@
   }
 }
 
-@media (max-width: 360px) {
-  .timeline-box-dates div {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 520px) {
-  .timeline-box-log .timeline-box-log-instant {
-    flex-direction: column;
-
-    .hide {
-      display: none;
-    }
-  }
-}
-
 @media (max-width: 621px) {
   .sof-custom-offcanvas {
-    width: 100%;
+    .sof-custom-header .sfo-info .sof-client-order {
+      grid-template-columns: 1fr;
 
-    .sof-custom-body .sof-custom-tab {
-      .timeline-container {
-        padding-left: 0;
+      .sof-filed.last {
+        grid-column: auto;
+        grid-row-start: auto;
       }
+    }
 
-      .sof-scroll {
-        padding: 16px 12px 20px 20px;
-        scrollbar-gutter: auto;
-      }
+    .sof-custom-body .timeline-footer {
+      flex-wrap: nowrap;
+      padding: 12px;
 
-      .timeline-item {
-        display: block;
-        padding-left: 18px;
+      .current-step {
+        flex: 1 1 auto;
+        width: auto;
+        flex-wrap: wrap;
+        white-space: normal;
 
-        .sof-icon {
-          top: 20px;
-          left: -13px;
-          padding: 2px;
-
-          &.first {
-            top: 0;
-          }
-
-          svg {
-            width: 16px;
-            height: 16px;
-          }
-        }
-
-        .timeline-box {
+        strong {
           min-width: 0;
-          margin-bottom: 14px;
-
-          .timeline-box-header {
-            align-items: stretch;
-            flex-direction: column;
-            gap: 14px;
-            padding: 16px;
-            border-bottom-style: solid;
-
-            .timeline-step-identity {
-              width: 100%;
-              margin: 0;
-            }
-
-            .step-icon {
-              flex: 0 0 auto;
-              align-self: flex-start;
-              padding: 8px 7px 7px;
-            }
-
-            .timeline-box-title {
-              min-width: 0;
-              margin-right: 0;
-
-              .timeline-box-title-department {
-                font-size: 14px;
-                line-height: 1.35;
-                overflow-wrap: anywhere;
-              }
-
-              .timeline-box-title-user {
-                align-items: flex-start;
-                margin-top: 3px;
-                font-size: 13px;
-                line-height: 1.35;
-                overflow-wrap: anywhere;
-              }
-            }
-
-            .timeline-box-dates {
-              display: block;
-              width: 100%;
-              padding-top: 10px;
-              border-top: 1px dashed var(--cui-border-color);
-              font-size: 13px;
-              text-align: start;
-
-              > div {
-                display: flex;
-                align-items: baseline;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                gap: 6px;
-                padding: 2px 0;
-                line-height: 1.4;
-
-                span {
-                  flex: 0 0 42px;
-                  font-weight: 600;
-                }
-
-                > div {
-                  min-width: 0;
-                  overflow-wrap: anywhere;
-                }
-              }
-            }
-          }
-
-          .timeline-box-log-container {
-            gap: 0;
-            padding: 4px 16px 10px;
-            font-size: 13px;
-
-            .timeline-box-log {
-              min-width: 0;
-              flex-direction: column;
-              gap: 5px;
-              padding: 12px 0;
-              border-bottom: 1px dashed var(--cui-border-color);
-
-              &:last-child {
-                border-bottom: 0;
-              }
-
-              .timeline-box-log-instant {
-                flex-direction: row;
-                gap: 6px;
-                color: var(--cui-medium-emphasis);
-                font-size: 12px;
-
-                .hide {
-                  display: none;
-                }
-              }
-
-              .timeline-box-log-text {
-                width: 100%;
-                min-width: 0;
-                line-height: 1.55;
-                overflow-wrap: anywhere;
-                word-break: normal;
-              }
-            }
-          }
+          overflow-wrap: anywhere;
         }
       }
 
-      .timeline-obs {
-        margin-top: 4px;
-        padding: 16px;
-        line-height: 1.5;
-        overflow-wrap: anywhere;
+      .refresh-btn {
+        flex: 0 0 auto;
       }
     }
   }

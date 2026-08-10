@@ -1,7 +1,7 @@
 import { Injectable, NgZone, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { Notification, NotificationSocketMessage } from './../interface/notification.interface';
 
 @Injectable({

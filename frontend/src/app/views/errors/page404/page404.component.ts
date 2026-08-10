@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-page404',
   imports: [RouterLink],
   templateUrl: './page404.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './page404.component.scss',
 })
 export class Page404Component {

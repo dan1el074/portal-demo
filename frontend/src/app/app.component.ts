@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
@@ -11,6 +11,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 @Component({
     selector: 'app-root',
     template: '<ngx-spinner name="loginSpinner" bdColor="#ebebeb" size="default" color="#0053b0" type="ball-clip-rotate" [fullScreen]="true"></ngx-spinner><router-outlet />',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RouterOutlet, NgxSpinnerModule]
 })
 export class AppComponent implements OnInit {

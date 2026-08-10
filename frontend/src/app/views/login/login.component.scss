@@ -25,7 +25,9 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 16px;
   height: 100vh;
+  padding: 24px;
   background: #ebebeb;
 }
 
@@ -69,6 +71,57 @@ button {
     &:active {
       transform: scale(0.97);
     }
+  }
+}
+
+.login-update {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 768px);
+  padding: 12px 14px;
+  color: #263238;
+  background: rgb(255 255 255 / 96%);
+  border: 1px solid rgb(0 83 176 / 18%);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 10%);
+
+  .login-update-icon {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    color: #fff;
+    background: #198754;
+    border-radius: 50%;
+    place-items: center;
+  }
+
+  .login-update-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+
+    strong {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    span {
+      color: #66727d;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+  }
+
+  .login-update-action {
+    flex: 0 0 auto;
+    min-height: 36px;
+    margin: 0;
+    padding: 8px 18px;
+    border-radius: 8px;
+    white-space: nowrap;
   }
 }
 
@@ -250,7 +303,18 @@ button {
  *                 responsividade
  * ---------------------------------------------- */
 @media only screen and (max-width: 800px) {
+  .login-update {
+    position: fixed;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 12px;
+    z-index: 110;
+    width: auto;
+  }
+
   main {
+    padding: 0;
+
     .container {
       background-color: #fff;
       border-radius: 0;
@@ -312,6 +376,19 @@ button {
 }
 
 @media only screen and (max-width: 400px) {
+  .login-update {
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    .login-update-copy {
+      padding-top: 2px;
+    }
+
+    .login-update-action {
+      width: 100%;
+    }
+  }
+
   main {
     .container {
       background-color: #fff;

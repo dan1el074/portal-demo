@@ -62,6 +62,43 @@ ganho funcional imediato.
   saldo produzido; `memorando` consome a consulta compartilhada de linhas do
   pedido.
 
+## Imagens e thumbnails
+
+As imagens sao armazenadas no diretorio configurado por
+`app.server.image-path` (`IMAGE_PATH`). A entidade `Picture` guarda o caminho
+da imagem original em `path` e o caminho da miniatura em `thumb`. A coluna
+`thumb` foi adicionada pela migracao `V7__add_picture_thumbnail.sql` e pode ser
+nula para manter compatibilidade com imagens criadas anteriormente.
+
+O endpoint `GET /images/{id}/thumb` implementa a geracao sob demanda:
+
+1. Se `Picture.thumb` aponta para um arquivo existente, esse arquivo e
+   retornado.
+2. Se `thumb` esta nulo ou o arquivo nao existe, o backend le a imagem
+   original, gera uma miniatura JPEG de no maximo 240 pixels no maior lado e
+   persiste o novo caminho em `Picture.thumb`.
+3. A miniatura usa o mesmo nome de arquivo da imagem original, mas fica no
+   diretorio irmao `thumbs`.
+
+```text
+servidor/
+|-- imagens/
+|   `-- STEP_FLOW....jpg
+`-- thumbs/
+    `-- STEP_FLOW....jpg
+```
+
+Na pagina `/general/step-flow`, os componentes de offcanvas usam esse endpoint
+somente para os previews de imagens. O link do card continua apontando para
+`GET /images/{id}`, preservando a visualizacao da imagem original. Videos
+continuam usando o fluxo de preview do provedor de video e nao geram arquivos
+nesse diretorio.
+
+Ao excluir uma `Picture`, os arquivos original e thumbnail sao removidos. Ao
+substituir a imagem original, a thumbnail anterior e apagada e o atributo
+`thumb` volta a ser nulo para que uma versao atualizada seja criada no proximo
+preview.
+
 ## E-mail
 
 O perfil `dev` usa `localhost:1025` por padrao e espera um capturador SMTP

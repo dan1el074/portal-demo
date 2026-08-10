@@ -49,6 +49,26 @@
         background-color: rgba(34, 197, 94, 0.12);
       }
 
+      .media-icon {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        color: #16a34a;
+        background: rgb(34 197 94 / 12%);
+        border-radius: 7px;
+        place-items: center;
+
+        svg {
+          width: 20px;
+          height: 20px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 1.7;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+      }
+
       &.warning-btn {
         &.active {
           background-color: rgba(245, 158, 11, 0.12);

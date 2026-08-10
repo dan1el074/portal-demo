@@ -1,18 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
-import { CiEditFormComponent } from './memorando-edit-form.component';
+import { MemorandoEditFormComponent } from './memorando-edit-form.component';
 
-describe('CiEditFormComponent', () => {
-  let component: CiEditFormComponent;
-  let fixture: ComponentFixture<CiEditFormComponent>;
+describe('MemorandoEditFormComponent', () => {
+  let component: MemorandoEditFormComponent;
+  let fixture: ComponentFixture<MemorandoEditFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CiEditFormComponent]
+      imports: [MemorandoEditFormComponent],
+      providers: [provideRouter([])]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CiEditFormComponent);
+    fixture = TestBed.createComponent(MemorandoEditFormComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

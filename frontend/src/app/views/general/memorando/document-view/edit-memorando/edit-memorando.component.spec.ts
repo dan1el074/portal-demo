@@ -1,18 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
-import { EditCiComponent } from './edit-ci.component';
+import { EditMemorandoComponent } from './edit-memorando.component';
 
-describe('EditCiComponent', () => {
-  let component: EditCiComponent;
-  let fixture: ComponentFixture<EditCiComponent>;
+describe('EditMemorandoComponent', () => {
+  let component: EditMemorandoComponent;
+  let fixture: ComponentFixture<EditMemorandoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditCiComponent]
+      imports: [EditMemorandoComponent],
+      providers: [provideRouter([])]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EditCiComponent);
+    fixture = TestBed.createComponent(EditMemorandoComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

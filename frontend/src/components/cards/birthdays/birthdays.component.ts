@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AvatarComponent, CardBodyComponent, CardComponent, CardTitleDirective } from '@coreui/angular';
 import { Birthday } from '../../../app/interface/birthday.interface';
 import { environment } from '../../../environments/environment';
@@ -14,6 +14,7 @@ import { environment } from '../../../environments/environment';
     AvatarComponent
   ],
   templateUrl: './birthdays.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './birthdays.component.scss',
 })
 export class BirthdaysComponent implements OnInit {

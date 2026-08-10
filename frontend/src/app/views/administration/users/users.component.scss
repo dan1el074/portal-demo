@@ -77,6 +77,7 @@
 
 .management-card-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -86,8 +87,16 @@
   h2 { margin: 0; font-size: 16px; font-weight: 600; }
   p { margin: 3px 0 0; color: var(--cui-medium-emphasis); font-size: 13px; }
 }
+.management-card-header > div { flex: 1 1 260px; min-width: 0; }
+.management-card-header .primary-action { flex: 0 0 auto; margin-left: auto; }
 
-.section-tabs c-tabs-list { overflow-x: auto; padding: 0 20px; scrollbar-width: thin; }
+.section-tabs c-tabs-list {
+  overflow-x: auto;
+  padding: 0 20px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.section-tabs c-tabs-list::-webkit-scrollbar { display: none; }
 .section-tabs button[cTab] { display: inline-flex; align-items: center; gap: 7px; min-height: 48px; margin: 0; white-space: nowrap; font-size: 13px; font-weight: 600; }
 .tab-count { display: inline-grid; min-width: 20px; height: 20px; place-items: center; padding: 0 6px; border-radius: 999px; background: rgba(var(--cui-emphasis-color-rgb), .08); color: var(--cui-secondary-color); font-size: 10px; }
 .close-tab:not(.hide) { display: inline-flex; }

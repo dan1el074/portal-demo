@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { UserService } from '../services/user.service';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { Me } from '../interface/user.interface';
 
 @Injectable({
@@ -17,8 +17,7 @@ export class AuthGuard {
 
   public canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     const requiredRoles: string[] = route.data?.['roles'];
-    return this.userService.getUserData().pipe(
-      tap((user) => this.userService.setUser(user)),
+    return this.getUser().pipe(
       map((user) => {
         if (!requiredRoles || requiredRoles.length === 0) return true;
 

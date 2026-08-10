@@ -61,4 +61,8 @@ public class VideoService {
         }
         videoRepository.delete(video);
     }
+
+    public String getPreviewUrl(Video video, boolean animated) {
+        return bunnyStreamClient.getPreviewUrl(video.getProviderVideoId(), animated);
+    }
 }

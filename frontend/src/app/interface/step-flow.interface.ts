@@ -16,6 +16,7 @@ export interface Step {
   description: string;
   icon: SafeHtml;
   count: number;
+  lateCount: number;
 }
 
 // retornos da API
@@ -25,6 +26,7 @@ export interface AdminDashboard {
   completeCount: number,
   lateCount: number,
   stepsCount: Array<number>;
+  stepsLateCount: Array<number>;
 }
 
 export interface StepFlowData {

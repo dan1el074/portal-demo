@@ -70,6 +70,21 @@ public class BunnyStreamClient {
                 + "/" + providerVideoId;
     }
 
+    public String getPreviewUrl(String providerVideoId, boolean animated) {
+        validateConfiguration();
+        HttpEntity<Void> request = new HttpEntity<>(createAuthenticationHeaders());
+        String url = API_BASE_URL + "/" + properties.getLibraryId() + "/videos/" + providerVideoId + "/play";
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
+        Map body = response.getBody();
+        String key = animated ? "previewUrl" : "thumbnailUrl";
+
+        if (body == null || body.get(key) == null) {
+            throw new UnprocessableEntityException("A prévia do vídeo ainda não está disponível!");
+        }
+
+        return body.get(key).toString();
+    }
+
     private HttpHeaders createAuthenticationHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("AccessKey", properties.getApiKey());

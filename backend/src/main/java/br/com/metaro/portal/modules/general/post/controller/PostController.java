@@ -41,6 +41,12 @@ public class PostController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POST')")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostDto> update(@PathVariable Long id, @ModelAttribute PostInsertDto dto) throws IOException {
+        return ResponseEntity.ok(postService.update(id, dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_POST')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws IOException {
         postService.delete(id);

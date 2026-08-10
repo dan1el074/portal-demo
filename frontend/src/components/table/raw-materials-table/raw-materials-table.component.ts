@@ -1,6 +1,6 @@
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ChangeDetectionStrategy } from '@angular/core';
 import { IColumn, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
 import {
   getRawMaterialStockStatus,
@@ -15,6 +15,7 @@ registerLocaleData(localePt);
   selector: 'app-raw-materials-table',
   imports: [CommonModule, SmartTableComponent, TemplateIdDirective],
   templateUrl: './raw-materials-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './raw-materials-table.component.scss',
 })
 export class RawMaterialsTableComponent implements OnChanges {

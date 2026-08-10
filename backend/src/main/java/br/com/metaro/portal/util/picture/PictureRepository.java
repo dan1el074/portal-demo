@@ -11,7 +11,8 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     @Query("""
         SELECT
             p.id AS id,
-            p.path AS path
+            p.path AS path,
+            p.thumb AS thumb
         FROM Picture p
         WHERE p.id = :id
     """)

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import {
   ButtonCloseDirective,
   ButtonDirective,
@@ -20,6 +20,7 @@ import {
     ModalFooterComponent,
     ButtonDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './unsaved-changes-step-flow-modal.component.html',
 })
 export class UnsavedChangesStepFlowModalComponent {

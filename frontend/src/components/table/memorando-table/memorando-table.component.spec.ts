@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CiTableComponent } from './memorando-table.component';
+import { MemorandoTableComponent } from './memorando-table.component';
 
-describe('CiTableComponent', () => {
-  let component: CiTableComponent;
-  let fixture: ComponentFixture<CiTableComponent>;
+describe('MemorandoTableComponent', () => {
+  let component: MemorandoTableComponent;
+  let fixture: ComponentFixture<MemorandoTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CiTableComponent]
+      imports: [MemorandoTableComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CiTableComponent);
+    fixture = TestBed.createComponent(MemorandoTableComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -21,9 +21,10 @@
   header
   [clickableRows]="mode !== 'operator' || !showInactive"
   class="step-flow-table raw-materials-smart-table raw-materials-wide-search"
+  [class.search-cleaner-inline]="mode === 'operator'"
 >
   <ng-template cTemplateId="tableCustomHeader">
-    <div class="custom-table-header inventory-filter-bar col-auto p-0">
+    <div class="custom-table-header inventory-filter-bar col-auto p-0" [class.search-only]="mode === 'operator'">
       @if (mode !== 'operator') {
         <div class="status-filter" role="group" aria-label="Filtrar pelo nível do estoque">
           @for (option of [

@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { MultiSelectComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
 import { ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { MemorandoService } from '../../../../app/services/memorando.service';
 import { PostitionService } from '../../../../app/services/position.service';
 import { OrderInfo } from '../../../../app/interface/erp.interface';
@@ -25,6 +25,7 @@ import { PositionMin } from '../../../../app/interface/position.interface';
     MultiSelectOptionComponent
   ],
   templateUrl: './memorando-edit-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './memorando-edit-form.component.scss',
 })
 export class MemorandoEditFormComponent implements OnInit, OnChanges {

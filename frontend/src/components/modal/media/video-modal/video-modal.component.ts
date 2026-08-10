@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepFlowVideo } from '../../../../app/interface/step-flow.interface';
 import { SafeResourceUrl } from '@angular/platform-browser';
@@ -9,6 +9,7 @@ import { SafeResourceUrl } from '@angular/platform-browser';
     CommonModule
   ],
   templateUrl: './video-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './video-modal.component.scss',
 })
 export class VideoModalComponent {

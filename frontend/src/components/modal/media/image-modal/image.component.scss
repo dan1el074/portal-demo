@@ -14,6 +14,33 @@ c-modal.img-modal {
       height: auto;
     }
 
+    .img-carousel {
+      width: fit-content;
+      max-width: 90vw;
+
+      c-carousel-inner {
+        width: fit-content;
+        max-width: 90vw;
+      }
+
+      c-carousel-item {
+        display: none;
+        width: fit-content;
+        max-width: 90vw;
+
+        &.current-slide {
+          display: block;
+        }
+
+        img {
+          display: block;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+        }
+      }
+    }
+
     .modal-img-btn {
       position: absolute;
       top: 10px;

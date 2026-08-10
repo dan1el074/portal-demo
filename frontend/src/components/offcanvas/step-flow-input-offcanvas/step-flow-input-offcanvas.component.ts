@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService } from '@app/services/toast.service';
 import { finalize } from 'rxjs';
 import { Upload } from 'tus-js-client';
-import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent, TemplateIdDirective } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent } from '@coreui/angular';
 import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
 import { DeletableStepFlowMedia, DeleteStepFlowMediaModalComponent } from '../../modal/step-flow/delete-step-flow-media-modal/delete-step-flow-media-modal.component';
 import { UnsavedChangesStepFlowModalComponent } from '../../modal/step-flow/unsaved-changes-step-flow-modal/unsaved-changes-step-flow-modal.component';
@@ -16,9 +16,10 @@ import { BackNavigationService } from '../../../app/services/back-navigation.ser
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
 import { StepFlowImage } from '../../../app/interface/image.interface';
-import { environment } from '../../../environments/environment';
 import { EditableItem, QuantityStepFlowModalComponent } from '../../modal/step-flow/quantity-step-flow-modal/quantity-step-flow-modal.component';
-import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../../../app/interface/step-flow-media.interface';
+import { StepFlowHistoryComponent } from './history/step-flow-history.component';
+import { StepFlowEditableMediaComponent } from './editable-media/step-flow-editable-media.component';
+import { StepFlowUploadComponent } from './upload/step-flow-upload.component';
 
 @Component({
   selector: 'app-step-flow-input-offcanvas',
@@ -26,10 +27,6 @@ import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../.
     CommonModule,
     ButtonDirective,
     ButtonCloseDirective,
-    AccordionComponent,
-    AccordionItemComponent,
-    TemplateIdDirective,
-    AccordionButtonDirective,
     ReactiveFormsModule,
     FormsModule,
     FormSelectDirective,
@@ -39,11 +36,15 @@ import { getSortedStepFlowMedia, StepFlowMedia, StepFlowMediaFilter } from '../.
     CancelStepFlowModalComponent,
     SpinnerComponent,
     VideoModalComponent,
+    StepFlowHistoryComponent,
+    StepFlowEditableMediaComponent,
+    StepFlowUploadComponent,
     QuantityStepFlowModalComponent,
     DeleteStepFlowMediaModalComponent,
     UnsavedChangesStepFlowModalComponent
   ],
   templateUrl: './step-flow-input-offcanvas.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './step-flow-input-offcanvas.component.scss',
 })
 export class StepFlowInputOffcanvasComponent {
@@ -57,7 +58,6 @@ export class StepFlowInputOffcanvasComponent {
   protected order: StepFlowOrder | null = null;
   protected loading: boolean = true;
   protected visible = false;
-  protected apiUrl: string = environment.apiUrl;
   protected form!: FormGroup;
   protected itemsForm!: FormArray;
   protected showCancelModal = false;
@@ -87,11 +87,6 @@ export class StepFlowInputOffcanvasComponent {
   protected uploadingVideos = signal<Array<UploadingVideo>>([]);
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
-  protected mediaFilter: StepFlowMediaFilter = 'all';
-
-  protected get filteredMedia(): Array<StepFlowMedia> {
-    return getSortedStepFlowMedia(this.order?.pictures ?? [], this.order?.videos ?? [], this.mediaFilter);
-  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -119,7 +114,6 @@ export class StepFlowInputOffcanvasComponent {
   public open(id: number): void {
     this.visible = true;
     this.orderId = id;
-    this.mediaFilter = 'all';
     this.resetForm();
     this.loadOrder();
     this.backNav.register(() => this.hide());
@@ -420,10 +414,6 @@ export class StepFlowInputOffcanvasComponent {
     this.openDeleteMediaModal(video.id, video.name, 'video');
   }
 
-  protected setMediaFilter(filter: StepFlowMediaFilter): void {
-    this.mediaFilter = filter;
-  }
-
   private openDeleteMediaModal(id: number, name: string, type: 'image' | 'video'): void {
     this.mediaToDelete = { id, name, type };
   }
@@ -456,7 +446,10 @@ export class StepFlowInputOffcanvasComponent {
       next: () => {
         if (!this.order) throw new Error("This order is null!");
 
-        this.order.pictures = this.order?.pictures.filter(p => p.id != id);
+        this.order = {
+          ...this.order,
+          pictures: this.order.pictures.filter(picture => picture.id !== id),
+        };
         this.resetDeleteMediaModal();
         this.cdf.detectChanges();
 
@@ -472,7 +465,10 @@ export class StepFlowInputOffcanvasComponent {
       .subscribe({
       next: () => {
         if (!this.order) throw new Error("This order is null!");
-        this.order.videos = this.order.videos.filter(v => v.id !== id);
+        this.order = {
+          ...this.order,
+          videos: this.order.videos.filter(video => video.id !== id),
+        };
         this.resetDeleteMediaModal();
         this.cdf.detectChanges();
         this.toasterService.success("Vídeo apagado com sucesso!");
