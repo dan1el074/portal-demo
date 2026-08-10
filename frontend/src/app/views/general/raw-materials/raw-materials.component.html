@@ -310,8 +310,11 @@
     <button cButtonClose (click)="accessModalVisible = false"></button>
   </c-modal-header>
   <c-modal-body>
-    <p class="access-help">Selecione as categorias que cada usuário poderá acessar na Gestão de Estoque.</p>
     <div class="permission-grid">
+      <div class="permission-table-header" aria-hidden="true">
+        <span>Usuário</span>
+        <span>Categorias permitidas</span>
+      </div>
       @for (user of users; track user.id) {
         <section>
           <div class="permission-user">

@@ -1,4 +1,32 @@
-app-step-flow-media-list { display: block; height: 100%; }
+app-step-flow-media-list {
+  display: block;
+  height: 100%;
+  min-height: 0;
+
+  > .sof-scroll-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .sof-scroll {
+    box-sizing: border-box;
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 16px;
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (max-width: 621px) {
+  app-step-flow-media-list .sof-scroll {
+    padding: 12px;
+    scrollbar-gutter: auto;
+  }
+}
 
 .sof-custom-offcanvas {
   .sof-custom-body {
@@ -14,6 +42,12 @@ app-step-flow-media-list { display: block; height: 100%; }
           align-items: center;
           justify-content: space-between;
           gap: 8px;
+        }
+
+        .media-empty {
+          height: auto;
+          padding-top: 32px;
+          text-align: center;
         }
 
         .sof-file-filter {
@@ -112,6 +146,7 @@ app-step-flow-media-list { display: block; height: 100%; }
               width: auto;
             }
           }
+
         }
 
         .sof-file-item {
@@ -209,6 +244,23 @@ app-step-flow-media-list { display: block; height: 100%; }
 
           > svg {
             flex-shrink: 0;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .sof-file-item {
+            gap: 8px;
+            padding-right: 10px;
+
+            .sof-media-preview {
+              width: 68px;
+              flex-basis: 68px;
+            }
+
+            .sof-file-date,
+            > svg {
+              display: none;
+            }
           }
         }
 

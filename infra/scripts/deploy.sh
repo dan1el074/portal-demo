@@ -12,7 +12,7 @@ CONFIG_FILE="/etc/portal-deploy.conf"
 source "$CONFIG_FILE"
 
 REQUIRED_VARIABLES=(
-    ENVIRONMENT DEPLOY_BRANCH PROJECT_DIR APP_DIR NGINX_DIR
+    ENVIRONMENT DEPLOY_BRANCH PROJECT_DIR APP_DIR THUMBNAIL_DIR NGINX_DIR
     DATABASE_NAME APP_SERVICE NGINX_SERVICE BACKUP_ROOT
     BACKUP_KEEP LOG_ROOT BACKEND_HEALTH_URL BACKEND_HEALTH_TIMEOUT
     BACKEND_HEALTH_INTERVAL FRONTEND_HEALTH_URL
@@ -42,6 +42,11 @@ done
 
 [[ "$DEPLOY_BRANCH" == "main" || "$DEPLOY_BRANCH" == "prod" ]] || {
     echo "Branch não permitida: $DEPLOY_BRANCH"
+    exit 1
+}
+
+[[ "$THUMBNAIL_DIR" == "$APP_DIR/"* ]] || {
+    echo "Diretório de thumbnails inválido: $THUMBNAIL_DIR"
     exit 1
 }
 
@@ -195,6 +200,13 @@ unzip -l "$BUILT_JAR" |
 sha256sum "$BUILT_JAR"
 
 message "Preparando os novos artefatos"
+
+sudo install \
+    -d \
+    -o metaro \
+    -g metaro \
+    -m 750 \
+    "$THUMBNAIL_DIR"
 
 sudo install \
     -o metaro \

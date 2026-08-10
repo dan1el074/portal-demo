@@ -80,7 +80,7 @@
               </div>
             } @empty {
               @if (mediaFilter === 'image' || !filteredUploadingVideos.length) {
-                <i class="custom-error image">{{ mediaSearch ? 'Nenhum arquivo encontrado para esta busca.' : 'Nenhum arquivo encontrado para este filtro.' }}</i>
+                <i class="custom-error image media-empty">{{ mediaSearch ? 'Nenhum arquivo encontrado para esta busca.' : 'Nenhum arquivo encontrado para este filtro.' }}</i>
               }
             }
 
