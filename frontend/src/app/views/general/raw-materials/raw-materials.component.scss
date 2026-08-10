@@ -1,8 +1,13 @@
 .inventory-page {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   padding-bottom: 28px;
+  overflow-x: clip;
 }
 
 .wide-container {
+  width: 100%;
   max-width: 1600px;
 }
 
@@ -19,6 +24,7 @@
   align-items: center;
   gap: 8px;
   min-width: 180px;
+  max-width: 100%;
   margin-bottom: 16px;
   padding: 10px 12px;
   line-height: 1.1;
@@ -32,9 +38,7 @@
 }
 
 .view-mode-icon,
-.view-option-icon,
-.summary-icon,
-.tool-icon {
+.view-option-icon {
   display: grid;
   place-items: center;
 
@@ -153,6 +157,7 @@
 }
 
 .inventory-table-card {
+  min-width: 0;
   overflow: hidden;
   margin: 19.2px 0 0;
 }
@@ -177,6 +182,10 @@
   padding: 16px 20px;
   border-bottom: 1px solid var(--cui-border-color);
 
+  > div {
+    min-width: 0;
+  }
+
   h2 {
     margin: 0;
     font-size: 16px;
@@ -187,6 +196,7 @@
     margin: 2px 0 0;
     color: var(--cui-medium-emphasis);
     font-size: 13px;
+    overflow-wrap: anywhere;
   }
 
   button {
@@ -206,7 +216,11 @@
 }
 
 .inventory-tabs {
+  min-width: 0;
+
   c-tabs-list {
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     padding: 0 20px;
     -ms-overflow-style: none;
@@ -267,7 +281,21 @@
 }
 
 .table-body {
+  min-width: 0;
   padding: 16px 20px 4px;
+  overflow: hidden;
+
+  app-raw-materials-table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  c-smart-pagination {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
 }
 
 .item-form {
@@ -642,12 +670,23 @@
 }
 
 @media (max-width: 900px) {
-  .admin-tools {
-    grid-template-columns: 1fr;
+  .inventory-header {
+    align-items: stretch;
+    flex-direction: column;
+
+    .ops-header {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .fix-dropdown,
+    .fixed-view {
+      align-self: flex-end;
+    }
   }
 
   .form-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .weight-preview {
@@ -657,24 +696,6 @@
 }
 
 @media (max-width: 680px) {
-  .inventory-header {
-    flex-direction: column;
-    align-items: initial;
-    justify-content: baseline;
-
-    .ops-header {
-      width: 100%;
-    }
-
-    .fix-dropdown {
-      margin-left: auto;
-    }
-  }
-
-  .summary-grid {
-    grid-template-columns: 1fr;
-  }
-
   .view-mode-btn,
   .fixed-view {
     min-width: min(100%, 230px);
@@ -683,6 +704,11 @@
   .table-title {
     align-items: flex-start;
     flex-direction: column;
+
+    button {
+      justify-content: center;
+      width: 100%;
+    }
   }
 
   .form-grid {
@@ -720,10 +746,6 @@
 @media (max-width: 991.98px) {
   .inventory-page { padding-right: 12px !important; padding-left: 12px !important; }
 
-  .summary-card { padding: 12px; }
-
-  .tool-card-header,
-  .tool-card-content,
   .table-title,
   .table-body { padding-right: 12px; padding-left: 12px; }
 }

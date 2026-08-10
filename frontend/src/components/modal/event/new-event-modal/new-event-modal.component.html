@@ -1,8 +1,10 @@
-<c-modal alignment="center" backdrop="static" id="new-event-modal" size="lg" [visible]="visible" (visibleChange)="visibleChange($event)">
+<c-modal alignment="center" backdrop="static" id="new-event-modal" size="lg" [visible]="visible" (visibleChange)="visibleChange($event)" scrollable>
   <c-modal-header><div><span class="eyebrow">Agenda</span><h5 cModalTitle>{{ editingEvent ? 'Editar evento' : 'Novo evento' }}</h5></div><button cButtonClose (click)="close()"></button></c-modal-header>
   <c-modal-body>
     <div class="event-grid">
-      <section class="calendar-panel"><span class="field-label">Data do evento</span><c-calendar locale="pt-BR" [startDate]="eventDate" [minDate]="today" [showAdjacentDays]="true" (startDateChange)="selectDate($event)"></c-calendar></section>
+      <div class="calendar-panel-scroll">
+        <section class="calendar-panel"><span class="field-label">Data do evento</span><c-calendar locale="pt-BR" [startDate]="eventDate" [minDate]="today" [showAdjacentDays]="true" (startDateChange)="selectDate($event)"></c-calendar></section>
+      </div>
       <section class="details-panel">
         <label><span class="field-label">Título</span><input cFormControl [(ngModel)]="title" maxlength="120" placeholder="Título do evento" /></label>
         <fieldset class="time-fields"><legend class="field-label">Horário</legend><div class="time-inputs"><label><span>Hora</span><input cFormControl type="number" inputmode="numeric" min="0" max="23" step="1" [(ngModel)]="eventHour" aria-label="Hora do evento" /></label><strong aria-hidden="true">:</strong><label><span>Minutos</span><input cFormControl type="number" inputmode="numeric" min="0" max="59" step="1" [(ngModel)]="eventMinute" aria-label="Minutos do evento" /></label></div><small>Use o formato de 24 horas, entre 00:00 e 23:59.</small></fieldset>
