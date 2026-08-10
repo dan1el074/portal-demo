@@ -5,12 +5,14 @@ import { IconDirective } from '@coreui/icons-angular';
 import { cilCursor, cilFork } from '@coreui/icons';
 import { Subject } from 'rxjs';
 import { FileService } from '../../../../app/services/file.service';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-layout-search-modal',
   imports: [
     IconDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalBodyComponent,
     ButtonCloseDirective,

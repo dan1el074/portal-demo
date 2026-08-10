@@ -1,4 +1,4 @@
-<c-modal alignment="center" backdrop="static" id="new-post-modal" scrollable [visible]="visible" (visibleChange)="handleToggleModal($event)">
+<c-modal modalBackNavigation alignment="center" backdrop="static" id="new-post-modal" scrollable [visible]="visible" (visibleChange)="handleToggleModal($event)">
   <c-modal-header>
     <h5 cModalTitle>{{ editingPost ? 'Editar post' : 'Criar post' }}</h5>
     <button (click)="closeModal()" cButtonClose></button>

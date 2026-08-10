@@ -1,4 +1,26 @@
 <c-container breakpoint="lg" class="h-auto px-4" fluid>
+  @if (updateAvailable) {
+    <section class="update-alert" role="alert" aria-live="polite">
+      <div class="update-alert-icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+          <path d="M21 3v5h-5"></path>
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+          <path d="M8 16H3v5"></path>
+        </svg>
+      </div>
+
+      <div class="update-alert-content">
+        <strong>Uma nova versão do Portal está disponível</strong>
+        <span>Atualize a página para carregar as melhorias mais recentes.</span>
+      </div>
+
+      <button cButton class="update-alert-action" color="primary" type="button" (click)="updateApplication()">
+        Atualizar agora
+      </button>
+    </section>
+  }
+
   @if (fatalError) {
     <p>Erro ao carregar informações</p>
   } @else {

@@ -1,8 +1,8 @@
 @if (post.pictures.length == 1) {
-  <c-modal [id]="'modal-' + post.id" alignment="center" class="img-modal">
+  <c-modal modalBackNavigation [id]="'modal-' + post.id" [visible]="visible" (visibleChange)="onVisibleChange($event)" alignment="center" class="img-modal">
     <c-modal-body class="img-modal-body">
       <div style="position: relative">
-        <button [cModalToggle]="'modal-' + post.id" class="modal-img-btn" cButtonClose></button>
+        <button (click)="close.emit()" class="modal-img-btn" cButtonClose></button>
         <img cCardImg="bottom" [src]="apiUrl + '/images/' + post.pictures[0].id" />
       </div>
     </c-modal-body>
@@ -10,13 +10,13 @@
 }
 
 @if (post.pictures.length > 1) {
-  <c-modal [id]="'modal-' + post.id" alignment="center" class="img-modal">
+  <c-modal modalBackNavigation [id]="'modal-' + post.id" [visible]="visible" (visibleChange)="onVisibleChange($event)" alignment="center" class="img-modal">
     <c-modal-body class="img-modal-body">
 
       @if (ready) {
         <ng-container>
         <c-carousel class="img-carousel" [activeIndex]="index" [animate]="false" [interval]="0" [wrap]="false" (itemChange)="selectSlide($event)">
-          <button [cModalToggle]="'modal-' + post.id" class="modal-img-btn" cButtonClose></button>
+          <button (click)="close.emit()" class="modal-img-btn" cButtonClose></button>
           <c-carousel-indicators />
           <c-carousel-inner>
 

@@ -2,10 +2,11 @@ import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from 
 import { ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
 import { cilTrash } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-delete-post-modal',
-  imports: [ModalComponent, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, IconDirective],
+  imports: [ModalComponent, ModalBackNavigationDirective, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, IconDirective],
   templateUrl: './delete-post-modal.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './delete-post-modal.component.scss',

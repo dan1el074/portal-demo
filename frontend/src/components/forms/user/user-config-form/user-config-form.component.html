@@ -60,7 +60,7 @@
 
       <span class="file-info">PNG, JPEG, JPG, WEBP · máx. 2 MB</span>
 
-      <c-modal id="modal2" [visible]="modalReady" (visibleChange)="handleModalChange($event)" backdrop="static" alignment="center">
+      <c-modal modalBackNavigation id="modal2" [visible]="modalReady" (visibleChange)="handleModalChange($event)" backdrop="static" alignment="center">
         <c-modal-header>
           <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
           <h5 cModalTitle>Nova imagem</h5>

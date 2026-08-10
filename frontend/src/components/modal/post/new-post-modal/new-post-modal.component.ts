@@ -6,12 +6,13 @@ import { ToastrService } from '@app/services/toast.service';
 import { Me } from '../../../../app/interface/user.interface';
 import { PostCard } from '../../../../app/interface/post.interface';
 import { environment } from '../../../../environments/environment';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 interface PreviewItem { url: string; existingId?: number; file?: File; }
 
 @Component({
   selector: 'app-new-post-modal',
-  imports: [FormsModule, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, TooltipDirective, AvatarComponent, LoadingButtonComponent],
+  imports: [FormsModule, ModalComponent, ModalBackNavigationDirective, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, TooltipDirective, AvatarComponent, LoadingButtonComponent],
   templateUrl: './new-post-modal.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './new-post-modal.component.scss',

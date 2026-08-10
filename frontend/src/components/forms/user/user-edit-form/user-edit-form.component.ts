@@ -13,6 +13,7 @@ import { UserEditData } from '../../../../app/interface/user.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
 import { ToastrService } from '@app/services/toast.service';
 import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.component';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-user-edit-form',
@@ -25,6 +26,7 @@ import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.co
     IconDirective,
     ButtonDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
     ButtonCloseDirective,

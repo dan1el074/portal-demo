@@ -1,4 +1,4 @@
-<c-modal [visible]="visible" alignment="center" backdrop="static" id="newMemorandoModal" >
+<c-modal modalBackNavigation [visible]="visible" alignment="center" backdrop="static" id="newMemorandoModal" >
   <form [formGroup]="newMemorandoForm" (ngSubmit)="onSubmit()" autocomplete="off">
     <c-modal-header>
       <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
