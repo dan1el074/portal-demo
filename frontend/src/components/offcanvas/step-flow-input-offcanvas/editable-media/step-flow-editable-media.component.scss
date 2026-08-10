@@ -28,6 +28,12 @@ app-step-flow-editable-media { display: block; }
         margin-bottom: 4px;
       }
 
+      .media-empty {
+        height: auto;
+        padding-top: 32px;
+        text-align: center;
+      }
+
       .sof-file-filter {
         display: flex;
         flex-shrink: 0;

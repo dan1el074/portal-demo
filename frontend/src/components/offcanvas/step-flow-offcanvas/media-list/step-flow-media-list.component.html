@@ -1,5 +1,5 @@
             <div class="sof-scroll-container">
-              <div class="sof-scroll">
+              <div class="sof-scroll" tabindex="0">
                 <div class="sof-file-container">
 
                   @if (order.pictures.length || order.videos.length) {
@@ -34,10 +34,10 @@
                         </div>
                       }
                     } @empty {
-                      <i class="custom-error image">{{ mediaSearch ? 'Nenhum arquivo encontrado para esta busca.' : 'Nenhum arquivo encontrado para este filtro.' }}</i>
+                      <i class="custom-error image media-empty">{{ mediaSearch ? 'Nenhum arquivo encontrado para esta busca.' : 'Nenhum arquivo encontrado para este filtro.' }}</i>
                     }
                   } @else {
-                    <i class="custom-error image">Nenhum arquivo anexado.</i>
+                    <i class="custom-error image media-empty">Nenhum arquivo anexado.</i>
                   }
 
                   <ng-template #fileContent let-media let-type="type">
