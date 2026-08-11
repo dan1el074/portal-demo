@@ -345,7 +345,7 @@ if [[ "$RESTORE_DATABASE" == "true" ]]; then
         --exit-on-error \
         --create \
         --dbname=postgres \
-        "$BACKUP_PATH/database.dump"
+        < "$BACKUP_PATH/database.dump"
 fi
 
 rollback_message "Restaurando backend e configuração"
