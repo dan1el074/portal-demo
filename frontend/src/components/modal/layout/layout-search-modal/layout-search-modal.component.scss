@@ -53,8 +53,16 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 16px 8px;
+      padding: 16px 8px 16px 16px;
       border-bottom: var(--cui-border-width) solid var(--cui-border-color-translucent);
+
+      &.tool-item {
+        padding-block: 10px;
+
+        .tool-title {
+          font-size: 14px;
+        }
+      }
 
       &:last-child {
         border-bottom: none;
@@ -65,6 +73,21 @@
 
         svg {
           color: #003dff;
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid #003dff;
+        outline-offset: -2px;
+      }
+
+      .item-content {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+
+        small {
+          color: var(--cui-secondary-color);
         }
       }
     }

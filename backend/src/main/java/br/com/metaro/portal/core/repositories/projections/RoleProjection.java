@@ -7,4 +7,5 @@ public interface RoleProjection {
     String getTitleUrl();
     String getParent();
     String getParentUrl();
+    Boolean getActivated();
 }

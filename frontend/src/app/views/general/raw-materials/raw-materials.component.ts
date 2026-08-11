@@ -9,8 +9,8 @@ import { calculateRawMaterialUnitWeight, formatRawMaterialDecimal, RawMaterialCa
 import { RawMaterialsService } from '../../../services/raw-materials.service';
 import { UserService } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment';
-import { BackNavigationService } from '../../../services/back-navigation.service';
 import { RawMaterialsOverviewComponent } from '../../../../components/raw-materials/raw-materials-overview/raw-materials-overview.component';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-raw-materials',
@@ -27,6 +27,7 @@ import { RawMaterialsOverviewComponent } from '../../../../components/raw-materi
     DropdownMenuDirective,
     DropdownToggleDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
     ModalBodyComponent,
@@ -82,13 +83,11 @@ export class RawMaterialsComponent implements OnInit {
 
   private currentSort?: { column: string; state: 'asc' | 'desc' };
   private searchTimer?: ReturnType<typeof setTimeout>;
-  private formHistoryActive: 'item' | 'stock' | null = null;
 
   constructor(
     private rawMaterialsService: RawMaterialsService,
     private userService: UserService,
     private cdf: ChangeDetectorRef,
-    private backNav: BackNavigationService,
   ) {}
 
   ngOnInit(): void {
@@ -210,7 +209,6 @@ export class RawMaterialsComponent implements OnInit {
           user: this.userService.getCurrentUser()?.name ?? 'Administrador',
         };
     this.itemModalVisible = true;
-    this.registerFormHistory('item');
   }
 
   protected onItemModalVisibleChange(visible: boolean): void {
@@ -220,7 +218,6 @@ export class RawMaterialsComponent implements OnInit {
   protected closeItemModal(): void {
     this.itemModalVisible = false;
     this.editingItem = null;
-    this.unregisterFormHistory('item');
   }
 
   protected formatDimensionField(field: 'length' | 'width' | 'thickness' | 'weightPerSquareMeter'): void {
@@ -247,7 +244,6 @@ export class RawMaterialsComponent implements OnInit {
     this.stockQuantity = item.currentStorage;
     this.stockKg = item.currentStorageKg;
     this.stockModalVisible = true;
-    this.registerFormHistory('stock');
   }
 
   protected onStockModalVisibleChange(visible: boolean): void {
@@ -257,7 +253,6 @@ export class RawMaterialsComponent implements OnInit {
   protected closeStockModal(): void {
     this.stockModalVisible = false;
     this.stockTarget = null;
-    this.unregisterFormHistory('stock');
   }
 
   protected openTableItem(item: RawMaterialsTable): void {
@@ -498,26 +493,4 @@ export class RawMaterialsComponent implements OnInit {
     }));
   }
 
-  private registerFormHistory(form: 'item' | 'stock'): void {
-    if (this.formHistoryActive) return;
-    this.formHistoryActive = form;
-    this.backNav.register(() => {
-      const activeForm = this.formHistoryActive;
-      this.formHistoryActive = null;
-      if (activeForm === 'item') {
-        this.itemModalVisible = false;
-        this.editingItem = null;
-      } else if (activeForm === 'stock') {
-        this.stockModalVisible = false;
-        this.stockTarget = null;
-      }
-      this.cdf.detectChanges();
-    });
-  }
-
-  private unregisterFormHistory(form: 'item' | 'stock'): void {
-    if (this.formHistoryActive !== form) return;
-    this.formHistoryActive = null;
-    this.backNav.unregister();
-  }
 }

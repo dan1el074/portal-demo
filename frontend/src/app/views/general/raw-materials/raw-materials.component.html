@@ -168,7 +168,7 @@
   </c-card>
 </c-container>
 
-<c-modal [visible]="itemModalVisible" (visibleChange)="onItemModalVisibleChange($event)" alignment="center" backdrop="static" size="lg">
+<c-modal modalBackNavigation [visible]="itemModalVisible" (visibleChange)="onItemModalVisibleChange($event)" alignment="center" backdrop="static" size="lg">
   <c-modal-header>
     <h5 cModalTitle>{{ currentView === 'consultation' ? 'Visualizar matéria-prima' : (editingItem?.id ? 'Editar matéria-prima' : 'Nova matéria-prima') }}</h5>
     <button cButtonClose (click)="closeItemModal()"></button>
@@ -265,7 +265,7 @@
   </c-modal-footer>
 </c-modal>
 
-<c-modal [visible]="stockModalVisible" (visibleChange)="onStockModalVisibleChange($event)" alignment="center" backdrop="static">
+<c-modal modalBackNavigation [visible]="stockModalVisible" (visibleChange)="onStockModalVisibleChange($event)" alignment="center" backdrop="static">
   <c-modal-header>
     <h5 cModalTitle>Atualizar estoque · {{ stockTarget?.code }}</h5>
     <button cButtonClose (click)="closeStockModal()"></button>
@@ -304,7 +304,7 @@
   </c-modal-footer>
 </c-modal>
 
-<c-modal [visible]="accessModalVisible" (visibleChange)="accessModalVisible = $event" alignment="center" backdrop="static" size="lg">
+<c-modal modalBackNavigation [visible]="accessModalVisible" (visibleChange)="accessModalVisible = $event" alignment="center" backdrop="static" size="lg">
   <c-modal-header>
     <h5 cModalTitle>Permissões por categoria</h5>
     <button cButtonClose (click)="accessModalVisible = false"></button>

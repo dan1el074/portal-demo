@@ -1,4 +1,4 @@
-<c-modal alignment="center" backdrop="static" id="new-event-modal" size="lg" [visible]="visible" (visibleChange)="visibleChange($event)" scrollable>
+<c-modal modalBackNavigation alignment="center" backdrop="static" id="new-event-modal" size="lg" [visible]="visible" (visibleChange)="visibleChange($event)" scrollable>
   <c-modal-header><div><span class="eyebrow">Agenda</span><h5 cModalTitle>{{ editingEvent ? 'Editar evento' : 'Novo evento' }}</h5></div><button cButtonClose (click)="close()"></button></c-modal-header>
   <c-modal-body>
     <div class="event-grid">

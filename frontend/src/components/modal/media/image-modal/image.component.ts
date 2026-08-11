@@ -1,17 +1,18 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
-import { ButtonCloseDirective, CarouselComponent, CarouselControlComponent, CarouselIndicatorsComponent, CarouselInnerComponent, CarouselItemComponent, ModalBodyComponent, ModalComponent, ModalToggleDirective } from '@coreui/angular';
+import { Component, Input, OnChanges, OnInit, Output, EventEmitter, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { ButtonCloseDirective, CarouselComponent, CarouselControlComponent, CarouselIndicatorsComponent, CarouselInnerComponent, CarouselItemComponent, ModalBodyComponent, ModalComponent } from '@coreui/angular';
 import { PostCard } from '../../../../app/interface/post.interface';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-image',
   imports: [
     CommonModule,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalBodyComponent,
-    ModalToggleDirective,
     ButtonCloseDirective,
     CarouselComponent,
     CarouselIndicatorsComponent,
@@ -28,6 +29,8 @@ export class ImageComponent implements OnInit, OnChanges {
   @Input() post!: PostCard;
   @Input() index!: number;
   @Input() ready!: boolean;
+  @Input() visible = false;
+  @Output() close = new EventEmitter<void>();
 
   protected apiUrl = environment.apiUrl;
   protected slides: any[] = [];
@@ -42,6 +45,10 @@ export class ImageComponent implements OnInit, OnChanges {
 
   protected selectSlide(index: number): void {
     this.index = index;
+  }
+
+  protected onVisibleChange(visible: boolean): void {
+    if (!visible) this.close.emit();
   }
 
   private buildSlides(): void {

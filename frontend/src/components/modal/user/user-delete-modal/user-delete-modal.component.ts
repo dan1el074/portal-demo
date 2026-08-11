@@ -3,6 +3,7 @@ import { ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalCompone
 import { cilPencil } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { UserTable } from '../../../../app/interface/user.interface';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-user-delete-modal',
@@ -10,6 +11,7 @@ import { UserTable } from '../../../../app/interface/user.interface';
     ButtonDirective,
     ModalToggleDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
     ButtonCloseDirective,

@@ -6,12 +6,14 @@ import { StepFlowService } from '../../../../app/services/step-flow.service';
 import { StepFlowOrderInfo, StepFlowOrderItem } from '../../../../app/interface/step-flow.interface';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from '../../../../app/pipes/truncate.pipe';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-new-step-flow-modal',
   imports: [
     CommonModule,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalTitleDirective,
     ModalHeaderComponent,
     ModalBodyComponent,

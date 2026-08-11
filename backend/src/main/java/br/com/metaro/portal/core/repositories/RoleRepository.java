@@ -25,7 +25,8 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             r.title AS title,
             r.titleUrl AS titleUrl,
             r.parent AS parent,
-            r.parentUrl AS parentUrl
+            r.parentUrl AS parentUrl,
+            r.activated AS activated
         FROM User u
         JOIN u.roles r
         WHERE u.username = :username
@@ -39,7 +40,8 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             r.title AS title,
             r.titleUrl AS titleUrl,
             r.parent AS parent,
-            r.parentUrl AS parentUrl
+            r.parentUrl AS parentUrl,
+            r.activated AS activated
         FROM Role r
         WHERE r.authority <> 'ROLE_USER'
     """)

@@ -18,7 +18,7 @@ public class ErpStepFlowController {
         this.stepFlowErpOrderService = stepFlowErpOrderService;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")
     @GetMapping(value = "/{orderNumber}")
     public ResponseEntity<ErpOrderDto> findAvailableOrderByNumber(
             @PathVariable Integer orderNumber

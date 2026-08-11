@@ -26,7 +26,7 @@ public class RoleService {
 
         for (Role role : roles) {
             if (role.getTitle() == null) continue;
-            nodes.put(role.getId(), new RoleSummaryDto(role.getId(), role.getTitle()));
+            nodes.put(role.getId(), new RoleSummaryDto(role.getId(), role.getTitle(), role.isActivated()));
         }
 
         for (Role role : roles) {

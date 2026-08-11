@@ -6,10 +6,11 @@ import { CalendarComponent, LoadingButtonComponent } from '@coreui/angular-pro';
 import { ToastrService } from '@app/services/toast.service';
 import { EventCard } from '../../../../app/interface/event.interface';
 import { environment } from '../../../../environments/environment';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-new-event-modal',
-  imports: [CommonModule, FormsModule, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, FormControlDirective, CalendarComponent, LoadingButtonComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, ModalBackNavigationDirective, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, FormControlDirective, CalendarComponent, LoadingButtonComponent],
   templateUrl: './new-event-modal.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './new-event-modal.component.scss'

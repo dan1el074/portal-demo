@@ -12,6 +12,7 @@ import { ErrorService } from '../../../../services/error.service';
 import { Position } from '../../../../interface/position.interface';
 import { Me, UserSummary } from '../../../../interface/user.interface';
 import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } from '../../../../interface/memorando.interface';
+import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-document-view',
@@ -26,6 +27,7 @@ import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } fro
     FormCheckLabelDirective,
     ButtonDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
     ButtonCloseDirective,

@@ -15,8 +15,8 @@ INSERT INTO tb_picture (name, path, type, post_id) VALUES ('1768478289921_6', 'C
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00001', 'C:\\workspace\\outros\\imagens\\img_00001.jpg', 'POST', 4);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00002', 'C:\\workspace\\outros\\imagens\\img_00002.jpg', 'POST', 4);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00003', 'C:\\workspace\\outros\\imagens\\img_00003.jpg', 'POST', 4);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00004', 'C:\\workspace\\outros\\imagens\\img_00004.jpg', 'POST',4);
-INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00005', 'C:\\workspace\\outros\\imagens\\img_00005.jpg', 'POST',4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00004', 'C:\\workspace\\outros\\imagens\\img_00004.jpg', 'POST', 4);
+INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00005', 'C:\\workspace\\outros\\imagens\\img_00005.jpg', 'EVENT', NULL);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00006', 'C:\\workspace\\outros\\imagens\\img_00006.jpeg', 'POST', 2);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00007', 'C:\\workspace\\outros\\imagens\\img_00007.jpeg', 'POST', 3);
 INSERT INTO tb_picture (name, path, type, post_id) VALUES ('img_00008', 'C:\\workspace\\outros\\imagens\\img_00008.jpeg', 'POST', 1);
@@ -76,11 +76,20 @@ INSERT INTO tb_user_role (user_id, role_id) VALUES (1,2);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,5);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (2,6);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (2,8);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (3,1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (3,3);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (3,4);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (3,7);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (4,1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (4,5);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (4,6);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (5,1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (5,7);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (6,1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (6,3);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (6,4);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (6,7);
 
 INSERT INTO tb_notification (message, action_url, viewed, auto_delete, type, reference_id, created_at, user_id) VALUES ('teste', null, false, true, 'MEMORANDO_FINISH', null, NOW(), 1);
 INSERT INTO tb_notification (message, action_url, viewed, auto_delete, type, reference_id, created_at, user_id) VALUES ('teste', null, false, true, 'MEMORANDO_FINISH', null, NOW(), 1);
@@ -91,5 +100,5 @@ INSERT INTO tb_file (id, title, file_name, created_at) VALUES (1, 'Manifesto', '
 INSERT INTO tb_file (id, title, file_name, created_at) VALUES (2, 'Lista de ramais', 'ramais.pdf', CURRENT_TIMESTAMP);
 INSERT INTO tb_file (id, title, file_name, created_at) VALUES (3, 'Memorando', 'manual-memorando.pdf', CURRENT_TIMESTAMP);
 
-INSERT INTO tb_event (title, picture_id, event_date, created_at, updated_at) VALUES ('Minuto da Qualidade', 6, TIMESTAMP WITH TIME ZONE '2026-08-14T20:15:00Z', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT INTO tb_event (title, picture_id, event_date, created_at, updated_at) VALUES ('Café gratidão', 15, TIMESTAMP WITH TIME ZONE '2026-08-21T20:15:00Z', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tb_event (title, picture_id, event_date, created_at, updated_at) VALUES ('Minuto da Qualidade', 6, TIMESTAMP WITH TIME ZONE '2036-08-14T20:15:00Z', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO tb_event (title, picture_id, event_date, created_at, updated_at) VALUES ('SIPAT - Pav 4', 11, TIMESTAMP WITH TIME ZONE '2036-08-21T20:15:00Z', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

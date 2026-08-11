@@ -19,7 +19,7 @@
       @if (createForm.get('picture')?.errors?.['invalidFormat']) { <div class='text-danger centered'>Formato de imagem inválido.</div> }
   </section>
 
-  <c-modal [visible]='modalReady' (visibleChange)='handleModalChange($event)' backdrop='static' alignment='center'>
+  <c-modal modalBackNavigation [visible]='modalReady' (visibleChange)='handleModalChange($event)' backdrop='static' alignment='center'>
     <c-modal-header><svg [cIcon]='icons.cilPencil' class='modal-title-icon' size='lg'></svg><h5 cModalTitle>Nova imagem</h5><button type='button' (click)='toggleModal(true)' cButtonClose></button></c-modal-header>
     <c-modal-body><image-cropper [imageChangedEvent]='imageChangedEvent' [maintainAspectRatio]='true' [aspectRatio]='1 / 1' [resizeToWidth]='256' format='png' (imageCropped)='imageCropped($event)'></image-cropper></c-modal-body>
     <c-modal-footer><button type='button' cButton color='secondary' (click)='toggleModal(true)'>Cancelar</button><button type='button' cButton color='primary' (click)='processImage()'>Aplicar</button></c-modal-footer>
