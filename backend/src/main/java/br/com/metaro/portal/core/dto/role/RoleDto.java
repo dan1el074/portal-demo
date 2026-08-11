@@ -17,6 +17,7 @@ public class RoleDto {
     private String titleUrl;
     private String parent;
     private String parentUrl;
+    private boolean activated;
 
     public RoleDto(Role role) {
         this.id = role.getId();
@@ -25,6 +26,7 @@ public class RoleDto {
         this.titleUrl = role.getTitleUrl();
         this.parent = role.getParent();
         this.parentUrl = role.getParentUrl();
+        this.activated = role.isActivated();
     }
 
     public RoleDto(RoleProjection projection) {
@@ -34,5 +36,6 @@ public class RoleDto {
         this.titleUrl = projection.getTitleUrl();
         this.parent = projection.getParent();
         this.parentUrl = projection.getParentUrl();
+        this.activated = projection.getActivated();
     }
 }

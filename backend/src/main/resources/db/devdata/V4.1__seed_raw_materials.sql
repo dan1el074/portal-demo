@@ -1,0 +1,1 @@
+INSERT INTO tb_user_role (user_id, role_id) VALUES (4,12);

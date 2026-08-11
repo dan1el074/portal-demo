@@ -27,6 +27,7 @@ public class Role implements GrantedAuthority {
     private String titleUrl;
     private String parent;
     private String parentUrl;
+    private boolean activated = true;
 
     @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();

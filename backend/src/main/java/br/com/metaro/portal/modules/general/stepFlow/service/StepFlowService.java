@@ -51,6 +51,7 @@ public class StepFlowService {
 
     @Transactional(readOnly = true)
     public Page<OrderMinDto> listOrders(Pageable pageable, String search, String stepFilter) {
+        pageable = withIdDescendingAsLastSort(pageable);
         String translated = search;
         String onlyStep = stepFilter;
 
@@ -113,10 +114,19 @@ public class StepFlowService {
                 .toList();
 
         Sort remainingSort = remainingOrders.isEmpty()
-                ? Sort.by("number")
+                ? Sort.by(Sort.Direction.DESC, "id")
                 : Sort.by(remainingOrders);
 
         return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), remainingSort);
+    }
+
+    private Pageable withIdDescendingAsLastSort(Pageable pageable) {
+        List<Sort.Order> orders = new ArrayList<>(pageable.getSort().stream()
+                .filter(order -> !order.getProperty().equals("id"))
+                .toList());
+        orders.add(Sort.Order.desc("id"));
+
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(orders));
     }
 
     @Transactional(readOnly = true)
@@ -219,8 +229,9 @@ public class StepFlowService {
 
         if (
             !me.getPosition().getName().equals("Montagem Final")
-            && !me.getPosition().getName().equals("Expedição")
-            && !me.getPosition().getName().equals("TI")
+            && !me.getPosition().getName().equals("Almoxarifado")
+            && me.getAuthorities().stream().noneMatch(x ->
+                    x.getAuthority().equals("ROLE_ADMIN"))
         ) {
             throw new ForbiddenException("Você não tem permissão para excluir essa imagem!");
         }
@@ -417,7 +428,7 @@ public class StepFlowService {
 
     public List<OrderItemInputDto> parseItems(String itemsJson) throws IOException {
         if (itemsJson == null || itemsJson.isBlank()) return List.of();
-        return objectMapper.readValue(itemsJson, new TypeReference<List<OrderItemInputDto>>() {});
+        return objectMapper.readValue(itemsJson, new TypeReference<>() {});
     }
 
     public void checkIfHavePictures(Order order) {

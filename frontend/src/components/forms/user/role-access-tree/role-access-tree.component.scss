@@ -43,6 +43,18 @@
   padding: 7px 0;
 }
 
+.tool-control.inactive-role-control,
+.level-control.inactive-role-control {
+  color: var(--cui-secondary-color);
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+.tool-control.inactive-role-control input,
+.level-control.inactive-role-control input {
+  cursor: not-allowed;
+}
+
 .tool-control,
 .level-control {
   display: flex;

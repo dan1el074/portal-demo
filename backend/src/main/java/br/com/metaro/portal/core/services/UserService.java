@@ -232,6 +232,7 @@ public class UserService implements UserDetailsService {
 
         for (Long roleId : rolesList) {
             Role role = roleRepository.findById(roleId).orElseThrow(ResourceNotFoundException::new);
+            validateRoleIsActivated(role);
             addRoleWithAncestors(entity, role);
         }
 
@@ -322,7 +323,17 @@ public class UserService implements UserDetailsService {
 
         for (Long roleId : rolesList) {
             Role role = roleRepository.findById(roleId).orElseThrow(ResourceNotFoundException::new);
+            validateRoleIsActivated(role);
             addRoleWithAncestors(entity, role);
+        }
+    }
+
+    private void validateRoleIsActivated(Role role) {
+        if (!role.isActivated()) {
+            throw new UnprocessableEntityException(
+                    "A permissÃ£o %s estÃ¡ desativada e nÃ£o pode ser atribuÃ­da a um usuÃ¡rio!"
+                            .formatted(role.getAuthority())
+            );
         }
     }
 

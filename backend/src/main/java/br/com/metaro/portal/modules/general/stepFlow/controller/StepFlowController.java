@@ -42,28 +42,28 @@ public class StepFlowController {
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")
     @GetMapping(value = "/step/{ordinal}")
     public ResponseEntity<List<OrderMinDto>> listOrdersByStep(@PathVariable Integer ordinal) {
         List<OrderMinDto> dtos = stepFlowService.listOrdersByCurrentStep(ordinal);
         return ResponseEntity.ok(dtos);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_CONSULTATION')")
     @GetMapping(value = "/admin")
     public ResponseEntity<StepFlowInfoDto> getStepFlowInfo() {
         StepFlowInfoDto dtos = stepFlowService.generateDashboard();
         return ResponseEntity.ok(dtos);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")
     @PostMapping
     public ResponseEntity<Void> create (@RequestBody ErpOrderDto erpOrderDto) {
         stepFlowService.create(erpOrderDto);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderDto> update(
             @PathVariable Long id,
@@ -77,14 +77,14 @@ public class StepFlowController {
         return ResponseEntity.ok(newDto);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")
     @PutMapping(value = "/{id}/nextStep")
     public ResponseEntity<Void> nextStep(@PathVariable Long id) {
         stepFlowService.goToNextStep(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")
     @DeleteMapping(value = "/image/{id}")
     public ResponseEntity<Void> deleteImageById(@PathVariable Long id) throws IOException {
         stepFlowService.deleteImageById(id);

@@ -13,6 +13,12 @@ import { StepFlowOffcanvasComponent } from '../../../../components/offcanvas/ste
 import { StepFlowInputOffcanvasComponent } from '../../../../components/offcanvas/step-flow-input-offcanvas/step-flow-input-offcanvas.component';
 import { NewStepFlowModalComponent } from '../../../../components/modal/step-flow/new-step-flow-modal/new-step-flow-modal.component';
 
+interface StepFlowView extends Step {
+  type: 'profile' | 'sector';
+  roleAuthority?: string;
+  activated: boolean;
+}
+
 @Component({
   selector: 'app-step-flow',
   imports: [
@@ -43,13 +49,14 @@ export class StepFlowComponent implements OnInit {
   @ViewChild('stepFlowInputOffcanvas')stepFlowInputOffcanvas!: StepFlowInputOffcanvasComponent;
 
   protected isAdmin: boolean = false;
-  protected isManager: boolean = false;
+  protected hasConsultationAccess: boolean = false;
   protected showMoney: boolean = true;
   protected isShipping: boolean = false;
   protected data!: Array<StepFlowData>;
   protected currentStepData!: Array<StepFlowData>;
   protected resume!: Array<Resume>;
   protected steps!: Array<Step>;
+  protected views!: Array<StepFlowView>;
   protected dashboard!: AdminDashboard;
   protected currentStepIndex: number = - 1;
   protected loading: boolean = true;
@@ -115,9 +122,9 @@ export class StepFlowComponent implements OnInit {
     this.steps = [
       {
         id: 0,
-        title: "Administrador",
+        title: "Consulta",
         description: '',
-        icon: this.sanitizer.bypassSecurityTrustHtml(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>`),
+        icon: this.sanitizer.bypassSecurityTrustHtml(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12.35a1 1 0 0 1 0-.7C3.78 7.6 7.7 5 12 5c4.3 0 8.22 2.6 9.94 6.65a1 1 0 0 1 0 .7C20.22 16.4 16.3 19 12 19c-4.3 0-8.22-2.6-9.94-6.65"></path><circle cx="12" cy="12" r="3"></circle></svg>`),
         count: 0,
         lateCount: 0
       },
@@ -164,11 +171,12 @@ export class StepFlowComponent implements OnInit {
     ];
 
     this.user = this.userService.getCurrentUser();
+    this.views = this.buildViews();
     this.getStepAccess();
     this.loadOrders();
 
-    if (this.isManager) this.loadDashboard();
-    if (this.currentStepIndex > 0) this.loadCurrentStepOrders(this.currentStepIndex - 1);
+    if (this.hasConsultationAccess) this.loadDashboard();
+    this.loadCurrentSectorOrders();
   }
 
   public openOrder(orderId: number) {
@@ -176,12 +184,16 @@ export class StepFlowComponent implements OnInit {
   }
 
   protected setCurrentStepIndex(index: number): void {
+    const view = this.views[index];
+    const canTransition = this.isAdmin || (this.isShipping && this.isShippingView(view));
+    if (!canTransition || !view?.activated) return;
+
     this.currentStepData = [];
     this.workQueueSearch = '';
     this.currentStepIndex = index;
 
-    if (index == 0 && this.isAdmin) this.loadDashboard();
-    if (index > 0) this.loadCurrentStepOrders(index - 1);
+    if (view.roleAuthority === 'ROLE_STEP_FLOW_CONSULTATION') this.loadDashboard();
+    if (view.type === 'sector') this.loadCurrentStepOrders(view.id - 1);
   }
 
   protected searchForStatus(term: string): void {
@@ -211,7 +223,7 @@ export class StepFlowComponent implements OnInit {
       next: () => {
         this.toaster.success("Registro criado com sucesso!");
         this.loadOrders();
-        if (this.currentStepIndex > 0) this.loadCurrentStepOrders(this.currentStepIndex - 1);
+        this.loadCurrentSectorOrders();
       },
       error: () => {
         this.toaster.error("Erro ao criar registro!")
@@ -235,7 +247,7 @@ export class StepFlowComponent implements OnInit {
 
           this.cdf.detectChanges();
         },
-        error: () => this.toaster.error("Erro ao recuperar informações de administrador")
+        error: () => this.toaster.error("Erro ao recuperar informações de consulta")
       });
   }
 
@@ -287,32 +299,44 @@ export class StepFlowComponent implements OnInit {
       return;
     }
 
-    if (this.user.roles.filter(role => role.authority == 'ROLE_ADMIN').length) {
-      this.isAdmin = true;
+    this.isAdmin = this.hasActiveRole('ROLE_ADMIN');
+
+    if (!this.isAdmin && this.hasActiveRole('ROLE_STEP_FLOW_ADMIN')) {
+      this.currentStepIndex = this.views.findIndex(
+        view => view.roleAuthority === 'ROLE_STEP_FLOW_ADMIN'
+      );
+      return;
     }
 
-    if (this.user.roles.filter(role => role.authority == 'ROLE_ADMIN' || role.authority == 'ROLE_STEP_FLOW_ADMIN').length) {
-      this.isManager = true;
-      this.currentStepIndex = 0;
-      return
+    if (this.hasActiveRole('ROLE_STEP_FLOW_CONSULTATION')) {
+      this.hasConsultationAccess = true;
+      this.currentStepIndex = this.views.findIndex(
+        view => view.roleAuthority === 'ROLE_STEP_FLOW_CONSULTATION'
+      );
+      return;
+    }
+
+    if (!this.hasActiveRole('ROLE_STEP_FLOW_OPERATOR')) {
+      this.currentStepIndex = -1;
+      return;
     }
 
     switch (this.user.position) {
       case 'Montagem Final':
-        this.currentStepIndex = this.steps.findIndex(step => step.title == 'Montagem Final');
+        this.currentStepIndex = this.views.findIndex(view => view.title == 'Montagem Final');
         this.showMoney = false;
         break;
       case 'PCP':
-        this.currentStepIndex = this.steps.findIndex(step => step.title == 'PCP');
+        this.currentStepIndex = this.views.findIndex(view => view.title == 'PCP');
         break;
       case 'Comercial':
-        this.currentStepIndex = this.steps.findIndex(step => step.title == 'Frete');
+        this.currentStepIndex = this.views.findIndex(view => view.title == 'Frete');
         break;
       case 'Financeiro':
-        this.currentStepIndex = this.steps.findIndex(step => step.title == 'Faturamento');
+        this.currentStepIndex = this.views.findIndex(view => view.title == 'Faturamento');
         break;
       case 'Almoxarifado':
-        this.currentStepIndex = this.steps.findIndex(step => step.title == 'Expedição');
+        this.currentStepIndex = this.views.findIndex(view => view.title == 'Expedição');
         this.isShipping = true;
         break;
       default:
@@ -350,7 +374,7 @@ export class StepFlowComponent implements OnInit {
   }
 
   protected reloadOrders(): void {
-    if (this.currentStepIndex > 0) this.loadCurrentStepOrders(this.currentStepIndex - 1);
+    this.loadCurrentSectorOrders();
     this.loadOrders();
   }
 
@@ -400,6 +424,49 @@ export class StepFlowComponent implements OnInit {
     this.currentStepFilter = '';
     this.currentPage = 1;
     this.loadOrders();
+  }
+
+  private buildViews(): Array<StepFlowView> {
+    const consultationView: StepFlowView = {
+      ...this.steps[0],
+      type: 'profile',
+      roleAuthority: 'ROLE_STEP_FLOW_CONSULTATION',
+      activated: this.hasActiveRole('ROLE_STEP_FLOW_CONSULTATION'),
+    };
+
+    const administratorView: StepFlowView = {
+      id: -1,
+      title: 'Administrador',
+      description: 'Perfil reservado para uso futuro',
+      icon: this.sanitizer.bypassSecurityTrustHtml(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>`),
+      count: 0,
+      lateCount: 0,
+      type: 'profile',
+      roleAuthority: 'ROLE_STEP_FLOW_ADMIN',
+      activated: this.hasActiveRole('ROLE_STEP_FLOW_ADMIN'),
+    };
+
+    const sectorViews = this.steps.slice(1).map<StepFlowView>(step => ({
+      ...step,
+      type: 'sector',
+      activated: true,
+    }));
+
+    return [consultationView, administratorView, ...sectorViews];
+  }
+
+  private hasActiveRole(authority: string): boolean {
+    return this.user?.roles.some(role => role.authority === authority && role.activated) ?? false;
+  }
+
+  private loadCurrentSectorOrders(): void {
+    const view = this.views[this.currentStepIndex];
+    if (view?.type === 'sector') this.loadCurrentStepOrders(view.id - 1);
+  }
+
+  protected isShippingView(view: StepFlowView | undefined): boolean {
+    return view?.type === 'sector'
+      && (view.title === 'Montagem Final' || view.title === 'Expedição');
   }
 
   private normalizeSearchValue(value: unknown): string {

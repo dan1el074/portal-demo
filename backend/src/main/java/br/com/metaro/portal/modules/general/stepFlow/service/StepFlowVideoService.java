@@ -73,8 +73,9 @@ public class StepFlowVideoService {
 
         if (
             !me.getPosition().getName().equals("Montagem Final")
-            && !me.getPosition().getName().equals("Expedição")
-            && !me.getPosition().getName().equals("TI")
+            && !me.getPosition().getName().equals("Almoxarifado")
+            && me.getAuthorities().stream().noneMatch(x ->
+                    x.getAuthority().equals("ROLE_ADMIN"))
         ) {
             throw new ForbiddenException("Você não tem permissão para excluir esse vídeo!");
         }

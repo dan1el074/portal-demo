@@ -9,6 +9,7 @@ export class BackNavigationService {
   private readonly platformId = inject(PLATFORM_ID);
 
   private stack: Array<CloseHandler> = [];
+  private afterCloseActions: Array<() => void> = [];
   private listenerAttached = false;
 
   register(onBack: CloseHandler): void {
@@ -30,8 +31,20 @@ export class BackNavigationService {
     history.back();
   }
 
+  runAfterOverlayClose(action: () => void): void {
+    if (!isPlatformBrowser(this.platformId) || !this.stack.length) {
+      action();
+      return;
+    }
+
+    this.afterCloseActions.push(action);
+  }
+
   private onPopState = (): void => {
     const onBack = this.stack.pop();
     if (onBack) onBack();
+
+    const afterClose = this.afterCloseActions.shift();
+    if (afterClose) setTimeout(afterClose);
   };
 }

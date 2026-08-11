@@ -59,7 +59,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND s.step = :step
             AND s.status = :status
             AND o.status <> :orderStatus
-        ORDER BY o.number
+        ORDER BY o.id DESC
     """)
     public List<Order> findByCurrentStep(@Param("step") StepType step,
                                          @Param("status") StepStatus status,
