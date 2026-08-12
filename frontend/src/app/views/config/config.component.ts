@@ -8,11 +8,14 @@ import { CommonModule } from '@angular/common';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ErrorService } from '../../services/error.service';
 import { HomeService } from '../../services/home.service';
+import { RawMaterialsService } from '../../services/raw-materials.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-config',
   imports: [
     CommonModule,
+    FormsModule,
     NgxSpinnerModule,
     CardComponent,
     CardBodyComponent,
@@ -30,10 +33,13 @@ export class ConfigComponent implements OnInit {
   protected userData: UserConfigData | null = null;
   protected loaded = false;
   protected isAdmin = false;
+  protected rawMaterialHistoryRetention = 1000;
+  protected savingHistoryRetention = false;
 
   constructor(
     private userService: UserService,
     private homeService: HomeService,
+    private rawMaterialsService: RawMaterialsService,
     private toasterService: ToastrService,
     private errorService: ErrorService,
     private spinner: NgxSpinnerService,
@@ -45,6 +51,12 @@ export class ConfigComponent implements OnInit {
     this.isAdmin = this.userService.getCurrentUser()?.roles.some(
       role => role.authority === 'ROLE_ADMIN'
     ) ?? false;
+    if (this.isAdmin) {
+      this.rawMaterialsService.getHistoryRetention().subscribe(setting => {
+        this.rawMaterialHistoryRetention = setting.value;
+        this.cdr.detectChanges();
+      });
+    }
 
     this.userService.getUserConfig().subscribe({
       next: data =>  {
@@ -75,6 +87,28 @@ export class ConfigComponent implements OnInit {
     this.homeService.clearAllCache().subscribe({
       next: () => this.toasterService.success('Cache limpo com sucesso!'),
       error: () => this.toasterService.error('Erro ao limpar cache!')
+    });
+  }
+
+  protected saveHistoryRetention(): void {
+    const value = Math.trunc(Number(this.rawMaterialHistoryRetention));
+    if (!Number.isFinite(value) || value < 10 || value > 100000) {
+      this.toasterService.error('Informe um valor entre 10 e 100.000 registros.');
+      return;
+    }
+    this.savingHistoryRetention = true;
+    this.rawMaterialsService.updateHistoryRetention(value).subscribe({
+      next: setting => {
+        this.rawMaterialHistoryRetention = setting.value;
+        this.savingHistoryRetention = false;
+        this.toasterService.success('Retenção do histórico atualizada.');
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.savingHistoryRetention = false;
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
     });
   }
 }

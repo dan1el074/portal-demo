@@ -24,17 +24,12 @@ export class RawMaterialsOverviewComponent {
   @Input({ required: true }) users: RawMaterialUserAccess[] = [];
   @Input() apiUrl = '';
   @Input() newCategoryName = '';
-  @Input() editingCategoryId: number | null = null;
-  @Input() editingCategoryName = '';
   @Input() categoryDeleteError = '';
 
   @Output() statusFilter = new EventEmitter<RawMaterialStockStatus>();
   @Output() newCategoryNameChange = new EventEmitter<string>();
   @Output() addCategory = new EventEmitter<void>();
-  @Output() editingCategoryNameChange = new EventEmitter<string>();
   @Output() startCategoryEdit = new EventEmitter<RawMaterialCategory>();
-  @Output() cancelCategoryEdit = new EventEmitter<void>();
-  @Output() saveCategoryEdit = new EventEmitter<RawMaterialCategory>();
   @Output() deleteCategory = new EventEmitter<RawMaterialCategory>();
   @Output() manageAccess = new EventEmitter<void>();
 

@@ -18,9 +18,10 @@ export class StepFlowService {
 
   public findAll( page: number, size: number, sortColumn?: string, sortDirection?: 'asc' | 'desc', search?: string, stepFilter?: string): Observable<PagedResult<StepFlowData>> {
     let params = new HttpParams().set('page', page).set('size', size);
+    const trimmedSearch = search?.trim();
 
     if (sortColumn) params = params.set('sort', `${sortColumn},${sortDirection ?? 'asc'}`);
-    if (search) params = params.set('search', search);
+    if (trimmedSearch) params = params.set('search', trimmedSearch);
     if (stepFilter) params = params.set('stepFilter', stepFilter);
 
     return this.http.get<PagedResult<StepFlowData>>(this.api, { params });

@@ -29,6 +29,26 @@
 
             <div class="admin-tool">
               <div class="admin-tool-copy">
+                <strong>Histórico de matérias-primas</strong>
+                <span>Quantidade máxima de movimentações mantidas por item.</span>
+              </div>
+              <div class="history-retention-control">
+                <input
+                  type="number"
+                  min="10"
+                  max="100000"
+                  step="10"
+                  aria-label="Movimentações mantidas por item"
+                  [(ngModel)]="rawMaterialHistoryRetention"
+                >
+                <button class="admin-action primary" type="button" [disabled]="savingHistoryRetention" (click)="saveHistoryRetention()">
+                  {{ savingHistoryRetention ? 'Salvando...' : 'Salvar' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="admin-tool">
+              <div class="admin-tool-copy">
                 <strong>Documentação da API</strong>
                 <span>Consulte e teste os endpoints disponíveis pelo Swagger.</span>
               </div>

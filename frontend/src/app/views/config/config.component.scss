@@ -116,3 +116,17 @@
     }
   }
 }
+.history-retention-control {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.history-retention-control input {
+  width: 8rem;
+  padding: .45rem .6rem;
+  border: 1px solid var(--cui-border-color);
+  border-radius: .375rem;
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
+}
