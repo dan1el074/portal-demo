@@ -25,7 +25,8 @@ class RawMaterialsServiceValidationTests {
     @Mock RawMaterialRepository materialRepository;
     @Mock RawMaterialCategoryRepository categoryRepository;
     @Mock RawMaterialHistoryRepository historyRepository;
-    @Mock RawMaterialCategoryDenialRepository denialRepository;
+    @Mock UserRepository userRepository;
+    @Mock ParamRepository paramRepository;
     @Mock UserService userService;
     @InjectMocks RawMaterialsService service;
 
@@ -76,7 +77,7 @@ class RawMaterialsServiceValidationTests {
     }
 
     @Test
-    void deniedCategoryCannotBeMovedEvenWhenOperatorAlsoHasConsultationRole() {
+    void categoryWithoutAccessCannotBeMovedEvenWhenOperatorAlsoHasConsultationRole() {
         User operator = new User();
         operator.setId(7L);
         Role operatorRole = mock(Role.class);
@@ -92,8 +93,7 @@ class RawMaterialsServiceValidationTests {
         item.setCategory(category);
         when(materialRepository.findById(11L)).thenReturn(Optional.of(item));
         when(userService.authenticate()).thenReturn(operator);
-        when(denialRepository.findDeniedCategoryIds(7L)).thenReturn(List.of(3L));
-        when(categoryRepository.findAll()).thenReturn(List.of(category));
+        when(categoryRepository.findAllowedCategoryIds(7L)).thenReturn(List.of());
 
         assertThatThrownBy(() -> service.updateStock(11L, new RawMaterialStockDto(BigDecimal.TEN)))
                 .isInstanceOf(ForbiddenException.class)
@@ -127,6 +127,21 @@ class RawMaterialsServiceValidationTests {
                 .isEqualTo("Descrição do item|Estoque mínimo");
     }
 
+    @Test
+    void doesNotRecordHistoryWhenAdministratorSavesWithoutChanges() {
+        RawMaterialCategory category = new RawMaterialCategory();
+        category.setId(1L);
+        category.setName("Chapas Finas");
+        RawMaterial item = material(category);
+
+        when(materialRepository.findById(11L)).thenReturn(Optional.of(item));
+
+        service.update(11L, validItem());
+
+        verify(materialRepository, never()).save(any());
+        verifyNoInteractions(historyRepository, userService, categoryRepository);
+    }
+
     private RawMaterial material(RawMaterialCategory category) {
         RawMaterial item = new RawMaterial();
         item.setId(11L);
@@ -142,6 +157,9 @@ class RawMaterialsServiceValidationTests {
         item.setWeightPerSquareMeter(BigDecimal.ONE);
         item.setActive(true);
         item.setCategory(category);
+        User updatedBy = new User();
+        updatedBy.setName("Administrador");
+        item.setUpdatedBy(updatedBy);
         return item;
     }
 

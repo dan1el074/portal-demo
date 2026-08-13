@@ -24,7 +24,6 @@ public class RawMaterialsService {
     private final RawMaterialRepository materialRepository;
     private final RawMaterialCategoryRepository categoryRepository;
     private final RawMaterialHistoryRepository historyRepository;
-    private final RawMaterialCategoryDenialRepository denialRepository;
     private final UserRepository userRepository;
     private final ParamRepository paramRepository;
     private final UserService userService;
@@ -90,10 +89,12 @@ public class RawMaterialsService {
     @Transactional
     public RawMaterialDto update(Long id, RawMaterialInputDto dto) {
         validateInput(dto, id);
-        User me = userService.authenticate();
         RawMaterial item = findItem(id);
         BigDecimal previous = item.getCurrentStorage();
         List<String> changedFields = changedFields(item, dto);
+        if (changedFields.isEmpty()) return new RawMaterialDto(item);
+
+        User me = userService.authenticate();
         copy(dto, item);
         item.setUpdatedBy(me);
         materialRepository.save(item);
@@ -137,14 +138,12 @@ public class RawMaterialsService {
         RawMaterialCategory category = new RawMaterialCategory();
         category.setName(dto.getName().trim());
         category.setConversionFactor(normalizeFormula(dto.getConversionFactor()));
-        category = categoryRepository.save(category);
-
-        if (Boolean.FALSE.equals(dto.getReleaseToAll())) {
+        if (Boolean.TRUE.equals(dto.getReleaseToAll())) {
             for (RawMaterialOperatorProjection operator : userRepository.findRawMaterialOperators()) {
-                denialRepository.save(new RawMaterialCategoryDenial(null,
-                        userRepository.getReferenceById(operator.getId()), category));
+                category.getUsersWithAccess().add(userRepository.getReferenceById(operator.getId()));
             }
         }
+        category = categoryRepository.save(category);
 
         return new RawMaterialCategoryDto(category);
     }
@@ -176,8 +175,8 @@ public class RawMaterialsService {
         List<Long> allCategoryIds = categoryRepository.findAll().stream().map(RawMaterialCategory::getId).toList();
 
         return userRepository.findRawMaterialOperators().stream().map(user -> {
-            Set<Long> denied = new HashSet<>(denialRepository.findDeniedCategoryIds(user.getId()));
-            List<Long> allowed = allCategoryIds.stream().filter(id -> !denied.contains(id)).toList();
+            Set<Long> allowedIds = new HashSet<>(categoryRepository.findAllowedCategoryIds(user.getId()));
+            List<Long> allowed = allCategoryIds.stream().filter(allowedIds::contains).toList();
             return new RawMaterialUserAccessDto(user.getId(), user.getName(), user.getPictureId(), allowed);
         }).toList();
     }
@@ -189,8 +188,9 @@ public class RawMaterialsService {
 
     @Transactional
     public void updateAccess(RawMaterialAccessUpdateDto dto) {
+        List<RawMaterialCategory> categories = categoryRepository.findAll();
         Set<Long> allCategories = new HashSet<>();
-        categoryRepository.findAll().forEach(category -> allCategories.add(category.getId()));
+        categories.forEach(category -> allCategories.add(category.getId()));
         Set<Long> operators = new HashSet<>();
         userRepository.findRawMaterialOperators().forEach(user -> operators.add(user.getId()));
 
@@ -202,12 +202,11 @@ public class RawMaterialsService {
                 throw new UnprocessableEntityException("Categoria inválida no controle de acesso.");
             }
 
-            denialRepository.deleteByUserId(input.getId());
             Set<Long> allowed = new HashSet<>(input.getCategoryIds());
-
-            for (Long categoryId : allCategories) {
-                if (!allowed.contains(categoryId)) denialRepository.save(new RawMaterialCategoryDenial(null,
-                    userRepository.getReferenceById(input.getId()), categoryRepository.getReferenceById(categoryId)));
+            User user = userRepository.getReferenceById(input.getId());
+            for (RawMaterialCategory category : categories) {
+                category.getUsersWithAccess().removeIf(existing -> existing.getId().equals(input.getId()));
+                if (allowed.contains(category.getId())) category.getUsersWithAccess().add(user);
             }
         }
     }
@@ -328,9 +327,7 @@ public class RawMaterialsService {
     }
 
     private List<Long> allowedCategoryIds(Long userId) {
-        Set<Long> denied = new HashSet<>(denialRepository.findDeniedCategoryIds(userId));
-        return categoryRepository.findAll().stream().map(RawMaterialCategory::getId)
-                .filter(id -> !denied.contains(id)).toList();
+        return categoryRepository.findAllowedCategoryIds(userId);
     }
 
     private void assertCategoryAccess(Long categoryId) {

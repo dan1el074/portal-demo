@@ -368,7 +368,7 @@ export class RawMaterialsComponent implements OnInit {
         next: () => {
           this.closeStockModal();
           this.loadItems();
-          this.loadSummary();
+          if (this.currentView !== 'operator' || this.isAdmin) this.loadSummary();
         },
         error: error => this.errorService.showError(error),
       });
