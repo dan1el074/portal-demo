@@ -9,7 +9,7 @@ import {
   ModalTitleDirective,
   SpinnerComponent,
 } from '@coreui/angular';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 export interface DeletableStepFlowMedia {
   id: number;

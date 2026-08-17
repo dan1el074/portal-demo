@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../app/services/toast.service';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, SpinnerComponent } from '@coreui/angular';
 import { StepFlowService } from '../../../../app/services/step-flow.service';
 import { StepFlowOrderInfo, StepFlowOrderItem } from '../../../../app/interface/step-flow.interface';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from '../../../../app/pipes/truncate.pipe';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-new-step-flow-modal',

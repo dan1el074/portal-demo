@@ -10,7 +10,7 @@ import { RawMaterialsService } from '../../../services/raw-materials.service';
 import { UserService } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment';
 import { RawMaterialsOverviewComponent } from '../../../../components/raw-materials/raw-materials-overview/raw-materials-overview.component';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../directive/modal-back-navigation.directive';
 import { ErrorService } from '../../../services/error.service';
 
 @Component({

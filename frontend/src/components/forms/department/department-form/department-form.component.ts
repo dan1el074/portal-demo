@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MultiSelectComponent, MultiSelectOptgroupComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
 import { FormControlDirective } from '@coreui/angular';
 import { cilPencil, cilX } from '@coreui/icons';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../app/services/toast.service';
 import { UserService } from './../../../../app/services/user.service';
 import { PositionFormImput } from '../../../../app/interface/position.interface';
 import { UserGroup } from '../../../../app/interface/user.interface';

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../services/toast.service';
 import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownDividerDirective, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective } from '@coreui/angular';
 import { IItem, SmartPaginationComponent } from '@coreui/angular-pro';
 import { UserService } from './../../../services/user.service';

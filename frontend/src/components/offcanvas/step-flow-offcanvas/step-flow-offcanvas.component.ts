@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, LOCALE_ID, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../app/services/toast.service';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonCloseDirective, ButtonDirective, OffcanvasService, Tabs2Module, TemplateIdDirective } from '@coreui/angular';
 import { StepFlowService } from '../../../app/services/step-flow.service';
 import { StepFlowOrder, StepFlowVideo } from '../../../app/interface/step-flow.interface';

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../services/toast.service';
 import { ButtonDirective, ContainerComponent } from '@coreui/angular';
 import { EMPTY, Subscription, catchError, interval, startWith, switchMap } from 'rxjs';
 import { HomeService } from './../../services/home.service';
