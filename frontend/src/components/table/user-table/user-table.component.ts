@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { AvatarComponent, ButtonDirective, ModalToggleDirective } from '@coreui/angular';
 import { IColumn, SmartTableComponent, TemplateIdDirective } from '@coreui/angular-pro';
 import { IconDirective } from '@coreui/icons-angular';
@@ -29,6 +29,8 @@ export class UserTableComponent implements OnChanges {
   protected tableFilterValue = '';
   protected columns: IColumn[] = [];
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['resetKey'] && !changes['resetKey'].firstChange) {
       this.tableFilterValue = '';
@@ -43,7 +45,10 @@ export class UserTableComponent implements OnChanges {
       ...(!this.hideDeactiveButton ? [this.column('actions', '', false)] : []),
     ];
     this.loading = true;
-    queueMicrotask(() => this.loading = false);
+    queueMicrotask(() => {
+      this.loading = false;
+      this.cdr.detectChanges();
+    });
   }
 
   protected openUser(event: { item: UserTable }): void {
