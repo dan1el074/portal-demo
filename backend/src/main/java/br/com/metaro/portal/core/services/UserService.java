@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -156,6 +157,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
+    @CacheEvict(cacheNames = "homeInfo", allEntries = true)
     @Transactional
     public UserMinDto insert(UserInsertDto dto) throws IOException {
         User user = new User();
@@ -164,6 +166,7 @@ public class UserService implements UserDetailsService {
         return new UserMinDto(user);
     }
 
+    @CacheEvict(cacheNames = "homeInfo", allEntries = true)
     @Transactional
     public List<UserMinDto> update(Long id, UserInsertDto dto, String resetPicture) throws IOException {
         User user = userRepository.getReferenceById(id);
@@ -189,6 +192,7 @@ public class UserService implements UserDetailsService {
         return new UserConfigDto(user);
     }
 
+    @CacheEvict(cacheNames = "homeInfo", allEntries = true)
     @Transactional
     public void deactivateUser(Long id) {
         if (!userRepository.existsById(id)) throw new ResourceNotFoundException();

@@ -33,7 +33,7 @@ public class RawMaterialsService {
         User me = userService.authenticate();
         Pageable safePageable = sanitizePageable(pageable);
         String safeSearch = search == null ? "" : search.trim();
-        String safeCategory = category == null || category.isBlank() ? null : category.trim();
+        String safeCategory = category == null ? "" : category.trim();
         String safeStatus = status == null || status.equalsIgnoreCase("all")
                 ? null
                 : status.toLowerCase(Locale.ROOT);
