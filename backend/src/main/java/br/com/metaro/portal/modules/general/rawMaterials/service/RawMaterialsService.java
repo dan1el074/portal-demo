@@ -138,13 +138,14 @@ public class RawMaterialsService {
         RawMaterialCategory category = new RawMaterialCategory();
         category.setName(dto.getName().trim());
         category.setConversionFactor(normalizeFormula(dto.getConversionFactor()));
+
         if (Boolean.TRUE.equals(dto.getReleaseToAll())) {
             for (RawMaterialOperatorProjection operator : userRepository.findRawMaterialOperators()) {
                 category.getUsersWithAccess().add(userRepository.getReferenceById(operator.getId()));
             }
         }
-        category = categoryRepository.save(category);
 
+        category = categoryRepository.save(category);
         return new RawMaterialCategoryDto(category);
     }
 
@@ -332,6 +333,7 @@ public class RawMaterialsService {
 
     private void assertCategoryAccess(Long categoryId) {
         User me = userService.authenticate();
+
         if (isOnlyOperator(me) && !allowedCategoryIds(me.getId()).contains(categoryId)) {
             throw new ForbiddenException("Você não tem acesso a esta categoria.");
         }
@@ -340,6 +342,7 @@ public class RawMaterialsService {
     private void assertStockAccess(Long categoryId) {
         User me = userService.authenticate();
         boolean globalAdministrator = me.hasRole("ROLE_ADMIN") || me.hasRole("ROLE_RAW_MATERIALS_ADMIN");
+
         if (!globalAdministrator && me.hasRole("ROLE_RAW_MATERIALS_OPERATOR")
                 && !allowedCategoryIds(me.getId()).contains(categoryId)) {
             throw new ForbiddenException("Você não tem acesso para movimentar esta categoria.");

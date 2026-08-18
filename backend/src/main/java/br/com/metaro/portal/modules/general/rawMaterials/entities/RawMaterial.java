@@ -51,7 +51,8 @@ public class RawMaterial {
     @JoinColumn(name = "updated_by", nullable = false)
     private User updatedBy;
 
-    @PrePersist @PreUpdate
+    @PrePersist
+    @PreUpdate
     void touch() {
         updatedAt = Instant.now();
     }

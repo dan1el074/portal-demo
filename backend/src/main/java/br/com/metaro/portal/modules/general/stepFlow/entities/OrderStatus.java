@@ -18,8 +18,7 @@ public enum OrderStatus {
 
     public static OrderStatus fromDescription(String text) {
         return Arrays.stream(values())
-                .filter(e -> StringUtils.normalize(e.getDescription())
-                        .equals(StringUtils.normalize(text)))
+                .filter(e -> StringUtils.normalize(e.getDescription()).equals(StringUtils.normalize(text)))
                 .findFirst()
                 .orElse(null);
     }

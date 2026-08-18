@@ -34,7 +34,8 @@ public class RawMaterialCategory {
             uniqueConstraints = @UniqueConstraint(columnNames = {"category_id", "user_id"}))
     private Set<User> usersWithAccess = new HashSet<>();
 
-    @PrePersist @PreUpdate
+    @PrePersist
+    @PreUpdate
     void touch() {
         updatedAt = Instant.now();
     }
