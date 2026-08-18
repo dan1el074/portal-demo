@@ -30,6 +30,13 @@ class RawMaterialRepositoryTests {
     }
 
     @Test
+    void acceptsEmptyOptionalFilters() {
+        var page = repository.search(PageRequest.of(0, 10), "", "", null, false);
+
+        assertThat(page).isNotNull();
+    }
+
+    @Test
     void summarizesActiveStockWithoutLoadingEntities() {
         RawMaterialSummaryProjection summary = repository.summarize();
 

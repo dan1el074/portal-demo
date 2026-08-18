@@ -24,7 +24,7 @@ public interface RawMaterialRepository extends JpaRepository<RawMaterial, Long> 
                r.updatedAt AS updateAt, u.name AS user
         FROM RawMaterial r JOIN r.category c JOIN r.updatedBy u
         WHERE r.active = :active
-          AND (:category IS NULL OR LOWER(c.name) = LOWER(:category))
+          AND (:category = '' OR LOWER(c.name) = LOWER(:category))
           AND (:search = '' OR LOWER(r.code) LIKE LOWER(CONCAT('%', :search, '%'))
                OR LOWER(r.name) LIKE LOWER(CONCAT('%', :search, '%'))
                OR LOWER(COALESCE(r.description, '')) LIKE LOWER(CONCAT('%', :search, '%')))
@@ -45,7 +45,7 @@ public interface RawMaterialRepository extends JpaRepository<RawMaterial, Long> 
                r.updatedAt AS updateAt, u.name AS user
         FROM RawMaterial r JOIN r.category c JOIN r.updatedBy u
         WHERE r.active = :active AND c.id IN :categoryIds
-          AND (:category IS NULL OR LOWER(c.name) = LOWER(:category))
+          AND (:category = '' OR LOWER(c.name) = LOWER(:category))
           AND (:search = '' OR LOWER(r.code) LIKE LOWER(CONCAT('%', :search, '%'))
                OR LOWER(r.name) LIKE LOWER(CONCAT('%', :search, '%')))
           AND (:status IS NULL
