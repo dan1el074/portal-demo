@@ -5,7 +5,7 @@ import { ButtonCloseDirective, ColDirective, ModalBodyComponent, ModalComponent,
 import { IconDirective } from '@coreui/icons-angular';
 import { cilCursor, cilFork } from '@coreui/icons';
 import { FileService } from '../../../../app/services/file.service';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 import { Role } from '../../../../app/interface/role.interface';
 import { getNavigationTools, NavigationTool } from '../../../../app/shared/navigation-tool';
 import { BackNavigationService } from '../../../../app/services/back-navigation.service';

@@ -11,9 +11,9 @@ import { environment } from '../../../../environments/environment';
 import { PositionMin } from '../../../../app/interface/position.interface';
 import { UserEditData } from '../../../../app/interface/user.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../app/services/toast.service';
 import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.component';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-user-edit-form',

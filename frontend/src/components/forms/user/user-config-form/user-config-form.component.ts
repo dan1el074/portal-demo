@@ -11,7 +11,7 @@ import { UserConfigData } from '../../../../app/interface/user.interface';
 import { environment } from '../../../../environments/environment';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { RouterLink } from '@angular/router';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-user-config-form',

@@ -3,6 +3,7 @@ package br.com.metaro.portal.core.repositories;
 import br.com.metaro.portal.core.dto.user.UserMinDto;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.projections.*;
+import br.com.metaro.portal.modules.general.rawMaterials.repositories.projections.RawMaterialOperatorProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,14 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    @Query("""
+        SELECT DISTINCT u.id AS id, u.name AS name, p.id AS pictureId
+        FROM User u JOIN u.roles r LEFT JOIN u.picture p
+        WHERE r.authority = 'ROLE_RAW_MATERIALS_OPERATOR' AND u.activated = true
+        ORDER BY u.name
+    """)
+    List<RawMaterialOperatorProjection> findRawMaterialOperators();
+
     @Query("""
         SELECT new br.com.metaro.portal.core.dto.user.UserMinDto(
             u.id,

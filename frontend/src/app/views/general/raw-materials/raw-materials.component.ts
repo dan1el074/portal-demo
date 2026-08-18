@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, Tabs2Module } from '@coreui/angular';
+import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, ModalToggleDirective, Tabs2Module } from '@coreui/angular';
 import { SmartPaginationComponent } from '@coreui/angular-pro';
-import { forkJoin } from 'rxjs';
+import { finalize, forkJoin, map, of } from 'rxjs';
 import { RawMaterialsTableComponent } from '../../../../components/table/raw-materials-table/raw-materials-table.component';
-import { calculateRawMaterialUnitWeight, formatRawMaterialDecimal, RawMaterialCategory, RawMaterialStockStatus, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess, RawMaterialView } from '../../../interface/raw-materials.interface';
+import { calculateRawMaterialUnitWeight, formatRawMaterialDecimal, RawMaterialCategory, RawMaterialHistory, RawMaterialStockStatus, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess, RawMaterialView } from '../../../interface/raw-materials.interface';
 import { RawMaterialsService } from '../../../services/raw-materials.service';
 import { UserService } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment';
 import { RawMaterialsOverviewComponent } from '../../../../components/raw-materials/raw-materials-overview/raw-materials-overview.component';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../directive/modal-back-navigation.directive';
+import { ErrorService } from '../../../services/error.service';
 
 @Component({
   selector: 'app-raw-materials',
@@ -32,6 +33,7 @@ import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigati
     ModalTitleDirective,
     ModalBodyComponent,
     ModalFooterComponent,
+    ModalToggleDirective,
     ButtonCloseDirective,
     Tabs2Module,
     SmartPaginationComponent,
@@ -71,6 +73,15 @@ export class RawMaterialsComponent implements OnInit {
   protected itemModalVisible = false;
   protected stockModalVisible = false;
   protected accessModalVisible = false;
+  protected categoryReleaseModalVisible = false;
+  protected categoryEditModalVisible = false;
+  protected pendingCategoryName = '';
+  protected history: RawMaterialHistory[] = [];
+  protected historyPage = 1;
+  protected historySize = 10;
+  protected historyTotalPages = 1;
+  protected historyTotalElements = 0;
+  protected loadingHistory = false;
   protected editingItem: RawMaterialsTable | null = null;
   protected stockTarget: RawMaterialsTable | null = null;
   protected stockQuantity = 0;
@@ -78,7 +89,11 @@ export class RawMaterialsComponent implements OnInit {
   protected newCategoryName = '';
   protected editingCategoryId: number | null = null;
   protected editingCategoryName = '';
+  protected editingCategoryConversionFactor = '';
+  protected categoryEditError = '';
   protected categoryDeleteError = '';
+  protected itemSaveError = '';
+  protected itemFormSubmitted = false;
   protected saving = false;
 
   private currentSort?: { column: string; state: 'asc' | 'desc' };
@@ -88,11 +103,12 @@ export class RawMaterialsComponent implements OnInit {
     private rawMaterialsService: RawMaterialsService,
     private userService: UserService,
     private cdf: ChangeDetectorRef,
+    private errorService: ErrorService,
   ) {}
 
   ngOnInit(): void {
     this.resolveAccess();
-    this.loadSummary();
+    if (this.currentView !== 'operator' || this.isAdmin) this.loadSummary();
     this.loadInventoryAccess();
   }
 
@@ -186,56 +202,76 @@ export class RawMaterialsComponent implements OnInit {
 
   protected openItemModal(item?: RawMaterialsTable): void {
     if (!this.isAdmin && !(this.currentView === 'consultation' && item)) return;
+    this.saving = false;
+    this.itemSaveError = '';
+    this.itemFormSubmitted = false;
     this.editingItem = item
-      ? this.formatItemDimensions({ ...item })
+      ? this.formatItemDimensions({ ...item, categoryId: this.categories.find(category => category.name === item.type)?.id })
       : {
           id: 0,
           code: '',
           name: '',
           description: '',
           type: this.categories[0]?.name ?? '',
+          categoryId: this.categories[0]?.id,
           currentStorage: 0,
           currentStorageKg: 0,
           minStorage: 0,
           minStorageKg: 0,
           maxStorage: 0,
           maxStorageKg: 0,
-          length: '0,000',
-          width: '0,000',
-          thickness: '0,000',
-          weightPerSquareMeter: '0,000',
+          length: '',
+          width: '',
+          thickness: '',
+          weightPerSquareMeter: '',
           active: true,
           updateAt: new Date().toISOString(),
           user: this.userService.getCurrentUser()?.name ?? 'Administrador',
         };
     this.itemModalVisible = true;
-  }
-
-  protected onItemModalVisibleChange(visible: boolean): void {
-    if (!visible && this.itemModalVisible) this.closeItemModal();
+    this.history = [];
   }
 
   protected closeItemModal(): void {
+    this.saving = false;
+    this.itemSaveError = '';
+    this.itemFormSubmitted = false;
     this.itemModalVisible = false;
     this.editingItem = null;
+    this.history = [];
   }
 
   protected formatDimensionField(field: 'length' | 'width' | 'thickness' | 'weightPerSquareMeter'): void {
     if (!this.editingItem) return;
+    if (String(this.editingItem[field] ?? '').trim() === '') return;
     this.editingItem[field] = formatRawMaterialDecimal(this.editingItem[field]);
   }
 
   protected saveItem(): void {
-    if (this.currentView === 'consultation' || !this.editingItem || this.hasInvalidStockRange() || !this.editingItem.code.trim() || !this.editingItem.name.trim() || !this.editingItem.type) return;
+    this.itemFormSubmitted = true;
+    this.itemSaveError = '';
+    if (this.currentView === 'consultation' || !this.editingItem || this.hasInvalidItemForm()) return;
     this.editingItem = this.formatItemDimensions(this.editingItem);
+    this.editingItem.categoryId = this.categories.find(category => category.name === this.editingItem?.type)?.id;
+    if (!this.editingItem.categoryId) return;
+    this.itemSaveError = '';
     this.saving = true;
-    this.rawMaterialsService.saveItem(this.editingItem).subscribe(() => {
-      this.saving = false;
-      this.closeItemModal();
-      this.loadItems();
-      this.loadSummary();
-      this.cdf.detectChanges();
-    });
+    this.rawMaterialsService.saveItem(this.editingItem)
+      .pipe(finalize(() => {
+        this.saving = false;
+        this.cdf.detectChanges();
+      }))
+      .subscribe({
+        next: () => {
+          this.closeItemModal();
+          this.loadItems();
+          this.loadSummary();
+        },
+        error: error => {
+          this.itemSaveError = this.resolveErrorMessage(error);
+          this.errorService.showError(error);
+        },
+      });
   }
 
   protected openStockModal(item: RawMaterialsTable): void {
@@ -276,11 +312,37 @@ export class RawMaterialsComponent implements OnInit {
   }
 
   protected calculatedUnitWeight(item: RawMaterialsTable): number {
-    return calculateRawMaterialUnitWeight(item);
+    return calculateRawMaterialUnitWeight(item, this.categoryConversionFactor(item));
+  }
+
+  protected categoryConversionFactor(item: RawMaterialsTable): string {
+    return this.categories.find(category => category.name === item.type)?.conversionFactor ?? '';
   }
 
   protected hasInvalidStockRange(): boolean {
-    return !!this.editingItem && Number(this.editingItem.maxStorage) < Number(this.editingItem.minStorage);
+    if (!this.editingItem) return false;
+    const minimum = Number(this.editingItem.minStorage);
+    const maximum = Number(this.editingItem.maxStorage);
+    return minimum > 0 && maximum > 0 && maximum < minimum;
+  }
+
+  protected isCodeInvalid(): boolean {
+    return this.itemFormSubmitted && !this.editingItem?.code?.trim();
+  }
+
+  protected isNameInvalid(): boolean {
+    return this.itemFormSubmitted && (this.editingItem?.name?.trim().length ?? 0) < 5;
+  }
+
+  protected isCategoryInvalid(): boolean {
+    return this.itemFormSubmitted && !this.editingItem?.type;
+  }
+
+  protected hasInvalidItemForm(): boolean {
+    return !this.editingItem?.code?.trim()
+      || (this.editingItem?.name?.trim().length ?? 0) < 5
+      || !this.editingItem?.type
+      || this.hasInvalidStockRange();
   }
 
   private formatItemDimensions(item: RawMaterialsTable): RawMaterialsTable {
@@ -297,22 +359,73 @@ export class RawMaterialsComponent implements OnInit {
     if (!this.stockTarget) return;
     this.saving = true;
     const user = this.userService.getCurrentUser()?.name ?? 'Operador';
-    this.rawMaterialsService.updateStock(this.stockTarget.id, this.stockQuantity, this.stockKg, user).subscribe(() => {
-      this.saving = false;
-      this.closeStockModal();
-      this.loadItems();
-      this.loadSummary();
-      this.cdf.detectChanges();
-    });
+    this.rawMaterialsService.updateStock(this.stockTarget.id, this.stockQuantity, this.stockKg, user)
+      .pipe(finalize(() => {
+        this.saving = false;
+        this.cdf.detectChanges();
+      }))
+      .subscribe({
+        next: () => {
+          this.closeStockModal();
+          this.loadItems();
+          if (this.currentView !== 'operator' || this.isAdmin) this.loadSummary();
+        },
+        error: error => this.errorService.showError(error),
+      });
   }
 
   protected addCategory(): void {
     const name = this.newCategoryName.trim();
     if (!name || this.categories.some(category => category.name.toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR'))) return;
-    this.rawMaterialsService.addCategory(name).subscribe(category => {
+    this.pendingCategoryName = name;
+    this.categoryReleaseModalVisible = true;
+  }
+
+  protected confirmAddCategory(releaseToAll: boolean): void {
+    if (!this.pendingCategoryName) return;
+    this.rawMaterialsService.addCategory(this.pendingCategoryName, releaseToAll).subscribe(category => {
       this.categories = this.sortCategories([...this.categories, category]);
       this.newCategoryName = '';
+      this.pendingCategoryName = '';
+      this.categoryReleaseModalVisible = false;
       this.categoryDeleteError = '';
+      if (releaseToAll) this.users = this.users.map(user => ({ ...user, categoryIds: [...user.categoryIds, category.id] }));
+      this.cdf.detectChanges();
+    });
+  }
+
+  protected prepareHistory(): void {
+    if (!this.editingItem?.id) return;
+    this.historySize = 10;
+    this.historyPage = 1;
+    this.loadHistory();
+  }
+
+  protected onHistoryPageChange(page: number): void {
+    this.historyPage = page;
+    this.loadHistory();
+  }
+
+  protected showCompleteHistory(): void {
+    this.historySize = 25;
+    this.historyPage = 1;
+    this.loadHistory();
+  }
+
+  protected historyAction(movement: RawMaterialHistory): string {
+    const label = ({ CREATED: 'Item criado', UPDATED: 'Dados alterados', STOCK_UPDATED: 'Estoque atualizado',
+      STOCK_AND_ITEM_UPDATED: 'Dados alterados' })[movement.action];
+    return movement.changedFields?.length ? `${label} (${movement.changedFields.join(', ')})` : label;
+  }
+
+  private loadHistory(): void {
+    if (!this.editingItem?.id) return;
+    this.loadingHistory = true;
+    this.rawMaterialsService.getHistory(this.editingItem.id, this.historyPage - 1, this.historySize).subscribe(page => {
+      this.history = page.content;
+      this.historyTotalPages = Math.max(page.totalPages, 1);
+      this.historyTotalElements = page.totalElements;
+      this.loadingHistory = false;
       this.cdf.detectChanges();
     });
   }
@@ -320,33 +433,46 @@ export class RawMaterialsComponent implements OnInit {
   protected startCategoryEdit(category: RawMaterialCategory): void {
     this.editingCategoryId = category.id;
     this.editingCategoryName = category.name;
+    this.editingCategoryConversionFactor = category.conversionFactor ?? '';
+    this.categoryEditError = '';
     this.categoryDeleteError = '';
+    this.categoryEditModalVisible = true;
   }
 
   protected cancelCategoryEdit(): void {
+    this.categoryEditModalVisible = false;
     this.editingCategoryId = null;
     this.editingCategoryName = '';
+    this.editingCategoryConversionFactor = '';
+    this.categoryEditError = '';
   }
 
-  protected saveCategoryEdit(category: RawMaterialCategory): void {
+  protected saveCategoryEdit(): void {
     const name = this.editingCategoryName.trim();
-    if (!name) return;
-    this.rawMaterialsService.updateCategory(category.id, name).subscribe(updated => {
-      if (!updated) {
-        this.categoryDeleteError = 'Já existe uma categoria com esse nome.';
+    const category = this.categories.find(current => current.id === this.editingCategoryId);
+    if (!name || !category) return;
+    this.categoryEditError = '';
+    this.saving = true;
+    this.rawMaterialsService.updateCategory(category.id, name, this.editingCategoryConversionFactor.trim() || null)
+      .pipe(finalize(() => {
+        this.saving = false;
         this.cdf.detectChanges();
-        return;
-      }
-
-      if (this.currentCategory === category.name) this.currentCategory = updated.name;
-      this.categories = this.sortCategories(
-        this.categories.map(current => current.id === updated.id ? updated : current),
-      );
-      this.cancelCategoryEdit();
-      this.categoryDeleteError = '';
-      this.loadItems();
-      this.cdf.detectChanges();
-    });
+      }))
+      .subscribe({
+        next: updated => {
+          if (this.currentCategory === category.name) this.currentCategory = updated.name;
+          this.categories = this.sortCategories(
+            this.categories.map(current => current.id === updated.id ? updated : current),
+          );
+          this.cancelCategoryEdit();
+          this.categoryDeleteError = '';
+          this.loadItems();
+        },
+        error: error => {
+          this.categoryEditError = this.resolveErrorMessage(error);
+          this.errorService.showError(error);
+        },
+      });
   }
 
   protected deleteCategory(category: RawMaterialCategory): void {
@@ -383,11 +509,15 @@ export class RawMaterialsComponent implements OnInit {
 
   protected saveUserAccess(): void {
     this.saving = true;
-    this.rawMaterialsService.updateUserAccess(this.users).subscribe(() => {
-      this.saving = false;
-      this.accessModalVisible = false;
-      this.cdf.detectChanges();
-    });
+    this.rawMaterialsService.updateUserAccess(this.users)
+      .pipe(finalize(() => {
+        this.saving = false;
+        this.cdf.detectChanges();
+      }))
+      .subscribe({
+        next: () => this.accessModalVisible = false,
+        error: error => this.errorService.showError(error),
+      });
   }
 
   protected viewLabel(): string {
@@ -454,9 +584,19 @@ export class RawMaterialsComponent implements OnInit {
   }
 
   private loadInventoryAccess(): void {
+    const currentUser = this.userService.getCurrentUser();
     forkJoin({
       categories: this.rawMaterialsService.getCategories(),
-      users: this.rawMaterialsService.getUsers(),
+      users: this.isAdmin
+        ? this.rawMaterialsService.getUsers()
+        : this.currentView === 'operator' && currentUser
+          ? this.rawMaterialsService.getMyCategoryIds().pipe(map(categoryIds => [{
+              id: currentUser.id,
+              name: currentUser.name,
+              pictureId: currentUser.pictureId ?? null,
+              categoryIds,
+            }]))
+          : of([]),
     }).subscribe(({ categories, users }) => {
       this.categories = this.sortCategories(categories);
       this.users = users;
@@ -491,6 +631,14 @@ export class RawMaterialsComponent implements OnInit {
       numeric: true,
       sensitivity: 'base',
     }));
+  }
+
+  private resolveErrorMessage(response: any): string {
+    const body = response?.error;
+    if (Array.isArray(body?.errors) && body.errors.length) {
+      return body.errors.map((error: any) => error?.message).filter(Boolean).join(' ');
+    }
+    return body?.error || body?.message || response?.message || 'Não foi possível salvar a matéria-prima.';
   }
 
 }

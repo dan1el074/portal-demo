@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CardBodyComponent, CardComponent, CardTitleDirective, ColComponent, RowComponent } from '@coreui/angular';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../../services/toast.service';
 import { AuthGuard } from '../../../../../config/authGuard';
 import { MemorandoService } from '../../../../../services/memorando.service';
 import { ErrorService } from '../../../../../services/error.service';

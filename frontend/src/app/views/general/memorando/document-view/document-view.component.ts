@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, ContainerComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPrint } from '@coreui/icons';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../services/toast.service';
 import { AuthGuard } from '../../../../config/authGuard';
 import { MemorandoService } from './../../../../services/memorando.service';
 import { NotificationWebSocketService } from '../../../../services/websocket.service';
@@ -12,7 +12,7 @@ import { ErrorService } from '../../../../services/error.service';
 import { Position } from '../../../../interface/position.interface';
 import { Me, UserSummary } from '../../../../interface/user.interface';
 import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } from '../../../../interface/memorando.interface';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../../directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-document-view',

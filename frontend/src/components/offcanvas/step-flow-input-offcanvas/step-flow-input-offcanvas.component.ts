@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../app/services/toast.service';
 import { finalize } from 'rxjs';
 import { Upload } from 'tus-js-client';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent } from '@coreui/angular';

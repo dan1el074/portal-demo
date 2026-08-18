@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { AlertComponent, ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
 import { MultiSelectComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../app/services/toast.service';
 import { OrderInfo } from '../../../../app/interface/erp.interface';
 import { NewMemorando } from '../../../../app/interface/memorando.interface';
 import { PositionMin } from '../../../../app/interface/position.interface';

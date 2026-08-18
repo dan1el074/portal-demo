@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from './toast.service';
 import { CustomError, Error } from '../interface/error.interface';
 
 @Injectable({ providedIn: 'root' })

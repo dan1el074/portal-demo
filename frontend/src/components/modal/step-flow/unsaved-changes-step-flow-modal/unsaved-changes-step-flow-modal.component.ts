@@ -8,7 +8,7 @@ import {
   ModalHeaderComponent,
   ModalTitleDirective,
 } from '@coreui/angular';
-import { ModalBackNavigationDirective } from '@app/directive/modal-back-navigation.directive';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-unsaved-changes-step-flow-modal',
