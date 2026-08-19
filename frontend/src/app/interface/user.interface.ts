@@ -106,6 +106,14 @@ export interface UserGroup {
   childrens: Array<UserMinSummary>;
 }
 
+export interface ActiveSession {
+  sessionId: string;
+  userId: number;
+  username: string;
+  issuedAt: string;
+  expiresAt: string;
+}
+
 export interface HomeCardStat {
   label: string;
   title: string;

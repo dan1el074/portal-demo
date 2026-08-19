@@ -87,7 +87,7 @@ export class ToastrService {
       }
     };
 
-    closeButton.addEventListener('click', remove, { once: true });
+    toast.addEventListener('click', remove, { once: true });
     this.activeMessages.add(signature);
     container.appendChild(toast);
     timer = this.document.defaultView?.setTimeout(remove, timeOut);

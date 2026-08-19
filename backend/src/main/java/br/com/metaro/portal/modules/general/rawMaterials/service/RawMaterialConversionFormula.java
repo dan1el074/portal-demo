@@ -11,7 +11,30 @@ public class RawMaterialConversionFormula {
                                BigDecimal width,
                                BigDecimal thickness,
                                BigDecimal squareMeterWeight) {
-        return RawMaterialConversionFormulaParser.evaluate(expression, length, width, thickness, squareMeterWeight);
+        return evaluate(expression, length, width, thickness, squareMeterWeight, BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+    public BigDecimal evaluate(String expression,
+                               BigDecimal length,
+                               BigDecimal width,
+                               BigDecimal thickness,
+                               BigDecimal squareMeterWeight,
+                               BigDecimal litersPerUnit,
+                               BigDecimal linearMeterWeight) {
+        return evaluate(expression, length, width, thickness, BigDecimal.ZERO, squareMeterWeight, litersPerUnit,
+                linearMeterWeight);
+    }
+
+    public BigDecimal evaluate(String expression,
+                               BigDecimal length,
+                               BigDecimal width,
+                               BigDecimal thickness,
+                               BigDecimal height,
+                               BigDecimal squareMeterWeight,
+                               BigDecimal litersPerUnit,
+                               BigDecimal linearMeterWeight) {
+        return RawMaterialConversionFormulaParser.evaluate(expression, length, width, thickness, height,
+                squareMeterWeight, litersPerUnit, linearMeterWeight);
     }
 
     public void validate(String expression) {

@@ -35,6 +35,26 @@ class RawMaterialConversionFormulaTests {
     }
 
     @Test
+    void supportsLitersPerUnitAndLinearMeterWeight() {
+        BigDecimal result = RawMaterialConversionFormula.evaluate(
+                "%u + (%c * %m)", BigDecimal.valueOf(3), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(2), BigDecimal.valueOf(4)
+        );
+
+        assertThat(result).isEqualByComparingTo("14");
+    }
+
+    @Test
+    void supportsHeight() {
+        BigDecimal result = RawMaterialConversionFormula.evaluate(
+                "%c * %l * %a", BigDecimal.valueOf(3), BigDecimal.valueOf(2), BigDecimal.ZERO,
+                BigDecimal.valueOf(4), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
+        );
+
+        assertThat(result).isEqualByComparingTo("24");
+    }
+
+    @Test
     void rejectsUnknownVariablesAndExecutableContent() {
         assertThatThrownBy(() -> RawMaterialConversionFormula.validate("%x * 2"))
                 .isInstanceOf(IllegalArgumentException.class)

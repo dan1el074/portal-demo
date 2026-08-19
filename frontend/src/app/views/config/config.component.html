@@ -49,6 +49,16 @@
 
             <div class="admin-tool">
               <div class="admin-tool-copy">
+                <strong>Sessões ativas</strong>
+                <span>Consulte os usuários que possuem tokens válidos no portal.</span>
+              </div>
+              <button class="admin-action secondary" type="button" (click)="openActiveSessions()">
+                Ver sessões
+              </button>
+            </div>
+
+            <div class="admin-tool">
+              <div class="admin-tool-copy">
                 <strong>Documentação da API</strong>
                 <span>Consulte e teste os endpoints disponíveis pelo Swagger.</span>
               </div>
@@ -69,3 +79,55 @@
     <i>Carregando...</i>
   }
 </c-container>
+
+<c-modal
+  modalBackNavigation
+  [visible]="activeSessionsVisible"
+  (visibleChange)="onActiveSessionsVisibleChange($event)"
+  alignment="center"
+  backdrop="static"
+  size="lg"
+>
+  <c-modal-header>
+    <div>
+      <h5 cModalTitle>Sessões ativas</h5>
+      <span class="sessions-subtitle">Tokens de acesso válidos nesta instância do portal</span>
+    </div>
+    <button cButtonClose (click)="closeActiveSessions()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (activeSessionsLoading) {
+      <div class="sessions-state"><c-spinner aria-hidden="true" /><span>Carregando sessões...</span></div>
+    } @else if (activeSessionsError) {
+      <div class="sessions-state error">{{ activeSessionsError }}</div>
+    } @else if (!activeSessions.length) {
+      <div class="sessions-state">Nenhuma sessão ativa encontrada.</div>
+    } @else {
+      <div class="sessions-summary">{{ activeSessions.length }} {{ activeSessions.length === 1 ? 'sessão ativa' : 'sessões ativas' }}</div>
+      <div class="sessions-table-wrapper">
+        <table class="sessions-table">
+          <thead><tr><th>Usuário</th><th>Início</th><th>Expira em</th><th>Desconectar</th></tr></thead>
+          <tbody>
+            @for (session of activeSessions; track $index) {
+              <tr>
+                <td><strong>{{ session.username }}</strong></td>
+                <td>{{ session.issuedAt | date:'dd/MM/yyyy HH:mm':'-0300' }}</td>
+                <td>{{ session.expiresAt | date:'dd/MM/yyyy HH:mm':'-0300' }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="disconnect-session"
+                    [disabled]="disconnectingSessions.has(session.userId)"
+                    (click)="disconnectSession(session)"
+                  >
+                    {{ disconnectingSessions.has(session.userId) ? 'Desconectando...' : 'Desconectar' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </c-modal-body>
+</c-modal>

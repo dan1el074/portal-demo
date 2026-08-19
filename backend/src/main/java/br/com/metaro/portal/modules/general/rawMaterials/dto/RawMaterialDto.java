@@ -32,24 +32,28 @@ public class RawMaterialDto {
     private BigDecimal length;
     private BigDecimal width;
     private BigDecimal thickness;
+    private BigDecimal height;
     private BigDecimal weightPerSquareMeter;
+    private BigDecimal litersPerUnit;
+    private BigDecimal weightPerLinearMeter;
 
     public RawMaterialDto(RawMaterialListProjection p) {
         this(p.getId(), p.getCode(), p.getName(), p.getDescription(), p.getCurrentStorage(),
-            weight(p.getCurrentStorage(), p.getLength(), p.getWidth(), p.getThickness(), p.getWeightPerSquareMeter(), p.getConversionFactor()),
-            p.getMinStorage(), weight(p.getMinStorage(), p.getLength(), p.getWidth(), p.getThickness(), p.getWeightPerSquareMeter(), p.getConversionFactor()),
-            p.getMaxStorage(), weight(p.getMaxStorage(), p.getLength(), p.getWidth(), p.getThickness(), p.getWeightPerSquareMeter(), p.getConversionFactor()),
+            weight(p.getCurrentStorage(), p.getLength(), p.getWidth(), p.getThickness(), p.getHeight(), p.getWeightPerSquareMeter(), p.getLitersPerUnit(), p.getWeightPerLinearMeter(), p.getConversionFactor()),
+            p.getMinStorage(), weight(p.getMinStorage(), p.getLength(), p.getWidth(), p.getThickness(), p.getHeight(), p.getWeightPerSquareMeter(), p.getLitersPerUnit(), p.getWeightPerLinearMeter(), p.getConversionFactor()),
+            p.getMaxStorage(), weight(p.getMaxStorage(), p.getLength(), p.getWidth(), p.getThickness(), p.getHeight(), p.getWeightPerSquareMeter(), p.getLitersPerUnit(), p.getWeightPerLinearMeter(), p.getConversionFactor()),
             p.getType(), null, p.getActive(), p.getUpdateAt(), p.getUser(), p.getLength(), p.getWidth(),
-            p.getThickness(), p.getWeightPerSquareMeter());
+            p.getThickness(), p.getHeight(), p.getWeightPerSquareMeter(), p.getLitersPerUnit(), p.getWeightPerLinearMeter());
     }
 
     public RawMaterialDto(RawMaterial r) {
         this(r.getId(), r.getCode(), r.getName(), r.getDescription(), r.getCurrentStorage(),
-            weight(r.getCurrentStorage(), r.getLength(), r.getWidth(), r.getThickness(), r.getWeightPerSquareMeter(), r.getCategory().getConversionFactor()),
-            r.getMinStorage(), weight(r.getMinStorage(), r.getLength(), r.getWidth(), r.getThickness(), r.getWeightPerSquareMeter(), r.getCategory().getConversionFactor()),
-            r.getMaxStorage(), weight(r.getMaxStorage(), r.getLength(), r.getWidth(), r.getThickness(), r.getWeightPerSquareMeter(), r.getCategory().getConversionFactor()),
+            weight(r.getCurrentStorage(), r.getLength(), r.getWidth(), r.getThickness(), r.getHeight(), r.getWeightPerSquareMeter(), r.getLitersPerUnit(), r.getWeightPerLinearMeter(), r.getCategory().getConversionFactor()),
+            r.getMinStorage(), weight(r.getMinStorage(), r.getLength(), r.getWidth(), r.getThickness(), r.getHeight(), r.getWeightPerSquareMeter(), r.getLitersPerUnit(), r.getWeightPerLinearMeter(), r.getCategory().getConversionFactor()),
+            r.getMaxStorage(), weight(r.getMaxStorage(), r.getLength(), r.getWidth(), r.getThickness(), r.getHeight(), r.getWeightPerSquareMeter(), r.getLitersPerUnit(), r.getWeightPerLinearMeter(), r.getCategory().getConversionFactor()),
             r.getCategory().getName(), r.getCategory().getId(), r.getActive(), r.getUpdatedAt(),
-            r.getUpdatedBy().getName(), r.getLength(), r.getWidth(), r.getThickness(), r.getWeightPerSquareMeter());
+            r.getUpdatedBy().getName(), r.getLength(), r.getWidth(), r.getThickness(), r.getHeight(), r.getWeightPerSquareMeter(),
+            r.getLitersPerUnit(), r.getWeightPerLinearMeter());
     }
 
     private static BigDecimal weight(
@@ -57,14 +61,18 @@ public class RawMaterialDto {
             BigDecimal length,
             BigDecimal width,
             BigDecimal thickness,
+            BigDecimal height,
             BigDecimal sqmWeight,
+            BigDecimal litersPerUnit,
+            BigDecimal linearMeterWeight,
             String formula
     ) {
         if (quantity == null || formula == null || formula.isBlank()) {
             return BigDecimal.ZERO.setScale(3);
         }
         try {
-            BigDecimal unitWeight = RawMaterialConversionFormula.evaluate(formula, length, width, thickness, sqmWeight);
+            BigDecimal unitWeight = RawMaterialConversionFormula.evaluate(formula, length, width, thickness, height,
+                    sqmWeight, litersPerUnit, linearMeterWeight);
             if (unitWeight.signum() < 0) return BigDecimal.ZERO.setScale(3);
             return quantity.multiply(unitWeight).setScale(3, RoundingMode.HALF_UP);
         } catch (IllegalArgumentException | ArithmeticException exception) {

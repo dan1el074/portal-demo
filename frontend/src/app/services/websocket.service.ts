@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { ToastrService } from './toast.service';
 import { Notification, NotificationSocketMessage } from './../interface/notification.interface';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class NotificationWebSocketService {
 
   constructor(
     private toasterService: ToastrService,
+    private userService: UserService,
     private router: Router,
     private ngZone: NgZone
   ) {}
@@ -40,6 +42,11 @@ export class NotificationWebSocketService {
     this.socket.onmessage = (event) => {
       this.ngZone.run(() => {
         const data: NotificationSocketMessage = JSON.parse(event.data);
+
+        if (data.type === 'FORCE_LOGOUT') {
+          this.handleUnauthorized();
+          return;
+        }
 
         if (data.type === 'NEW_NOTIFICATION' && data.notification) {
           this.notifications.update(current => [data.notification!, ...current]);
@@ -146,7 +153,8 @@ export class NotificationWebSocketService {
 
   private handleUnauthorized(): void {
     this.disconnect();
-    localStorage.removeItem('user');
+    this.userService.clearUser();
+    this.toasterService.info('Sua sessão foi desconectada por um administrador.');
     this.router.navigateByUrl('/login');
   }
 }

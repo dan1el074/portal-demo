@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { CardBodyComponent, CardComponent, ContainerComponent } from '@coreui/angular';
+import { ButtonCloseDirective, CardBodyComponent, CardComponent, ContainerComponent, ModalBodyComponent, ModalComponent, ModalHeaderComponent, ModalTitleDirective, SpinnerComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
-import { UserConfigData } from '../../interface/user.interface';
+import { ActiveSession, UserConfigData } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
 import { ToastrService } from '../../services/toast.service';
 import { CommonModule } from '@angular/common';
@@ -10,6 +10,7 @@ import { ErrorService } from '../../services/error.service';
 import { HomeService } from '../../services/home.service';
 import { RawMaterialsService } from '../../services/raw-materials.service';
 import { FormsModule } from '@angular/forms';
+import { ModalBackNavigationDirective } from '../../directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-config',
@@ -20,6 +21,13 @@ import { FormsModule } from '@angular/forms';
     CardComponent,
     CardBodyComponent,
     ContainerComponent,
+    ModalComponent,
+    ModalBackNavigationDirective,
+    ModalHeaderComponent,
+    ModalTitleDirective,
+    ModalBodyComponent,
+    ButtonCloseDirective,
+    SpinnerComponent,
     UserConfigFormComponent
   ],
   templateUrl: './config.component.html',
@@ -35,6 +43,11 @@ export class ConfigComponent implements OnInit {
   protected isAdmin = false;
   protected rawMaterialHistoryRetention = 1000;
   protected savingHistoryRetention = false;
+  protected activeSessionsVisible = false;
+  protected activeSessionsLoading = false;
+  protected activeSessions: Array<ActiveSession> = [];
+  protected activeSessionsError = '';
+  protected disconnectingSessions = new Set<number>();
 
   constructor(
     private userService: UserService,
@@ -106,6 +119,54 @@ export class ConfigComponent implements OnInit {
       },
       error: error => {
         this.savingHistoryRetention = false;
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  protected openActiveSessions(): void {
+    this.activeSessionsVisible = true;
+    this.activeSessionsLoading = true;
+    this.activeSessions = [];
+    this.activeSessionsError = '';
+    this.userService.getActiveSessions().subscribe({
+      next: sessions => {
+        this.activeSessions = sessions;
+        this.activeSessionsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.activeSessionsLoading = false;
+        this.activeSessionsError = 'Não foi possível carregar as sessões ativas.';
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  protected closeActiveSessions(): void {
+    this.activeSessionsVisible = false;
+    this.activeSessions = [];
+    this.activeSessionsError = '';
+  }
+
+  protected onActiveSessionsVisibleChange(visible: boolean): void {
+    if (!visible) this.closeActiveSessions();
+  }
+
+  protected disconnectSession(session: ActiveSession): void {
+    if (this.disconnectingSessions.has(session.userId)) return;
+    this.disconnectingSessions.add(session.userId);
+    this.userService.disconnectActiveSession(session.userId).subscribe({
+      next: () => {
+        this.activeSessions = this.activeSessions.filter(item => item.userId !== session.userId);
+        this.disconnectingSessions.delete(session.userId);
+        this.toasterService.success(`Sessão de ${session.username} desconectada.`);
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.disconnectingSessions.delete(session.userId);
         this.errorService.showError(error);
         this.cdr.detectChanges();
       },

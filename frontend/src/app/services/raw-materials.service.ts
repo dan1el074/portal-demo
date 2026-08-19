@@ -6,6 +6,7 @@ import {
   RawMaterialCategory,
   RawMaterialFilters,
   RawMaterialHistory,
+  RawMaterialDimensionField,
   RawMaterialPagedResult,
   RawMaterialSummary,
   RawMaterialsTable,
@@ -62,7 +63,10 @@ export class RawMaterialsService {
       length: this.optionalDecimal(item.length),
       width: this.optionalDecimal(item.width),
       thickness: this.optionalDecimal(item.thickness),
+      height: this.optionalDecimal(item.height),
       weightPerSquareMeter: this.optionalDecimal(item.weightPerSquareMeter),
+      litersPerUnit: this.optionalDecimal(item.litersPerUnit),
+      weightPerLinearMeter: this.optionalDecimal(item.weightPerLinearMeter),
       categoryId: item.categoryId,
       active: item.active,
     };
@@ -79,8 +83,8 @@ export class RawMaterialsService {
     return this.http.post<RawMaterialCategory>(`${this.api}/categories`, { name, conversionFactor: null, releaseToAll });
   }
 
-  updateCategory(id: number, name: string, conversionFactor?: string | null): Observable<RawMaterialCategory> {
-    return this.http.put<RawMaterialCategory>(`${this.api}/categories/${id}`, { name, conversionFactor, releaseToAll: true });
+  updateCategory(id: number, name: string, conversionFactor: string | null, dimensionFields: RawMaterialDimensionField[]): Observable<RawMaterialCategory> {
+    return this.http.put<RawMaterialCategory>(`${this.api}/categories/${id}`, { name, conversionFactor, dimensionFields, releaseToAll: true });
   }
 
   deleteCategory(id: number): Observable<boolean> {

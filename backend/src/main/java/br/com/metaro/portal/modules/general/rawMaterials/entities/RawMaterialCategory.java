@@ -24,6 +24,8 @@ public class RawMaterialCategory {
     private String name;
     @Column(columnDefinition = "TEXT")
     private String conversionFactor;
+    @Column(columnDefinition = "TEXT")
+    private String dimensionFields;
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updatedAt;
 

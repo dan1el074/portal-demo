@@ -37,8 +37,14 @@ public class RawMaterial {
     private BigDecimal width = BigDecimal.ZERO;
     @Column(nullable = false, precision = 18, scale = 3)
     private BigDecimal thickness = BigDecimal.ZERO;
+    @Column(nullable = false, precision = 18, scale = 3, columnDefinition = "numeric(18,3) default 0")
+    private BigDecimal height = BigDecimal.ZERO;
     @Column(nullable = false, precision = 18, scale = 3)
     private BigDecimal weightPerSquareMeter = BigDecimal.ZERO;
+    @Column(nullable = false, precision = 18, scale = 3, columnDefinition = "numeric(18,3) default 0")
+    private BigDecimal litersPerUnit = BigDecimal.ZERO;
+    @Column(nullable = false, precision = 18, scale = 3, columnDefinition = "numeric(18,3) default 0")
+    private BigDecimal weightPerLinearMeter = BigDecimal.ZERO;
     @Column(nullable = false)
     private Boolean active = true;
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
