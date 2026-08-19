@@ -21,6 +21,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RawMaterialsService {
     public static final String HISTORY_RETENTION_PARAM = "rawMaterialsHistoryRetention";
+    private static final List<String> DIMENSION_FIELDS = List.of(
+            "length", "width", "thickness", "height", "weightPerSquareMeter", "litersPerUnit", "weightPerLinearMeter"
+    );
     private final RawMaterialRepository materialRepository;
     private final RawMaterialCategoryRepository categoryRepository;
     private final RawMaterialHistoryRepository historyRepository;
@@ -134,10 +137,12 @@ public class RawMaterialsService {
     @Transactional
     public RawMaterialCategoryDto createCategory(RawMaterialCategoryInputDto dto) {
         validateCategory(dto.getName(), 0L);
-        validateConversionFactor(dto.getConversionFactor());
+        String dimensionFields = normalizeDimensionFields(dto.getDimensionFields());
+        validateConversionFactor(dto.getConversionFactor(), dimensionFields);
         RawMaterialCategory category = new RawMaterialCategory();
         category.setName(dto.getName().trim());
         category.setConversionFactor(normalizeFormula(dto.getConversionFactor()));
+        category.setDimensionFields(dimensionFields);
 
         if (Boolean.TRUE.equals(dto.getReleaseToAll())) {
             for (RawMaterialOperatorProjection operator : userRepository.findRawMaterialOperators()) {
@@ -152,10 +157,12 @@ public class RawMaterialsService {
     @Transactional
     public RawMaterialCategoryDto updateCategory(Long id, RawMaterialCategoryInputDto dto) {
         validateCategory(dto.getName(), id);
-        validateConversionFactor(dto.getConversionFactor());
+        String dimensionFields = normalizeDimensionFields(dto.getDimensionFields());
+        validateConversionFactor(dto.getConversionFactor(), dimensionFields);
         RawMaterialCategory category = categoryRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         category.setName(dto.getName().trim());
         category.setConversionFactor(normalizeFormula(dto.getConversionFactor()));
+        category.setDimensionFields(dimensionFields);
         return new RawMaterialCategoryDto(categoryRepository.save(category));
     }
 
@@ -235,7 +242,10 @@ public class RawMaterialsService {
         item.setLength(zeroIfNull(dto.getLength()));
         item.setWidth(zeroIfNull(dto.getWidth()));
         item.setThickness(zeroIfNull(dto.getThickness()));
+        item.setHeight(zeroIfNull(dto.getHeight()));
         item.setWeightPerSquareMeter(zeroIfNull(dto.getWeightPerSquareMeter()));
+        item.setLitersPerUnit(zeroIfNull(dto.getLitersPerUnit()));
+        item.setWeightPerLinearMeter(zeroIfNull(dto.getWeightPerLinearMeter()));
         item.setActive(dto.getActive());
         item.setCategory(categoryRepository.findById(dto.getCategoryId()).orElseThrow(ResourceNotFoundException::new));
         item.setDescription(dto.getDescription() == null || dto.getDescription().isBlank()
@@ -263,8 +273,26 @@ public class RawMaterialsService {
         }
     }
 
-    private void validateConversionFactor(String formula) {
+    private void validateConversionFactor(String formula, String dimensionFields) {
         if (formula == null || formula.isBlank()) return;
+        Map<Character, String> dimensionByVariable = Map.of(
+                'c', "length",
+                'l', "width",
+                'e', "thickness",
+                'a', "height",
+                'p', "weightPerSquareMeter",
+                'u', "litersPerUnit",
+                'm', "weightPerLinearMeter"
+        );
+        Set<String> activeFields = new HashSet<>(Arrays.asList(dimensionFields.split(",")));
+        String normalizedFormula = formula.toLowerCase(Locale.ROOT);
+        for (Map.Entry<Character, String> variable : dimensionByVariable.entrySet()) {
+            if (normalizedFormula.contains("%" + variable.getKey()) && !activeFields.contains(variable.getValue())) {
+                throw new UnprocessableEntityException(
+                        "A variável %" + variable.getKey() + " não pode ser usada porque o campo correspondente não está ativo."
+                );
+            }
+        }
         try {
             RawMaterialConversionFormula.validate(formula);
         } catch (IllegalArgumentException exception) {
@@ -274,6 +302,14 @@ public class RawMaterialsService {
 
     private String normalizeFormula(String formula) {
         return formula == null || formula.isBlank() ? null : formula.trim();
+    }
+
+    private String normalizeDimensionFields(List<String> fields) {
+        List<String> values = fields == null ? DIMENSION_FIELDS : fields.stream().distinct().toList();
+        if (!DIMENSION_FIELDS.containsAll(values)) {
+            throw new UnprocessableEntityException("Há campos inválidos na configuração da categoria.");
+        }
+        return String.join(",", DIMENSION_FIELDS.stream().filter(values::contains).toList());
     }
 
     private RawMaterial findItem(Long id) {
@@ -303,7 +339,10 @@ public class RawMaterialsService {
         if (!sameDecimal(item.getLength(), dto.getLength())) fields.add("Comprimento");
         if (!sameDecimal(item.getWidth(), dto.getWidth())) fields.add("Largura");
         if (!sameDecimal(item.getThickness(), dto.getThickness())) fields.add("Espessura");
-        if (!sameDecimal(item.getWeightPerSquareMeter(), dto.getWeightPerSquareMeter())) fields.add("Peso por m²");
+        if (!sameDecimal(item.getHeight(), dto.getHeight())) fields.add("Altura");
+        if (!sameDecimal(item.getWeightPerSquareMeter(), dto.getWeightPerSquareMeter())) fields.add("Peso por metro quadrado");
+        if (!sameDecimal(item.getLitersPerUnit(), dto.getLitersPerUnit())) fields.add("Litros por unidade");
+        if (!sameDecimal(item.getWeightPerLinearMeter(), dto.getWeightPerLinearMeter())) fields.add("Peso por metro linear");
         if (!Objects.equals(item.getCategory().getId(), dto.getCategoryId())) fields.add("Categoria");
         if (!Objects.equals(item.getActive(), dto.getActive())) fields.add("Situação do item");
         return fields;

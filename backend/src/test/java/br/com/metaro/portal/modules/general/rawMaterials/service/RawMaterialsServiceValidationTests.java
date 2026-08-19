@@ -6,6 +6,7 @@ import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import br.com.metaro.portal.modules.general.rawMaterials.dto.RawMaterialInputDto;
+import br.com.metaro.portal.modules.general.rawMaterials.dto.RawMaterialCategoryInputDto;
 import br.com.metaro.portal.modules.general.rawMaterials.dto.RawMaterialStockDto;
 import br.com.metaro.portal.modules.general.rawMaterials.entities.*;
 import br.com.metaro.portal.modules.general.rawMaterials.repositories.*;
@@ -41,6 +42,20 @@ class RawMaterialsServiceValidationTests {
                 .hasMessageContaining("máximo");
         verifyNoInteractions(userService, categoryRepository, historyRepository);
         verify(materialRepository, never()).save(any());
+    }
+
+    @Test
+    void rejectsFormulaVariableWhenCategoryFieldIsInactive() {
+        RawMaterialCategoryInputDto dto = new RawMaterialCategoryInputDto();
+        dto.setName("Tubos");
+        dto.setConversionFactor("%c * %p");
+        dto.setDimensionFields(List.of("length"));
+
+        assertThatThrownBy(() -> service.createCategory(dto))
+                .isInstanceOf(UnprocessableEntityException.class)
+                .hasMessageContaining("%p")
+                .hasMessageContaining("não está ativo");
+        verify(categoryRepository, never()).save(any());
     }
 
     @Test

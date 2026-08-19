@@ -5,13 +5,14 @@ import { ButtonCloseDirective, ButtonDirective, CardBodyComponent, CardComponent
 import { SmartPaginationComponent } from '@coreui/angular-pro';
 import { finalize, forkJoin, map, of } from 'rxjs';
 import { RawMaterialsTableComponent } from '../../../../components/table/raw-materials-table/raw-materials-table.component';
-import { calculateRawMaterialUnitWeight, formatRawMaterialDecimal, RawMaterialCategory, RawMaterialHistory, RawMaterialStockStatus, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess, RawMaterialView } from '../../../interface/raw-materials.interface';
+import { calculateRawMaterialUnitWeight, formatRawMaterialDecimal, RawMaterialCategory, RawMaterialDimensionField, RawMaterialHistory, RawMaterialStockStatus, RawMaterialSummary, RawMaterialsTable, RawMaterialUserAccess, RawMaterialView } from '../../../interface/raw-materials.interface';
 import { RawMaterialsService } from '../../../services/raw-materials.service';
 import { UserService } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment';
 import { RawMaterialsOverviewComponent } from '../../../../components/raw-materials/raw-materials-overview/raw-materials-overview.component';
 import { ModalBackNavigationDirective } from '../../../directive/modal-back-navigation.directive';
 import { ErrorService } from '../../../services/error.service';
+import { ToastrService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-raw-materials',
@@ -73,6 +74,7 @@ export class RawMaterialsComponent implements OnInit {
   protected itemModalVisible = false;
   protected stockModalVisible = false;
   protected accessModalVisible = false;
+  protected accessUsers: RawMaterialUserAccess[] = [];
   protected categoryReleaseModalVisible = false;
   protected categoryEditModalVisible = false;
   protected pendingCategoryName = '';
@@ -90,6 +92,16 @@ export class RawMaterialsComponent implements OnInit {
   protected editingCategoryId: number | null = null;
   protected editingCategoryName = '';
   protected editingCategoryConversionFactor = '';
+  protected editingCategoryDimensionFields: RawMaterialDimensionField[] = [];
+  protected readonly dimensionOptions: Array<{ value: RawMaterialDimensionField; label: string }> = [
+    { value: 'length', label: 'Comprimento' },
+    { value: 'width', label: 'Largura' },
+    { value: 'thickness', label: 'Espessura' },
+    { value: 'height', label: 'Altura' },
+    { value: 'weightPerSquareMeter', label: 'Peso por metro quadrado' },
+    { value: 'litersPerUnit', label: 'Litros por unidade' },
+    { value: 'weightPerLinearMeter', label: 'Peso por metro linear' },
+  ];
   protected categoryEditError = '';
   protected categoryDeleteError = '';
   protected itemSaveError = '';
@@ -104,6 +116,7 @@ export class RawMaterialsComponent implements OnInit {
     private userService: UserService,
     private cdf: ChangeDetectorRef,
     private errorService: ErrorService,
+    private toasterService: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -151,7 +164,7 @@ export class RawMaterialsComponent implements OnInit {
   }
 
   protected canAccessInactive(): boolean {
-    return this.isAdmin;
+    return this.isAdmin || this.currentView === 'consultation';
   }
 
   protected filterByStatus(status: RawMaterialStockStatus): void {
@@ -223,7 +236,10 @@ export class RawMaterialsComponent implements OnInit {
           length: '',
           width: '',
           thickness: '',
+          height: '',
           weightPerSquareMeter: '',
+          litersPerUnit: '',
+          weightPerLinearMeter: '',
           active: true,
           updateAt: new Date().toISOString(),
           user: this.userService.getCurrentUser()?.name ?? 'Administrador',
@@ -241,7 +257,7 @@ export class RawMaterialsComponent implements OnInit {
     this.history = [];
   }
 
-  protected formatDimensionField(field: 'length' | 'width' | 'thickness' | 'weightPerSquareMeter'): void {
+  protected formatDimensionField(field: RawMaterialDimensionField): void {
     if (!this.editingItem) return;
     if (String(this.editingItem[field] ?? '').trim() === '') return;
     this.editingItem[field] = formatRawMaterialDecimal(this.editingItem[field]);
@@ -256,6 +272,7 @@ export class RawMaterialsComponent implements OnInit {
     if (!this.editingItem.categoryId) return;
     this.itemSaveError = '';
     this.saving = true;
+    const isEditing = this.editingItem.id > 0;
     this.rawMaterialsService.saveItem(this.editingItem)
       .pipe(finalize(() => {
         this.saving = false;
@@ -266,6 +283,7 @@ export class RawMaterialsComponent implements OnInit {
           this.closeItemModal();
           this.loadItems();
           this.loadSummary();
+          this.toasterService.success(isEditing ? 'Item atualizado com sucesso!' : 'Item criado com sucesso!');
         },
         error: error => {
           this.itemSaveError = this.resolveErrorMessage(error);
@@ -319,6 +337,11 @@ export class RawMaterialsComponent implements OnInit {
     return this.categories.find(category => category.name === item.type)?.conversionFactor ?? '';
   }
 
+  protected categoryUsesDimension(field: RawMaterialDimensionField): boolean {
+    const category = this.categories.find(item => item.name === this.editingItem?.type);
+    return category?.dimensionFields?.includes(field) ?? false;
+  }
+
   protected hasInvalidStockRange(): boolean {
     if (!this.editingItem) return false;
     const minimum = Number(this.editingItem.minStorage);
@@ -351,7 +374,10 @@ export class RawMaterialsComponent implements OnInit {
       length: formatRawMaterialDecimal(item.length),
       width: formatRawMaterialDecimal(item.width),
       thickness: formatRawMaterialDecimal(item.thickness),
+      height: formatRawMaterialDecimal(item.height),
       weightPerSquareMeter: formatRawMaterialDecimal(item.weightPerSquareMeter),
+      litersPerUnit: formatRawMaterialDecimal(item.litersPerUnit),
+      weightPerLinearMeter: formatRawMaterialDecimal(item.weightPerLinearMeter),
     };
   }
 
@@ -369,6 +395,7 @@ export class RawMaterialsComponent implements OnInit {
           this.closeStockModal();
           this.loadItems();
           if (this.currentView !== 'operator' || this.isAdmin) this.loadSummary();
+          this.toasterService.success('Estoque atualizado com sucesso!');
         },
         error: error => this.errorService.showError(error),
       });
@@ -383,14 +410,18 @@ export class RawMaterialsComponent implements OnInit {
 
   protected confirmAddCategory(releaseToAll: boolean): void {
     if (!this.pendingCategoryName) return;
-    this.rawMaterialsService.addCategory(this.pendingCategoryName, releaseToAll).subscribe(category => {
-      this.categories = this.sortCategories([...this.categories, category]);
-      this.newCategoryName = '';
-      this.pendingCategoryName = '';
-      this.categoryReleaseModalVisible = false;
-      this.categoryDeleteError = '';
-      if (releaseToAll) this.users = this.users.map(user => ({ ...user, categoryIds: [...user.categoryIds, category.id] }));
-      this.cdf.detectChanges();
+    this.rawMaterialsService.addCategory(this.pendingCategoryName, releaseToAll).subscribe({
+      next: category => {
+        this.categories = this.sortCategories([...this.categories, category]);
+        this.newCategoryName = '';
+        this.pendingCategoryName = '';
+        this.categoryReleaseModalVisible = false;
+        this.categoryDeleteError = '';
+        if (releaseToAll) this.users = this.users.map(user => ({ ...user, categoryIds: [...user.categoryIds, category.id] }));
+        this.toasterService.success('Categoria criada com sucesso!');
+        this.cdf.detectChanges();
+      },
+      error: error => this.errorService.showError(error),
     });
   }
 
@@ -434,6 +465,7 @@ export class RawMaterialsComponent implements OnInit {
     this.editingCategoryId = category.id;
     this.editingCategoryName = category.name;
     this.editingCategoryConversionFactor = category.conversionFactor ?? '';
+    this.editingCategoryDimensionFields = [...category.dimensionFields];
     this.categoryEditError = '';
     this.categoryDeleteError = '';
     this.categoryEditModalVisible = true;
@@ -444,16 +476,53 @@ export class RawMaterialsComponent implements OnInit {
     this.editingCategoryId = null;
     this.editingCategoryName = '';
     this.editingCategoryConversionFactor = '';
+    this.editingCategoryDimensionFields = [];
     this.categoryEditError = '';
+  }
+
+  protected toggleCategoryDimension(field: RawMaterialDimensionField): void {
+    this.editingCategoryDimensionFields = this.editingCategoryDimensionFields.includes(field)
+      ? this.editingCategoryDimensionFields.filter(current => current !== field)
+      : [...this.editingCategoryDimensionFields, field];
+  }
+
+  protected inactiveFormulaVariables(): string[] {
+    const dimensionByVariable: Record<string, RawMaterialDimensionField> = {
+      c: 'length',
+      l: 'width',
+      e: 'thickness',
+      a: 'height',
+      p: 'weightPerSquareMeter',
+      u: 'litersPerUnit',
+      m: 'weightPerLinearMeter',
+    };
+    const variables = [...this.editingCategoryConversionFactor.matchAll(/%([a-z])/gi)]
+      .map(match => match[1].toLowerCase());
+    return [...new Set(variables)].filter(variable => {
+      const dimension = dimensionByVariable[variable];
+      return dimension && !this.editingCategoryDimensionFields.includes(dimension);
+    });
+  }
+
+  protected inactiveFormulaError(): string {
+    const variables = this.inactiveFormulaVariables().map(variable => `%${variable}`);
+    if (!variables.length) return '';
+    return `${variables.join(', ')} ${variables.length === 1 ? 'não está disponível' : 'não estão disponíveis'} porque o campo correspondente não está ativo.`;
   }
 
   protected saveCategoryEdit(): void {
     const name = this.editingCategoryName.trim();
     const category = this.categories.find(current => current.id === this.editingCategoryId);
     if (!name || !category) return;
+    const inactiveVariableError = this.inactiveFormulaError();
+    if (inactiveVariableError) {
+      this.categoryEditError = inactiveVariableError;
+      return;
+    }
     this.categoryEditError = '';
     this.saving = true;
-    this.rawMaterialsService.updateCategory(category.id, name, this.editingCategoryConversionFactor.trim() || null)
+    this.rawMaterialsService.updateCategory(category.id, name, this.editingCategoryConversionFactor.trim() || null,
+      this.editingCategoryDimensionFields)
       .pipe(finalize(() => {
         this.saving = false;
         this.cdf.detectChanges();
@@ -467,6 +536,7 @@ export class RawMaterialsComponent implements OnInit {
           this.cancelCategoryEdit();
           this.categoryDeleteError = '';
           this.loadItems();
+          this.toasterService.success('Categoria atualizada com sucesso!');
         },
         error: error => {
           this.categoryEditError = this.resolveErrorMessage(error);
@@ -476,25 +546,42 @@ export class RawMaterialsComponent implements OnInit {
   }
 
   protected deleteCategory(category: RawMaterialCategory): void {
-    this.rawMaterialsService.deleteCategory(category.id).subscribe(deleted => {
-      if (!deleted) {
-        this.categoryDeleteError = `A categoria “${category.name}” possui itens vinculados e não pode ser apagada.`;
+    this.categoryDeleteError = '';
+    this.rawMaterialsService.deleteCategory(category.id).subscribe({
+      next: () => {
+        this.categories = this.categories.filter(current => current.id !== category.id);
+        if (this.activeInventoryTab === `category-${category.id}`) {
+          this.selectDefaultCategory();
+          this.loadItems();
+        }
+        this.users = this.users.map(user => ({
+          ...user,
+          categoryIds: user.categoryIds.filter(categoryId => categoryId !== category.id),
+        }));
+        this.categoryDeleteError = '';
+        this.toasterService.success('Categoria apagada com sucesso!');
         this.cdf.detectChanges();
-        return;
-      }
-
-      this.categories = this.categories.filter(current => current.id !== category.id);
-      if (this.activeInventoryTab === `category-${category.id}`) {
-        this.selectDefaultCategory();
-        this.loadItems();
-      }
-      this.users = this.users.map(user => ({
-        ...user,
-        categoryIds: user.categoryIds.filter(categoryId => categoryId !== category.id),
-      }));
-      this.categoryDeleteError = '';
-      this.cdf.detectChanges();
+      },
+      error: error => {
+        this.categoryDeleteError = this.resolveErrorMessage(error);
+        this.errorService.showError(error);
+        this.cdf.detectChanges();
+      },
     });
+  }
+
+  protected openAccessModal(): void {
+    this.accessUsers = this.users.map(user => ({ ...user, categoryIds: [...user.categoryIds] }));
+    this.accessModalVisible = true;
+  }
+
+  protected closeAccessModal(): void {
+    this.accessModalVisible = false;
+    this.accessUsers = [];
+  }
+
+  protected onAccessModalVisibleChange(visible: boolean): void {
+    if (!visible) this.closeAccessModal();
   }
 
   protected userHasCategory(user: RawMaterialUserAccess, categoryId: number): boolean {
@@ -509,13 +596,18 @@ export class RawMaterialsComponent implements OnInit {
 
   protected saveUserAccess(): void {
     this.saving = true;
-    this.rawMaterialsService.updateUserAccess(this.users)
+    this.rawMaterialsService.updateUserAccess(this.accessUsers)
       .pipe(finalize(() => {
         this.saving = false;
         this.cdf.detectChanges();
       }))
       .subscribe({
-        next: () => this.accessModalVisible = false,
+        next: () => {
+          this.users = this.accessUsers.map(user => ({ ...user, categoryIds: [...user.categoryIds] }));
+          this.closeAccessModal();
+          this.toasterService.success('Permissões atualizadas com sucesso!');
+          this.cdf.detectChanges();
+        },
         error: error => this.errorService.showError(error),
       });
   }

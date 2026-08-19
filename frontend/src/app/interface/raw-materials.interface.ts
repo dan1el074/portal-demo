@@ -1,5 +1,6 @@
 export type RawMaterialView = 'admin' | 'operator' | 'consultation';
 export type RawMaterialStockStatus = 'all' | 'low' | 'ok' | 'high';
+export type RawMaterialDimensionField = 'length' | 'width' | 'thickness' | 'height' | 'weightPerSquareMeter' | 'litersPerUnit' | 'weightPerLinearMeter';
 
 export interface RawMaterialsTable {
   id: number;
@@ -20,7 +21,10 @@ export interface RawMaterialsTable {
   length?: string;
   width?: string;
   thickness?: string;
+  height?: string;
   weightPerSquareMeter?: string;
+  litersPerUnit?: string;
+  weightPerLinearMeter?: string;
 }
 
 export interface RawMaterialHistory {
@@ -37,6 +41,7 @@ export interface RawMaterialCategory {
   id: number;
   name: string;
   conversionFactor?: string | null;
+  dimensionFields: RawMaterialDimensionField[];
   updatedAt: string;
 }
 
@@ -84,7 +89,10 @@ export function calculateRawMaterialUnitWeight(item: RawMaterialsTable, formula?
       c: parseRawMaterialDecimal(item.length),
       l: parseRawMaterialDecimal(item.width),
       e: parseRawMaterialDecimal(item.thickness),
+      a: parseRawMaterialDecimal(item.height),
       p: parseRawMaterialDecimal(item.weightPerSquareMeter),
+      u: parseRawMaterialDecimal(item.litersPerUnit),
+      m: parseRawMaterialDecimal(item.weightPerLinearMeter),
     }).parse();
     return Number.isFinite(result) && result >= 0 ? result : 0;
   } catch {
@@ -95,7 +103,7 @@ export function calculateRawMaterialUnitWeight(item: RawMaterialsTable, formula?
 class ConversionFormulaParser {
   private index = 0;
 
-  constructor(private expression: string, private variables: Record<'c' | 'l' | 'e' | 'p', number>) {}
+  constructor(private expression: string, private variables: Record<'c' | 'l' | 'e' | 'a' | 'p' | 'u' | 'm', number>) {}
 
   parse(): number {
     const result = this.parseExpression();
@@ -138,7 +146,7 @@ class ConversionFormulaParser {
       return result;
     }
     if (this.consume('%')) {
-      const variable = this.expression[this.index++]?.toLowerCase() as 'c' | 'l' | 'e' | 'p';
+      const variable = this.expression[this.index++]?.toLowerCase() as 'c' | 'l' | 'e' | 'a' | 'p' | 'u' | 'm';
       if (!(variable in this.variables)) throw new Error('Variável inválida');
       return this.variables[variable];
     }

@@ -18,8 +18,9 @@ public interface RawMaterialRepository extends JpaRepository<RawMaterial, Long> 
     @Query("""
         SELECT r.id AS id, r.code AS code, r.name AS name, r.description AS description,
                r.currentStorage AS currentStorage, r.minStorage AS minStorage, r.maxStorage AS maxStorage,
-               r.length AS length, r.width AS width, r.thickness AS thickness,
-               r.weightPerSquareMeter AS weightPerSquareMeter, c.conversionFactor AS conversionFactor,
+               r.length AS length, r.width AS width, r.thickness AS thickness, r.height AS height,
+               r.weightPerSquareMeter AS weightPerSquareMeter, r.litersPerUnit AS litersPerUnit,
+               r.weightPerLinearMeter AS weightPerLinearMeter, c.conversionFactor AS conversionFactor,
                c.name AS type, r.active AS active,
                r.updatedAt AS updateAt, u.name AS user
         FROM RawMaterial r JOIN r.category c JOIN r.updatedBy u
@@ -39,8 +40,9 @@ public interface RawMaterialRepository extends JpaRepository<RawMaterial, Long> 
     @Query("""
         SELECT r.id AS id, r.code AS code, r.name AS name, r.description AS description,
                r.currentStorage AS currentStorage, r.minStorage AS minStorage, r.maxStorage AS maxStorage,
-               r.length AS length, r.width AS width, r.thickness AS thickness,
-               r.weightPerSquareMeter AS weightPerSquareMeter, c.conversionFactor AS conversionFactor,
+               r.length AS length, r.width AS width, r.thickness AS thickness, r.height AS height,
+               r.weightPerSquareMeter AS weightPerSquareMeter, r.litersPerUnit AS litersPerUnit,
+               r.weightPerLinearMeter AS weightPerLinearMeter, c.conversionFactor AS conversionFactor,
                c.name AS type, r.active AS active,
                r.updatedAt AS updateAt, u.name AS user
         FROM RawMaterial r JOIN r.category c JOIN r.updatedBy u

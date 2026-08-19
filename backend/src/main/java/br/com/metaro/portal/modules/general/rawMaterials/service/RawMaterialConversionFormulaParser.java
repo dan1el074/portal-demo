@@ -11,28 +11,37 @@ class RawMaterialConversionFormulaParser {
     private final BigDecimal length;
     private final BigDecimal width;
     private final BigDecimal thickness;
+    private final BigDecimal height;
     private final BigDecimal squareMeterWeight;
+    private final BigDecimal litersPerUnit;
+    private final BigDecimal linearMeterWeight;
     private int index;
 
     private RawMaterialConversionFormulaParser(String expression, boolean validationOnly, BigDecimal length,
-                                               BigDecimal width, BigDecimal thickness,BigDecimal squareMeterWeight) {
+                                               BigDecimal width, BigDecimal thickness, BigDecimal height, BigDecimal squareMeterWeight,
+                                               BigDecimal litersPerUnit, BigDecimal linearMeterWeight) {
         this.expression = expression == null ? "" : expression;
         this.validationOnly = validationOnly;
         this.length = zeroIfNull(length);
         this.width = zeroIfNull(width);
         this.thickness = zeroIfNull(thickness);
+        this.height = zeroIfNull(height);
         this.squareMeterWeight = zeroIfNull(squareMeterWeight);
+        this.litersPerUnit = zeroIfNull(litersPerUnit);
+        this.linearMeterWeight = zeroIfNull(linearMeterWeight);
     }
 
     public static BigDecimal evaluate(String expression, BigDecimal length, BigDecimal width,
-                               BigDecimal thickness, BigDecimal squareMeterWeight) {
+                               BigDecimal thickness, BigDecimal height, BigDecimal squareMeterWeight, BigDecimal litersPerUnit,
+                               BigDecimal linearMeterWeight) {
         return new RawMaterialConversionFormulaParser(expression, false,
-                length, width, thickness, squareMeterWeight).parse();
+                length, width, thickness, height, squareMeterWeight, litersPerUnit, linearMeterWeight).parse();
     }
 
     public static void validate(String expression) {
         new RawMaterialConversionFormulaParser(expression,
-                true, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE).parse();
+                true, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE).parse();
     }
 
     private BigDecimal parse() {
@@ -89,7 +98,10 @@ class RawMaterialConversionFormulaParser {
             case 'c' -> length;
             case 'l' -> width;
             case 'e' -> thickness;
+            case 'a' -> height;
             case 'p' -> squareMeterWeight;
+            case 'u' -> litersPerUnit;
+            case 'm' -> linearMeterWeight;
             default -> throw error("variável desconhecida");
         };
     }

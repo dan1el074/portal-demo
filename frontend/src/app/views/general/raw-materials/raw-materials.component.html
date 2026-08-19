@@ -93,7 +93,7 @@
     (addCategory)="addCategory()"
     (startCategoryEdit)="startCategoryEdit($event)"
     (deleteCategory)="deleteCategory($event)"
-    (manageAccess)="accessModalVisible = true"
+    (manageAccess)="openAccessModal()"
   />
 
   @if (currentView !== 'operator') {
@@ -224,6 +224,7 @@
                 <small class="form-field-error">O estoque máximo deve ser igual ou maior que o mínimo.</small>
               }
             </label>
+            @if (categoryUsesDimension('length')) {
             <label>
               Comprimento
               <div class="field-with-unit">
@@ -231,6 +232,8 @@
                 <span class="unit-tooltip" data-tooltip="Metro">m</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('width')) {
             <label>
               Largura
               <div class="field-with-unit">
@@ -238,6 +241,8 @@
                 <span class="unit-tooltip" data-tooltip="Metro">m</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('thickness')) {
             <label>
               Espessura
               <div class="field-with-unit">
@@ -245,13 +250,43 @@
                 <span class="unit-tooltip" data-tooltip="Milímetro">mm</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('weightPerSquareMeter')) {
             <label>
-              Peso por m²
+              Peso por metro quadrado
               <div class="field-with-unit">
                 <input type="text" inputmode="decimal" [(ngModel)]="editingItem.weightPerSquareMeter" (blur)="formatDimensionField('weightPerSquareMeter')">
                 <span class="unit-tooltip weight-unit" data-tooltip="Quilograma por metro quadrado">kg/m²</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('height')) {
+            <label>
+              Altura
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.height" (blur)="formatDimensionField('height')">
+                <span class="unit-tooltip" data-tooltip="Metro">m</span>
+              </div>
+            </label>
+            }
+            @if (categoryUsesDimension('litersPerUnit')) {
+            <label>
+              Litros por unidade
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.litersPerUnit" (blur)="formatDimensionField('litersPerUnit')">
+                <span class="unit-tooltip" data-tooltip="Litros por unidade">L/un</span>
+              </div>
+            </label>
+            }
+            @if (categoryUsesDimension('weightPerLinearMeter')) {
+            <label>
+              Peso por metro linear
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.weightPerLinearMeter" (blur)="formatDimensionField('weightPerLinearMeter')">
+                <span class="unit-tooltip weight-unit" data-tooltip="Quilograma por metro linear">kg/m</span>
+              </div>
+            </label>
+            }
             <div class="weight-preview">
               <span>Peso calculado por unidade</span>
               <strong>{{ calculatedUnitWeight(editingItem) | number:'1.3-3':'pt-BR' }} kg</strong>
@@ -373,6 +408,21 @@
         Nome da categoria
         <input type="text" maxlength="80" [(ngModel)]="editingCategoryName" required>
       </label>
+      <fieldset class="category-dimensions">
+        <legend>Campos exibidos na matéria-prima</legend>
+        <div class="category-dimensions-grid">
+          @for (option of dimensionOptions; track option.value) {
+            <label>
+              <input
+                type="checkbox"
+                [checked]="editingCategoryDimensionFields.includes(option.value)"
+                (change)="toggleCategoryDimension(option.value)"
+              >
+              <span>{{ option.label }}</span>
+            </label>
+          }
+        </div>
+      </fieldset>
       <label>
         Fator de conversão
         <input
@@ -382,15 +432,22 @@
           placeholder="Ex.: (%c * %l * %p) / 2"
           spellcheck="false"
           autocomplete="off"
+          [class.invalid-input]="inactiveFormulaVariables().length > 0"
         >
+        @if (inactiveFormulaError()) {
+          <small class="form-field-error">{{ inactiveFormulaError() }}</small>
+        }
       </label>
       <div class="conversion-help">
         <strong>Campos disponíveis na fórmula</strong>
         <div><code>%c</code><span>Comprimento</span></div>
         <div><code>%l</code><span>Largura</span></div>
         <div><code>%e</code><span>Espessura</span></div>
-        <div><code>%p</code><span>Peso por m²</span></div>
-        <small>Use números, parênteses e os operadores +, −, × e ÷. Se o campo ficar vazio, os pesos da categoria serão exibidos como 0,00.</small>
+        <div><code>%a</code><span>Altura</span></div>
+        <div><code>%p</code><span>Peso por metro quadrado</span></div>
+        <div><code>%u</code><span>Litros por unidade</span></div>
+        <div><code>%m</code><span>Peso por metro linear</span></div>
+        <small>Use números, parênteses e os operadores +, −, * e /. Se o campo ficar vazio, os pesos da categoria serão exibidos como 0,00.</small>
       </div>
     </div>
   </c-modal-body>
@@ -441,10 +498,10 @@
   </c-modal-footer>
 </c-modal>
 
-<c-modal modalBackNavigation [visible]="accessModalVisible" (visibleChange)="accessModalVisible = $event" alignment="center" backdrop="static" size="lg">
+<c-modal modalBackNavigation [visible]="accessModalVisible" (visibleChange)="onAccessModalVisibleChange($event)" alignment="center" backdrop="static" size="lg">
   <c-modal-header>
     <h5 cModalTitle>Permissões por categoria</h5>
-    <button cButtonClose (click)="accessModalVisible = false"></button>
+    <button cButtonClose (click)="closeAccessModal()"></button>
   </c-modal-header>
   <c-modal-body>
     <div class="permission-grid">
@@ -452,7 +509,7 @@
         <span>Usuário</span>
         <span>Categorias permitidas</span>
       </div>
-      @for (user of users; track user.id) {
+      @for (user of accessUsers; track user.id) {
         <section>
           <div class="permission-user">
             <img
@@ -480,7 +537,7 @@
     </div>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="secondary" variant="outline" (click)="accessModalVisible = false">Cancelar</button>
+    <button cButton color="secondary" variant="outline" (click)="closeAccessModal()">Cancelar</button>
     <button cButton color="primary" [disabled]="saving" (click)="saveUserAccess()">{{ saving ? 'Salvando...' : 'Salvar' }}</button>
   </c-modal-footer>
 </c-modal>

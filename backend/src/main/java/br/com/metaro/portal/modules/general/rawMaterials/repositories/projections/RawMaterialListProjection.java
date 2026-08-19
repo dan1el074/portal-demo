@@ -14,7 +14,10 @@ public interface RawMaterialListProjection {
     BigDecimal getLength();
     BigDecimal getWidth();
     BigDecimal getThickness();
+    BigDecimal getHeight();
     BigDecimal getWeightPerSquareMeter();
+    BigDecimal getLitersPerUnit();
+    BigDecimal getWeightPerLinearMeter();
     String getConversionFactor();
     String getType();
     Boolean getActive();
