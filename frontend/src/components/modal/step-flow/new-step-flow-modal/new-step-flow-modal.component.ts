@@ -41,6 +41,8 @@ export class NewStepFlowModalComponent {
   protected valid: boolean | undefined = undefined;
   protected searchResult: StepFlowOrderInfo | null = null;
   protected loadSearch: boolean = false;
+  protected duplicateWarningVisible = false;
+  protected pendingOrder: StepFlowOrderInfo | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -70,8 +72,8 @@ export class NewStepFlowModalComponent {
     this.resetForm();
   }
 
-  protected handleLiveDemoChange(event: any) {
-    if (!event) this.closeMemorandoModal();
+  protected handleLiveDemoChange(event: boolean): void {
+    if (!event && !this.duplicateWarningVisible) this.closeMemorandoModal();
   }
 
   private resetForm(): void {
@@ -80,6 +82,8 @@ export class NewStepFlowModalComponent {
     this.valid = undefined;
     this.searchResult = null;
     this.loadSearch = false;
+    this.duplicateWarningVisible = false;
+    this.pendingOrder = null;
   }
 
   protected onSearch(): void {
@@ -171,6 +175,32 @@ export class NewStepFlowModalComponent {
 
     const updatedResult: StepFlowOrderInfo = { ...this.searchResult!, items: updatedItems };
 
+    if (this.hasPreviouslyUsedQuantity()) {
+      this.pendingOrder = updatedResult;
+      this.duplicateWarningVisible = true;
+      return;
+    }
+
     this.createNewOrder.emit(updatedResult);
+  }
+
+  protected closeDuplicateWarning(): void {
+    this.duplicateWarningVisible = false;
+    this.pendingOrder = null;
+  }
+
+  protected confirmDuplicate(): void {
+    if (!this.pendingOrder) return;
+
+    const order = this.pendingOrder;
+    this.duplicateWarningVisible = false;
+    this.pendingOrder = null;
+    this.createNewOrder.emit(order);
+  }
+
+  private hasPreviouslyUsedQuantity(): boolean {
+    return this.itemsForm.controls.some(control =>
+      Number(control.get('maxQuantity')?.value) < Number(control.get('quantity')?.value)
+    );
   }
 }

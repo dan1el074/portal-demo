@@ -13,8 +13,10 @@ import br.com.metaro.portal.modules.general.rawMaterials.repositories.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.springframework.scheduling.TaskScheduler;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,6 +31,8 @@ class RawMaterialsServiceValidationTests {
     @Mock UserRepository userRepository;
     @Mock ParamRepository paramRepository;
     @Mock UserService userService;
+    @Mock TaskScheduler taskScheduler;
+    @Mock RawMaterialStockAlertScheduler stockAlertScheduler;
     @InjectMocks RawMaterialsService service;
 
     @Test
@@ -155,6 +159,42 @@ class RawMaterialsServiceValidationTests {
 
         verify(materialRepository, never()).save(any());
         verifyNoInteractions(historyRepository, userService, categoryRepository);
+    }
+
+    @Test
+    void schedulesAlertOnlyWhenStockCrossesBelowMinimum() {
+        RawMaterialCategory category = new RawMaterialCategory();
+        category.setId(1L);
+        RawMaterial item = material(category);
+        item.setCurrentStorage(new BigDecimal("5"));
+        item.setMinStorage(new BigDecimal("3"));
+        when(materialRepository.findById(11L)).thenReturn(Optional.of(item));
+        when(userService.authenticate()).thenReturn(new User());
+
+        service.updateStock(11L, new RawMaterialStockDto(new BigDecimal("2")));
+
+        verify(taskScheduler).schedule(any(Runnable.class), any(Instant.class));
+    }
+
+    @Test
+    void doesNotRepeatAlertWhileStockRemainsBelowMinimum() {
+        RawMaterialCategory category = new RawMaterialCategory();
+        category.setId(1L);
+        RawMaterial item = material(category);
+        item.setCurrentStorage(new BigDecimal("2"));
+        item.setMinStorage(new BigDecimal("3"));
+        when(materialRepository.findById(11L)).thenReturn(Optional.of(item));
+        when(userService.authenticate()).thenReturn(new User());
+
+        service.updateStock(11L, new RawMaterialStockDto(BigDecimal.ONE));
+
+        verifyNoInteractions(taskScheduler, stockAlertScheduler);
+    }
+
+    @Test
+    void changingOnlyMinimumDoesNotTriggerStockAlert() {
+        assertThat(RawMaterialsService.crossedBelowMinimum(
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.TEN)).isFalse();
     }
 
     private RawMaterial material(RawMaterialCategory category) {

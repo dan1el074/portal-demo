@@ -1,6 +1,6 @@
 <c-modal modalBackNavigation
   alignment="center"
-  [visible]="visible"
+  [visible]="visible && !duplicateWarningVisible"
   (visibleChange)="handleLiveDemoChange($event)"
   class="new-step-modal"
   id="newStepFlowModal"
@@ -131,5 +131,32 @@
   <c-modal-footer class="m-footer">
     <button cButton class="default" (click)="closeMemorandoModal()">Cancelar</button>
     <button cButton class="color" [disabled]="!searchResult || itemsForm.invalid" (click)="onCreate()">Continuar</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal
+  alignment="center"
+  backdrop="static"
+  [visible]="visible && duplicateWarningVisible"
+  (visibleChange)="!$event && closeDuplicateWarning()"
+  id="duplicateStepFlowOrderModal"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Pedido já cadastrado</h5>
+    <button cButtonClose type="button" (click)="closeDuplicateWarning()"></button>
+  </c-modal-header>
+
+  <c-modal-body>
+    Já existe um registro com o pedido nº <strong>{{ pendingOrder?.number }}</strong>, isso vai criar um novo lote.
+    Continuar mesmo assim?
+  </c-modal-body>
+
+  <c-modal-footer>
+    <button cButton color="secondary" type="button" (click)="closeDuplicateWarning()">
+      Voltar
+    </button>
+    <button cButton color="primary" type="button" (click)="confirmDuplicate()">
+      Continuar
+    </button>
   </c-modal-footer>
 </c-modal>
