@@ -11,6 +11,7 @@ import br.com.metaro.portal.modules.general.rawMaterials.repositories.projection
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -30,6 +31,8 @@ public class RawMaterialsService {
     private final UserRepository userRepository;
     private final ParamRepository paramRepository;
     private final UserService userService;
+    private final TaskScheduler taskScheduler;
+    private final RawMaterialStockAlertScheduler stockAlertScheduler;
 
     @Transactional(readOnly = true)
     public Page<RawMaterialDto> list(Pageable pageable, String search, String category, String status, boolean inactive) {
@@ -94,6 +97,7 @@ public class RawMaterialsService {
         validateInput(dto, id);
         RawMaterial item = findItem(id);
         BigDecimal previous = item.getCurrentStorage();
+        BigDecimal previousMinimum = item.getMinStorage();
         List<String> changedFields = changedFields(item, dto);
         if (changedFields.isEmpty()) return new RawMaterialDto(item);
 
@@ -103,6 +107,7 @@ public class RawMaterialsService {
         materialRepository.save(item);
         addHistory(item, previous.compareTo(item.getCurrentStorage()) == 0 ? "UPDATED" : "STOCK_AND_ITEM_UPDATED",
                 previous, item.getCurrentStorage(), changedFields, me);
+        scheduleLowStockAlert(item, previous, previousMinimum);
 
         return new RawMaterialDto(item);
     }
@@ -120,6 +125,7 @@ public class RawMaterialsService {
         item.setUpdatedBy(me);
         materialRepository.save(item);
         addHistory(item, "STOCK_UPDATED", previous, item.getCurrentStorage(), List.of(), me);
+        scheduleLowStockAlert(item, previous, item.getMinStorage());
 
         return new RawMaterialDto(item);
     }
@@ -318,6 +324,20 @@ public class RawMaterialsService {
 
     private void addHistory(RawMaterial item, String action, BigDecimal previous, BigDecimal current, User user) {
         addHistory(item, action, previous, current, List.of(), user);
+    }
+
+    private void scheduleLowStockAlert(RawMaterial item, BigDecimal previousStorage, BigDecimal previousMinimum) {
+        if (crossedBelowMinimum(previousStorage, previousMinimum, item.getCurrentStorage(), item.getMinStorage())) {
+            Long itemId = item.getId();
+            taskScheduler.schedule(() -> stockAlertScheduler.executeSchedule(itemId), Instant.now().plusSeconds(1));
+        }
+    }
+
+    static boolean crossedBelowMinimum(BigDecimal previousStorage, BigDecimal previousMinimum,
+                                       BigDecimal currentStorage, BigDecimal currentMinimum) {
+        return previousStorage.compareTo(currentStorage) != 0
+                && previousStorage.compareTo(previousMinimum) >= 0
+                && currentStorage.compareTo(currentMinimum) < 0;
     }
 
     private void addHistory(RawMaterial item, String action, BigDecimal previous, BigDecimal current,

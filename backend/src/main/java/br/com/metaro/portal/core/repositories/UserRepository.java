@@ -15,6 +15,17 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
+        SELECT u FROM User u
+        JOIN u.position p
+        WHERE u.activated = true
+          AND u.email IS NOT NULL
+          AND TRIM(u.email) <> ''
+          AND LOWER(TRIM(p.name)) = LOWER(TRIM(:positionName))
+        ORDER BY u.name
+    """)
+    List<User> findActiveEmailRecipientsByPositionName(@Param("positionName") String positionName);
+
+    @Query("""
         SELECT DISTINCT u.id AS id, u.name AS name, p.id AS pictureId
         FROM User u JOIN u.roles r LEFT JOIN u.picture p
         WHERE r.authority = 'ROLE_RAW_MATERIALS_OPERATOR' AND u.activated = true

@@ -49,6 +49,16 @@
 
             <div class="admin-tool">
               <div class="admin-tool-copy">
+                <strong>Histórico de e-mails</strong>
+                <span>Consulte os e-mails enviados pelo portal e eventuais falhas.</span>
+              </div>
+              <button class="admin-action secondary" type="button" (click)="openEmailLogs()">
+                Ver e-mails
+              </button>
+            </div>
+
+            <div class="admin-tool">
+              <div class="admin-tool-copy">
                 <strong>Sessões ativas</strong>
                 <span>Consulte os usuários que possuem tokens válidos no portal.</span>
               </div>
@@ -127,6 +137,61 @@
             }
           </tbody>
         </table>
+      </div>
+    }
+  </c-modal-body>
+</c-modal>
+
+<c-modal
+  modalBackNavigation
+  [visible]="emailLogsVisible"
+  (visibleChange)="onEmailLogsVisibleChange($event)"
+  alignment="center"
+  backdrop="static"
+  size="xl"
+>
+  <c-modal-header>
+    <div>
+      <h5 cModalTitle>Histórico de e-mails</h5>
+      <span class="sessions-subtitle">Resumo dos envios realizados pelo Portal Metaro</span>
+    </div>
+    <button cButtonClose (click)="closeEmailLogs()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (emailLogsLoading) {
+      <div class="sessions-state"><c-spinner aria-hidden="true" /><span>Carregando e-mails...</span></div>
+    } @else if (emailLogsError) {
+      <div class="sessions-state error">{{ emailLogsError }}</div>
+    } @else if (!emailLogs.length) {
+      <div class="sessions-state">Nenhum envio de e-mail registrado.</div>
+    } @else {
+      <div class="sessions-summary">{{ emailLogsTotalElements }} {{ emailLogsTotalElements === 1 ? 'e-mail registrado' : 'e-mails registrados' }}</div>
+      <div class="email-logs-table-wrapper">
+        <table class="email-logs-table">
+          <thead><tr><th>Data</th><th>Assunto</th><th>Destinatário</th><th>Módulo</th><th>Status</th></tr></thead>
+          <tbody>
+            @for (email of emailLogs; track email.id) {
+              <tr>
+                <td>{{ email.createdAt | date:'dd/MM/yyyy HH:mm':'-0300' }}</td>
+                <td class="email-subject-cell">
+                  <strong class="email-subject" [title]="email.subject">{{ email.subject }}</strong>
+                </td>
+                <td>{{ email.recipient }}</td>
+                <td>{{ email.module }}</td>
+                <td>
+                  <span class="email-status" [class.sent]="email.status === 'SENT'" [class.error]="email.status === 'ERROR'" [title]="email.errorMessage || ''">
+                    {{ email.status === 'SENT' ? 'Enviado' : 'Erro' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="email-logs-pagination">
+        <button type="button" [disabled]="emailLogsPage === 0" (click)="changeEmailLogsPage(emailLogsPage - 1)">Anterior</button>
+        <span>Página {{ emailLogsPage + 1 }} de {{ emailLogsTotalPages }}</span>
+        <button type="button" [disabled]="emailLogsPage + 1 >= emailLogsTotalPages" (click)="changeEmailLogsPage(emailLogsPage + 1)">Próxima</button>
       </div>
     }
   </c-modal-body>

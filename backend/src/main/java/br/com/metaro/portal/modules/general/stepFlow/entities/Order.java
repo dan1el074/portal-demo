@@ -29,7 +29,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private StepType currentStep; // atualizar sempre que mexer no OrderStep
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // LATE -> apenas quando a dueDate passar (só no frontend)
+    private OrderStatus status; // LATE -> apenas quando a dueDate passar (apenas DTO)
     private Double shipment;
     private String carrier;
 
@@ -72,9 +72,7 @@ public class Order {
 
     @Transient
     public String getDisplayNumber() {
-        return occurrence != null && occurrence > 1
-                ? "%d-%d".formatted(number, occurrence)
-                : number.toString();
+        return occurrence != null && occurrence > 1 ? "%d-%d".formatted(number, occurrence) : number.toString();
     }
 
     @Transient

@@ -11,6 +11,8 @@ import { HomeService } from '../../services/home.service';
 import { RawMaterialsService } from '../../services/raw-materials.service';
 import { FormsModule } from '@angular/forms';
 import { ModalBackNavigationDirective } from '../../directive/modal-back-navigation.directive';
+import { EmailLog, EmailLogPage } from '../../interface/email-log.interface';
+import { EmailLogService } from '../../services/email-log.service';
 
 @Component({
   selector: 'app-config',
@@ -48,11 +50,20 @@ export class ConfigComponent implements OnInit {
   protected activeSessions: Array<ActiveSession> = [];
   protected activeSessionsError = '';
   protected disconnectingSessions = new Set<number>();
+  protected emailLogsVisible = false;
+  protected emailLogsLoading = false;
+  protected emailLogsError = '';
+  protected emailLogs: Array<EmailLog> = [];
+  protected emailLogsPage = 0;
+  protected emailLogsTotalPages = 0;
+  protected emailLogsTotalElements = 0;
+  private readonly emailLogsPageSize = 15;
 
   constructor(
     private userService: UserService,
     private homeService: HomeService,
     private rawMaterialsService: RawMaterialsService,
+    private emailLogService: EmailLogService,
     private toasterService: ToastrService,
     private errorService: ErrorService,
     private spinner: NgxSpinnerService,
@@ -167,6 +178,47 @@ export class ConfigComponent implements OnInit {
       },
       error: error => {
         this.disconnectingSessions.delete(session.userId);
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  protected openEmailLogs(): void {
+    this.emailLogsVisible = true;
+    this.loadEmailLogs(0);
+  }
+
+  protected closeEmailLogs(): void {
+    this.emailLogsVisible = false;
+    this.emailLogs = [];
+    this.emailLogsError = '';
+  }
+
+  protected onEmailLogsVisibleChange(visible: boolean): void {
+    if (!visible) this.closeEmailLogs();
+  }
+
+  protected changeEmailLogsPage(page: number): void {
+    if (page < 0 || page >= this.emailLogsTotalPages || page === this.emailLogsPage) return;
+    this.loadEmailLogs(page);
+  }
+
+  private loadEmailLogs(page: number): void {
+    this.emailLogsLoading = true;
+    this.emailLogsError = '';
+    this.emailLogService.list(page, this.emailLogsPageSize).subscribe({
+      next: (result: EmailLogPage) => {
+        this.emailLogs = result.content;
+        this.emailLogsPage = result.number;
+        this.emailLogsTotalPages = result.totalPages;
+        this.emailLogsTotalElements = result.totalElements;
+        this.emailLogsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.emailLogsLoading = false;
+        this.emailLogsError = 'Não foi possível carregar o histórico de e-mails.';
         this.errorService.showError(error);
         this.cdr.detectChanges();
       },
