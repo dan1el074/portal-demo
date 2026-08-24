@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Me, UserData, UserGroup, UserMinData } from './../interface/user.interface';
+import { ActiveSession, Me, UserData, UserGroup, UserMinData } from './../interface/user.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -79,5 +79,13 @@ export class UserService {
 
   public deactivateUser(id: number): Observable<any> {
     return this.http.put<Array<UserMinData>>(this.api + '/deactivate-user/' + id, null);
+  }
+
+  public getActiveSessions(): Observable<Array<ActiveSession>> {
+    return this.http.get<Array<ActiveSession>>(environment.apiUrl + '/api/auth/active-sessions');
+  }
+
+  public disconnectActiveSession(userId: number): Observable<void> {
+    return this.http.delete<void>(environment.apiUrl + '/api/auth/active-sessions/user/' + userId);
   }
 }

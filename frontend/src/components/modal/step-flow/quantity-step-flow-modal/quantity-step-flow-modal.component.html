@@ -1,4 +1,4 @@
-<c-modal [visible]="visible" backdrop="static" alignment="center" (visibleChange)="!$event && onClose()">
+<c-modal modalBackNavigation [visible]="visible" backdrop="static" alignment="center" (visibleChange)="!$event && onClose()">
   @if (item) {
     <c-modal-header>
       <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>

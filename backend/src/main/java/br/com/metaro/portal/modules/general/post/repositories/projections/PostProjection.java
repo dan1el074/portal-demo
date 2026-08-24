@@ -5,7 +5,6 @@ import java.time.Instant;
 public interface PostProjection {
     Long getId();
     String getContent();
-    Boolean getIsWarning();
     Instant getCreatedAt();
     Long getAuthorId();
     String getAuthorName();

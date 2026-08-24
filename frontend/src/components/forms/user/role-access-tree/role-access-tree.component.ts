@@ -62,7 +62,7 @@ export class RoleAccessTreeComponent implements OnChanges {
   }
 
   protected toggleTool(tool: RoleSummary, checked: boolean): void {
-    if (this.disabled) return;
+    if (this.disabled || !tool.activated) return;
 
     const next = this.withoutTool(tool);
     if (checked) {
@@ -74,7 +74,7 @@ export class RoleAccessTreeComponent implements OnChanges {
   }
 
   protected selectLevel(tool: RoleSummary, level: AccessLevel): void {
-    if (this.disabled) return;
+    if (this.disabled || !level.role.activated) return;
 
     const next = this.withoutTool(tool);
     next.add(Number(level.role.id));

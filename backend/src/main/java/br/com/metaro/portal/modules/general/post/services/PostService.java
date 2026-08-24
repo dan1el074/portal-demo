@@ -63,7 +63,6 @@ public class PostService {
     public PostDto update(Long id, PostInsertDto dto) throws IOException {
         Post post = postRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         post.setContent(dto.getText() == null || dto.getText().isBlank() ? null : formatPostContent(dto.getText()));
-        post.setIsWarning("true".equals(dto.getIsWarning()));
         post.setUpdatedAt(Instant.now());
 
         if (dto.getRetainedImageIds() != null) {
@@ -110,7 +109,6 @@ public class PostService {
         User me = userService.authenticate();
         post.setAuthor(me);
 
-        if (dto.getIsWarning() != null && dto.getIsWarning().equals("true")) post.setIsWarning(true);
         if (!dto.getText().isEmpty()) post.setContent(formatPostContent(dto.getText()));
 
         post = postRepository.save(post);

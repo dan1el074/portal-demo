@@ -1,14 +1,14 @@
-<c-modal [visible]="visible" alignment="top" backdrop="static" id="newSearchModal" scrollable>
+<c-modal modalBackNavigation [visible]="visible" alignment="top" backdrop="static" id="newSearchModal" scrollable>
   <c-modal-header>
     <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" class="search-buttom-icon">
       <circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="1.4"></circle>
       <path d="m21 21-4.3-4.3" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
     </svg>
-    <form autocomplete="off" class="search-form">
-      <input [(ngModel)]="searchInput" (ngModelChange)="onSearchChange($event)" name="searchInput" placeholder="Buscar..." class="search-input" type="text">
+    <form autocomplete="off" class="search-form" (ngSubmit)="onSubmit(searchInput)">
+      <input [(ngModel)]="searchInput" (ngModelChange)="onSearchChange($event)" name="searchInput" placeholder="Ferramentas, projetos, etc..." class="search-input" type="text">
 
       @if (searchInput.length) {
-        <button class="action-search-button" (click)="onSubmit(searchInput)">
+        <button class="action-search-button" type="submit" aria-label="Buscar projetos">
           <svg [cIcon]="icons.cilCursor" size="lg"></svg>
         </button>
       }
@@ -17,6 +17,21 @@
     <button (click)="closeSearchModal()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body class="search-body">
+
+    @if (toolList.length) {
+      <span class="title">Ferramentas</span>
+      <ul class="search-container">
+        @for(tool of toolList; track tool.id) {
+          <li class="search-item tool-item" role="button" tabindex="0" (click)="openTool(tool)" (keydown.enter)="openTool(tool)">
+            <svg [cIcon]="tool.parent === 'Administração' ? icons.cilCursor : icons.cilFork" size="lg"></svg>
+            <span class="item-content">
+              <span class="tool-title">{{ tool.title }}</span>
+              <small>{{ tool.parent }}</small>
+            </span>
+          </li>
+        }
+      </ul>
+    }
 
     @if (showResult) {
       @if (loadSeach) {
@@ -45,12 +60,12 @@
               </li>
             }
           </ul>
-        } @else {
+        } @else if (!toolList.length) {
           <span>Não encontrado.</span>
         }
       }
-    } @else {
-      <span>Projetos, ferramentas, etc.</span>
+    } @else if (!toolList.length) {
+      <span>Digite para buscar projetos e ferramentas.</span>
     }
 
   </c-modal-body>

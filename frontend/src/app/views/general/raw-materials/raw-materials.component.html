@@ -88,16 +88,12 @@
     [users]="users"
     [apiUrl]="apiUrl"
     [(newCategoryName)]="newCategoryName"
-    [editingCategoryId]="editingCategoryId"
-    [(editingCategoryName)]="editingCategoryName"
     [categoryDeleteError]="categoryDeleteError"
     (statusFilter)="filterByStatus($event)"
     (addCategory)="addCategory()"
     (startCategoryEdit)="startCategoryEdit($event)"
-    (cancelCategoryEdit)="cancelCategoryEdit()"
-    (saveCategoryEdit)="saveCategoryEdit($event)"
     (deleteCategory)="deleteCategory($event)"
-    (manageAccess)="accessModalVisible = true"
+    (manageAccess)="openAccessModal()"
   />
 
   @if (currentView !== 'operator') {
@@ -168,26 +164,45 @@
   </c-card>
 </c-container>
 
-<c-modal [visible]="itemModalVisible" (visibleChange)="onItemModalVisibleChange($event)" alignment="center" backdrop="static" size="lg">
+<c-modal modalBackNavigation id="rawMaterialItemModal" [visible]="itemModalVisible" alignment="center" backdrop="static" size="lg">
   <c-modal-header>
     <h5 cModalTitle>{{ currentView === 'consultation' ? 'Visualizar matéria-prima' : (editingItem?.id ? 'Editar matéria-prima' : 'Nova matéria-prima') }}</h5>
     <button cButtonClose (click)="closeItemModal()"></button>
   </c-modal-header>
   <c-modal-body>
     @if (editingItem) {
+      @if (itemSaveError) {
+        <div class="item-form-error" role="alert">{{ itemSaveError }}</div>
+      }
       <fieldset class="item-form" [disabled]="currentView === 'consultation'">
         <section class="form-section">
           <h6>Dados do item</h6>
           <div class="form-grid identification-grid">
-            <label>Código<input [(ngModel)]="editingItem.code" required></label>
-            <label class="description-field">Descrição do item<input [(ngModel)]="editingItem.name" required></label>
+            <label>
+              Código
+              <input type="text" maxlength="80" [(ngModel)]="editingItem.code" required [class.invalid-input]="isCodeInvalid()">
+              @if (isCodeInvalid()) {
+                <small class="form-field-error">O código é obrigatório.</small>
+              }
+            </label>
+            <label class="description-field">
+              Descrição do item
+              <input type="text" minlength="5" maxlength="255" [(ngModel)]="editingItem.name" required [class.invalid-input]="isNameInvalid()">
+              @if (isNameInvalid()) {
+                <small class="form-field-error">A descrição precisa ter no mínimo 5 caracteres.</small>
+              }
+            </label>
             <label class="notes-field">Aplicação / observação<textarea [(ngModel)]="editingItem.description"></textarea></label>
             <label>Categoria
-              <select [(ngModel)]="editingItem.type">
+              <select [(ngModel)]="editingItem.type" required [class.invalid-input]="isCategoryInvalid()">
+                <option value="" disabled>Selecione uma categoria</option>
                 @for (category of categories; track category.id) {
                   <option [value]="category.name">{{ category.name }}</option>
                 }
               </select>
+              @if (isCategoryInvalid()) {
+                <small class="form-field-error">A categoria é obrigatória.</small>
+              }
             </label>
           </div>
         </section>
@@ -209,34 +224,69 @@
                 <small class="form-field-error">O estoque máximo deve ser igual ou maior que o mínimo.</small>
               }
             </label>
+            @if (categoryUsesDimension('length')) {
             <label>
               Comprimento
               <div class="field-with-unit">
                 <input type="text" inputmode="decimal" [(ngModel)]="editingItem.length" (blur)="formatDimensionField('length')">
-                <span class="unit-tooltip" data-tooltip="Metro" tabindex="0">m</span>
+                <span class="unit-tooltip" data-tooltip="Metro">m</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('width')) {
             <label>
               Largura
               <div class="field-with-unit">
                 <input type="text" inputmode="decimal" [(ngModel)]="editingItem.width" (blur)="formatDimensionField('width')">
-                <span class="unit-tooltip" data-tooltip="Metro" tabindex="0">m</span>
+                <span class="unit-tooltip" data-tooltip="Metro">m</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('thickness')) {
             <label>
               Espessura
               <div class="field-with-unit">
                 <input type="text" inputmode="decimal" [(ngModel)]="editingItem.thickness" (blur)="formatDimensionField('thickness')">
-                <span class="unit-tooltip" data-tooltip="Milímetro" tabindex="0">mm</span>
+                <span class="unit-tooltip" data-tooltip="Milímetro">mm</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('weightPerSquareMeter')) {
             <label>
-              Peso por m²
+              Peso por metro quadrado
               <div class="field-with-unit">
                 <input type="text" inputmode="decimal" [(ngModel)]="editingItem.weightPerSquareMeter" (blur)="formatDimensionField('weightPerSquareMeter')">
-                <span class="unit-tooltip weight-unit" data-tooltip="Quilograma por metro quadrado" tabindex="0">kg/m²</span>
+                <span class="unit-tooltip weight-unit" data-tooltip="Quilograma por metro quadrado">kg/m²</span>
               </div>
             </label>
+            }
+            @if (categoryUsesDimension('height')) {
+            <label>
+              Altura
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.height" (blur)="formatDimensionField('height')">
+                <span class="unit-tooltip" data-tooltip="Metro">m</span>
+              </div>
+            </label>
+            }
+            @if (categoryUsesDimension('litersPerUnit')) {
+            <label>
+              Litros por unidade
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.litersPerUnit" (blur)="formatDimensionField('litersPerUnit')">
+                <span class="unit-tooltip" data-tooltip="Litros por unidade">L/un</span>
+              </div>
+            </label>
+            }
+            @if (categoryUsesDimension('weightPerLinearMeter')) {
+            <label>
+              Peso por metro linear
+              <div class="field-with-unit">
+                <input type="text" inputmode="decimal" [(ngModel)]="editingItem.weightPerLinearMeter" (blur)="formatDimensionField('weightPerLinearMeter')">
+                <span class="unit-tooltip weight-unit" data-tooltip="Quilograma por metro linear">kg/m</span>
+              </div>
+            </label>
+            }
             <div class="weight-preview">
               <span>Peso calculado por unidade</span>
               <strong>{{ calculatedUnitWeight(editingItem) | number:'1.3-3':'pt-BR' }} kg</strong>
@@ -251,21 +301,165 @@
           </label>
         }
       </fieldset>
+
     }
   </c-modal-body>
   <c-modal-footer>
-    @if (currentView === 'consultation') {
-      <button cButton color="secondary" (click)="closeItemModal()">Fechar</button>
-    } @else {
-      <button cButton color="secondary" variant="outline" (click)="closeItemModal()">Cancelar</button>
-      <button cButton color="primary" [disabled]="saving || hasInvalidStockRange() || !editingItem?.code || !editingItem?.name || !editingItem?.type" (click)="saveItem()">
-        {{ saving ? 'Salvando...' : 'Salvar' }}
-      </button>
-    }
+    <div class="item-modal-footer">
+      @if (editingItem?.id) {
+        <button
+          cButton
+          cModalToggle="rawMaterialHistoryModal"
+          type="button"
+          class="history-button"
+          (click)="prepareHistory()"
+          aria-label="Ver as últimas 10 movimentações do item"
+        >
+          <span class="history-button-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 7v5l3 2"></path>
+            </svg>
+          </span>
+          <strong>Histórico</strong>
+        </button>
+      } @else {
+        <span></span>
+      }
+      <div class="item-modal-actions">
+        @if (currentView === 'consultation') {
+          <button cButton color="secondary" (click)="closeItemModal()">Fechar</button>
+        } @else {
+          <button cButton color="secondary" variant="outline" (click)="closeItemModal()">Cancelar</button>
+          <button cButton color="primary" [disabled]="saving" (click)="saveItem()">
+            {{ saving ? 'Salvando...' : 'Salvar' }}
+          </button>
+        }
+      </div>
+    </div>
   </c-modal-footer>
 </c-modal>
 
-<c-modal [visible]="stockModalVisible" (visibleChange)="onStockModalVisibleChange($event)" alignment="center" backdrop="static">
+<c-modal id="rawMaterialHistoryModal" alignment="center" backdrop="static" size="lg" scrollable>
+  <c-modal-header>
+    <h5 cModalTitle>Histórico · {{ editingItem?.code }}</h5>
+    <button cButtonClose cModalToggle="rawMaterialItemModal" aria-label="Voltar ao item"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (loadingHistory) {
+      <p class="history-empty">Carregando movimentações...</p>
+    } @else if (!history.length) {
+      <p class="history-empty">Nenhuma movimentação registrada.</p>
+    } @else {
+      <div class="history-list">
+        @for (movement of history; track movement.id) {
+          <article>
+            <div>
+              <strong>{{ historyAction(movement) }}</strong>
+              <span>{{ movement.createdAt | date:'dd/MM/yyyy HH:mm' }} · {{ movement.user }}</span>
+            </div>
+            @if (movement.previousStorage !== null && movement.newStorage !== null) {
+              <span class="history-quantity">{{ movement.previousStorage | number:'1.0-3':'pt-BR' }} → {{ movement.newStorage | number:'1.0-3':'pt-BR' }}</span>
+            }
+          </article>
+        }
+      </div>
+      <div class="history-pagination">
+        <span>{{ historyTotalElements }} movimentações disponíveis</span>
+        @if (historySize === 10 && historyTotalElements > 10) {
+          <button cButton color="link" size="sm" type="button" (click)="showCompleteHistory()">Ver histórico completo</button>
+        }
+      </div>
+      @if (historySize > 10 && historyTotalPages > 1) {
+        <c-smart-pagination [activePage]="historyPage" [pages]="historyTotalPages" (activePageChange)="onHistoryPageChange($event)" />
+      }
+    }
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" cModalToggle="rawMaterialItemModal">Voltar ao item</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal modalBackNavigation [visible]="categoryReleaseModalVisible" (visibleChange)="categoryReleaseModalVisible = $event" alignment="center" backdrop="static">
+  <c-modal-header>
+    <h5 cModalTitle>Liberar nova categoria?</h5>
+    <button cButtonClose (click)="categoryReleaseModalVisible = false"></button>
+  </c-modal-header>
+  <c-modal-body>
+    <p>A categoria <strong>{{ pendingCategoryName }}</strong> deve ficar disponível para todos os usuários operadores?</p>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" variant="outline" (click)="confirmAddCategory(false)">Não</button>
+    <button cButton color="primary" (click)="confirmAddCategory(true)">Liberar</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal modalBackNavigation [visible]="categoryEditModalVisible" (visibleChange)="categoryEditModalVisible = $event" alignment="center" backdrop="static" size="lg">
+  <c-modal-header>
+    <h5 cModalTitle>Editar categoria</h5>
+    <button cButtonClose (click)="cancelCategoryEdit()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (categoryEditError) {
+      <div class="item-form-error" role="alert">{{ categoryEditError }}</div>
+    }
+    <div class="category-edit-form">
+      <label>
+        Nome da categoria
+        <input type="text" maxlength="80" [(ngModel)]="editingCategoryName" required>
+      </label>
+      <fieldset class="category-dimensions">
+        <legend>Campos exibidos na matéria-prima</legend>
+        <div class="category-dimensions-grid">
+          @for (option of dimensionOptions; track option.value) {
+            <label>
+              <input
+                type="checkbox"
+                [checked]="editingCategoryDimensionFields.includes(option.value)"
+                (change)="toggleCategoryDimension(option.value)"
+              >
+              <span>{{ option.label }}</span>
+            </label>
+          }
+        </div>
+      </fieldset>
+      <label>
+        Fator de conversão
+        <input
+          type="text"
+          maxlength="1000"
+          [(ngModel)]="editingCategoryConversionFactor"
+          placeholder="Ex.: (%c * %l * %p) / 2"
+          spellcheck="false"
+          autocomplete="off"
+          [class.invalid-input]="inactiveFormulaVariables().length > 0"
+        >
+        @if (inactiveFormulaError()) {
+          <small class="form-field-error">{{ inactiveFormulaError() }}</small>
+        }
+      </label>
+      <div class="conversion-help">
+        <strong>Campos disponíveis na fórmula</strong>
+        <div><code>%c</code><span>Comprimento</span></div>
+        <div><code>%l</code><span>Largura</span></div>
+        <div><code>%e</code><span>Espessura</span></div>
+        <div><code>%a</code><span>Altura</span></div>
+        <div><code>%p</code><span>Peso por metro quadrado</span></div>
+        <div><code>%u</code><span>Litros por unidade</span></div>
+        <div><code>%m</code><span>Peso por metro linear</span></div>
+        <small>Use números, parênteses e os operadores +, −, * e /. Se o campo ficar vazio, os pesos da categoria serão exibidos como 0,00.</small>
+      </div>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" variant="outline" [disabled]="saving" (click)="cancelCategoryEdit()">Cancelar</button>
+    <button cButton color="primary" [disabled]="saving || !editingCategoryName.trim()" (click)="saveCategoryEdit()">
+      {{ saving ? 'Salvando...' : 'Salvar' }}
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal modalBackNavigation [visible]="stockModalVisible" (visibleChange)="onStockModalVisibleChange($event)" alignment="center" backdrop="static">
   <c-modal-header>
     <h5 cModalTitle>Atualizar estoque · {{ stockTarget?.code }}</h5>
     <button cButtonClose (click)="closeStockModal()"></button>
@@ -284,7 +478,7 @@
         <div class="operator-info-block conversion-block">
           <span>Fator de conversão</span>
           <strong>{{ calculatedUnitWeight(stockTarget) | number:'1.2-4':'pt-BR' }} kg/un</strong>
-          <small>largura x comprimento x peso por mm</small>
+          <small>{{ categoryConversionFactorLabel(stockTarget) || 'Sem fator configurado' }}</small>
         </div>
       </div>
       <div class="stock-editor">
@@ -304,10 +498,10 @@
   </c-modal-footer>
 </c-modal>
 
-<c-modal [visible]="accessModalVisible" (visibleChange)="accessModalVisible = $event" alignment="center" backdrop="static" size="lg">
+<c-modal modalBackNavigation [visible]="accessModalVisible" (visibleChange)="onAccessModalVisibleChange($event)" alignment="center" backdrop="static" size="lg">
   <c-modal-header>
     <h5 cModalTitle>Permissões por categoria</h5>
-    <button cButtonClose (click)="accessModalVisible = false"></button>
+    <button cButtonClose (click)="closeAccessModal()"></button>
   </c-modal-header>
   <c-modal-body>
     <div class="permission-grid">
@@ -315,7 +509,7 @@
         <span>Usuário</span>
         <span>Categorias permitidas</span>
       </div>
-      @for (user of users; track user.id) {
+      @for (user of accessUsers; track user.id) {
         <section>
           <div class="permission-user">
             <img
@@ -343,7 +537,7 @@
     </div>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="secondary" variant="outline" (click)="accessModalVisible = false">Cancelar</button>
+    <button cButton color="secondary" variant="outline" (click)="closeAccessModal()">Cancelar</button>
     <button cButton color="primary" [disabled]="saving" (click)="saveUserAccess()">{{ saving ? 'Salvando...' : 'Salvar' }}</button>
   </c-modal-footer>
 </c-modal>

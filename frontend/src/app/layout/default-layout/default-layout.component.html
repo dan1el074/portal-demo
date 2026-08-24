@@ -33,4 +33,8 @@
 </div>
 
 <app-layout-alert-modal [visible]="showAlertModal" [pendingIssues]="user.pendingIssues" (closeModal)="toggleAlertModal(false)"></app-layout-alert-modal>
-<app-layout-search-modal [visible]="showSearchModal" (closeModal)="toggleSearchModal(false)"></app-layout-search-modal>
+<app-layout-search-modal
+  [visible]="showSearchModal"
+  [roles]="user.roles"
+  (closeModal)="toggleSearchModal(false)"
+></app-layout-search-modal>

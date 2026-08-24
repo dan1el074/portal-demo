@@ -11,10 +11,12 @@ import java.util.List;
 public class RoleSummaryDto {
     private Long id;
     private String authority;
+    private boolean activated;
     private final List<RoleSummaryDto> childrens = new ArrayList<>();
 
-    public RoleSummaryDto(Long id, String authority) {
+    public RoleSummaryDto(Long id, String authority, boolean activated) {
         this.id = id;
         this.authority = authority;
+        this.activated = activated;
     }
 }

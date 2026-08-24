@@ -5,6 +5,7 @@ export interface Role {
   parentUrl: string;
   title: string;
   titleUrl: string;
+  activated: boolean;
 }
 
 export interface GroupedRole {
@@ -15,6 +16,7 @@ export interface GroupedRole {
 export interface RoleSummary {
   id: number;
   authority: string;
+  activated: boolean;
   childrens: Array<RoleSummary>;
 }
 

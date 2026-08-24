@@ -10,6 +10,7 @@ import { DefaultFooterComponent, DefaultHeaderComponent } from './';
 import { LayoutAlertModalComponent } from './../../../components/modal/layout/layout-alert-modal/layout-alert-modal.component';
 import { LayoutSearchModalComponent } from '../../../components/modal/layout/layout-search-modal/layout-search-modal.component';
 import { navItems } from './_nav';
+import { getNavigationTools } from '../../shared/navigation-tool';
 
 @Component({
   selector: 'app-dashboard',
@@ -79,17 +80,15 @@ export class DefaultLayoutComponent implements OnInit {
   private updateTools(): void {
     const customNav: Array<INavData> = [];
 
-    this.user.roles.forEach(role => {
-      if (!role.title || !role.titleUrl) return;
-
+    getNavigationTools(this.user.roles).forEach(tool => {
       const toolList: INavData = {
-        name: role.parent,
-        url: role.parentUrl,
-        iconComponent: { name: role.parent == 'Administração' ? 'cilCursor' : 'cilFork' },
+        name: tool.parent,
+        url: tool.parentUrl,
+        iconComponent: { name: tool.parent == 'Administração' ? 'cilCursor' : 'cilFork' },
         children: []
       };
 
-      let index = customNav.findIndex(tool => tool.name == role.parent);
+      let index = customNav.findIndex(navItem => navItem.name == tool.parent);
 
       if (index < 0) {
         customNav.push(toolList);
@@ -97,8 +96,8 @@ export class DefaultLayoutComponent implements OnInit {
       }
 
       customNav[index].children?.push({
-        name: role.title,
-        url: role.parentUrl + role.titleUrl,
+        name: tool.title,
+        url: tool.url,
         icon: 'nav-icon-bullet'
       });
     });

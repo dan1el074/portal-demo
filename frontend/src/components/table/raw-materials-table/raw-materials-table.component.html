@@ -82,7 +82,12 @@
           <span class="code-field">{{ item.code }}</span>
         }
         @case ('name') {
-          <span class="description-field">{{ item.name }}</span>
+          <span class="description-field">
+            @if (mode === 'operator') {
+              <strong>{{ item.code }}</strong> -
+            }
+            {{ item.name }}
+          </span>
         }
         @case ('type') {
           <div class="badge simple category-badge">{{ item.type }}</div>

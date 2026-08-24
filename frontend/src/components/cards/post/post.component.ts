@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AvatarComponent, ButtonDirective, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, ModalToggleDirective, RowComponent } from '@coreui/angular';
+import { AvatarComponent, ButtonDirective, CardBodyComponent, CardComponent, CardImgDirective, CarouselConfig, ColComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownMenuDirective, DropdownToggleDirective, RowComponent } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilOptions, cilPencil, cilTrash } from '@coreui/icons';
 import { CarouselCustomConfig } from './carouse.config';
@@ -22,7 +22,6 @@ import { environment } from '../../../environments/environment';
     CardBodyComponent,
     RowComponent,
     ColComponent,
-    ModalToggleDirective,
     ImageComponent,
     TimeAgoPipe,
     DropdownComponent,
@@ -43,19 +42,25 @@ export class PostComponent {
 
   protected slideIndex = 0;
   protected carouselReady = false;
+  protected imageModalVisible = false;
   protected apiUrl = environment.apiUrl;
   protected icons = { cilOptions, cilPencil, cilTrash };
 
-  constructor (private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
-  protected openCarousel(index: number) {
+  protected openCarousel(index: number): void {
     this.slideIndex = index;
     this.carouselReady = false;
+    this.imageModalVisible = true;
 
     setTimeout(() => {
       this.carouselReady = true;
       this.cdr.detectChanges();
     });
+  }
+
+  protected closeImageModal(): void {
+    this.imageModalVisible = false;
   }
 
   protected onEdit(id: number): void {

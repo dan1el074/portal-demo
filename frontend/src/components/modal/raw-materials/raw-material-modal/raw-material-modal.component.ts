@@ -4,6 +4,7 @@ import { cilPencil } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RawMaterialsTable } from '../../../../app/interface/raw-materials.interface';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-raw-material-modal',
@@ -12,6 +13,7 @@ import { RawMaterialsTable } from '../../../../app/interface/raw-materials.inter
     ButtonDirective,
     ButtonCloseDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
     ModalBodyComponent,

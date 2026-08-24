@@ -2,16 +2,17 @@ import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChange
 import { FormsModule } from '@angular/forms';
 import { AvatarComponent, ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, TooltipDirective } from '@coreui/angular';
 import { LoadingButtonComponent } from '@coreui/angular-pro';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../app/services/toast.service';
 import { Me } from '../../../../app/interface/user.interface';
 import { PostCard } from '../../../../app/interface/post.interface';
 import { environment } from '../../../../environments/environment';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 interface PreviewItem { url: string; existingId?: number; file?: File; }
 
 @Component({
   selector: 'app-new-post-modal',
-  imports: [FormsModule, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, TooltipDirective, AvatarComponent, LoadingButtonComponent],
+  imports: [FormsModule, ModalComponent, ModalBackNavigationDirective, ModalHeaderComponent, ModalTitleDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, ButtonCloseDirective, TooltipDirective, AvatarComponent, LoadingButtonComponent],
   templateUrl: './new-post-modal.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './new-post-modal.component.scss',
@@ -69,7 +70,6 @@ export class NewPostModalComponent implements OnChanges {
     this.loading = true;
     const data = new FormData();
     data.append('text', this.textContent);
-    data.append('isWarning', 'false');
     this.previews.filter(item => item.existingId).forEach(item => data.append('retainedImageIds', String(item.existingId)));
     this.previews.filter(item => item.file).forEach(item => data.append('images', item.file!));
     this.publishTask.emit(data);

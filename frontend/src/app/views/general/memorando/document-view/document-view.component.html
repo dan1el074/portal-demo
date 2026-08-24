@@ -204,7 +204,7 @@
     </div>
   </div>
 
-  <c-modal [visible]="showSignModal" (visibleChange)="handleSignModalChange($event)" alignment="center">
+  <c-modal modalBackNavigation [visible]="showSignModal" (visibleChange)="handleSignModalChange($event)" alignment="center">
     <c-modal-header>
       <h5 cModalTitle>Assinar documento</h5>
       <button (click)="toggleSignModal()" cButtonClose></button>
@@ -221,7 +221,7 @@
     </c-modal-footer>
   </c-modal>
 
-  <c-modal [visible]="showPublishModal" (visibleChange)="handlePublishModalChange($event)" alignment="center">
+  <c-modal modalBackNavigation [visible]="showPublishModal" (visibleChange)="handlePublishModalChange($event)" alignment="center">
     <c-modal-header>
       <h5 cModalTitle>Publicar Memorando</h5>
       <button (click)="togglePublishModal()" cButtonClose></button>
@@ -238,7 +238,7 @@
     </c-modal-footer>
   </c-modal>
 
-  <c-modal [visible]="showCancelModal" (visibleChange)="handleCancelModalChange($event)" alignment="center">
+  <c-modal modalBackNavigation [visible]="showCancelModal" (visibleChange)="handleCancelModalChange($event)" alignment="center">
     <c-modal-header>
       <h5 cModalTitle>Cancelar Registro - Memorando</h5>
       <button (click)="toggleCancelModal()" cButtonClose></button>
@@ -255,7 +255,7 @@
     </c-modal-footer>
   </c-modal>
 
-  <c-modal [visible]="showRollbackModal" (visibleChange)="handleRollbackModalChange($event)" alignment="center">
+  <c-modal modalBackNavigation [visible]="showRollbackModal" (visibleChange)="handleRollbackModalChange($event)" alignment="center">
     <c-modal-header>
       <h5 cModalTitle>Reiniciar Registro - Memorando</h5>
       <button (click)="toggleRollbackModal()" cButtonClose></button>
@@ -270,7 +270,7 @@
     </c-modal-footer>
   </c-modal>
 
-  <c-modal [visible]="showDeleteModal" (visibleChange)="handleDeleteModalChange($event)" alignment="center">
+  <c-modal modalBackNavigation [visible]="showDeleteModal" (visibleChange)="handleDeleteModalChange($event)" alignment="center">
     <c-modal-header>
       <h5 cModalTitle>Deletear Registro - Memorando</h5>
       <button (click)="toggleDeleteModal()" cButtonClose></button>
@@ -288,7 +288,7 @@
   </c-modal>
 
   @if (manangerAlert) {
-    <c-modal [visible]="showUpdateDepartmentModal" (visibleChange)="handleUpdateDepartmentModalChange($event)" alignment="center">
+    <c-modal modalBackNavigation [visible]="showUpdateDepartmentModal" (visibleChange)="handleUpdateDepartmentModalChange($event)" alignment="center">
       <c-modal-header>
         <h5 cModalTitle>Atualizar Assinaturas - {{ manangerAlert.department.name }}</h5>
         <button (click)="toggleUpdateDepartmentModal()" cButtonClose></button>

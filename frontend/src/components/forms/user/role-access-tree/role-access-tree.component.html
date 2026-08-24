@@ -7,12 +7,12 @@
 
       <div class='tool-list'>
         @for (tool of group.childrens; track tool.id) {
-          <div class='tool'>
-            <label class='tool-control'>
+          <div class='tool' [class.inactive-role]='!tool.activated'>
+            <label class='tool-control' [class.inactive-role-control]='!tool.activated'>
               <input
                 type='checkbox'
                 [checked]='isToolEnabled(tool)'
-                [disabled]='disabled'
+                [disabled]='disabled || !tool.activated'
                 (change)='toggleTool(tool, $any($event.target).checked)'
               >
               <span>{{ tool.authority }}</span>
@@ -21,12 +21,12 @@
             @if (hasLevels(tool) && isToolEnabled(tool)) {
               <div class='level-list' role='radiogroup' [attr.aria-label]="'Nível de acesso de ' + tool.authority">
                 @for (level of levels(tool); track level.role.id) {
-                  <label class='level-control' [style.margin-left.px]='level.depth * 18'>
+                  <label class='level-control' [class.inactive-role-control]='!level.role.activated' [style.margin-left.px]='level.depth * 18'>
                     <input
                       type='radio'
                       [name]="'access-level-' + tool.id"
                       [checked]='isLevelSelected(tool, level)'
-                      [disabled]='disabled'
+                      [disabled]='disabled || !level.role.activated'
                       (change)='selectLevel(tool, level)'
                     >
                     <span>{{ levelName(level) }}</span>

@@ -346,7 +346,7 @@ public class MemorandoScheduler {
                               </body>
                             </html>
                         """.formatted(formatedDate, entity.getNumber(), year, entity.getNumber(), year,
-                            entity.getTitle(), entity.getRequest(), entity.getClient(), formatedDate));
+                            entity.getTitle(), entity.getRequest(), entity.getClient(), formatedDate), "Memorando");
                 } catch (Exception exception) {
                     log.error(
                             "Não foi possível enviar o memorando {} para {}",

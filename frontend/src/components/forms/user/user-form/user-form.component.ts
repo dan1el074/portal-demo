@@ -9,8 +9,9 @@ import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { cilPencil, cilX } from '@coreui/icons';
 import { PositionMin } from '../../../../app/interface/position.interface';
 import { RoleGroup } from '../../../../app/interface/role.interface';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../app/services/toast.service';
 import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.component';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-user-form',
@@ -23,6 +24,7 @@ import { RoleAccessTreeComponent } from '../role-access-tree/role-access-tree.co
     IconDirective,
     ButtonDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
     ButtonCloseDirective,

@@ -1,17 +1,19 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../../app/services/toast.service';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, SpinnerComponent } from '@coreui/angular';
 import { StepFlowService } from '../../../../app/services/step-flow.service';
 import { StepFlowOrderInfo, StepFlowOrderItem } from '../../../../app/interface/step-flow.interface';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from '../../../../app/pipes/truncate.pipe';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-new-step-flow-modal',
   imports: [
     CommonModule,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalTitleDirective,
     ModalHeaderComponent,
     ModalBodyComponent,
@@ -39,6 +41,8 @@ export class NewStepFlowModalComponent {
   protected valid: boolean | undefined = undefined;
   protected searchResult: StepFlowOrderInfo | null = null;
   protected loadSearch: boolean = false;
+  protected duplicateWarningVisible = false;
+  protected pendingOrder: StepFlowOrderInfo | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -68,8 +72,8 @@ export class NewStepFlowModalComponent {
     this.resetForm();
   }
 
-  protected handleLiveDemoChange(event: any) {
-    if (!event) this.closeMemorandoModal();
+  protected handleLiveDemoChange(event: boolean): void {
+    if (!event && !this.duplicateWarningVisible) this.closeMemorandoModal();
   }
 
   private resetForm(): void {
@@ -78,6 +82,8 @@ export class NewStepFlowModalComponent {
     this.valid = undefined;
     this.searchResult = null;
     this.loadSearch = false;
+    this.duplicateWarningVisible = false;
+    this.pendingOrder = null;
   }
 
   protected onSearch(): void {
@@ -169,6 +175,32 @@ export class NewStepFlowModalComponent {
 
     const updatedResult: StepFlowOrderInfo = { ...this.searchResult!, items: updatedItems };
 
+    if (this.hasPreviouslyUsedQuantity()) {
+      this.pendingOrder = updatedResult;
+      this.duplicateWarningVisible = true;
+      return;
+    }
+
     this.createNewOrder.emit(updatedResult);
+  }
+
+  protected closeDuplicateWarning(): void {
+    this.duplicateWarningVisible = false;
+    this.pendingOrder = null;
+  }
+
+  protected confirmDuplicate(): void {
+    if (!this.pendingOrder) return;
+
+    const order = this.pendingOrder;
+    this.duplicateWarningVisible = false;
+    this.pendingOrder = null;
+    this.createNewOrder.emit(order);
+  }
+
+  private hasPreviouslyUsedQuantity(): boolean {
+    return this.itemsForm.controls.some(control =>
+      Number(control.get('maxQuantity')?.value) < Number(control.get('quantity')?.value)
+    );
   }
 }

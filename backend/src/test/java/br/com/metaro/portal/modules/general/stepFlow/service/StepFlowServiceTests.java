@@ -73,7 +73,30 @@ class StepFlowServiceTests {
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         verify(orderRepository).searchOrderByEffectiveStatus(pageableCaptor.capture(), eq(""), eq(1));
         assertThat(pageableCaptor.getValue().getSort().getOrderFor("status")).isNull();
-        assertThat(pageableCaptor.getValue().getSort().getOrderFor("number")).isNotNull();
+        assertThat(pageableCaptor.getValue().getSort().toList())
+                .containsExactly(Sort.Order.desc("id"));
+    }
+
+    @Test
+    void appendsDescendingIdAfterTheRequestedSorts() {
+        OrderRepository orderRepository = mock(OrderRepository.class);
+        StepFlowService service = new StepFlowService();
+        ReflectionTestUtils.setField(service, "orderRepository", orderRepository);
+        when(orderRepository.search(any(Pageable.class), eq(""))).thenReturn(Page.empty());
+
+        service.listOrders(
+                PageRequest.of(0, 30, Sort.by(Sort.Direction.ASC, "client")
+                        .and(Sort.by(Sort.Direction.ASC, "id"))),
+                null,
+                null
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(orderRepository).search(pageableCaptor.capture(), eq(""));
+        assertThat(pageableCaptor.getValue().getSort().toList()).containsExactly(
+                Sort.Order.asc("client"),
+                Sort.Order.desc("id")
+        );
     }
 
     @Test

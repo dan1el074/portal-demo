@@ -43,6 +43,7 @@ public class RequestService {
                      </table>
                 </div>
             """.formatted(dto.getName(), dto.getEmail());
-        emailService.sendHtmlEmail(toMail, "Requisição de acesso - %s".formatted(dto.getName()), message);
+        emailService.sendHtmlEmail(toMail, "Requisição de acesso - %s".formatted(dto.getName()), message,
+                "Solicitação de acesso");
     }
 }

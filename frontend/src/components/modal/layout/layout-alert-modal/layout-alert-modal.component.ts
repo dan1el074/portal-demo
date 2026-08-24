@@ -1,11 +1,13 @@
 import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent } from '@coreui/angular';
 import { PendingIssues } from '../../../../app/interface/user.interface';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-layout-alert-modal',
   imports: [
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalBodyComponent,
     ModalFooterComponent,

@@ -1,22 +1,35 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { CardBodyComponent, CardComponent, ContainerComponent } from '@coreui/angular';
+import { ButtonCloseDirective, CardBodyComponent, CardComponent, ContainerComponent, ModalBodyComponent, ModalComponent, ModalHeaderComponent, ModalTitleDirective, SpinnerComponent } from '@coreui/angular';
 import { UserConfigFormComponent } from '../../../components/forms/user/user-config-form/user-config-form.component';
-import { UserConfigData } from '../../interface/user.interface';
+import { ActiveSession, UserConfigData } from '../../interface/user.interface';
 import { UserService } from '../../services/user.service';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../services/toast.service';
 import { CommonModule } from '@angular/common';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { ErrorService } from '../../services/error.service';
 import { HomeService } from '../../services/home.service';
+import { RawMaterialsService } from '../../services/raw-materials.service';
+import { FormsModule } from '@angular/forms';
+import { ModalBackNavigationDirective } from '../../directive/modal-back-navigation.directive';
+import { EmailLog, EmailLogPage } from '../../interface/email-log.interface';
+import { EmailLogService } from '../../services/email-log.service';
 
 @Component({
   selector: 'app-config',
   imports: [
     CommonModule,
+    FormsModule,
     NgxSpinnerModule,
     CardComponent,
     CardBodyComponent,
     ContainerComponent,
+    ModalComponent,
+    ModalBackNavigationDirective,
+    ModalHeaderComponent,
+    ModalTitleDirective,
+    ModalBodyComponent,
+    ButtonCloseDirective,
+    SpinnerComponent,
     UserConfigFormComponent
   ],
   templateUrl: './config.component.html',
@@ -30,10 +43,27 @@ export class ConfigComponent implements OnInit {
   protected userData: UserConfigData | null = null;
   protected loaded = false;
   protected isAdmin = false;
+  protected rawMaterialHistoryRetention = 1000;
+  protected savingHistoryRetention = false;
+  protected activeSessionsVisible = false;
+  protected activeSessionsLoading = false;
+  protected activeSessions: Array<ActiveSession> = [];
+  protected activeSessionsError = '';
+  protected disconnectingSessions = new Set<number>();
+  protected emailLogsVisible = false;
+  protected emailLogsLoading = false;
+  protected emailLogsError = '';
+  protected emailLogs: Array<EmailLog> = [];
+  protected emailLogsPage = 0;
+  protected emailLogsTotalPages = 0;
+  protected emailLogsTotalElements = 0;
+  private readonly emailLogsPageSize = 15;
 
   constructor(
     private userService: UserService,
     private homeService: HomeService,
+    private rawMaterialsService: RawMaterialsService,
+    private emailLogService: EmailLogService,
     private toasterService: ToastrService,
     private errorService: ErrorService,
     private spinner: NgxSpinnerService,
@@ -45,6 +75,12 @@ export class ConfigComponent implements OnInit {
     this.isAdmin = this.userService.getCurrentUser()?.roles.some(
       role => role.authority === 'ROLE_ADMIN'
     ) ?? false;
+    if (this.isAdmin) {
+      this.rawMaterialsService.getHistoryRetention().subscribe(setting => {
+        this.rawMaterialHistoryRetention = setting.value;
+        this.cdr.detectChanges();
+      });
+    }
 
     this.userService.getUserConfig().subscribe({
       next: data =>  {
@@ -75,6 +111,117 @@ export class ConfigComponent implements OnInit {
     this.homeService.clearAllCache().subscribe({
       next: () => this.toasterService.success('Cache limpo com sucesso!'),
       error: () => this.toasterService.error('Erro ao limpar cache!')
+    });
+  }
+
+  protected saveHistoryRetention(): void {
+    const value = Math.trunc(Number(this.rawMaterialHistoryRetention));
+    if (!Number.isFinite(value) || value < 10 || value > 100000) {
+      this.toasterService.error('Informe um valor entre 10 e 100.000 registros.');
+      return;
+    }
+    this.savingHistoryRetention = true;
+    this.rawMaterialsService.updateHistoryRetention(value).subscribe({
+      next: setting => {
+        this.rawMaterialHistoryRetention = setting.value;
+        this.savingHistoryRetention = false;
+        this.toasterService.success('Retenção do histórico atualizada.');
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.savingHistoryRetention = false;
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  protected openActiveSessions(): void {
+    this.activeSessionsVisible = true;
+    this.activeSessionsLoading = true;
+    this.activeSessions = [];
+    this.activeSessionsError = '';
+    this.userService.getActiveSessions().subscribe({
+      next: sessions => {
+        this.activeSessions = sessions;
+        this.activeSessionsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.activeSessionsLoading = false;
+        this.activeSessionsError = 'Não foi possível carregar as sessões ativas.';
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  protected closeActiveSessions(): void {
+    this.activeSessionsVisible = false;
+    this.activeSessions = [];
+    this.activeSessionsError = '';
+  }
+
+  protected onActiveSessionsVisibleChange(visible: boolean): void {
+    if (!visible) this.closeActiveSessions();
+  }
+
+  protected disconnectSession(session: ActiveSession): void {
+    if (this.disconnectingSessions.has(session.userId)) return;
+    this.disconnectingSessions.add(session.userId);
+    this.userService.disconnectActiveSession(session.userId).subscribe({
+      next: () => {
+        this.activeSessions = this.activeSessions.filter(item => item.userId !== session.userId);
+        this.disconnectingSessions.delete(session.userId);
+        this.toasterService.success(`Sessão de ${session.username} desconectada.`);
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.disconnectingSessions.delete(session.userId);
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  protected openEmailLogs(): void {
+    this.emailLogsVisible = true;
+    this.loadEmailLogs(0);
+  }
+
+  protected closeEmailLogs(): void {
+    this.emailLogsVisible = false;
+    this.emailLogs = [];
+    this.emailLogsError = '';
+  }
+
+  protected onEmailLogsVisibleChange(visible: boolean): void {
+    if (!visible) this.closeEmailLogs();
+  }
+
+  protected changeEmailLogsPage(page: number): void {
+    if (page < 0 || page >= this.emailLogsTotalPages || page === this.emailLogsPage) return;
+    this.loadEmailLogs(page);
+  }
+
+  private loadEmailLogs(page: number): void {
+    this.emailLogsLoading = true;
+    this.emailLogsError = '';
+    this.emailLogService.list(page, this.emailLogsPageSize).subscribe({
+      next: (result: EmailLogPage) => {
+        this.emailLogs = result.content;
+        this.emailLogsPage = result.number;
+        this.emailLogsTotalPages = result.totalPages;
+        this.emailLogsTotalElements = result.totalElements;
+        this.emailLogsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.emailLogsLoading = false;
+        this.emailLogsError = 'Não foi possível carregar o histórico de e-mails.';
+        this.errorService.showError(error);
+        this.cdr.detectChanges();
+      },
     });
   }
 }

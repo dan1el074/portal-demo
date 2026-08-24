@@ -1,4 +1,4 @@
-<c-modal id="staticBackdropModal-{{ item.id }}" backdrop="static" alignment="center">
+<c-modal modalBackNavigation id="staticBackdropModal-{{ item.id }}" backdrop="static" alignment="center">
   <form cForm>
     <c-modal-header>
       <svg [cIcon]="icons.cilPencil" class="modal-title-icon" size="lg"></svg>
@@ -28,7 +28,7 @@
         <span>{{ item.thickness }} mm</span>
       </div>
       <div class="custom-card text">
-        <h6>Peso por m²</h6>
+        <h6>Peso por metro quadrado</h6>
         <span>{{ item.weightPerSquareMeter }} kg/m²</span>
       </div>
       <div class="custom-card">

@@ -8,29 +8,37 @@
     @if (isAdmin) {
       <c-dropdown class="fix-dropdown">
         <button cDropdownToggle [caret]="false" class="view-mode-btn">
-          <div [innerHTML]="steps[currentStepIndex].icon" class="view-mode-icon"></div>
+          <div [innerHTML]="views[currentStepIndex].icon" class="view-mode-icon"></div>
           <div class="view-mode-text">
             <span>Visualizando como</span>
-            {{ steps[currentStepIndex].title }}
+            {{ views[currentStepIndex].title }}
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-mode-carret">
             <path d="m6 9 6 6 6-6"></path>
           </svg>
         </button>
         <div cDropdownMenu class="dropdown-step-container">
-          @for(step of steps; track step.id; let i = $index) {
+          @for(view of views; track view.id; let i = $index) {
             @if (i == 0) {
               <span cDropdownItemPlain class="dropdown-step-type">Perfil de acesso</span>
             }
 
-            @if (i == 1) {
+            @if (i == 2) {
               <li><hr cDropdownDivider></li>
               <span cDropdownItemPlain class="dropdown-step-type">Setor</span>
             }
 
-            <button cDropdownItem [class.custom-active]="i == currentStepIndex" (click)="setCurrentStepIndex(i)">
-              <div [innerHTML]="step.icon"></div>
-              <span class="dropdown-step-title">{{ step.title }}</span>
+            <button
+              cDropdownItem
+              [disabled]="!view.activated"
+              [class.text-body-secondary]="!view.activated"
+              [class.opacity-50]="!view.activated"
+              [style.cursor]="!view.activated ? 'not-allowed' : null"
+              [class.custom-active]="i == currentStepIndex"
+              (click)="setCurrentStepIndex(i)"
+            >
+              <div [innerHTML]="view.icon" [style.padding-bottom.px]="view.type === 'profile' ? 4 : 0"></div>
+              <span class="dropdown-step-title">{{ view.title }}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.show]="currentStepIndex == i" class="active-icon">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -44,10 +52,10 @@
     @if (isShipping) {
       <c-dropdown class="fix-dropdown">
         <button cDropdownToggle [caret]="false" class="view-mode-btn">
-          <div [innerHTML]="steps[currentStepIndex].icon" class="view-mode-icon"></div>
+          <div [innerHTML]="views[currentStepIndex].icon" class="view-mode-icon"></div>
           <div class="view-mode-text">
             <span>Visualizando como</span>
-            {{ steps[currentStepIndex].title }}
+            {{ views[currentStepIndex].title }}
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="view-mode-carret">
             <path d="m6 9 6 6 6-6"></path>
@@ -55,22 +63,22 @@
         </button>
         <div cDropdownMenu class="dropdown-step-container">
           <span cDropdownItemPlain class="dropdown-step-type">Setor</span>
-          @for(step of steps; track step.id; let i = $index) {
-            @if (i == 1 || i == 5) {
+          @for(view of views; track view.id; let i = $index) {
+            @if (isShippingView(view)) {
               <button cDropdownItem [class.custom-active]="i == currentStepIndex" (click)="setCurrentStepIndex(i)">
-                <div [innerHTML]="step.icon"></div>
-                <span class="dropdown-step-title">{{ step.title }}</span>
+                <div [innerHTML]="view.icon"></div>
+                <span class="dropdown-step-title">{{ view.title }}</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.show]="currentStepIndex == i" class="active-icon">
                   <circle cx="12" cy="12" r="10"></circle>
                   <path d="m9 12 2 2 4-4"></path>
                 </svg>
               </button>
             }
-
           }
         </div>
       </c-dropdown>
     }
+
   </div>
 
   @switch (currentStepIndex) {
@@ -134,13 +142,17 @@
       </c-card>
     }
 
+    @case (1) {
+      <div class="access-error">A visualização de administrador ainda não está disponível.</div>
+    }
+
     @default {
       <div class="sfc-default-sub-header">
         <div class="sfc-step-page-icon">
-          <div class="step-icon" [innerHtml]="steps[currentStepIndex].icon"></div>
+          <div class="step-icon" [innerHtml]="views[currentStepIndex].icon"></div>
           <div class="step-text">
-            <div class="step-title">{{ steps[currentStepIndex].title }}</div>
-            <div class="step-description">{{ steps[currentStepIndex].description }}</div>
+            <div class="step-title">{{ views[currentStepIndex].title }}</div>
+            <div class="step-description">{{ views[currentStepIndex].description }}</div>
           </div>
         </div>
 
@@ -153,7 +165,7 @@
             Atualizar
           </button>
 
-          @if (currentStepIndex == 1) {
+          @if (views[currentStepIndex].id == 1) {
             <button cButton (click)="toggleNewModal(true)">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14"></path>

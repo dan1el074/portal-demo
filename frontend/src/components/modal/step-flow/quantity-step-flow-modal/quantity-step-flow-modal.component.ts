@@ -4,6 +4,7 @@ import { AbstractControl, FormControl, ReactiveFormsModule, ValidationErrors, Va
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPencil } from '@coreui/icons';
 import { ModalComponent, ModalHeaderComponent, ModalBodyComponent, ModalFooterComponent, ModalTitleDirective, ButtonCloseDirective, ButtonDirective, FormControlDirective, FormTextDirective } from '@coreui/angular';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 export interface EditableItem {
   id: number;
@@ -20,6 +21,7 @@ export interface EditableItem {
     ReactiveFormsModule,
     IconDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalBodyComponent,
     ModalFooterComponent,

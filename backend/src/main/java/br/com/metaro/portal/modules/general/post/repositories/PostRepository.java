@@ -22,7 +22,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         SELECT
             p.id AS id,
             p.content AS content,
-            p.isWarning AS isWarning,
             p.createdAt AS createdAt,
             u.id AS authorId,
             u.name AS authorName,

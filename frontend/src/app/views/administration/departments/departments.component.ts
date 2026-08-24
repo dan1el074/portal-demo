@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, Tabs2Module } from '@coreui/angular';
 import { cilPlus, cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../services/toast.service';
 import { PostitionService } from './../../../services/position.service';
 import { DepartmentTableComponent } from '../../../../components/table/department-table/department-table.component';
 import { DepartmentFormComponent } from '../../../../components/forms/department/department-form/department-form.component';

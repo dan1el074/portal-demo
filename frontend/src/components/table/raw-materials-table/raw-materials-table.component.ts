@@ -36,18 +36,17 @@ export class RawMaterialsTableComponent implements OnChanges {
   protected columns: (IColumn | string)[] = [];
 
   ngOnChanges(): void {
-    const common: IColumn[] = [
-      this.column('code', '#'),
-      this.column('name', 'Descrição'),
-    ];
+    const common: IColumn[] = [];
 
     if (this.mode === 'operator') {
       common.push(
+        this.column('name', 'Descrição'),
         this.column('currentStorage', 'Estoque'),
-        this.column('type', 'Categoria'),
       );
     } else {
       common.push(
+        this.column('code', '#'),
+        this.column('name', 'Descrição'),
         this.column('type', 'Categoria'),
         this.column('currentStorage', 'Estoque'),
       );

@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ToastrService } from '@app/services/toast.service';
+import { ToastrService } from '../../../app/services/toast.service';
 import { finalize } from 'rxjs';
 import { Upload } from 'tus-js-client';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent } from '@coreui/angular';
@@ -63,6 +63,7 @@ export class StepFlowInputOffcanvasComponent {
   protected showCancelModal = false;
   protected adminStepControl = new FormControl<number | null>(null);
   protected saveLoading: boolean = false;
+  protected nextStepLoading: boolean = false;
   protected showEditQuantityModal = false;
   protected editingItem: EditableItem | null = null;
   protected showNextStepConfirmationModal = false;
@@ -393,17 +394,26 @@ export class StepFlowInputOffcanvasComponent {
   }
 
   private advanceToNextStep(): void {
-    const id = this.order?.id as number;
+    if (this.nextStepLoading) {
+      return;
+    }
 
-    this.stepFlowService.nextStep(id).subscribe({
-      next: () => {
-        this.close();
-        this.nextStepTask.emit(id);
+    const id = this.order?.id as number;
+    this.nextStepLoading = true;
+
+    this.stepFlowService.nextStep(id)
+      .pipe(finalize(() => {
+        this.nextStepLoading = false;
         this.cdf.detectChanges();
-        this.toasterService.success('Informações atualizada com sucesso.');
-      },
-      error: (error) => this.toasterService.error(error.error.error),
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.close();
+          this.nextStepTask.emit(id);
+          this.toasterService.success('Informações atualizada com sucesso.');
+        },
+        error: (error) => this.toasterService.error(error.error.error),
+      });
   }
 
   protected onDeleteImage(image: StepFlowImage): void {

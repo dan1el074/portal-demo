@@ -3,6 +3,7 @@ import { ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalCompone
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPencil } from '@coreui/icons';
 import { Position } from '../../../../app/interface/position.interface';
+import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 
 @Component({
   selector: 'app-position-delete-modal',
@@ -10,6 +11,7 @@ import { Position } from '../../../../app/interface/position.interface';
     ButtonDirective,
     ModalToggleDirective,
     ModalComponent,
+    ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
     ButtonCloseDirective,
