@@ -10,6 +10,9 @@ CREATE TABLE tb_email_log (
 
 CREATE INDEX idx_email_log_created_at ON tb_email_log(created_at DESC, id DESC);
 
+ALTER TABLE tb_post
+DROP COLUMN is_warning;
+
 UPDATE tb_position
 SET is_locked = TRUE
 WHERE LOWER(TRIM(name)) = 'compras';

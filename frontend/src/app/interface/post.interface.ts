@@ -6,12 +6,10 @@ export interface PostCard {
   author: UserSummary,
   createdAt: string,
   content: string | null,
-  isWarning: boolean,
   pictures: Array<Picture>,
 }
 
 export interface NewPost {
   text: string;
   images: File[];
-  isWarning: boolean;
 }

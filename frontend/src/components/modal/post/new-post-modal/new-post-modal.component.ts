@@ -70,7 +70,6 @@ export class NewPostModalComponent implements OnChanges {
     this.loading = true;
     const data = new FormData();
     data.append('text', this.textContent);
-    data.append('isWarning', 'false');
     this.previews.filter(item => item.existingId).forEach(item => data.append('retainedImageIds', String(item.existingId)));
     this.previews.filter(item => item.file).forEach(item => data.append('images', item.file!));
     this.publishTask.emit(data);
