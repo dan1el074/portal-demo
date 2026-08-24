@@ -337,6 +337,20 @@ export class RawMaterialsComponent implements OnInit {
     return this.categories.find(category => category.name === item.type)?.conversionFactor ?? '';
   }
 
+  protected categoryConversionFactorLabel(item: RawMaterialsTable): string {
+    const labels: Record<string, string> = {
+      c: 'comprimento',
+      l: 'largura',
+      e: 'espessura',
+      a: 'altura',
+      p: 'peso por metro quadrado',
+      u: 'litros por unidade',
+      m: 'peso por metro linear',
+    };
+    return this.categoryConversionFactor(item).replace(/%([a-z])/gi,
+      (token, variable: string) => labels[variable.toLowerCase()] ?? token);
+  }
+
   protected categoryUsesDimension(field: RawMaterialDimensionField): boolean {
     const category = this.categories.find(item => item.name === this.editingItem?.type);
     return category?.dimensionFields?.includes(field) ?? false;

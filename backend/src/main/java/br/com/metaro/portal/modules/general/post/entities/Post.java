@@ -18,7 +18,6 @@ public class Post {
     private Long id;
     @Column(columnDefinition = "TEXT")
     private String content;
-    private Boolean isWarning = false;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")

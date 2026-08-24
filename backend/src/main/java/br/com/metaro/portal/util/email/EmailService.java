@@ -29,7 +29,7 @@ public class EmailService {
 
             helper.setTo(para);
             helper.setSubject(assunto);
-            helper.setText(html, true);
+            helper.setText(EmailCssInliner.inline(html), true);
             helper.setFrom(new InternetAddress(mailFrom, "Portal Metaro"));
 
             mailSender.send(message);

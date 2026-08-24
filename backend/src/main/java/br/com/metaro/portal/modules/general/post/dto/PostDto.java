@@ -19,7 +19,6 @@ import java.util.List;
 public class PostDto {
     private Long id;
     private String content;
-    private Boolean isWarning;
     private UserSummaryDto author;
     private Instant createdAt;
 
@@ -28,7 +27,6 @@ public class PostDto {
     public PostDto(Post post) {
         id = post.getId();
         content = post.getContent();
-        isWarning = post.getIsWarning();
         author = new UserSummaryDto(post.getAuthor());
         createdAt = post.getCreatedAt();
 
@@ -40,7 +38,6 @@ public class PostDto {
     public PostDto(PostProjection projection, List<PictureMinDto> pictures) {
         this.id = projection.getId();
         this.content = projection.getContent();
-        this.isWarning = projection.getIsWarning();
         this.createdAt = projection.getCreatedAt();
         this.author = new UserSummaryDto(
                 projection.getAuthorId(),

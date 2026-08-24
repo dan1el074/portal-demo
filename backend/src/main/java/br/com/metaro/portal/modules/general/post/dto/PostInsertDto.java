@@ -13,6 +13,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostInsertDto {
     private String text;
     private MultipartFile[] images;
-    private String isWarning;
     private Long[] retainedImageIds;
 }

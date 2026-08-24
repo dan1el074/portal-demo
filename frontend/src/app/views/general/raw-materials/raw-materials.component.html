@@ -478,7 +478,7 @@
         <div class="operator-info-block conversion-block">
           <span>Fator de conversão</span>
           <strong>{{ calculatedUnitWeight(stockTarget) | number:'1.2-4':'pt-BR' }} kg/un</strong>
-          <small>{{ categoryConversionFactor(stockTarget) || 'Sem fator configurado' }}</small>
+          <small>{{ categoryConversionFactorLabel(stockTarget) || 'Sem fator configurado' }}</small>
         </div>
       </div>
       <div class="stock-editor">
