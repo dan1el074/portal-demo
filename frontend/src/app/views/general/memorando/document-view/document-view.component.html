@@ -1,308 +1,222 @@
-<c-container breakpoint="lg" class="h-auto px-4" fluid>
-
-  <div class="button-container no-print">
-    @if (item.status == 'CREATED') {
-      <button cButton color="primary" (click)="togglePublishModal()">Publicar</button>
-      <a [routerLink]="['./edit']" class="edit">
-        <button cButton color="info">Editar</button>
+<c-container class='h-auto px-4 memorando-detail-page' fluid>
+  <nav class='detail-navigation no-print' aria-label='Navegação do memorando'>
+    <div class='detail-breadcrumb'>
+      <a routerLink='/general/memorando' class='back-link'>
+        <svg aria-hidden='true' viewBox='0 0 24 24'><path d='m12 19-7-7 7-7'></path><path d='M19 12H5'></path></svg>
+        Voltar à lista
       </a>
-      @if (!item.number) {
-        <button cButton color="danger" (click)="toggleDeleteModal()">Deletar</button>
-      }
-      @if (isAdmin && item.number != null) {
-        <button cButton color="danger" (click)="toggleCancelModal()">Cancelar</button>
-      }
-    }
-
-    @if (item.status == 'PUBLISH') {
-      @if (canSign) {
-        <button cButton color="primary" (click)="toggleSignModal()">Assinar</button>
-      }
-      @if (isAdmin) {
-        <button cButton color="info" (click)="toggleRollbackModal()">Reiniciar</button>
-        <button cButton color="danger" (click)="toggleCancelModal()">Cancelar</button>
-      }
-    }
-
-    <button cButton color="secondary" (click)="printPage()">
-      <svg [cIcon]="icons.cilPrint"></svg>
-    </button>
-  </div>
-
-  <div class="print-area">
-    <div class="paper-container">
-      @if (manangerAlert && item.status == 'PUBLISH') {
-        <c-alert color="warning" class="no-print">
-          Alerta: Foi verificado que <strong>{{ manangerAlert.user.name }}</strong> não participa mais da gestão do departamento de <strong>{{ manangerAlert.department.name }}</strong>.
-
-          @if (isAdmin) {
-            <br>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end alert-buttons">
-              <button cButton color="warning" variant="outline" (click)="toggleUpdateDepartmentModal()">Atualizar assinaturas do setor</button>
-            </div>
-          }
-        </c-alert>
-      }
-
-      <div class="paper">
-        <c-row>
-          <c-col class="align-center flex">
-            <div class="memorando-logo"></div>
-            <span class="small bold">RE 33/04</span>
-          </c-col>
-          <c-col xs="6" class="flex align-center bold">
-            <span>SISTEMA DE GESTÃO DA QUALIDADE<br>MEMORANDO</span>
-          </c-col>
-          <c-col class="flex">
-            Ref. PR 01
-          </c-col>
-        </c-row>
-
-        <c-row>
-          <c-col><strong>Nº: </strong>
-            @if (item.number) {
-              {{ item.number }}
-            } @else {
-              --
-            }
-          </c-col>
-          <c-col><strong>Ano: </strong>
-            @if (item.createAt) {
-              {{ item.createAt | date: "yyyy" : '-0300' }}
-            } @else {
-              --
-            }
-          </c-col>
-          <c-col>
-            <strong>Status: </strong>
-              @switch (item.status) {
-                @case ("CREATED") {
-                  Salvo
-                }
-                @case ("PUBLISH") {
-                  Publicado
-                }
-                @case ("APPROVED") {
-                  Aprovado
-                }
-                @case ("CANCELED") {
-                  Cancelado
-                }
-              }
-          </c-col>
-        </c-row>
-
-        <c-row>
-          <c-col><strong>Data: </strong>
-            @if (item.createAt) {
-              {{ item.createAt | date: "dd/MM/yyyy" : '-0300' }}
-            } @else {
-              --
-            }
-          </c-col>
-        </c-row>
-
-        <c-row>
-          <c-col><strong>Pedido:</strong> {{ item.request }}</c-col>
-        </c-row>
-
-        <c-row>
-          <c-col>
-            @if(item.items.length > 1) {
-              <strong>Itens:</strong>
-              <div class="tab">
-                @for(currentItem of item.items; track currentItem) {
-                  <div>{{ currentItem }}</div>
-                }
-              </div>
-            } @else {
-              <strong>Item:</strong>
-              {{ item.items[0] }}
-            }
-          </c-col>
-        </c-row>
-
-        <c-row>
-          <c-col><strong>Cliente:</strong> {{ item.client }}</c-col>
-        </c-row>
-
-        <c-row>
-          <c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col>
-        </c-row>
-
-        <c-row>
-          <c-col><strong>Título:</strong> {{ item.title }}</c-col>
-        </c-row>
-
-        <c-row>
-          <c-col [innerHtml]="'<strong>Descrição:</strong> ' + item.description"></c-col>
-        </c-row>
-
-        <c-row>
-          <c-col><strong>Motivo:</strong> {{ item.reason }}</c-col>
-        </c-row>
-
-        <c-row>
-          <c-col class="flex-col">
-            <strong>Departamentos envolvidos:</strong>
-            <div class="departments">
-              @for (signature of signatures; track signature.position; let index = $index) {
-                <c-form-check>
-                  <input cFormCheckInput [id]="'check' + index" type="checkbox" class="fix" disabled [checked]="(signature.check || item.status == 'APPROVED') && item.status != 'CREATED'" />
-                  <label cFormCheckLabel [for]="'check' + index" class="fix">{{ signature.position }}</label>
-                  <div class="signature">
-                    @if (signature.signedBy) {
-                      <span class="sign">{{ signature.signedBy }}</span>
-                    }
-                  </div>
-                </c-form-check>
-              }
-            </div>
-            @if (signaturesMissing.length && item.status == 'PUBLISH') {
-              <div class="missing-signatures">
-                <strong>Faltam:</strong>
-                @for (user of signaturesMissing; track user.id; let index = $index) {
-                  @if (index == 0) {
-                    {{ user.name }}
-                  } @else {
-                    , {{ user.name }}
-                  }
-                }
-              </div>
-            }
-          </c-col>
-        </c-row>
-
-        <c-row>
-          <c-col class="created-by-container">
-            <div class="created-by">
-              <div class="signature">
-                <span class="sign">{{ item.user.name }}</span>
-              </div>
-            </div>
-            <strong>Autor</strong>
-          </c-col>
-        </c-row>
-
-        @if (item.status == "APPROVED") {
-          <div class="label approved">APROVADO</div>
-        }
-        @if (item.status == "CANCELED") {
-          <div class="label canceled">CANCELADO</div>
-        }
+      <span class='breadcrumb-separator'>/</span>
+      <strong>Memorando {{ item.number || '--' }}/{{ item.createAt ? (item.createAt | date:'yyyy':'-0300') : '--' }}</strong>
+      <div class='record-navigation' aria-label='Navegar entre memorandos'>
+        <button type='button' [disabled]='navigation.previousId == null' (click)='navigateTo(navigation.previousId)' title='Memorando anterior' aria-label='Abrir memorando anterior'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><path d='m15 18-6-6 6-6'></path></svg>
+        </button>
+        <button type='button' [disabled]='navigation.nextId == null' (click)='navigateTo(navigation.nextId)' title='Próximo memorando' aria-label='Abrir próximo memorando'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><path d='m9 18 6-6-6-6'></path></svg>
+        </button>
       </div>
     </div>
-
-    <div class="logs-container">
-      <ul class="logs">
-        @for (log of item.logs; track log.id) {
-          <li>
-            <span class="time">{{ log.createdAt | date: "dd/MM/yyyy 'às' HH:mm:ss" : '-0300' }}</span> - <strong>{{ log.user != null ? log.user.name : 'Sistema' }}</strong>: {{ log.content }}
-          </li>
-        }
-      </ul>
+    <div class='navigation-actions'>
+      <span class='status-badge' [class.draft]='item.status === "CREATED"' [class.active]='item.status === "PUBLISH"' [class.approved]='item.status === "APPROVED"' [class.canceled]='item.status === "CANCELED"'><i></i>{{ statusLabel() }}</span>
+      <button type='button' class='print-button' (click)='printPage()'>
+        <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M6 9V2h12v7'></path><path d='M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2'></path><rect width='12' height='8' x='6' y='14' rx='2'></rect></svg>
+        Imprimir
+      </button>
     </div>
+  </nav>
+
+  @if (loading) {
+    <div class='detail-loading no-print'>Carregando memorando...</div>
+  } @else {
+    <main class='detail-content no-print'>
+      @if (manangerAlert && item.status === 'PUBLISH') {
+        <aside class='context-alert warning-alert' role='alert'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><path d='m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'></path><path d='M12 9v4'></path><path d='M12 17h.01'></path></svg>
+          <div><strong>Gestor fora do departamento</strong><p>Foi identificado que {{ manangerAlert.user.name }} não participa mais da gestão de {{ manangerAlert.department.name }}.</p></div>
+          @if (isAdmin) { <button type='button' (click)='toggleUpdateDepartmentModal()'>Atualizar assinaturas</button> }
+        </aside>
+      }
+
+      <section class='detail-card document-card'>
+        <header class='document-header'>
+          <div class='document-identification'>
+            <div class='document-eyebrow'><svg class='document-title-icon' aria-hidden='true' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'></path><path d='M14 2v4a2 2 0 0 0 2 2h4'></path><path d='M10 9H8'></path><path d='M16 13H8'></path><path d='M16 17H8'></path></svg><span>Memorando interno</span></div>
+            <h1>{{ item.number || '-' }}/{{ item.createAt ? (item.createAt | date:'yyyy':'-0300') : '-' }}</h1>
+            <p>{{ item.title }}</p>
+          </div>
+          <div class='quality-reference'>
+            <strong>RE 33/04</strong>
+            <small>Ref. PR 01</small>
+          </div>
+        </header>
+
+        <div class='metadata-grid'>
+          <div><span class='document-label'>Número</span><strong>{{ item.number || '--' }}</strong></div>
+          <div><span class='document-label'>Data</span><strong>{{ item.createAt ? (item.createAt | date:'dd/MM/yyyy':'-0300') : '--' }}</strong></div>
+          <div><span class='document-label'>Pedido</span><strong>{{ item.request }}</strong></div>
+          <div><span class='document-label'>Status</span><strong>{{ statusLabel() }}</strong></div>
+          <div><span class='document-label'>Origem</span><strong>{{ item.user.position.name }}</strong></div>
+          <div><span class='document-label'>Autor</span><strong>{{ item.user.name }}</strong></div>
+          <div class='wide-metadata'><span class='document-label'>Cliente</span><strong>{{ item.client }}</strong></div>
+        </div>
+
+        <section class='document-section'>
+          <h2 class='document-label'>Itens do pedido</h2>
+          <div class='detail-table-container'>
+            <table class='detail-table'>
+              <thead><tr><th>Código</th><th>Descrição</th></tr></thead>
+              <tbody>
+                @for (currentItem of item.items; track currentItem) {
+                  @let parsedItem = parseItem(currentItem);
+                  <tr><td class='item-code'>{{ parsedItem.code }}</td><td class='item-name'>{{ parsedItem.description }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class='document-copy'>
+          <div><h2 class='document-label'>Descrição</h2><p [innerHTML]='item.description'></p></div>
+          <div><h2 class='document-label'>Motivo</h2><p>{{ item.reason }}</p></div>
+        </section>
+      </section>
+
+        <div class='document-actions'>
+          @if (item.status === 'CREATED') {
+            <button type='button' class='action-button primary-action' (click)='togglePublishModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M22 2 11 13'></path><path d='m22 2-7 20-4-9-9-4Z'></path></svg>Publicar</button>
+            <a [routerLink]='["./edit"]' class='action-button neutral-action'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M12 20h9'></path><path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'></path></svg>Editar</a>
+            @if (!item.number) { <button type='button' class='action-button danger-action' (click)='toggleDeleteModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M10 11v6'></path><path d='M14 11v6'></path><path d='M3 6h18'></path><path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6'></path><path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'></path></svg>Excluir</button> }
+            @if (isAdmin && item.number) { <button type='button' class='action-button danger-action' (click)='toggleCancelModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><path d='m15 9-6 6'></path><path d='m9 9 6 6'></path></svg>Cancelar</button> }
+          }
+          @if (item.status === 'PUBLISH') {
+            @if (canSign) { <button type='button' class='action-button primary-action' (click)='toggleSignModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M12 20h9'></path><path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'></path></svg>Assinar documento</button> }
+            @if (isAdmin) {
+              <button type='button' class='action-button neutral-action' (click)='toggleRollbackModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M3 12a9 9 0 1 0 3-6.7L3 8'></path><path d='M3 3v5h5'></path></svg>Reiniciar</button>
+              <button type='button' class='action-button danger-action' (click)='toggleCancelModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><path d='m15 9-6 6'></path><path d='m9 9 6 6'></path></svg>Cancelar</button>
+            }
+          }
+        </div>
+
+      <section class='detail-card signatures-card'>
+        <header class='section-card-header'>
+          <div><h2><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M12 20h9'></path><path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'></path></svg>Assinaturas dos gestores</h2><p>{{ signedCount }} de {{ signatures.length }} assinaturas coletadas</p></div>
+          @if (canSign) { <span class='required-signature'><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><line x1='12' x2='12' y1='8' y2='12'></line><line x1='12' x2='12.01' y1='16' y2='16'></line></svg>Sua assinatura é necessária</span> }
+        </header>
+        <div class='signature-progress'><c-progress [value]='signatureProgress' [color]='signatureProgress === 100 ? "success" : "primary"' [height]='6' aria-label='Progresso das assinaturas'></c-progress></div>
+        <div class='signature-grid'>
+          @for (signature of signatures; track signature.position) {
+            <article class='signature-block' [class.signed]='signature.check || item.status === "APPROVED"'>
+              <header><strong>{{ signature.position }}</strong>
+                @if (signature.check || item.status === 'APPROVED') { <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M21.8 10A10 10 0 1 1 17 3.3'></path><path d='m9 11 3 3L22 4'></path></svg> }
+                @else { <svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><polyline points='12 6 12 12 16 14'></polyline></svg> }
+              </header>
+              <div class='signature-area'>
+                @if (signature.signedBy) {
+                  <span class='handwritten-signature'>{{ signature.signedBy }}</span><i></i>
+                  @if (signature.signedAt) {
+                    <small>{{ signature.signedAt | date:"dd/MM/yyyy 'às' HH:mm":'-0300' }}</small>
+                  }
+                } @else if (item.status === 'APPROVED') {
+                  <span class='signature-complete'>Aprovação concluída</span><i></i><small>Assinaturas validadas</small>
+                } @else {
+                  <span class='signature-line'></span><small>Aguardando assinatura</small>
+                }
+              </div>
+            </article>
+          }
+        </div>
+        <div class='signature-state' [class.complete]='!signaturesMissing.length && item.status !== "CREATED"'>
+          @if (signaturesMissing.length && item.status === 'PUBLISH') {
+            <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'></path><circle cx='9' cy='7' r='4'></circle><path d='M22 21v-2a4 4 0 0 0-3-3.87'></path><path d='M16 3.13a4 4 0 0 1 0 7.75'></path></svg>
+            <div><strong>Aguardando assinatura de:</strong><p>@for (user of signaturesMissing; track user.id; let last = $last) { {{ user.name }}{{ last ? '' : ' · ' }} }</p></div>
+          } @else if (!signaturesMissing.length && item.status !== 'CREATED') {
+            <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M20 6 9 17l-5-5'></path></svg><strong>Todas as assinaturas foram coletadas.</strong>
+          } @else {
+            <svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><polyline points='12 6 12 12 16 14'></polyline></svg><strong>As assinaturas serão liberadas após a publicação.</strong>
+          }
+        </div>
+      </section>
+
+      <section class='detail-card history-card'>
+        <header class='section-card-header'><div><h2><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><polyline points='12 6 12 12 16 14'></polyline></svg>Histórico do documento</h2></div></header>
+        <ol class='history-timeline'>
+          @for (log of item.logs; track log.id) {
+            <li><i></i><div><span>{{ log.createdAt | date:"dd/MM/yyyy 'às' HH:mm:ss":'-0300' }}</span><p><strong>{{ log.user ? log.user.name : 'Sistema' }}:</strong> {{ log.content }}</p></div></li>
+          } @empty { <li class='empty-history'>Nenhum registro disponível.</li> }
+        </ol>
+      </section>
+    </main>
+  }
+
+  <div class='print-area print-only'>
+    <section class='legacy-paper'>
+      <c-row class='legacy-header-row'>
+        <c-col class='align-center flex'><div class='memorando-logo'></div><span class='small bold'>RE 33/04</span></c-col>
+        <c-col xs='6' class='flex align-center bold'><span>SISTEMA DE GESTÃO DA QUALIDADE<br>MEMORANDO</span></c-col>
+        <c-col class='flex'>Ref. PR 01</c-col>
+      </c-row>
+      <c-row><c-col><strong>Nº: </strong>{{ item.number || '--' }}</c-col><c-col><strong>Ano: </strong>{{ item.createAt ? (item.createAt | date:'yyyy':'-0300') : '--' }}</c-col><c-col><strong>Status: </strong>{{ statusLabel() }}</c-col></c-row>
+      <c-row><c-col><strong>Data: </strong>{{ item.createAt ? (item.createAt | date:'dd/MM/yyyy':'-0300') : '--' }}</c-col></c-row>
+      <c-row><c-col><strong>Pedido:</strong> {{ item.request }}</c-col></c-row>
+      <c-row><c-col><strong>{{ item.items.length > 1 ? 'Itens:' : 'Item:' }}</strong><div class='tab'>@for (currentItem of item.items; track currentItem) { <div>{{ currentItem }}</div> }</div></c-col></c-row>
+      <c-row><c-col><strong>Cliente:</strong> {{ item.client }}</c-col></c-row>
+      <c-row><c-col><strong>Origem:</strong> {{ item.user.position.name }}</c-col></c-row>
+      <c-row><c-col><strong>Título:</strong> {{ item.title }}</c-col></c-row>
+      <c-row><c-col [innerHTML]='"<strong>Descrição:</strong> " + item.description'></c-col></c-row>
+      <c-row><c-col><strong>Motivo:</strong> {{ item.reason }}</c-col></c-row>
+      <c-row><c-col class='flex-col'><strong>Departamentos envolvidos:</strong><div class='legacy-departments'>
+        @for (signature of signatures; track signature.position; let index = $index) {
+          <c-form-check><input cFormCheckInput [id]='"print-check-" + index' type='checkbox' class='fix' disabled [checked]='(signature.check || item.status === "APPROVED") && item.status !== "CREATED"'><label cFormCheckLabel [for]='"print-check-" + index' class='fix'>{{ signature.position }}</label><div class='legacy-signature'>@if (signature.signedBy) { <span>{{ signature.signedBy }}</span> }</div></c-form-check>
+        }
+      </div>
+      @if (signaturesMissing.length && item.status === 'PUBLISH') { <div class='legacy-missing'><strong>Faltam:</strong> @for (user of signaturesMissing; track user.id; let last = $last) { {{ user.name }}{{ last ? '' : ', ' }} }</div> }
+      </c-col></c-row>
+      <c-row><c-col class='legacy-author'><div class='legacy-signature'><span>{{ item.user.name }}</span></div><strong>Autor</strong></c-col></c-row>
+      @if (item.status === 'APPROVED') { <div class='legacy-stamp approved'>APROVADO</div> }
+      @if (item.status === 'CANCELED') { <div class='legacy-stamp canceled'>CANCELADO</div> }
+    </section>
+
+    <section class='print-history'>
+      <header><div class='memorando-logo'></div><div><strong>HISTÓRICO DO MEMORANDO</strong><span>{{ item.number || '--' }}/{{ item.createAt ? (item.createAt | date:'yyyy':'-0300') : '--' }} · RE 33/04</span></div></header>
+      <ol>@for (log of item.logs; track log.id) { <li><span>{{ log.createdAt | date:"dd/MM/yyyy 'às' HH:mm:ss":'-0300' }}</span><p><strong>{{ log.user ? log.user.name : 'Sistema' }}:</strong> {{ log.content }}</p></li> } @empty { <li>Nenhum registro disponível.</li> }</ol>
+    </section>
   </div>
 
-  <c-modal modalBackNavigation [visible]="showSignModal" (visibleChange)="handleSignModalChange($event)" alignment="center">
-    <c-modal-header>
-      <h5 cModalTitle>Assinar documento</h5>
-      <button (click)="toggleSignModal()" cButtonClose></button>
-    </c-modal-header>
-    <c-modal-body>
-      Tem certeza que deseja assinar o documento nº {{ item.number }}/{{ item.createAt | date: "yyyy" : '-0300' }}?
-      <br>Essa ação ficará registrada no log e não poderá ser desfeita!
-    </c-modal-body>
-    <c-modal-footer>
-      <button (click)="toggleSignModal()" cButton color="secondary">
-        Cancelar
-      </button>
-      <button cButton color="primary" (click)="onSign()">Assinar</button>
-    </c-modal-footer>
+  <c-modal modalBackNavigation [visible]='showSignModal' (visibleChange)='handleSignModalChange($event)' alignment='center'>
+    <c-modal-header><h5 cModalTitle>Assinar documento</h5><button type='button' class='modal-close' aria-label='Fechar' (click)='toggleSignModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M18 6 6 18'></path><path d='m6 6 12 12'></path></svg></button></c-modal-header>
+    <c-modal-body>Tem certeza que deseja assinar o documento nº {{ item.number }}/{{ item.createAt | date:'yyyy':'-0300' }}?<br>Essa ação ficará registrada no histórico e não poderá ser desfeita.</c-modal-body>
+    <c-modal-footer><button (click)='toggleSignModal()' cButton color='secondary'>Cancelar</button><button cButton color='primary' (click)='onSign()'>Assinar</button></c-modal-footer>
   </c-modal>
 
-  <c-modal modalBackNavigation [visible]="showPublishModal" (visibleChange)="handlePublishModalChange($event)" alignment="center">
-    <c-modal-header>
-      <h5 cModalTitle>Publicar Memorando</h5>
-      <button (click)="togglePublishModal()" cButtonClose></button>
-    </c-modal-header>
-    <c-modal-body>
-      Tem certeza que deseja publicar esse documento?
-      <br>Essa ação ficará registrada no log e não poderá ser desfeita!
-    </c-modal-body>
-    <c-modal-footer>
-      <button (click)="togglePublishModal()" cButton color="secondary">
-        Cancelar
-      </button>
-      <button cButton color="primary" (click)="onPublish()">Publicar</button>
-    </c-modal-footer>
+  <c-modal modalBackNavigation [visible]='showPublishModal' (visibleChange)='handlePublishModalChange($event)' alignment='center'>
+    <c-modal-header><h5 cModalTitle>Publicar memorando</h5><button type='button' class='modal-close' aria-label='Fechar' (click)='togglePublishModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M18 6 6 18'></path><path d='m6 6 12 12'></path></svg></button></c-modal-header>
+    <c-modal-body>Tem certeza que deseja publicar este documento?<br>Essa ação ficará registrada no histórico e não poderá ser desfeita.</c-modal-body>
+    <c-modal-footer><button (click)='togglePublishModal()' cButton color='secondary'>Cancelar</button><button cButton color='primary' (click)='onPublish()'>Publicar</button></c-modal-footer>
   </c-modal>
 
-  <c-modal modalBackNavigation [visible]="showCancelModal" (visibleChange)="handleCancelModalChange($event)" alignment="center">
-    <c-modal-header>
-      <h5 cModalTitle>Cancelar Registro - Memorando</h5>
-      <button (click)="toggleCancelModal()" cButtonClose></button>
-    </c-modal-header>
-    <c-modal-body>
-      Tem certeza que deseja cancelar o documento nº {{ item.number }}/{{ item.createAt | date: "yyyy" : '-0300' }}?
-      <br>Essa ação ficará registrada no log e não poderá ser desfeita!
-    </c-modal-body>
-    <c-modal-footer>
-      <button (click)="toggleCancelModal()" cButton color="secondary">
-        Desistir
-      </button>
-      <button cButton color="danger" (click)="onCancel()" class="fix-button">Cancelar</button>
-    </c-modal-footer>
+  <c-modal modalBackNavigation [visible]='showCancelModal' (visibleChange)='handleCancelModalChange($event)' alignment='center'>
+    <c-modal-header><h5 cModalTitle>Cancelar memorando</h5><button type='button' class='modal-close' aria-label='Fechar' (click)='toggleCancelModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M18 6 6 18'></path><path d='m6 6 12 12'></path></svg></button></c-modal-header>
+    <c-modal-body>Tem certeza que deseja cancelar o documento nº {{ item.number }}/{{ item.createAt | date:'yyyy':'-0300' }}?<br>Essa ação ficará registrada no histórico e não poderá ser desfeita.</c-modal-body>
+    <c-modal-footer><button (click)='toggleCancelModal()' cButton color='secondary'>Desistir</button><button cButton color='danger' (click)='onCancel()' class='fix-button'>Cancelar documento</button></c-modal-footer>
   </c-modal>
 
-  <c-modal modalBackNavigation [visible]="showRollbackModal" (visibleChange)="handleRollbackModalChange($event)" alignment="center">
-    <c-modal-header>
-      <h5 cModalTitle>Reiniciar Registro - Memorando</h5>
-      <button (click)="toggleRollbackModal()" cButtonClose></button>
-    </c-modal-header>
-    <c-modal-body>
-      Tem certeza que deseja reiniciar o documento nº {{ item.number }}/{{ item.createAt | date: "yyyy" : '-0300' }}?
-      <br>Essa ação ficará registrada no log e não poderá ser desfeita!
-    </c-modal-body>
-    <c-modal-footer>
-      <button (click)="toggleRollbackModal()" cButton color="secondary">Cancelar</button>
-      <button cButton color="danger" (click)="onRollback()" class="fix-button">Reiniciar</button>
-    </c-modal-footer>
+  <c-modal modalBackNavigation [visible]='showRollbackModal' (visibleChange)='handleRollbackModalChange($event)' alignment='center'>
+    <c-modal-header><h5 cModalTitle>Reiniciar memorando</h5><button type='button' class='modal-close' aria-label='Fechar' (click)='toggleRollbackModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M18 6 6 18'></path><path d='m6 6 12 12'></path></svg></button></c-modal-header>
+    <c-modal-body>O documento nº {{ item.number }}/{{ item.createAt | date:'yyyy':'-0300' }} voltará ao estado de rascunho. Essa ação ficará registrada no histórico.</c-modal-body>
+    <c-modal-footer><button (click)='toggleRollbackModal()' cButton color='secondary'>Cancelar</button><button cButton color='danger' (click)='onRollback()' class='fix-button'>Reiniciar</button></c-modal-footer>
   </c-modal>
 
-  <c-modal modalBackNavigation [visible]="showDeleteModal" (visibleChange)="handleDeleteModalChange($event)" alignment="center">
-    <c-modal-header>
-      <h5 cModalTitle>Deletear Registro - Memorando</h5>
-      <button (click)="toggleDeleteModal()" cButtonClose></button>
-    </c-modal-header>
-    <c-modal-body>
-      Tem certeza que deseja deletar o registro?
-      <br>Essa ação não poderá ser desfeita!
-    </c-modal-body>
-    <c-modal-footer>
-      <button (click)="toggleDeleteModal()" cButton color="secondary">
-        Cancelar
-      </button>
-      <button cButton color="danger" (click)="onDelete()" class="fix-button">Deletar</button>
-    </c-modal-footer>
+  <c-modal modalBackNavigation [visible]='showDeleteModal' (visibleChange)='handleDeleteModalChange($event)' alignment='center'>
+    <c-modal-header><h5 cModalTitle>Excluir memorando</h5><button type='button' class='modal-close' aria-label='Fechar' (click)='toggleDeleteModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M18 6 6 18'></path><path d='m6 6 12 12'></path></svg></button></c-modal-header>
+    <c-modal-body>Tem certeza que deseja excluir este rascunho?<br>Essa ação não poderá ser desfeita.</c-modal-body>
+    <c-modal-footer><button (click)='toggleDeleteModal()' cButton color='secondary'>Cancelar</button><button cButton color='danger' (click)='onDelete()' class='fix-button'>Excluir</button></c-modal-footer>
   </c-modal>
 
   @if (manangerAlert) {
-    <c-modal modalBackNavigation [visible]="showUpdateDepartmentModal" (visibleChange)="handleUpdateDepartmentModalChange($event)" alignment="center">
-      <c-modal-header>
-        <h5 cModalTitle>Atualizar Assinaturas - {{ manangerAlert.department.name }}</h5>
-        <button (click)="toggleUpdateDepartmentModal()" cButtonClose></button>
-      </c-modal-header>
-      <c-modal-body>
-        Ao fazer isso, não só a assinatura de <strong>{{ manangerAlert.user.name }}</strong>
-        será apagada, mas dos outros gestores desse mesmo setor.
-      </c-modal-body>
-      <c-modal-footer>
-        <button (click)="toggleUpdateDepartmentModal()" cButton color="secondary">
-          Cancelar
-        </button>
-        <button cButton color="danger" (click)="onUpdateDepartment()" class="fix-button">Avançar</button>
-      </c-modal-footer>
+    <c-modal modalBackNavigation [visible]='showUpdateDepartmentModal' (visibleChange)='handleUpdateDepartmentModalChange($event)' alignment='center'>
+      <c-modal-header><h5 cModalTitle>Atualizar assinaturas · {{ manangerAlert.department.name }}</h5><button type='button' class='modal-close' aria-label='Fechar' (click)='toggleUpdateDepartmentModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M18 6 6 18'></path><path d='m6 6 12 12'></path></svg></button></c-modal-header>
+      <c-modal-body>As assinaturas de {{ manangerAlert.user.name }} e dos demais gestores vinculados a este setor serão recriadas com a equipe atual.</c-modal-body>
+      <c-modal-footer><button (click)='toggleUpdateDepartmentModal()' cButton color='secondary'>Cancelar</button><button cButton color='danger' (click)='onUpdateDepartment()' class='fix-button'>Atualizar</button></c-modal-footer>
     </c-modal>
   }
 </c-container>

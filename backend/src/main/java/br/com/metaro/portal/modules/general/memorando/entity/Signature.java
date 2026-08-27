@@ -23,6 +23,8 @@ public class Signature {
     private Boolean isSign;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant signedAt;
 
     @ManyToOne
     @MapsId("memorandoId")

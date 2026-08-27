@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AlertComponent, ButtonCloseDirective, ButtonDirective, ColComponent, ContainerComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowComponent } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
-import { cilPrint } from '@coreui/icons';
+import { ButtonDirective, ColComponent, ContainerComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, ProgressComponent, RowComponent } from '@coreui/angular';
+import { distinctUntilChanged, map } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToastrService } from '../../../../services/toast.service';
 import { AuthGuard } from '../../../../config/authGuard';
 import { MemorandoService } from './../../../../services/memorando.service';
@@ -11,7 +11,7 @@ import { NotificationWebSocketService } from '../../../../services/websocket.ser
 import { ErrorService } from '../../../../services/error.service';
 import { Position } from '../../../../interface/position.interface';
 import { Me, UserSummary } from '../../../../interface/user.interface';
-import { SignatureList, Memorando, NewMemorando, UpdateDepartmentMemorando } from '../../../../interface/memorando.interface';
+import { SignatureList, Memorando, MemorandoNavigation, NewMemorando, UpdateDepartmentMemorando } from '../../../../interface/memorando.interface';
 import { ModalBackNavigationDirective } from '../../../../directive/modal-back-navigation.directive';
 
 @Component({
@@ -19,7 +19,6 @@ import { ModalBackNavigationDirective } from '../../../../directive/modal-back-n
   imports: [
     CommonModule,
     ContainerComponent,
-    IconDirective,
     RowComponent,
     ColComponent,
     FormCheckComponent,
@@ -30,22 +29,22 @@ import { ModalBackNavigationDirective } from '../../../../directive/modal-back-n
     ModalBackNavigationDirective,
     ModalHeaderComponent,
     ModalTitleDirective,
-    ButtonCloseDirective,
     ModalBodyComponent,
     ModalFooterComponent,
     RouterLink,
-    AlertComponent
+    ProgressComponent
   ],
   templateUrl: './document-view.component.html',
   styleUrl: './document-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentViewComponent implements OnInit {
-  @ViewChild('printSection', { static: false }) printSection!: ElementRef;
+  private readonly destroyRef = inject(DestroyRef);
   protected user!: Me;
-  protected icons = { cilPrint };
   protected signatures: Array<SignatureList> = [];
   protected signaturesMissing: Array<UserSummary> = [];
+  protected navigation: MemorandoNavigation = { previousId: null, nextId: null };
+  protected loading = true;
   protected isAdmin: boolean = false;
   protected canSign: boolean = false;
   protected showSignModal: boolean = false;
@@ -92,32 +91,57 @@ export class DocumentViewComponent implements OnInit {
   ) { }
 
   public ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    this.authGuardService.getUser().subscribe(user => {
-      if (user.roles.findIndex(role => role.authority == 'ROLE_ADMIN') >= 0) {
+    this.authGuardService.getUser().subscribe({
+      next: user => {
         this.user = user;
-        this.isAdmin = true;
-      }
+        this.isAdmin = user.roles.some(role => role.authority === 'ROLE_ADMIN');
 
-      this.memorandoService.findById(id).subscribe({
-        next: (data: Memorando) => {
-          this.item = data;
-          this.updateSignatures();
-          this.verifyCanSign(user);
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.toasterService.error('Registro não encontrado!');
-          this.router.navigate(['general/memorando']);
-          return;
-        }
-      });
+        this.route.paramMap.pipe(
+          map(params => Number(params.get('id'))),
+          distinctUntilChanged(),
+          takeUntilDestroyed(this.destroyRef),
+        ).subscribe(id => this.loadMemorando(id));
+      },
+      error: () => this.toasterService.error('Erro ao buscar informações do usuário!'),
     });
   }
 
   protected printPage(): void {
     window.print();
+  }
+
+  protected navigateTo(id: number | null): void {
+    if (id == null) return;
+    this.router.navigate(['/general/memorando', id]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  protected get signedCount(): number {
+    if (this.item.status === 'CREATED') return 0;
+    return this.signatures.filter(signature => signature.check || this.item.status === 'APPROVED').length;
+  }
+
+  protected get signatureProgress(): number {
+    if (!this.signatures.length) return 0;
+    return Math.round((this.signedCount / this.signatures.length) * 100);
+  }
+
+  protected statusLabel(): string {
+    switch (this.item.status) {
+      case 'CREATED': return 'Rascunho';
+      case 'PUBLISH': return 'Ativo';
+      case 'APPROVED': return 'Aprovado';
+      case 'CANCELED': return 'Cancelado';
+      default: return 'Indefinido';
+    }
+  }
+
+  protected parseItem(value: string): { code: string; description: string } {
+    const match = /^\s*(.+?)\s+-\s+(.+?)\s*$/.exec(value);
+
+    return match
+      ? { code: match[1], description: match[2] }
+      : { code: '—', description: value };
   }
 
   protected updateSignatures(): void {
@@ -130,15 +154,25 @@ export class DocumentViewComponent implements OnInit {
         check: false,
         position: department.name,
         signedBy: "",
+        signedAt: null,
       });
     })
+
+    // Rascunhos ainda não possuem um fluxo de assinaturas em andamento.
+    // Mesmo que existam dados antigos associados ao registro, a apresentação
+    // deve permanecer neutra até a publicação do memorando.
+    if (this.item.status === 'CREATED') return;
 
     // adiciona assinaturas
     this.item.signatures.forEach(signature => {
       if (!signature.isSign) return;
 
-      let index = this.signatures.findIndex(s => s.position == signature.departmentSigned.name);
+      const index = this.signatures.findIndex(s => s.position == signature.departmentSigned.name);
+      if (index < 0) return;
       this.signatures[index].signedBy += this.signatures[index].signedBy ? '; ' + signature.user.name : signature.user.name;
+      if (signature.signedAt && (!this.signatures[index].signedAt || signature.signedAt > this.signatures[index].signedAt!)) {
+        this.signatures[index].signedAt = signature.signedAt;
+      }
     })
 
     // verificar assinaturas
@@ -146,7 +180,7 @@ export class DocumentViewComponent implements OnInit {
       let allSignatures = this.item.signatures.filter(s => s.departmentSigned.name == department.name);
       let okSignatures = allSignatures.filter(s => s.isSign)
 
-      if (allSignatures.length == okSignatures.length) {
+      if (allSignatures.length > 0 && allSignatures.length == okSignatures.length) {
         this.signatures[this.signatures.findIndex(s => s.position == department.name)].check = true;
         return;
       }
@@ -181,6 +215,7 @@ export class DocumentViewComponent implements OnInit {
   }
 
   private verifyCanSign(user: Me): void {
+    this.canSign = false;
     if (this.item.status != "PUBLISH") return;
 
     if (
@@ -241,6 +276,8 @@ export class DocumentViewComponent implements OnInit {
       next: (data: Memorando) => {
         this.item = data;
         this.updateSignatures();
+        this.verifyCanSign(this.user);
+        this.loadNavigation();
         this.toasterService.success('Memorando publicada com sucesso!');
         this.togglePublishModal();
         this.cdr.detectChanges();
@@ -261,6 +298,8 @@ export class DocumentViewComponent implements OnInit {
     this.memorandoService.disable(this.item.id).subscribe({
       next: (data: Memorando) => {
         this.item = data;
+        this.updateSignatures();
+        this.verifyCanSign(this.user);
         this.toasterService.success('Memorando cancelado com sucesso!');
         this.toggleCancelModal();
         this.cdr.detectChanges();
@@ -283,6 +322,8 @@ export class DocumentViewComponent implements OnInit {
         this.item = data;
         this.manangerAlert = null;
         this.updateSignatures();
+        this.verifyCanSign(this.user);
+        this.loadNavigation();
         this.toasterService.success('Memorando reiniciado com sucesso!');
         this.toggleRollbackModal();
         this.cdr.detectChanges();
@@ -336,6 +377,45 @@ export class DocumentViewComponent implements OnInit {
         this.toasterService.success('Memorando atualizado com sucesso!');
       },
       error: (error) => this.errorService.showError(error)
+    });
+  }
+
+  private loadMemorando(id: number): void {
+    if (!Number.isFinite(id) || id <= 0) {
+      this.router.navigate(['/general/memorando']);
+      return;
+    }
+
+    this.loading = true;
+    this.navigation = { previousId: null, nextId: null };
+    this.manangerAlert = null;
+
+    this.memorandoService.findById(id).subscribe({
+      next: data => {
+        this.item = data;
+        this.updateSignatures();
+        this.verifyCanSign(this.user);
+        this.loadNavigation();
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toasterService.error('Registro não encontrado!');
+        this.router.navigate(['general/memorando']);
+      },
+    });
+  }
+
+  private loadNavigation(): void {
+    this.memorandoService.getNavigation(this.item.id).subscribe({
+      next: navigation => {
+        this.navigation = navigation;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.navigation = { previousId: null, nextId: null };
+        this.cdr.detectChanges();
+      },
     });
   }
 }

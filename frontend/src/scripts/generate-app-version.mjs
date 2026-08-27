@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const frontendDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const frontendDir = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const packageJson = JSON.parse(readFileSync(resolve(frontendDir, 'package.json'), 'utf8'));
 
 let revision = process.env.APP_BUILD_VERSION?.trim();

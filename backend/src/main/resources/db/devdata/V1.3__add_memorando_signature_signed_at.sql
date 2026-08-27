@@ -1,0 +1,2 @@
+ALTER TABLE tb_signature
+    ADD COLUMN signed_at TIMESTAMP WITHOUT TIME ZONE;

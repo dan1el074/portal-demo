@@ -34,14 +34,14 @@
       <div class="custom-card">
         <h6>Quantidade em estoque</h6>
         <div class="flex-container">
-          <button cButton matPrefix color="info" (click)="decrement()" aria-label="Diminuir" variant="outline">-</button>
+          <button cButton color="info" (click)="decrement()" aria-label="Diminuir" variant="outline">-</button>
           <div class="input-item">
             <input type="number" id="inputNumber" [value]="value" cFormControl>
             <div cFormText>
               Atual: <strong>{{ item.currentStorage }}</strong>
             </div>
           </div>
-          <button cButton matSuffix color="info" (click)="increment()" aria-label="Aumentar" variant="outline">+</button>
+          <button cButton color="info" (click)="increment()" aria-label="Aumentar" variant="outline">+</button>
         </div>
       </div>
     </c-modal-body>

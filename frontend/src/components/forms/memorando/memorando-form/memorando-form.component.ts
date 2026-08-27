@@ -1,7 +1,6 @@
-import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
-import { AlertComponent, ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
+import { FormControlDirective } from '@coreui/angular';
 import { MultiSelectComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
 import { ToastrService } from '../../../../app/services/toast.service';
 import { OrderInfo } from '../../../../app/interface/erp.interface';
@@ -12,15 +11,10 @@ import { PostitionService } from '../../../../app/services/position.service';
 @Component({
   selector: 'app-memorando-form',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
-    FormFloatingDirective,
-    FormLabelDirective,
     FormControlDirective,
-    ButtonDirective,
     MultiSelectComponent,
-    MultiSelectOptionComponent,
-    AlertComponent
+    MultiSelectOptionComponent
   ],
   templateUrl: './memorando-form.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -110,6 +104,8 @@ export class MemorandoFormComponent implements OnInit, OnChanges {
   protected onSubmit(): void {
     if (!this.createForm.valid) {
       this.showErrors = true;
+      this.createForm.markAllAsTouched();
+      this.toasterService.warning('Preencha todos os campos obrigatórios antes de continuar.');
       return;
     }
 
