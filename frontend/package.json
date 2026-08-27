@@ -6,7 +6,7 @@
   },
   "scripts": {
     "ng": "ng",
-    "generate:version": "node scripts/generate-app-version.mjs",
+    "generate:version": "node src/scripts/generate-app-version.mjs",
     "prestart": "npm run generate:version",
     "start": "ng serve -o",
     "prebuild": "npm run generate:version",

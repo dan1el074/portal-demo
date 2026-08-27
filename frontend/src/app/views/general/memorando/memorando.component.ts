@@ -61,11 +61,7 @@ export class MemorandoComponent implements OnInit {
     private router: Router,
     private backNav: BackNavigationService,
   ) {
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(value => {
+    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef)).subscribe(value => {
       this.currentSearch = value;
       this.currentPage = 1;
       this.loadMemorandos();
@@ -104,6 +100,7 @@ export class MemorandoComponent implements OnInit {
       this.closeFormTab(0);
       return;
     }
+
     this.activeItemKey = 0;
     this.statusFilter = undefined;
     this.currentSearch = '';
@@ -193,9 +190,7 @@ export class MemorandoComponent implements OnInit {
   }
 
   protected onSorterChange(sorter: { column?: string; state?: 'asc' | 'desc' }): void {
-    this.currentSort = sorter?.column && sorter?.state
-      ? { column: sorter.column, state: sorter.state }
-      : undefined;
+    this.currentSort = sorter?.column && sorter?.state ? { column: sorter.column, state: sorter.state } : undefined;
     this.currentPage = 1;
     this.loadMemorandos();
   }

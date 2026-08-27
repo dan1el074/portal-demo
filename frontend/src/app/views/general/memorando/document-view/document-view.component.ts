@@ -117,6 +117,7 @@ export class DocumentViewComponent implements OnInit {
   }
 
   protected get signedCount(): number {
+    if (this.item.status === 'CREATED') return 0;
     return this.signatures.filter(signature => signature.check || this.item.status === 'APPROVED').length;
   }
 
@@ -157,6 +158,11 @@ export class DocumentViewComponent implements OnInit {
       });
     })
 
+    // Rascunhos ainda não possuem um fluxo de assinaturas em andamento.
+    // Mesmo que existam dados antigos associados ao registro, a apresentação
+    // deve permanecer neutra até a publicação do memorando.
+    if (this.item.status === 'CREATED') return;
+
     // adiciona assinaturas
     this.item.signatures.forEach(signature => {
       if (!signature.isSign) return;
@@ -174,7 +180,7 @@ export class DocumentViewComponent implements OnInit {
       let allSignatures = this.item.signatures.filter(s => s.departmentSigned.name == department.name);
       let okSignatures = allSignatures.filter(s => s.isSign)
 
-      if (allSignatures.length == okSignatures.length) {
+      if (allSignatures.length > 0 && allSignatures.length == okSignatures.length) {
         this.signatures[this.signatures.findIndex(s => s.position == department.name)].check = true;
         return;
       }
