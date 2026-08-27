@@ -127,10 +127,10 @@
                   <button
                     type="button"
                     class="disconnect-session"
-                    [disabled]="disconnectingSessions.has(session.userId)"
+                    [disabled]="disconnectingSessions.has(session.sessionId)"
                     (click)="disconnectSession(session)"
                   >
-                    {{ disconnectingSessions.has(session.userId) ? 'Desconectando...' : 'Desconectar' }}
+                    {{ disconnectingSessions.has(session.sessionId) ? 'Desconectando...' : 'Desconectar' }}
                   </button>
                 </td>
               </tr>

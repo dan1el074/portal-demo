@@ -211,10 +211,10 @@ textarea {
 .category-table,
 .access-table {
   width: 100%;
-  min-width: 500px;
   margin: 0;
   border-collapse: collapse;
   font-size: 13px;
+  table-layout: auto;
 
   th {
     padding: 8px 10px;

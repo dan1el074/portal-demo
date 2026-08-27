@@ -1,9 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { MultiSelectComponent, MultiSelectOptionComponent } from '@coreui/angular-pro';
-import { ButtonDirective, FormControlDirective, FormFloatingDirective, FormLabelDirective } from '@coreui/angular';
+import { FormControlDirective } from '@coreui/angular';
 import { ToastrService } from '../../../../app/services/toast.service';
 import { MemorandoService } from '../../../../app/services/memorando.service';
 import { PostitionService } from '../../../../app/services/position.service';
@@ -14,12 +13,8 @@ import { PositionMin } from '../../../../app/interface/position.interface';
 @Component({
   selector: 'app-memorando-edit-form',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
-    FormFloatingDirective,
-    FormLabelDirective,
     FormControlDirective,
-    ButtonDirective,
     RouterLink,
     MultiSelectComponent,
     MultiSelectOptionComponent
@@ -54,7 +49,7 @@ export class MemorandoEditFormComponent implements OnInit, OnChanges {
       title: ['', [Validators.required]],
       description: [ '', [Validators.required, Validators.minLength(5)]],
       reason: ['', [Validators.required, Validators.minLength(5)]],
-      departments: ['', [Validators.required]],
+      departments: [[], [Validators.required]],
       status: ['']
     })
   }
@@ -123,6 +118,8 @@ export class MemorandoEditFormComponent implements OnInit, OnChanges {
   protected onSubmit(): void {
     if (!this.editForm.valid) {
       this.showErrors = true;
+      this.editForm.markAllAsTouched();
+      this.toasterService.warning('Preencha todos os campos obrigatórios antes de continuar.');
       return;
     }
 

@@ -49,7 +49,7 @@ export class ConfigComponent implements OnInit {
   protected activeSessionsLoading = false;
   protected activeSessions: Array<ActiveSession> = [];
   protected activeSessionsError = '';
-  protected disconnectingSessions = new Set<number>();
+  protected disconnectingSessions = new Set<string>();
   protected emailLogsVisible = false;
   protected emailLogsLoading = false;
   protected emailLogsError = '';
@@ -167,17 +167,17 @@ export class ConfigComponent implements OnInit {
   }
 
   protected disconnectSession(session: ActiveSession): void {
-    if (this.disconnectingSessions.has(session.userId)) return;
-    this.disconnectingSessions.add(session.userId);
-    this.userService.disconnectActiveSession(session.userId).subscribe({
+    if (this.disconnectingSessions.has(session.sessionId)) return;
+    this.disconnectingSessions.add(session.sessionId);
+    this.userService.disconnectActiveSession(session.sessionId).subscribe({
       next: () => {
-        this.activeSessions = this.activeSessions.filter(item => item.userId !== session.userId);
-        this.disconnectingSessions.delete(session.userId);
+        this.activeSessions = this.activeSessions.filter(item => item.sessionId !== session.sessionId);
+        this.disconnectingSessions.delete(session.sessionId);
         this.toasterService.success(`Sessão de ${session.username} desconectada.`);
         this.cdr.detectChanges();
       },
       error: error => {
-        this.disconnectingSessions.delete(session.userId);
+        this.disconnectingSessions.delete(session.sessionId);
         this.errorService.showError(error);
         this.cdr.detectChanges();
       },

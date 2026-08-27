@@ -13,6 +13,8 @@ import br.com.metaro.portal.modules.general.memorando.dto.MemorandoDto;
 import br.com.metaro.portal.modules.general.memorando.dto.MemorandoIgnoreDto;
 import br.com.metaro.portal.modules.general.memorando.dto.MemorandoInsertDto;
 import br.com.metaro.portal.modules.general.memorando.dto.MemorandoListDto;
+import br.com.metaro.portal.modules.general.memorando.dto.MemorandoNavigationDto;
+import br.com.metaro.portal.modules.general.memorando.dto.MemorandoSummaryDto;
 import br.com.metaro.portal.modules.general.memorando.entity.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.entity.Signature;
@@ -20,6 +22,10 @@ import br.com.metaro.portal.modules.general.memorando.repository.MemorandoReposi
 import br.com.metaro.portal.modules.general.memorando.util.MemorandoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +36,11 @@ import java.util.List;
 
 @Service
 public class MemorandoService {
+    private static final int MAX_PAGE_SIZE = 100;
+    private static final List<String> ALLOWED_SORTS = List.of("number", "request", "client", "status", "createAt");
+
+    @Value("${spring.datasource.driver-class-name:}")
+    private String datasourceDriver;
     @Autowired
     private MemorandoUtil util;
     @Autowired
@@ -44,11 +55,90 @@ public class MemorandoService {
     private PositionRepository positionRepository;
 
     @Transactional(readOnly = true)
-    public List<MemorandoListDto> listMemorandos() {
-        Sort sort = Sort.by("id").descending();
-        List<Memorando> entities = memorandoRepository.findAll(sort);
-        entities = util.filterByAccess(entities);
-        return entities.stream().map(MemorandoListDto::new).toList();
+    public Page<MemorandoListDto> listMemorandos(
+            Pageable requestedPageable,
+            String group,
+            String status,
+            String search,
+            boolean fullText
+    ) {
+        User me = userService.authenticate();
+        boolean admin = isAdmin(me);
+        boolean draft = parseDraftGroup(group);
+        MemorandoStatus statusFilter = parseStatus(status, draft);
+        String normalizedSearch = search == null ? "" : search.trim();
+        Pageable pageable = sanitizePageable(requestedPageable);
+
+        Page<Memorando> entities;
+        if (fullText && !normalizedSearch.isBlank() && isPostgres()) {
+            entities = memorandoRepository.searchFullText(
+                    pageable,
+                    normalizedSearch,
+                    draft,
+                    statusFilter == null ? "" : statusFilter.name(),
+                    admin,
+                    me.getId()
+            );
+        } else if (fullText && !normalizedSearch.isBlank()) {
+            entities = memorandoRepository.searchExtended(
+                    pageable, normalizedSearch, draft, statusFilter, admin, me.getId()
+            );
+        } else {
+            entities = memorandoRepository.search(pageable, normalizedSearch, draft, statusFilter, admin, me.getId());
+        }
+
+        return entities.map(MemorandoListDto::new);
+    }
+
+    @Transactional(readOnly = true)
+    public MemorandoSummaryDto getSummary() {
+        User me = userService.authenticate();
+        return new MemorandoSummaryDto(
+                memorandoRepository.findSummary(isAdmin(me), me.getId())
+        );
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    private boolean parseDraftGroup(String group) {
+        if (group == null || group.isBlank() || group.equalsIgnoreCase("PUBLISHED")) return false;
+        if (group.equalsIgnoreCase("DRAFT")) return true;
+        throw new UnprocessableEntityException("Grupo de memorandos inválido!");
+    }
+
+    private MemorandoStatus parseStatus(String status, boolean draft) {
+        if (status == null || status.isBlank()) return null;
+
+        try {
+            MemorandoStatus parsed = MemorandoStatus.valueOf(status.toUpperCase());
+            if (draft && parsed != MemorandoStatus.CREATED) {
+                throw new UnprocessableEntityException("O status informado não pertence aos rascunhos!");
+            }
+            if (!draft && parsed == MemorandoStatus.CREATED) {
+                throw new UnprocessableEntityException("O status informado não pertence aos publicados!");
+            }
+            return parsed;
+        } catch (IllegalArgumentException exception) {
+            throw new UnprocessableEntityException("Status de memorando inválido!");
+        }
+    }
+
+    private Pageable sanitizePageable(Pageable pageable) {
+        int size = Math.clamp(pageable.getPageSize(), 1, MAX_PAGE_SIZE);
+        Sort sort = Sort.by(pageable.getSort().stream()
+                .filter(order -> ALLOWED_SORTS.contains(order.getProperty()))
+                .toList());
+
+        if (sort.isUnsorted()) {
+            sort = Sort.by(Sort.Order.desc("createAt"), Sort.Order.desc("id"));
+        }
+        return PageRequest.of(Math.max(pageable.getPageNumber(), 0), size, sort);
+    }
+
+    private boolean isPostgres() {
+        return datasourceDriver.toLowerCase().contains("postgresql");
     }
 
     @Transactional(readOnly = true)
@@ -56,18 +146,45 @@ public class MemorandoService {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         User me = userService.authenticate();
 
-        if (
-            entity.getStatus().equals(MemorandoStatus.CREATED)
-            && !entity.getCreatedBy().getId().equals(me.getId())
-            && me.getRoles().stream().noneMatch(role -> role.getAuthority().equals("ROLE_ADMIN"))
-        )  throw new ForbiddenException("Você não tem permissões para acessar esse recurso!");
+        validateReadAccess(entity, me);
 
         return new MemorandoDto(entity);
     }
 
+    @Transactional(readOnly = true)
+    public MemorandoNavigationDto getNavigation(Long id) {
+        Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        User me = userService.authenticate();
+        validateReadAccess(entity, me);
+
+        boolean draft = entity.getStatus().equals(MemorandoStatus.CREATED);
+        Pageable firstResult = PageRequest.of(0, 1);
+        List<Long> previous = memorandoRepository.findPreviousAccessibleId(
+                id, draft, isAdmin(me), me.getId(), firstResult
+        );
+        List<Long> next = memorandoRepository.findNextAccessibleId(
+                id, draft, isAdmin(me), me.getId(), firstResult
+        );
+
+        return new MemorandoNavigationDto(
+                previous.isEmpty() ? null : previous.getFirst(),
+                next.isEmpty() ? null : next.getFirst()
+        );
+    }
+
+    private void validateReadAccess(Memorando entity, User user) {
+        if (
+            entity.getStatus().equals(MemorandoStatus.CREATED)
+            && !entity.getCreatedBy().getId().equals(user.getId())
+            && !isAdmin(user)
+        ) {
+            throw new ForbiddenException("Você não tem permissões para acessar esse recurso!");
+        }
+    }
+
     @CacheEvict(value = "homeInfo", allEntries = true)
     @Transactional
-    public MemorandoDto createMemorando(MemorandoInsertDto dto) throws Exception {
+    public MemorandoDto createMemorando(MemorandoInsertDto dto) {
         User me = userService.authenticate();
 
         if (
@@ -103,7 +220,7 @@ public class MemorandoService {
     }
 
     @Transactional
-    public MemorandoDto updateMemorando(Long id, MemorandoInsertDto dto) throws Exception {
+    public MemorandoDto updateMemorando(Long id, MemorandoInsertDto dto) {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (!entity.getStatus().equals(MemorandoStatus.CREATED)) {
@@ -141,7 +258,7 @@ public class MemorandoService {
     }
 
     @Transactional
-    public MemorandoDto signMemorando(Long id) throws Exception {
+    public MemorandoDto signMemorando(Long id) {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (!entity.getStatus().equals(MemorandoStatus.PUBLISH)) {
@@ -211,7 +328,7 @@ public class MemorandoService {
     }
 
     @Transactional
-    public MemorandoDto refreshSignatures(Long id, MemorandoIgnoreDto dto) throws Exception {
+    public MemorandoDto refreshSignatures(Long id, MemorandoIgnoreDto dto) {
         Memorando entity = memorandoRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (!entity.getStatus().equals(MemorandoStatus.PUBLISH)) {

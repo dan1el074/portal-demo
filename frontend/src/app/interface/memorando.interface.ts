@@ -28,6 +28,28 @@ export interface MemorandoList {
   createAt: string;
 }
 
+export type MemorandoGroup = 'PUBLISHED' | 'DRAFT';
+export type MemorandoStatus = 'CREATED' | 'PUBLISH' | 'APPROVED' | 'CANCELED';
+
+export interface MemorandoPage {
+  content: Array<MemorandoList>;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface MemorandoSummary {
+  total: number;
+  active: number;
+  approved: number;
+  canceled: number;
+  draft: number;
+}
+
+export interface MemorandoNavigation {
+  previousId: number | null;
+  nextId: number | null;
+}
+
 export interface NewMemorando {
   request: number;
   client: string;
@@ -43,12 +65,14 @@ export interface Signature {
   departmentSigned: Position;
   user: UserSummary;
   isSign: boolean;
+  signedAt: string | null;
 }
 
 export interface SignatureList {
   check: boolean;
   position: string;
   signedBy: string | null;
+  signedAt: string | null;
 }
 
 export interface CILog {

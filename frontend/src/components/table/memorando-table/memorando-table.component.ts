@@ -1,115 +1,63 @@
-import { TruncatePipe } from './../../../app/pipes/truncate.pipe';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { AvatarComponent, BadgeComponent, ButtonDirective, ContainerComponent, PlaceholderAnimationDirective, PlaceholderDirective, TooltipDirective } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
-import { cilSearch, cilPencil, cilX, cilExternalLink } from '@coreui/icons';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AvatarComponent } from '@coreui/angular';
+import { IColumn, SmartTableComponent, TemplateIdDirective, TooltipDirective } from '@coreui/angular-pro';
 import { environment } from '../../../environments/environment';
-import { MemorandoList } from '../../../app/interface/memorando.interface';
-import { RouterLink } from '@angular/router';
+import { MemorandoList, MemorandoStatus } from '../../../app/interface/memorando.interface';
 
 @Component({
   selector: 'app-memorando-table',
-  imports: [
-    CommonModule,
-    BadgeComponent,
-    TooltipDirective,
-    AvatarComponent,
-    ContainerComponent,
-    IconDirective,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ButtonDirective,
-    RouterLink,
-    TruncatePipe,
-    PlaceholderDirective,
-    PlaceholderAnimationDirective
-  ],
+  imports: [CommonModule, AvatarComponent, SmartTableComponent, TemplateIdDirective, TooltipDirective],
   templateUrl: './memorando-table.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './memorando-table.component.scss',
 })
-export class MemorandoTableComponent implements AfterViewInit, OnChanges {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @Input() data!: Array<MemorandoList>;
-  @Input() noMargin: boolean = false;
+export class MemorandoTableComponent {
+  @Input() data: Array<MemorandoList> = [];
+  @Input() loading = false;
+  @Input() searchValue = '';
+  @Input() fullText = false;
+  @Input() showStatusFilters = false;
+  @Input() selectedStatus?: MemorandoStatus;
+  @Input() sorterValue: { column?: string; state?: 'asc' | 'desc' } = {};
+  @Output() openMemorandoTask = new EventEmitter<number>();
+  @Output() sorterChange = new EventEmitter<any>();
+  @Output() itemsPerPageChange = new EventEmitter<number>();
+  @Output() filterChange = new EventEmitter<string>();
+  @Output() fullTextChange = new EventEmitter<boolean>();
+  @Output() statusChange = new EventEmitter<MemorandoStatus | undefined>();
+  @Output() clearAll = new EventEmitter<void>();
 
-  protected apiUrl = environment.apiUrl;
-  protected displayedColumns: string[] = ['memorandoNumber', 'orderNumber', 'client', 'status', 'signature', 'createdAt', 'buttons'];
-  protected dataSource = new MatTableDataSource<MemorandoList>([]);
-  protected icons = { cilSearch, cilPencil, cilX, cilExternalLink };
-  protected loadSearch = true;
+  protected readonly apiUrl = environment.apiUrl;
+  protected readonly columns: IColumn[] = [
+    this.column('number', 'Número'),
+    this.column('request', 'Pedido'),
+    this.column('client', 'Cliente'),
+    this.column('status', 'Status'),
+    this.column('signatureSummary', 'Assinaturas', false),
+    this.column('createAt', 'Criado'),
+  ];
 
-  constructor (private cdr: ChangeDetectorRef) {}
-
-  ngOnChanges(): void {
-    this.loadSearch = true;
-
-    if (this.data && this.data.length) {
-      this.data = this.data.sort((a, b) => {
-        if (!a.number || !b.number || !a.createAt || !b.createAt) return 0;
-
-        const aYear = new Date(a.createAt).getFullYear();
-        const aNumberPadded = a.number.toString().padStart(6, '0');
-        const aRes = Number(`${aYear}${aNumberPadded}`);
-
-        const bYear = new Date(b.createAt).getFullYear();
-        const bNumberPadded = b.number ? b.number.toString().padStart(6, '0') : "";
-        const bRes = Number(`${bYear}${bNumberPadded}`);
-
-        return bRes - aRes;
-      });
-
-      this.dataSource.data = this.data;
-    }
-
-    setTimeout(() => {
-      this.loadSearch = false;
-      this.cdr.detectChanges();
-    }, 500);
+  protected openMemorando(event: { item: MemorandoList }): void {
+    this.openMemorandoTask.emit(event.item.id);
   }
 
-  applyFilter(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = value.trim().toLowerCase();
+  protected onFullTextChange(event: Event): void {
+    this.fullTextChange.emit((event.target as HTMLInputElement).checked);
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  protected selectStatus(status?: MemorandoStatus): void {
+    this.statusChange.emit(status);
+  }
 
-    this.dataSource.sortingDataAccessor = (item: MemorandoList, property: string) => {
-      switch (property) {
-        case 'memorandoNumber': {
-          const year = new Date(item.createAt).getFullYear();
-          const numberPadded = item.number.toString().padStart(6, '0');
-          return Number(`${year}${numberPadded}`);
-        }
-
-        case 'orderNumber':
-          return item.request;
-
-        case 'client':
-          return item.client?.toLowerCase();
-
-        case 'status':
-          return item.status?.toLowerCase();
-
-        case 'createdAt':
-          return new Date(item.createAt);
-
-        default:
-          return (item as any)[property];
-      };
+  private column(key: string, label: string, sorter = true): IColumn {
+    return {
+      key,
+      label,
+      _labelTemplateId: 'all',
+      _style: { backgroundColor: 'rgba(var(--cui-emphasis-color-rgb), 0.04)', whiteSpace: 'nowrap' },
+      sorter: sorter ? () => 0 : false,
+      filter: false,
     };
   }
 }

@@ -1,55 +1,101 @@
-<c-container breakpoint="lg" class="h-auto px-4" fluid>
-  <c-row>
-    <c-col xs="12">
-      <c-card class="border">
-        <c-card-body>
-          <h4 cCardTitle>Memorando</h4>
-          <c-tabs [activeItemKey]="activeItemKey" (activeItemKeyChange)="onTabChange($event)" class="header-space">
-            <c-tabs-list variant="underline-border">
-              <button cTab [itemKey]="0">Publicados</button>
-              <button cTab [itemKey]="1" [class.no-select]="canceledMemorando.length <= 0" [disabled]="canceledMemorando.length <= 0">Cancelados</button>
-              <button cTab [itemKey]="2" [class.no-select]="savedMemorando.length <= 0" [disabled]="savedMemorando.length <= 0">Salvos</button>
-              <button cTab [itemKey]="3" [class.hide]="!newMemorandoTab" class="close-button">
-                Novo registro
-                <div (click)="toggleNewMemorandoTab(false)">
-                  <svg [cIcon]="icons.cilX" class="close-icon"></svg>
-                </div>
-              </button>
-            </c-tabs-list>
-            <c-tabs-content>
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="0">
-                <button cButton color="primary" (click)="toggleMemorandoModal(true)">
-                  <svg [cIcon]="icons.cilPlus" size="md"></svg>
-                  Adicionar
-                </button>
-                <app-memorando-table [data]="publishedMemorando" [noMargin]="true"></app-memorando-table>
-              </c-tab-panel>
+<c-container class='h-auto px-4 administration-page' fluid>
+  <header class='administration-header'>
+    <p class='ops-header'>
+      <span class='ops-welcome'>Gestão de Memorandos</span>
+      <span class='ops-access-level'>Consulte, acompanhe e publique os memorandos da empresa</span>
+    </p>
+  </header>
 
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="1">
-                <button cButton color="primary" (click)="toggleMemorandoModal(true)">
-                  <svg [cIcon]="icons.cilPlus" size="md"></svg>
-                  Adicionar
-                </button>
-                <app-memorando-table [data]="canceledMemorando" [noMargin]="true"></app-memorando-table>
-              </c-tab-panel>
+  <section class='sfc-resume' aria-label='Resumo dos memorandos'>
+    <c-card class='step-card pointer' [class.selected]='activeItemKey === 0 && statusFilter === undefined' style='border-left: 4px solid #314158' role='button' tabindex='0' (click)='resetTableFilters()' (keydown.enter)='resetTableFilters()'>
+      <c-card-body><div class='title-container'><h6>Total de registros</h6><div class='icon' style='background-color: #31415817'><svg aria-hidden='true' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#314158' stroke-width='1.8'><circle cx='8' cy='21' r='1'></circle><circle cx='19' cy='21' r='1'></circle><path d='M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12'></path></svg></div></div><p class='main-value' style='color: #314158'><strong>{{ summary.total }}</strong></p><span class='description'>memorandos publicados</span></c-card-body>
+    </c-card>
+    <c-card class='step-card pointer' [class.selected]='activeItemKey === 0 && statusFilter === "PUBLISH"' style='border-left: 4px solid #0369dd' role='button' tabindex='0' (click)='filterByStatus("PUBLISH")' (keydown.enter)='filterByStatus("PUBLISH")'>
+      <c-card-body><div class='title-container'><h6>Ativos</h6><div class='icon' style='background-color: #0369dd17'><svg aria-hidden='true' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#0369dd' stroke-width='1.8'><path d='M21 12a9 9 0 1 1-6.219-8.56'></path></svg></div></div><p class='main-value' style='color: #0369dd'><strong>{{ summary.active }}</strong></p><span class='description'>aguardando aprovações</span></c-card-body>
+    </c-card>
+    <c-card class='step-card pointer' [class.selected]='activeItemKey === 0 && statusFilter === "APPROVED"' style='border-left: 4px solid #009966' role='button' tabindex='0' (click)='filterByStatus("APPROVED")' (keydown.enter)='filterByStatus("APPROVED")'>
+      <c-card-body><div class='title-container'><h6>Aprovados</h6><div class='icon' style='background-color: #00996617'><svg aria-hidden='true' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#009966' stroke-width='1.8'><path d='M18 6 7 17l-5-5'></path><path d='m22 10-7.5 7.5L13 16'></path></svg></div></div><p class='main-value' style='color: #009966'><strong>{{ summary.approved }}</strong></p><span class='description'>assinaturas concluídas</span></c-card-body>
+    </c-card>
+    <c-card class='step-card pointer' [class.selected]='activeItemKey === 0 && statusFilter === "CANCELED"' style='border-left: 4px solid #c5232a' role='button' tabindex='0' (click)='filterByStatus("CANCELED")' (keydown.enter)='filterByStatus("CANCELED")'>
+      <c-card-body><div class='title-container'><h6>Cancelados</h6><div class='icon' style='background-color: #c5232a17'><svg aria-hidden='true' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='#c5232a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 16h.01'></path><path d='M12 8v4'></path><path d='M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z'></path></svg></div></div><p class='main-value' style='color: #c5232a'><strong>{{ summary.canceled }}</strong></p><span class='description'>memorandos cancelados</span></c-card-body>
+    </c-card>
+  </section>
 
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="2">
-                <button cButton color="primary" (click)="toggleMemorandoModal(true)">
-                  <svg [cIcon]="icons.cilPlus" size="md"></svg>
-                  Adicionar
-                </button>
-                <app-memorando-table [data]="savedMemorando" [noMargin]="true"></app-memorando-table>
-              </c-tab-panel>
+  <c-card class='management-card border'>
+    <div class='management-card-header'>
+      <div>
+        <h2>Memorando</h2>
+        <p>
+          @switch (activeItemKey) {
+            @case (1) { {{ totalItems }} rascunhos encontrados }
+            @case (2) { Crie um memorando a partir de um pedido }
+            @default { {{ totalItems }} memorandos encontrados }
+          }
+        </p>
+      </div>
+      @if (activeItemKey === 0 || activeItemKey === 1) {
+        <button cButton color='primary' class='primary-action' (click)='toggleMemorandoModal(true)'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M5 12h14'></path><path d='M12 5v14'></path></svg>
+          Novo memorando
+        </button>
+      }
+    </div>
 
-              <c-tab-panel class="p-3 remove-outline" [itemKey]="3">
-                <app-memorando-form [orderInfoList]="itemsToCreateMemorando" (exitTask)="toggleNewMemorandoTab(false)" (createTask)="createNewMemorando($event)"></app-memorando-form>
-              </c-tab-panel>
-            </c-tabs-content>
-          </c-tabs>
-        </c-card-body>
-      </c-card>
-    </c-col>
-  </c-row>
+    <c-card-body>
+      <c-tabs [activeItemKey]='activeItemKey' (activeItemKeyChange)='onTabChange($event)' class='section-tabs'>
+        <c-tabs-list variant='underline-border'>
+          <button cTab [itemKey]='0'>Publicados <span class='tab-count'>{{ summary.total }}</span></button>
+          <button cTab [itemKey]='1'>Rascunho <span class='tab-count'>{{ summary.draft }}</span></button>
+          @if (newMemorandoTab) {
+            <button cTab [itemKey]='2' class='close-tab'>Novo <span class='tab-close' role='button' tabindex='0' aria-label='Fechar cadastro' (click)='$event.stopPropagation(); toggleNewMemorandoTab(false)'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M18 6 6 18'></path><path d='m6 6 12 12'></path></svg></span></button>
+          }
+        </c-tabs-list>
 
-  <app-new-memorando-modal [visible]="showMemorandoModal" (closeModal)="toggleMemorandoModal(false)" (createNewMemorando)="openCreateTab($event)"></app-new-memorando-modal>
+        <c-tabs-content>
+          <c-tab-panel class='content-panel remove-outline' [itemKey]='0'>
+            <app-memorando-table
+              [data]='memorandos'
+              [loading]='loadingTable'
+              [searchValue]='currentSearch'
+              [fullText]='fullText'
+              [showStatusFilters]='true'
+              [selectedStatus]='statusFilter'
+              [sorterValue]='currentSort ?? {}'
+              (openMemorandoTask)='openMemorando($event)'
+              (sorterChange)='onSorterChange($event)'
+              (itemsPerPageChange)='onItemsPerPageChange($event)'
+              (filterChange)='onFilterChange($event)'
+              (fullTextChange)='onFullTextChange($event)'
+              (statusChange)='filterByStatus($event)'
+              (clearAll)='clearTableFilters()'
+            ></app-memorando-table>
+            <c-smart-pagination [activePage]='currentPage' [pages]='totalPages' (activePageChange)='onPageChange($event)' class='step-flow-table'></c-smart-pagination>
+          </c-tab-panel>
+          <c-tab-panel class='content-panel remove-outline' [itemKey]='1'>
+            <app-memorando-table
+              [data]='memorandos'
+              [loading]='loadingTable'
+              [searchValue]='currentSearch'
+              [fullText]='fullText'
+              [sorterValue]='currentSort ?? {}'
+              (openMemorandoTask)='openMemorando($event)'
+              (sorterChange)='onSorterChange($event)'
+              (itemsPerPageChange)='onItemsPerPageChange($event)'
+              (filterChange)='onFilterChange($event)'
+              (fullTextChange)='onFullTextChange($event)'
+              (clearAll)='clearTableFilters()'
+            ></app-memorando-table>
+            <c-smart-pagination [activePage]='currentPage' [pages]='totalPages' (activePageChange)='onPageChange($event)' class='step-flow-table'></c-smart-pagination>
+          </c-tab-panel>
+          @if (newMemorandoTab) {
+            <c-tab-panel class='form-panel remove-outline' [itemKey]='2'>
+              <app-memorando-form [orderInfoList]='itemsToCreateMemorando' (exitTask)='toggleNewMemorandoTab(false)' (createTask)='createNewMemorando($event)'></app-memorando-form>
+            </c-tab-panel>
+          }
+        </c-tabs-content>
+      </c-tabs>
+    </c-card-body>
+  </c-card>
+
+  <app-new-memorando-modal [visible]='showMemorandoModal' (closeModal)='toggleMemorandoModal(false)' (createNewMemorando)='openCreateTab($event)'></app-new-memorando-modal>
 </c-container>

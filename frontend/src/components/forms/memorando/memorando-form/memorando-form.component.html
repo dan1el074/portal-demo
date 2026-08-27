@@ -1,80 +1,51 @@
-<form [formGroup]="createForm" autocomplete="off">
-  <h4 class="mb-4">Novo Memorando</h4>
+<form [formGroup]='createForm' (ngSubmit)='onPublish()' autocomplete='off' class='profile-form memorando-form'>
+  <section class='form-section'>
+    <div class='section-heading'><span>DADOS DO PEDIDO</span></div>
+    <div class='form-grid'>
+      <label>Número do pedido<input cFormControl readonly formControlName='request' [valid]="!showErrors ? undefined : createForm.get('request')?.invalid ? false : undefined" type='text' placeholder='00000'></label>
+      <label>Cliente<input cFormControl readonly formControlName='client' [valid]="!showErrors ? undefined : createForm.get('client')?.invalid ? false : undefined" type='text' placeholder='Cliente'></label>
+      <div class='form-field wide'><label>Itens</label>
+        <c-multi-select multiple selectionType='text' searchNoResultsLabel='Não encontrado' placeholder='Selecione os itens' [selectAll]='false' [valid]="!showErrors ? undefined : createForm.get('items')?.invalid ? false : undefined" formControlName='items' class='memorando-select'>
+          @for (orderInfo of orderInfoList; track orderInfo.item) {
+            <c-multi-select-option [value]='orderInfo.item'>{{ orderInfo.item }}</c-multi-select-option>
+          }
+        </c-multi-select>
+      </div>
+    </div>
+  </section>
 
-  <div [cFormFloating]="true" class="mb-3">
-    <input cFormControl readOnly formControlName="request" [valid]="!showErrors ? undefined: createForm.get('request')?.errors != null ? false : undefined" id="request" type="text" placeholder="00000" />
-    <label cLabel for="name">Número do pedido</label>
-  </div>
+  <section class='form-section'>
+    <div class='section-heading'><span>CONTEÚDO DO MEMORANDO</span></div>
+    <div class='form-grid single-column'>
+      <label>Título<input cFormControl formControlName='title' [valid]="!showErrors ? undefined : createForm.get('title')?.invalid ? false : undefined" type='text' placeholder='Informe o título do memorando'></label>
+      <label>Descrição<textarea cFormControl formControlName='description' [valid]="!showErrors ? undefined : createForm.get('description')?.invalid ? false : undefined" rows='5' placeholder='Descreva as informações do memorando'></textarea></label>
+      <label>Motivo<input cFormControl formControlName='reason' [valid]="!showErrors ? undefined : createForm.get('reason')?.invalid ? false : undefined" type='text' placeholder='Informe o motivo do memorando'></label>
+    </div>
+  </section>
 
-  <div [cFormFloating]="true" class="mb-3">
-    <input cFormControl readOnly formControlName="client" [valid]="!showErrors ? undefined: createForm.get('client')?.errors != null ? false : undefined" id="client" type="text" placeholder="Cliente" />
-    <label cLabel for="name">Cliente</label>
-  </div>
+  <section class='form-section'>
+    <div class='section-heading'><span>DESTINATÁRIOS</span></div>
+    <div class='form-grid single-column'>
+      <div class='form-field'><label>Departamentos</label>
+        <c-multi-select multiple selectionType='text' searchNoResultsLabel='Não encontrado' placeholder='Selecione os departamentos' [selectAll]='false' [valid]="!showErrors ? undefined : createForm.get('departments')?.invalid ? false : undefined" formControlName='departments' class='memorando-select'>
+          @for (department of departments; track department.id) {
+            <c-multi-select-option [value]='department.id'>{{ department.name }}</c-multi-select-option>
+          }
+        </c-multi-select>
+      </div>
+    </div>
+  </section>
 
-  <c-multi-select
-    multiple
-    selectionType="text"
-    searchNoResultsLabel="Não encontrado"
-    placeholder="Itens"
-    [selectAll]="false"
-    [valid]="!showErrors ? undefined : createForm.get('items')?.errors != null ? false : undefined"
-    formControlName="items"
-    class="custom-select none-cleaner mb-3"
-  >
-    @for (orderInfo of orderInfoList; track orderInfo.item) {
-      <c-multi-select-option [value]="orderInfo.item">
-        {{ orderInfo.item }}
-      </c-multi-select-option>
-    }
-  </c-multi-select>
+  <aside class='memorando-notice' role='note'>
+    <svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9'></circle><path d='M12 8v5'></path><path d='M12 17h.01'></path></svg>
+    <span>Após publicar este memorando, registre as informações relevantes nas <strong>observações</strong> do Pedido de Venda no <strong>Probus</strong> para garantir o acompanhamento do processo, o alinhamento entre os setores e a rastreabilidade das informações.</span>
+  </aside>
 
-  <div [cFormFloating]="true" class="mb-3">
-    <input cFormControl formControlName="title" [valid]="!showErrors ? undefined: createForm.get('title')?.errors != null ? false : undefined" id="title" type="text" placeholder="Título" />
-    <label cLabel for="name">Título</label>
-  </div>
-
-  <div [cFormFloating]="true" class="mb-3">
-    <textarea
-      cFormControl
-      formControlName="description"
-      rows="5" [valid]="!showErrors ? undefined: createForm.get('description')?.errors != null ? false : undefined"
-      class="fix-height"
-      id="description"
-      type="text"
-      placeholder="Descrição">
-    </textarea>
-    <label cLabel for="name">Descrição</label>
-  </div>
-
-  <div [cFormFloating]="true" class="mb-3">
-    <input cFormControl formControlName="reason" [valid]="!showErrors ? undefined: createForm.get('reason')?.errors != null ? false : undefined" id="reason" type="text" placeholder="Motivo" />
-    <label cLabel for="name">Motivo</label>
-  </div>
-
-  <c-multi-select
-    multiple
-    selectionType="text"
-    searchNoResultsLabel="Não encontrado"
-    placeholder="Departamentos"
-    [selectAll]="false"
-    [valid]="!showErrors ? undefined : createForm.get('departments')?.errors != null ? false : undefined"
-    formControlName="departments"
-    class="custom-select none-cleaner mb-3"
-  >
-    @for (department of departments; track department.id) {
-      <c-multi-select-option [value]="department.id">
-        {{ department.name }}
-      </c-multi-select-option>
-    }
-  </c-multi-select>
-
-  <c-alert color="warning">
-    Após publicar este memorando, registre as informações relevantes nas <b>observações</b> do Pedido de Venda no <b>Probus</b> para garantir o acompanhamento do processo, alinhamento entre os setores e rastreabilidade das informações.
-  </c-alert>
-
-  <div class="button-container">
-    <button cButton color="secondary" (click)="onExit()">Cancelar</button>
-    <button cButton color="info" class="fix-info" (click)="onSave()">Salvar</button>
-    <button cButton color="primary" (click)="onPublish()">Publicar</button>
+  <div class='form-actions'>
+    <button type='button' class='discard-button' (click)='onExit()'>Descartar alterações</button>
+    <div class='form-submit-actions'>
+      <button type='button' class='draft-button' (click)='onSave()'>Salvar rascunho</button>
+      <button type='submit' class='save-button'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M22 2 11 13'></path><path d='m22 2-7 20-4-9-9-4Z'></path></svg>Publicar memorando</button>
+    </div>
   </div>
 </form>

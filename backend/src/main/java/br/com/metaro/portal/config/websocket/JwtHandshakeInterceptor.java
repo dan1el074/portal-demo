@@ -1,5 +1,6 @@
 package br.com.metaro.portal.config.websocket;
 
+import br.com.metaro.portal.config.ActiveSessionAuthorizationService;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     private final JwtDecoder jwtDecoder;
     private final UserRepository userRepository;
+    private final ActiveSessionAuthorizationService authorizationService;
 
     @Override
     public boolean beforeHandshake(
@@ -48,6 +50,8 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             User user = userOpt.get();
             attributes.put("userId", user.getId());
             attributes.put("username", username);
+            authorizationService.findAuthorizationIdByToken(token)
+                    .ifPresent(authorizationId -> attributes.put("authorizationId", authorizationId));
 
             return true;
         } catch (Exception e) {
