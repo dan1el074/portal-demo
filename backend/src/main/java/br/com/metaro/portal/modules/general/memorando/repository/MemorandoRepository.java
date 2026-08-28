@@ -81,20 +81,12 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
             AND ((:draft = true AND m.status = 'CREATED') OR (:draft = false AND m.status <> 'CREATED'))
             AND (:status = '' OR m.status = :status)
             AND (
-                to_tsvector('portuguese',
-                    COALESCE(m.client, '') || ' ' || COALESCE(m.title, '') || ' ' ||
-                    COALESCE(m.description, '') || ' ' || COALESCE(m.reason, '') || ' ' ||
-                    COALESCE(array_to_string(m.items, ' '), '')
-                ) @@ websearch_to_tsquery('portuguese', :search)
+                m.search_vector @@ websearch_to_tsquery('portuguese', :search)
                 OR to_tsvector('portuguese', COALESCE(u.name, ''))
                     @@ websearch_to_tsquery('portuguese', :search)
             )
         ORDER BY GREATEST(
-            ts_rank_cd(to_tsvector('portuguese',
-                COALESCE(m.client, '') || ' ' || COALESCE(m.title, '') || ' ' ||
-                COALESCE(m.description, '') || ' ' || COALESCE(m.reason, '') || ' ' ||
-                COALESCE(array_to_string(m.items, ' '), '')
-            ), websearch_to_tsquery('portuguese', :search)),
+            ts_rank_cd(m.search_vector, websearch_to_tsquery('portuguese', :search)),
             ts_rank_cd(
                 to_tsvector('portuguese', COALESCE(u.name, '')),
                 websearch_to_tsquery('portuguese', :search)
@@ -108,11 +100,7 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
             AND ((:draft = true AND m.status = 'CREATED') OR (:draft = false AND m.status <> 'CREATED'))
             AND (:status = '' OR m.status = :status)
             AND (
-                to_tsvector('portuguese',
-                    COALESCE(m.client, '') || ' ' || COALESCE(m.title, '') || ' ' ||
-                    COALESCE(m.description, '') || ' ' || COALESCE(m.reason, '') || ' ' ||
-                    COALESCE(array_to_string(m.items, ' '), '')
-                ) @@ websearch_to_tsquery('portuguese', :search)
+                m.search_vector @@ websearch_to_tsquery('portuguese', :search)
                 OR to_tsvector('portuguese', COALESCE(u.name, ''))
                     @@ websearch_to_tsquery('portuguese', :search)
             )
