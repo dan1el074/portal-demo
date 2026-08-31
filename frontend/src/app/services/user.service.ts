@@ -85,7 +85,7 @@ export class UserService {
     return this.http.get<Array<ActiveSession>>(environment.apiUrl + '/api/auth/active-sessions');
   }
 
-  public disconnectActiveSession(userId: number): Observable<void> {
-    return this.http.delete<void>(environment.apiUrl + '/api/auth/active-sessions/user/' + userId);
+  public disconnectActiveSession(sessionId: string): Observable<void> {
+    return this.http.delete<void>(environment.apiUrl + '/api/auth/active-sessions/' + encodeURIComponent(sessionId));
   }
 }

@@ -65,20 +65,20 @@ public class MemorandoUtil {
         entity.setFromDepartments(new ArrayList<>(positions));
     }
 
-    public List<Memorando> filterByAccess(List<Memorando> entities) {
-        User me = userService.authenticate();
-        if (me.getRoles().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"))) {
-            return entities;
-        }
-
-        entities = entities.stream().filter(entity ->
-                (!entity.getStatus().equals(MemorandoStatus.CREATED)
-                        && !entity.getStatus().equals(MemorandoStatus.CANCELED))
-                        || entity.getCreatedBy().getId().equals(me.getId())
-        ).toList();
-
-        return entities;
-    }
+//    public List<Memorando> filterByAccess(List<Memorando> entities) {
+//        User me = userService.authenticate();
+//        if (me.getRoles().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"))) {
+//            return entities;
+//        }
+//
+//        entities = entities.stream().filter(entity ->
+//                (!entity.getStatus().equals(MemorandoStatus.CREATED)
+//                        && !entity.getStatus().equals(MemorandoStatus.CANCELED))
+//                        || entity.getCreatedBy().getId().equals(me.getId())
+//        ).toList();
+//
+//        return entities;
+//    }
 
     public void addAllSignatures(Memorando entity) {
         entity.getSignatures().clear();
@@ -118,6 +118,7 @@ public class MemorandoUtil {
             }
 
             signature.setIsSign(true);
+            signature.setSignedAt(Instant.now());
             logService.create(entity.getId(), "Assinou o documento (%s)"
                     .formatted(signature.getDepartmentSigned().getName()));
         }
@@ -139,7 +140,7 @@ public class MemorandoUtil {
         }
     }
 
-    public void checkIfEveryoneHasSigned(Memorando entity) throws Exception {
+    public void checkIfEveryoneHasSigned(Memorando entity) {
         if (entity.getSignatures().stream().noneMatch(s -> s.getIsSign().equals(false))) {
             entity.setStatus(MemorandoStatus.APPROVED);
 
@@ -220,8 +221,8 @@ public class MemorandoUtil {
         }
         if (!dto.getDescription().equals(entity.getDescription())) {
             logService.create(entity.getId(), "Alterou a descrição de \"%s\" para \"%s\""
-                    .formatted(entity.getDescription().replaceAll("<br>", " "),
-                            dto.getDescription().replaceAll("<br>", " ")));
+                    .formatted(entity.getDescription().replace("<br>", " "),
+                            dto.getDescription().replace("<br>", " ")));
         }
         if (!dto.getReason().equals(entity.getReason())) {
             logService.create(entity.getId(), "Alterou o motivo de \"%s\" para \"%s\""

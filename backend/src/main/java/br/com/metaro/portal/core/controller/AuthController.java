@@ -5,6 +5,8 @@ import br.com.metaro.portal.config.ActiveSessionAuthorizationService;
 import br.com.metaro.portal.core.dto.auth.ActiveSessionDto;
 import br.com.metaro.portal.config.websocket.NotificationSessionManager;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,8 +41,24 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/active-sessions/{sessionId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> disconnectSession(@PathVariable String sessionId) {
+        authorizationService.disconnect(sessionId)
+                .ifPresent(userId -> notificationSessionManager.forceLogoutSession(sessionId));
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() != null) {
+            Arrays.stream(request.getCookies())
+                    .filter(cookie -> AuthCookieService.COOKIE_NAME.equals(cookie.getName()))
+                    .map(Cookie::getValue)
+                    .filter(value -> value != null && !value.isBlank())
+                    .findFirst()
+                    .ifPresent(authorizationService::disconnectToken);
+        }
         cookieService.clear(response);
         return ResponseEntity.noContent().build();
     }

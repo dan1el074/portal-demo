@@ -3,7 +3,7 @@
     <div class='section-heading'><span>DADOS DO DEPARTAMENTO</span></div>
     <div class='form-grid single-column'>
       <label>Nome do departamento<input cFormControl formControlName='name' [valid]="!showErrors ? undefined : editForm.get('name')?.invalid ? false : undefined" type='text' placeholder='Ex.: Engenharia'></label>
-      <label>Gestores
+      <div class='form-field'><label>Gestores</label>
         <c-multi-select multiple selectionType='text' [valid]="!showErrors ? undefined : editForm.get('manangers')?.invalid ? false : undefined" placeholder='Selecione os gestores' [selectAll]='false' formControlName='manangers' class='manager-select'>
           @for (userGroup of users; track userGroup.title) {
             <c-multi-select-optgroup [label]='userGroup.title'>
@@ -11,7 +11,7 @@
             </c-multi-select-optgroup>
           }
         </c-multi-select>
-      </label>
+      </div>
     </div>
   </section>
 

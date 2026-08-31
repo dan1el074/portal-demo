@@ -1,86 +1,117 @@
-form {
-  display: flex;
-  flex-direction: column;
+@use '../../user/user-form/user-form.component';
+
+.memorando-form {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.single-column {
+  grid-template-columns: 1fr;
+}
+
+.form-grid .form-field.wide {
+  grid-column: 1 / -1;
+}
+
+.memorando-select {
+  display: block;
   width: 100%;
-  padding: 20px 40px 0;
+}
 
-  h4 {
-    text-align: start;
+.form-grid textarea {
+  box-sizing: border-box;
+  min-height: 126px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  resize: vertical;
+  text-transform: none;
+}
+
+.form-grid input[readonly] {
+  background: var(--cui-tertiary-bg);
+  color: var(--cui-secondary-color);
+}
+
+:host ::ng-deep .memorando-select .form-multi-select-input-group {
+  align-items: center;
+  min-height: 46px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+:host ::ng-deep .memorando-select .form-multi-select-selection {
+  align-items: center;
+  min-height: 44px;
+  font-weight: 400;
+  text-transform: none;
+}
+
+:host ::ng-deep .memorando-select .form-multi-select-options {
+  padding: 8px;
+  font-size: 14px;
+}
+
+.memorando-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid rgba(var(--cui-warning-rgb), .38);
+  border-radius: 10px;
+  background: rgba(var(--cui-warning-rgb), .08);
+  color: var(--cui-body-color);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.memorando-notice svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--cui-warning);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.form-submit-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.draft-button {
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid var(--cui-border-color);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--cui-body-color);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.draft-button:hover {
+  background: rgba(var(--cui-emphasis-color-rgb), .05);
+}
+
+@media (max-width: 540px) {
+  .form-submit-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
   }
 
-  h3 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-
-    &.username {
-      margin-bottom: 20px;
-
-      span {
-        color: var(--cui-secondary-color);
-        font-size: 19px;
-        padding-top: 4px;
-      }
-    }
-  }
-
-  .text-danger {
-    text-align: center;
-    margin-top: 4px;
-  }
-
-  input {
-    border-radius: 4px;
-  }
-
-  .custon-label {
-    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-  }
-
-  textarea.fix-height {
-    height: initial;
-  }
-
-  select {
+  .form-submit-actions,
+  .draft-button {
     width: 100%;
-    padding: 1.625rem 12px 0.625rem;
-    border: 1px solid rgb(201, 205, 232);
-    border-radius: 4px;
-    outline: none;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-
-    &:focus {
-      border-color: rgb(171, 175, 235);
-      box-shadow: 0 0 0 0.25rem rgba(86, 120, 214, 0.25);
-    }
-
-    option:first-child {
-      display: none;
-    }
   }
 
-  .button-container {
-    display: flex;
-    justify-content: end;
-    gap: 4px;
-  }
-
-  .fix-margin {
-    margin-top: 16px;
-  }
-
-}
-
-.fix-info {
-  color: white !important;
-}
-
-.fix-danger {
-  color: white !important;
-  background-color: rgb(202, 56, 56);
-
-  &:hover {
-    background-color: rgb(201, 15, 15);
+  .draft-button {
+    min-height: 40px;
   }
 }

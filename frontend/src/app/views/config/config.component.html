@@ -97,6 +97,7 @@
   alignment="center"
   backdrop="static"
   size="lg"
+  scrollable
 >
   <c-modal-header>
     <div>
@@ -127,10 +128,10 @@
                   <button
                     type="button"
                     class="disconnect-session"
-                    [disabled]="disconnectingSessions.has(session.userId)"
+                    [disabled]="disconnectingSessions.has(session.sessionId)"
                     (click)="disconnectSession(session)"
                   >
-                    {{ disconnectingSessions.has(session.userId) ? 'Desconectando...' : 'Desconectar' }}
+                    {{ disconnectingSessions.has(session.sessionId) ? 'Desconectando...' : 'Desconectar' }}
                   </button>
                 </td>
               </tr>
@@ -148,7 +149,8 @@
   (visibleChange)="onEmailLogsVisibleChange($event)"
   alignment="center"
   backdrop="static"
-  size="xl"
+  size="lg"
+  scrollable
 >
   <c-modal-header>
     <div>
