@@ -71,8 +71,9 @@ public class MemorandoService {
 
         Page<Memorando> entities;
         if (fullText && !normalizedSearch.isBlank() && isPostgres()) {
+            Pageable relevancePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
             entities = memorandoRepository.searchFullText(
-                    pageable,
+                    relevancePageable,
                     normalizedSearch,
                     draft,
                     statusFilter == null ? "" : statusFilter.name(),

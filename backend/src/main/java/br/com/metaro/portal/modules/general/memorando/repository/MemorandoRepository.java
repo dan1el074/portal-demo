@@ -74,7 +74,18 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
     );
 
     @Query(value = """
-        SELECT m.*
+        SELECT
+            m.id,
+            m.number,
+            m.request,
+            m.client,
+            m.items,
+            m.title,
+            m.description,
+            m.reason,
+            m.create_at,
+            m.status,
+            m.user_id
         FROM tb_memorando m
         INNER JOIN tb_user u ON u.id = m.user_id
         WHERE (:admin = true OR ((m.status NOT IN ('CREATED', 'CANCELED')) OR m.user_id = :userId))
