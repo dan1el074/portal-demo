@@ -6,6 +6,7 @@ import br.com.metaro.portal.core.dto.errors.FieldMessageDto;
 import br.com.metaro.portal.core.services.exceptions.ForbiddenException;
 import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
+import br.com.metaro.portal.integration.focco.FoccoIntegrationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ErrorDto> forbidden(ForbiddenException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
+        ErrorDto error = new ErrorDto(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(FoccoIntegrationException.class)
+    public ResponseEntity<ErrorDto> foccoIntegration(FoccoIntegrationException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_GATEWAY;
         ErrorDto error = new ErrorDto(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(error);
     }

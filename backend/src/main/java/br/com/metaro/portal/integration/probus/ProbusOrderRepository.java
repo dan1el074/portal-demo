@@ -1,9 +1,8 @@
-package br.com.metaro.portal.util.erp;
+package br.com.metaro.portal.integration.probus;
 
 import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderItemDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderLineDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,10 +14,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ErpOrderRepository {
-    @Autowired
-    @Qualifier("externalJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+public class ProbusOrderRepository {
+    private final JdbcTemplate jdbcTemplate;
+
+    public ProbusOrderRepository(@Qualifier("externalJdbcTemplate") JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Optional<ErpOrderDto> findProductionOrderByNumber(int orderNumber) {
         ErpOrderDto order = jdbcTemplate.query("""

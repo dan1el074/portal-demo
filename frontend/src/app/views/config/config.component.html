@@ -47,6 +47,72 @@
               </div>
             </div>
 
+            <div class="admin-tool focco-tool">
+              <div class="admin-tool-copy">
+                <strong>Integração com o FoccoERP</strong>
+                <span>Credenciais usadas pelo Fluxo de etapas e pelo Memorando para consultar pedidos no ERP.</span>
+              </div>
+              <div class="focco-config-control">
+                <label>
+                  <span>Chave</span>
+                  <input type="text" autocomplete="off" [disabled]="foccoConfigLoading || foccoConfigSaving" [(ngModel)]="foccoKey">
+                </label>
+                <label>
+                  <span>Token</span>
+                  <input
+                    type="password"
+                    autocomplete="new-password"
+                    [placeholder]="foccoTokenConfigured ? 'Deixe vazio para manter' : 'Informe o token'"
+                    [disabled]="foccoConfigLoading || foccoConfigSaving"
+                    [(ngModel)]="foccoToken"
+                  >
+                </label>
+                <button
+                  class="admin-action primary"
+                  type="button"
+                  [disabled]="foccoConfigLoading || foccoConfigSaving"
+                  (click)="saveFoccoConfig()"
+                >
+                  {{ foccoConfigSaving ? 'Salvando...' : (foccoConfigLoading ? 'Carregando...' : 'Salvar') }}
+                </button>
+              </div>
+            </div>
+
+            <div class="admin-tool erp-tool">
+              <div class="admin-tool-copy">
+                <strong>Integração com o Probus</strong>
+                <span>Conexão somente leitura com o banco Oracle do ERP.</span>
+              </div>
+              <div class="erp-config-control probus-config-control">
+                <label>
+                  <span>URL JDBC</span>
+                  <input type="text" autocomplete="off" [disabled]="probusConfigLoading || probusConfigSaving" [(ngModel)]="probusJdbcUrl">
+                </label>
+                <label>
+                  <span>Usuário</span>
+                  <input type="text" autocomplete="username" [disabled]="probusConfigLoading || probusConfigSaving" [(ngModel)]="probusUsername">
+                </label>
+                <label>
+                  <span>Senha</span>
+                  <input
+                    type="password"
+                    autocomplete="new-password"
+                    [placeholder]="probusPasswordConfigured ? 'Deixe vazio para manter' : 'Informe a senha'"
+                    [disabled]="probusConfigLoading || probusConfigSaving"
+                    [(ngModel)]="probusPassword"
+                  >
+                </label>
+                <button
+                  class="admin-action primary"
+                  type="button"
+                  [disabled]="probusConfigLoading || probusConfigSaving"
+                  (click)="saveProbusConfig()"
+                >
+                  {{ probusConfigSaving ? 'Salvando...' : (probusConfigLoading ? 'Carregando...' : 'Salvar') }}
+                </button>
+              </div>
+            </div>
+
             <div class="admin-tool">
               <div class="admin-tool-copy">
                 <strong>Histórico de e-mails</strong>
@@ -149,7 +215,7 @@
   (visibleChange)="onEmailLogsVisibleChange($event)"
   alignment="center"
   backdrop="static"
-  size="lg"
+  size="xl"
   scrollable
 >
   <c-modal-header>
@@ -190,11 +256,13 @@
           </tbody>
         </table>
       </div>
-      <div class="email-logs-pagination">
-        <button type="button" [disabled]="emailLogsPage === 0" (click)="changeEmailLogsPage(emailLogsPage - 1)">Anterior</button>
-        <span>Página {{ emailLogsPage + 1 }} de {{ emailLogsTotalPages }}</span>
-        <button type="button" [disabled]="emailLogsPage + 1 >= emailLogsTotalPages" (click)="changeEmailLogsPage(emailLogsPage + 1)">Próxima</button>
-      </div>
     }
   </c-modal-body>
+  <c-modal-footer>
+    <div class="email-logs-pagination">
+      <button type="button" [disabled]="emailLogsPage === 0" (click)="changeEmailLogsPage(emailLogsPage - 1)">Anterior</button>
+      <span>Página {{ emailLogsPage + 1 }} de {{ emailLogsTotalPages }}</span>
+      <button type="button" [disabled]="emailLogsPage + 1 >= emailLogsTotalPages" (click)="changeEmailLogsPage(emailLogsPage + 1)">Próxima</button>
+    </div>
+  </c-modal-footer>
 </c-modal>

@@ -4,6 +4,7 @@ import { ToastrService } from '../../../../app/services/toast.service';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, SpinnerComponent } from '@coreui/angular';
 import { StepFlowService } from '../../../../app/services/step-flow.service';
 import { StepFlowOrderInfo, StepFlowOrderItem } from '../../../../app/interface/step-flow.interface';
+import { ErpSource } from '../../../../app/interface/erp.interface';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from '../../../../app/pipes/truncate.pipe';
 import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
@@ -51,6 +52,7 @@ export class NewStepFlowModalComponent {
     private cdf: ChangeDetectorRef
   ) {
     this.newOrderForm = this.formBuilder.group({
+      source: ['FOCCO' as ErpSource, Validators.required],
       number: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
     });
 
@@ -77,7 +79,7 @@ export class NewStepFlowModalComponent {
   }
 
   private resetForm(): void {
-    this.newOrderForm.reset({ orderNumber: '' });
+    this.newOrderForm.reset({ source: 'FOCCO', number: '' });
     this.itemsForm.clear();
     this.valid = undefined;
     this.searchResult = null;
@@ -96,7 +98,11 @@ export class NewStepFlowModalComponent {
     this.searchResult = null;
     this.itemsForm.clear();
 
-    this.stepFlowService.findOrderInfoByNumber(Number(this.newOrderForm.get('number')?.value)).subscribe({
+    const source = this.newOrderForm.get('source')?.value as ErpSource;
+    this.stepFlowService.findOrderInfoByNumber(
+      Number(this.newOrderForm.get('number')?.value),
+      source
+    ).subscribe({
       next: (data: StepFlowOrderInfo) => {
         this.searchResult = data;
         this.buildItemsForm(data.items);
@@ -111,7 +117,11 @@ export class NewStepFlowModalComponent {
             break;
 
           case 422:
-            this.toaster.error("Esse pedido já foi produzido!");
+            this.toaster.error(error.error?.error || "Esse pedido já foi produzido!");
+            break;
+
+          case 502:
+            this.toaster.error(error.error?.error || "Não foi possível consultar o ERP selecionado.");
             break;
 
           default:

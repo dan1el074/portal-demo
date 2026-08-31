@@ -11,7 +11,7 @@ import { MemorandoTableComponent } from '../../../../components/table/memorando-
 import { MemorandoFormComponent } from '../../../../components/forms/memorando/memorando-form/memorando-form.component';
 import { NewMemorandoModalComponent } from '../../../../components/modal/memorando/new-memorando-modal/new-memorando-modal.component';
 import { Memorando, MemorandoGroup, MemorandoList, MemorandoStatus, MemorandoSummary, NewMemorando } from '../../../interface/memorando.interface';
-import { OrderInfo } from '../../../interface/erp.interface';
+import { ErpOrderSearch, OrderInfo } from '../../../interface/erp.interface';
 import { BackNavigationService } from '../../../services/back-navigation.service';
 
 @Component({
@@ -147,8 +147,8 @@ export class MemorandoComponent implements OnInit {
     this.closeFormTab();
   }
 
-  protected openCreateTab(orderNumber: number): void {
-    this.memorandoService.searchOrder(orderNumber).subscribe({
+  protected openCreateTab(search: ErpOrderSearch): void {
+    this.memorandoService.searchOrder(search.orderNumber, search.source).subscribe({
       next: (data: Array<OrderInfo>) => {
         if (!data.length) {
           this.toasterService.error('Pedido não encontrado!');

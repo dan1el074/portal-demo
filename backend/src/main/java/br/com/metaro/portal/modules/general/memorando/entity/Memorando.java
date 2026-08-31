@@ -2,6 +2,7 @@ package br.com.metaro.portal.modules.general.memorando.entity;
 
 import br.com.metaro.portal.core.entities.Position;
 import br.com.metaro.portal.core.entities.User;
+import br.com.metaro.portal.util.erp.ErpSource;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,9 @@ public class Memorando {
     private Long number;
     private Long request;
     private String client;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ErpSource erpSource = ErpSource.PROBUS;
     private List<String> items;
     private String title;
     @Column(columnDefinition = "TEXT")

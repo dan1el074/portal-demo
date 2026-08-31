@@ -17,5 +17,6 @@ public class Param {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(length = 4000)
     private String content;
 }

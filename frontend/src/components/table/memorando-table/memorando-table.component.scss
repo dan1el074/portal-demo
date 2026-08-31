@@ -115,8 +115,45 @@
   &:hover { color: var(--cui-danger); }
 }
 
+@media (max-width: 839.98px) {
+  .memorando-filter-bar {
+    width: 100%;
+    flex: 0 0 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  :host ::ng-deep .memorando-smart-table > .row.my-2.mx-0:first-child > .memorando-filter-bar {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+  }
+}
+
 @media (max-width: 650px) {
   .memorando-filter-bar { flex-wrap: wrap; margin: 8px 0 0; }
   .status-filter { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
   .status-filter::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 349.98px) {
+  .status-filter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    overflow: visible;
+
+    button {
+      width: 100%;
+      border: 1px solid var(--cui-border-color);
+      border-radius: 0;
+
+      &:nth-child(odd) { border-right: 0; }
+      &:nth-child(n + 3) { border-top: 0; }
+      &:first-child { border-radius: 12px 0 0; }
+      &:nth-child(2) { border-radius: 0 12px 0 0; }
+      &:nth-child(3) { border-radius: 0 0 0 12px; }
+      &:last-child { border-radius: 0 0 12px; }
+    }
+  }
 }

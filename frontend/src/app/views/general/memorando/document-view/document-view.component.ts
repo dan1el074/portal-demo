@@ -58,6 +58,7 @@ export class DocumentViewComponent implements OnInit {
     id: 0,
     number: 0,
     request: 0,
+    erpSource: 'PROBUS',
     client: '',
     items: [],
     title: '',
@@ -263,6 +264,7 @@ export class DocumentViewComponent implements OnInit {
 
     const memorando: NewMemorando = {
       request: this.item.request,
+      erpSource: this.item.erpSource,
       client: this.item.client,
       items: this.item.items,
       title: this.item.title,
