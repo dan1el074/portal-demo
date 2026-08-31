@@ -79,7 +79,7 @@ class MemorandoRepositoryTests {
     }
 
     @Test
-    void preservesDraftAndCanceledAccessRulesBeforePagination() {
+    void keepsDraftsPrivateAndMakesCanceledMemorandosPublicBeforePagination() {
         List<User> users = userRepository.findAll();
         User currentUser = users.getFirst();
         User anotherUser = users.get(1);
@@ -99,7 +99,14 @@ class MemorandoRepositoryTests {
 
         assertThat(drafts.getContent()).hasSize(1);
         assertThat(drafts.getContent().getFirst().getCreatedBy().getId()).isEqualTo(currentUser.getId());
-        assertThat(canceled.getContent()).isEmpty();
+        assertThat(canceled.getContent()).hasSize(1);
+        assertThat(canceled.getContent().getFirst().getCreatedBy().getId()).isEqualTo(anotherUser.getId());
+
+        var canceledExtended = repository.searchExtended(
+                PageRequest.of(0, 10), "Cancelado alheio", false, MemorandoStatus.CANCELED,
+                false, currentUser.getId()
+        );
+        assertThat(canceledExtended.getContent()).hasSize(1);
     }
 
     @Test
@@ -124,21 +131,43 @@ class MemorandoRepositoryTests {
     }
 
     @Test
+    void includesPublicCanceledMemorandosButOnlyOwnDraftsInUserSummary() {
+        List<User> users = userRepository.findAll();
+        User currentUser = users.getFirst();
+        User anotherUser = users.get(1);
+        MemorandoSummaryProjection before = repository.findSummary(false, currentUser.getId());
+        repository.saveAll(List.of(
+                memorando("Cancelado alheio", "Cancelado alheio", MemorandoStatus.CANCELED, anotherUser),
+                memorando("Meu rascunho", "Meu rascunho", MemorandoStatus.CREATED, currentUser),
+                memorando("Rascunho alheio", "Rascunho alheio", MemorandoStatus.CREATED, anotherUser)
+        ));
+        repository.flush();
+
+        MemorandoSummaryProjection after = repository.findSummary(false, currentUser.getId());
+
+        assertThat(after.getTotal() - before.getTotal()).isEqualTo(1);
+        assertThat(after.getCanceled() - before.getCanceled()).isEqualTo(1);
+        assertThat(after.getDraft() - before.getDraft()).isEqualTo(1);
+    }
+
+    @Test
     void findsAccessiblePreviousAndNextMemorandosInsideTheSameGroup() {
-        User author = userRepository.findAll().getFirst();
+        List<User> users = userRepository.findAll();
+        User currentUser = users.getFirst();
+        User anotherUser = users.get(1);
         List<Memorando> memorandos = repository.saveAll(List.of(
-                memorando("Anterior", "Anterior", MemorandoStatus.PUBLISH, author),
-                memorando("Atual", "Atual", MemorandoStatus.PUBLISH, author),
-                memorando("Próximo", "Próximo", MemorandoStatus.APPROVED, author)
+                memorando("Anterior", "Anterior", MemorandoStatus.PUBLISH, anotherUser),
+                memorando("Atual", "Atual", MemorandoStatus.PUBLISH, currentUser),
+                memorando("Próximo cancelado", "Próximo cancelado", MemorandoStatus.CANCELED, anotherUser)
         ));
         repository.flush();
 
         Long currentId = memorandos.get(1).getId();
         List<Long> previous = repository.findPreviousAccessibleId(
-                currentId, false, true, author.getId(), PageRequest.of(0, 1)
+                currentId, false, false, currentUser.getId(), PageRequest.of(0, 1)
         );
         List<Long> next = repository.findNextAccessibleId(
-                currentId, false, true, author.getId(), PageRequest.of(0, 1)
+                currentId, false, false, currentUser.getId(), PageRequest.of(0, 1)
         );
 
         assertThat(previous).containsExactly(memorandos.getFirst().getId());

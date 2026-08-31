@@ -92,8 +92,10 @@
             @if (canSign) { <button type='button' class='action-button primary-action' (click)='toggleSignModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M12 20h9'></path><path d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'></path></svg>Assinar documento</button> }
             @if (isAdmin) {
               <button type='button' class='action-button neutral-action' (click)='toggleRollbackModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><path d='M3 12a9 9 0 1 0 3-6.7L3 8'></path><path d='M3 3v5h5'></path></svg>Reiniciar</button>
-              <button type='button' class='action-button danger-action' (click)='toggleCancelModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><path d='m15 9-6 6'></path><path d='m9 9 6 6'></path></svg>Cancelar</button>
             }
+          }
+          @if (isAdmin && (item.status === 'PUBLISH' || item.status === 'APPROVED')) {
+            <button type='button' class='action-button danger-action' (click)='toggleCancelModal()'><svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><path d='m15 9-6 6'></path><path d='m9 9 6 6'></path></svg>Cancelar</button>
           }
         </div>
 
@@ -125,8 +127,10 @@
             </article>
           }
         </div>
-        <div class='signature-state' [class.complete]='!signaturesMissing.length && item.status !== "CREATED"'>
-          @if (signaturesMissing.length && item.status === 'PUBLISH') {
+        <div class='signature-state' [class.complete]='!signaturesMissing.length && item.status !== "CREATED" && item.status !== "CANCELED"' [class.canceled]='item.status === "CANCELED"'>
+          @if (item.status === 'CANCELED') {
+            <svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'></circle><path d='m4.9 4.9 14.2 14.2'></path></svg><strong>Nenhuma assinatura poderá ser adicionada porque o memorando foi cancelado.</strong>
+          } @else if (signaturesMissing.length && item.status === 'PUBLISH') {
             <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'></path><circle cx='9' cy='7' r='4'></circle><path d='M22 21v-2a4 4 0 0 0-3-3.87'></path><path d='M16 3.13a4 4 0 0 1 0 7.75'></path></svg>
             <div><strong>Aguardando assinatura de:</strong><p>@for (user of signaturesMissing; track user.id; let last = $last) { {{ user.name }}{{ last ? '' : ' · ' }} }</p></div>
           } @else if (!signaturesMissing.length && item.status !== 'CREATED') {

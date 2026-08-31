@@ -53,39 +53,43 @@
 
         <c-tabs-content>
           <c-tab-panel class='content-panel remove-outline' [itemKey]='0'>
-            <app-memorando-table
-              [data]='memorandos'
-              [loading]='loadingTable'
-              [searchValue]='currentSearch'
-              [fullText]='fullText'
-              [showStatusFilters]='true'
-              [selectedStatus]='statusFilter'
-              [sorterValue]='currentSort ?? {}'
-              (openMemorandoTask)='openMemorando($event)'
-              (sorterChange)='onSorterChange($event)'
-              (itemsPerPageChange)='onItemsPerPageChange($event)'
-              (filterChange)='onFilterChange($event)'
-              (fullTextChange)='onFullTextChange($event)'
-              (statusChange)='filterByStatus($event)'
-              (clearAll)='clearTableFilters()'
-            ></app-memorando-table>
-            <c-smart-pagination [activePage]='currentPage' [pages]='totalPages' (activePageChange)='onPageChange($event)' class='step-flow-table'></c-smart-pagination>
+            @if (activeItemKey === 0) {
+              <app-memorando-table
+                [data]='memorandos'
+                [loading]='loadingTable'
+                [searchValue]='currentSearch'
+                [fullText]='fullText'
+                [showStatusFilters]='true'
+                [selectedStatus]='statusFilter'
+                [sorterValue]='currentSort ?? {}'
+                (openMemorandoTask)='openMemorando($event)'
+                (sorterChange)='onSorterChange($event)'
+                (itemsPerPageChange)='onItemsPerPageChange($event)'
+                (filterChange)='onFilterChange($event)'
+                (fullTextChange)='onFullTextChange($event)'
+                (statusChange)='filterByStatus($event)'
+                (clearAll)='clearTableFilters()'
+              ></app-memorando-table>
+              <c-smart-pagination [activePage]='currentPage' [pages]='totalPages' (activePageChange)='onPageChange($event)' class='step-flow-table'></c-smart-pagination>
+            }
           </c-tab-panel>
           <c-tab-panel class='content-panel remove-outline' [itemKey]='1'>
-            <app-memorando-table
-              [data]='memorandos'
-              [loading]='loadingTable'
-              [searchValue]='currentSearch'
-              [fullText]='fullText'
-              [sorterValue]='currentSort ?? {}'
-              (openMemorandoTask)='openMemorando($event)'
-              (sorterChange)='onSorterChange($event)'
-              (itemsPerPageChange)='onItemsPerPageChange($event)'
-              (filterChange)='onFilterChange($event)'
-              (fullTextChange)='onFullTextChange($event)'
-              (clearAll)='clearTableFilters()'
-            ></app-memorando-table>
-            <c-smart-pagination [activePage]='currentPage' [pages]='totalPages' (activePageChange)='onPageChange($event)' class='step-flow-table'></c-smart-pagination>
+            @if (activeItemKey === 1) {
+              <app-memorando-table
+                [data]='memorandos'
+                [loading]='loadingTable'
+                [searchValue]='currentSearch'
+                [fullText]='fullText'
+                [sorterValue]='currentSort ?? {}'
+                (openMemorandoTask)='openMemorando($event)'
+                (sorterChange)='onSorterChange($event)'
+                (itemsPerPageChange)='onItemsPerPageChange($event)'
+                (filterChange)='onFilterChange($event)'
+                (fullTextChange)='onFullTextChange($event)'
+                (clearAll)='clearTableFilters()'
+              ></app-memorando-table>
+              <c-smart-pagination [activePage]='currentPage' [pages]='totalPages' (activePageChange)='onPageChange($event)' class='step-flow-table'></c-smart-pagination>
+            }
           </c-tab-panel>
           @if (newMemorandoTab) {
             <c-tab-panel class='form-panel remove-outline' [itemKey]='2'>

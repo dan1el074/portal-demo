@@ -18,11 +18,9 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
     @Query("""
         SELECT m
         FROM Memorando m
-        WHERE (:admin = true OR (
-                (m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
-                    AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CANCELED)
-                OR m.createdBy.id = :userId
-            ))
+        WHERE (:admin = true
+            OR m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
+            OR m.createdBy.id = :userId)
             AND ((:draft = true AND m.status = br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED)
                 OR (:draft = false AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED))
             AND (:status IS NULL OR m.status = :status)
@@ -49,11 +47,9 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
     @Query("""
         SELECT m
         FROM Memorando m
-        WHERE (:admin = true OR (
-                (m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
-                    AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CANCELED)
-                OR m.createdBy.id = :userId
-            ))
+        WHERE (:admin = true
+            OR m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
+            OR m.createdBy.id = :userId)
             AND ((:draft = true AND m.status = br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED)
                 OR (:draft = false AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED))
             AND (:status IS NULL OR m.status = :status)
@@ -88,7 +84,7 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
             m.user_id
         FROM tb_memorando m
         INNER JOIN tb_user u ON u.id = m.user_id
-        WHERE (:admin = true OR ((m.status NOT IN ('CREATED', 'CANCELED')) OR m.user_id = :userId))
+        WHERE (:admin = true OR m.status <> 'CREATED' OR m.user_id = :userId)
             AND ((:draft = true AND m.status = 'CREATED') OR (:draft = false AND m.status <> 'CREATED'))
             AND (:status = '' OR m.status = :status)
             AND (
@@ -107,7 +103,7 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
         SELECT COUNT(*)
         FROM tb_memorando m
         INNER JOIN tb_user u ON u.id = m.user_id
-        WHERE (:admin = true OR ((m.status NOT IN ('CREATED', 'CANCELED')) OR m.user_id = :userId))
+        WHERE (:admin = true OR m.status <> 'CREATED' OR m.user_id = :userId)
             AND ((:draft = true AND m.status = 'CREATED') OR (:draft = false AND m.status <> 'CREATED'))
             AND (:status = '' OR m.status = :status)
             AND (
@@ -133,11 +129,9 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
             COALESCE(SUM(CASE WHEN m.status = br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CANCELED THEN 1 ELSE 0 END), 0) AS canceled,
             COALESCE(SUM(CASE WHEN m.status = br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED THEN 1 ELSE 0 END), 0) AS draft
         FROM Memorando m
-        WHERE (:admin = true OR (
-            (m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
-                AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CANCELED)
-            OR m.createdBy.id = :userId
-        ))
+        WHERE (:admin = true
+            OR m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
+            OR m.createdBy.id = :userId)
     """)
     br.com.metaro.portal.modules.general.memorando.repository.projections.MemorandoSummaryProjection findSummary(
             @Param("admin") boolean admin,
@@ -147,11 +141,9 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
     @Query("""
         SELECT m.id
         FROM Memorando m
-        WHERE (:admin = true OR (
-                (m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
-                    AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CANCELED)
-                OR m.createdBy.id = :userId
-            ))
+        WHERE (:admin = true
+            OR m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
+            OR m.createdBy.id = :userId)
             AND ((:draft = true AND m.status = br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED)
                 OR (:draft = false AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED))
             AND m.id < :id
@@ -168,11 +160,9 @@ public interface MemorandoRepository extends JpaRepository<Memorando, Long> {
     @Query("""
         SELECT m.id
         FROM Memorando m
-        WHERE (:admin = true OR (
-                (m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
-                    AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CANCELED)
-                OR m.createdBy.id = :userId
-            ))
+        WHERE (:admin = true
+            OR m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED
+            OR m.createdBy.id = :userId)
             AND ((:draft = true AND m.status = br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED)
                 OR (:draft = false AND m.status <> br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus.CREATED))
             AND m.id > :id

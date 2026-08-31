@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AvatarComponent } from '@coreui/angular';
-import { IColumn, SmartTableComponent, TemplateIdDirective, TooltipDirective } from '@coreui/angular-pro';
+import { IColumn, ISorterValue, SmartTableComponent, TemplateIdDirective, TooltipDirective } from '@coreui/angular-pro';
 import { environment } from '../../../environments/environment';
 import { MemorandoList, MemorandoStatus } from '../../../app/interface/memorando.interface';
 
@@ -40,6 +40,16 @@ export class MemorandoTableComponent {
 
   protected openMemorando(event: { item: MemorandoList }): void {
     this.openMemorandoTask.emit(event.item.id);
+  }
+
+  protected onFilterValueChange(value: string): void {
+    if (value === this.searchValue) return;
+    this.filterChange.emit(value);
+  }
+
+  protected onSorterValueChange(sorter: ISorterValue): void {
+    if (sorter?.column === this.sorterValue?.column && sorter?.state === this.sorterValue?.state) return;
+    this.sorterChange.emit(sorter);
   }
 
   protected onFullTextChange(event: Event): void {
