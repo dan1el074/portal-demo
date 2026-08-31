@@ -1,11 +1,13 @@
 import { Position } from './position.interface';
 import { UserSummary } from './user.interface';
+import { ErpSource } from './erp.interface';
 
 export interface Memorando {
   id: number;
   number: number;
   request: number;
   client: string;
+  erpSource: ErpSource;
   items: Array<string>;
   title: string;
   description: string;
@@ -52,6 +54,7 @@ export interface MemorandoNavigation {
 
 export interface NewMemorando {
   request: number;
+  erpSource: ErpSource;
   client: string;
   items: Array<string>;
   title: string;

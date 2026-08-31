@@ -6,6 +6,7 @@ import br.com.metaro.portal.modules.general.stepFlow.entities.StepStatus;
 import br.com.metaro.portal.modules.general.stepFlow.entities.StepType;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StatusCountsProjection;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StepCountProjection;
+import br.com.metaro.portal.util.erp.ErpSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -72,6 +73,19 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND o.status <> :orderStatus
     """)
     public List<Order> findByNumber(Integer orderNumber, @Param("orderStatus") OrderStatus orderStatus);
+
+    @Query("""
+        SELECT o
+        FROM Order o
+        WHERE o.number = :orderNumber
+            AND o.erpSource = :erpSource
+            AND o.status <> :orderStatus
+    """)
+    List<Order> findByNumberAndErpSource(
+            Integer orderNumber,
+            @Param("erpSource") ErpSource erpSource,
+            @Param("orderStatus") OrderStatus orderStatus
+    );
 
     public long countByNumber(Integer number);
 

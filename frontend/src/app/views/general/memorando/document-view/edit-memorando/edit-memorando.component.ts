@@ -30,6 +30,7 @@ export class EditMemorandoComponent implements OnInit {
     id: 0,
     number: 0,
     request: 0,
+    erpSource: 'PROBUS',
     client: '',
     items: [],
     title: '',

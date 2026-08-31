@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { UpdateDepartmentMemorando, Memorando, NewMemorando, MemorandoGroup, MemorandoNavigation, MemorandoPage, MemorandoStatus, MemorandoSummary } from '../interface/memorando.interface';
-import { OrderInfo } from '../interface/erp.interface';
+import { ErpSource, OrderInfo } from '../interface/erp.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -49,8 +49,9 @@ export class MemorandoService {
     return this.http.get<MemorandoNavigation>(`${this.api}/api/memorando/${id}/navigation`);
   }
 
-  public searchOrder(order: number): Observable<any> {
-    return this.http.get<Array<OrderInfo>>(this.api + '/api/erp/order/' + order);
+  public searchOrder(order: number, source: ErpSource): Observable<Array<OrderInfo>> {
+    const params = new HttpParams().set('source', source);
+    return this.http.get<Array<OrderInfo>>(this.api + '/api/erp/order/' + order, { params });
   }
 
   public insert(data: NewMemorando): Observable<any> {

@@ -1,5 +1,6 @@
 package br.com.metaro.portal.modules.general.stepFlow.entities;
 
+import br.com.metaro.portal.util.erp.ErpSource;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,6 +45,9 @@ public class Order {
     private Double subtotal;
     private Double discount;
     private Double total;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ErpSource erpSource = ErpSource.PROBUS;
 
     // auditoria
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")

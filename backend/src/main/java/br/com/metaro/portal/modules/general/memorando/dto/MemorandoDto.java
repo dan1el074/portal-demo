@@ -7,6 +7,7 @@ import br.com.metaro.portal.modules.general.memorando.entity.Memorando;
 import br.com.metaro.portal.modules.general.memorando.entity.MemorandoLog;
 import br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus;
 import br.com.metaro.portal.modules.general.memorando.entity.Signature;
+import br.com.metaro.portal.util.erp.ErpSource;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class MemorandoDto {
     private Long number;
     private Long request;
     private String client;
+    private ErpSource erpSource;
     private List<String> items;
     private String title;
     private String description;
@@ -39,6 +41,7 @@ public class MemorandoDto {
         number = entity.getNumber();
         request = entity.getRequest();
         client = entity.getClient();
+        erpSource = entity.getErpSource();
         title = entity.getTitle();
         description = entity.getDescription();
         reason = entity.getReason();

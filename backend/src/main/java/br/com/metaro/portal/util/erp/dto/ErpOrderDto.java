@@ -1,5 +1,6 @@
 package br.com.metaro.portal.util.erp.dto;
 
+import br.com.metaro.portal.util.erp.ErpSource;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class ErpOrderDto {
     private final Double discount;
     private final Double total;
     private final List<ErpOrderItemDto> items;
+    private ErpSource source = ErpSource.PROBUS;
 
     public ErpOrderDto(
             Integer number,
@@ -50,5 +52,9 @@ public class ErpOrderDto {
 
     public void addItem(ErpOrderItemDto item) {
         items.add(item);
+    }
+
+    public void setSource(ErpSource source) {
+        this.source = source == null ? ErpSource.PROBUS : source;
     }
 }

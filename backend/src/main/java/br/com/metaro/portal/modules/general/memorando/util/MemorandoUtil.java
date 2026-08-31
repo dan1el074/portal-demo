@@ -51,6 +51,7 @@ public class MemorandoUtil {
     public void dtoToEntity(MemorandoInsertDto dto, Memorando entity) {
         entity.setRequest(dto.getRequest());
         entity.setClient(dto.getClient());
+        entity.setErpSource(dto.getErpSource());
         entity.setItems(new ArrayList<>(dto.getItems()));
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());

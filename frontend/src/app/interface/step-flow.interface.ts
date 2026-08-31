@@ -1,5 +1,6 @@
 import { StepFlowImage } from './image.interface';
 import { SafeHtml } from "@angular/platform-browser";
+import { ErpSource } from './erp.interface';
 
 export interface Resume {
   id: number;
@@ -100,6 +101,7 @@ export interface PagedResult<T> {
 }
 
 export interface StepFlowOrderInfo {
+  source: ErpSource;
   number: number;
   client: string;
   cnpj: string;

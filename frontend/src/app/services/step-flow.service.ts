@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { AdminDashboard, PagedResult, StepFlowData, StepFlowOrder, StepFlowOrderInfo } from './../interface/step-flow.interface';
+import { ErpSource } from '../interface/erp.interface';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -35,8 +36,9 @@ export class StepFlowService {
     return this.http.get<AdminDashboard>(this.api + '/admin');
   }
 
-  public findOrderInfoByNumber(orderNumber: number): Observable<StepFlowOrderInfo> {
-    return this.http.get<StepFlowOrderInfo>(this.api + '/erp/' + orderNumber);
+  public findOrderInfoByNumber(orderNumber: number, source: ErpSource): Observable<StepFlowOrderInfo> {
+    const params = new HttpParams().set('source', source);
+    return this.http.get<StepFlowOrderInfo>(this.api + '/erp/' + orderNumber, { params });
   }
 
   public create(order: StepFlowOrderInfo): Observable<void> {

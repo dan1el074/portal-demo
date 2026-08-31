@@ -44,6 +44,7 @@ export class MemorandoEditFormComponent implements OnInit, OnChanges {
   ) {
     this.editForm = this.formBuilder.group({
       request: ['', [Validators.required]],
+      erpSource: ['PROBUS', [Validators.required]],
       client: ['', [Validators.required, Validators.minLength(5)]],
       items: [[], [Validators.required]],
       title: ['', [Validators.required]],
@@ -67,7 +68,7 @@ export class MemorandoEditFormComponent implements OnInit, OnChanges {
   public ngOnChanges(): void {
     if (this.data.id == 0) return;
 
-    this.memorandoService.searchOrder(this.data.request).subscribe({
+    this.memorandoService.searchOrder(this.data.request, this.data.erpSource).subscribe({
       next: (data: Array<OrderInfo>) => {
         if (data.length == 0) {
           this.toasterService.error('Informações do pedido não encontradas!');
@@ -92,6 +93,7 @@ export class MemorandoEditFormComponent implements OnInit, OnChanges {
 
     this.editForm.patchValue({
       request: this.orderInfoList[0].number,
+      erpSource: this.data.erpSource,
       client: this.orderInfoList[0].client,
       items: this.data.items,
       title: this.data.title,

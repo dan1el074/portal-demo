@@ -3,11 +3,13 @@ package br.com.metaro.portal.modules.general.stepFlow.service;
 import br.com.metaro.portal.core.entities.User;
 import br.com.metaro.portal.core.services.UserService;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
+import br.com.metaro.portal.integration.focco.FoccoOrderClient;
 import br.com.metaro.portal.modules.general.stepFlow.entities.Order;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderItem;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStatus;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepository;
 import br.com.metaro.portal.util.erp.ErpOrderQueryService;
+import br.com.metaro.portal.util.erp.ErpSource;
 import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderItemDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,7 @@ class StepFlowErpOrderServiceTests {
     private UserService userService;
     private ErpOrderQueryService erpOrderQueryService;
     private OrderRepository orderRepository;
+    private FoccoOrderClient foccoOrderClient;
     private StepFlowErpOrderService service;
 
     @BeforeEach
@@ -32,6 +35,7 @@ class StepFlowErpOrderServiceTests {
         userService = mock(UserService.class);
         erpOrderQueryService = mock(ErpOrderQueryService.class);
         orderRepository = mock(OrderRepository.class);
+        foccoOrderClient = mock(FoccoOrderClient.class);
 
         User authenticatedUser = new User();
         when(userService.authenticate()).thenReturn(authenticatedUser);
@@ -39,7 +43,8 @@ class StepFlowErpOrderServiceTests {
         service = new StepFlowErpOrderService(
                 userService,
                 erpOrderQueryService,
-                orderRepository
+                orderRepository,
+                foccoOrderClient
         );
     }
 
@@ -49,10 +54,10 @@ class StepFlowErpOrderServiceTests {
         Order localOrder = createLocalOrder(4);
         when(erpOrderQueryService.findProductionOrderByNumber(14064))
                 .thenReturn(Optional.of(erpOrder));
-        when(orderRepository.findByNumber(14064, OrderStatus.CANCELLED))
+        when(orderRepository.findByNumberAndErpSource(14064, ErpSource.PROBUS, OrderStatus.CANCELLED))
                 .thenReturn(List.of(localOrder));
 
-        ErpOrderDto result = service.findAvailableOrderByNumber(14064);
+        ErpOrderDto result = service.findAvailableOrderByNumber(14064, ErpSource.PROBUS);
 
         assertThat(result.getItems().getFirst().getProducedQuantity())
                 .isEqualTo(4);
@@ -64,11 +69,23 @@ class StepFlowErpOrderServiceTests {
         Order localOrder = createLocalOrder(10);
         when(erpOrderQueryService.findProductionOrderByNumber(14064))
                 .thenReturn(Optional.of(erpOrder));
-        when(orderRepository.findByNumber(14064, OrderStatus.CANCELLED))
+        when(orderRepository.findByNumberAndErpSource(14064, ErpSource.PROBUS, OrderStatus.CANCELLED))
                 .thenReturn(List.of(localOrder));
 
-        assertThatThrownBy(() -> service.findAvailableOrderByNumber(14064))
+        assertThatThrownBy(() -> service.findAvailableOrderByNumber(14064, ErpSource.PROBUS))
                 .isInstanceOf(UnprocessableEntityException.class);
+    }
+
+    @Test
+    void usesFoccoClientWhenFoccoIsSelected() {
+        ErpOrderDto erpOrder = createErpOrder(10);
+        when(foccoOrderClient.findProductionOrderByNumber(149)).thenReturn(erpOrder);
+        when(orderRepository.findByNumberAndErpSource(149, ErpSource.FOCCO, OrderStatus.CANCELLED))
+                .thenReturn(List.of());
+
+        ErpOrderDto result = service.findAvailableOrderByNumber(149, ErpSource.FOCCO);
+
+        assertThat(result.getSource()).isEqualTo(ErpSource.FOCCO);
     }
 
     private ErpOrderDto createErpOrder(int quantity) {

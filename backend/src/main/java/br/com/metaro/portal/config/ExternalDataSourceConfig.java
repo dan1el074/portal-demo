@@ -1,5 +1,9 @@
 package br.com.metaro.portal.config;
 
+import br.com.metaro.portal.integration.probus.ProbusConfigService;
+import br.com.metaro.portal.integration.probus.ProbusDataSource;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -21,9 +25,11 @@ public class ExternalDataSourceConfig {
 
     @Bean
     @Qualifier("externalDataSource")
-    @ConfigurationProperties(prefix = "external.datasource")
-    public DataSource externalDataSource() {
-        return DataSourceBuilder.create().build();
+    public DataSource externalDataSource(
+            ObjectProvider<ProbusConfigService> configServiceProvider,
+            @Value("${external.datasource.driver-class-name}") String driverClassName
+    ) {
+        return new ProbusDataSource(configServiceProvider, driverClassName);
     }
 
     @Bean

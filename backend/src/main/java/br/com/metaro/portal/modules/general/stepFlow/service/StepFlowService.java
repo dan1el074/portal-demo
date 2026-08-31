@@ -250,6 +250,7 @@ public class StepFlowService {
         entity.setSubtotal(order.getSubtotal());
         entity.setDiscount(order.getDiscount());
         entity.setTotal(order.getTotal());
+        entity.setErpSource(order.getSource());
         entity.setItems(new ArrayList<>());
 
         if (order.getPhone() != null) entity.setPhone(order.getPhone());
