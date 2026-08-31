@@ -405,6 +405,7 @@ svg {
   strong { font-size: 13px; }
   p { margin: 2px 0 0; }
   &.complete { align-items: center; border-color: #00996645; background: #0099660e; color: #087a56; }
+  &.canceled { align-items: center; border-color: #c5232a45; background: #c5232a0e; color: #a51d23; }
 }
 
 .history-timeline {

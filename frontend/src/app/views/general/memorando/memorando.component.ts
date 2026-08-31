@@ -78,6 +78,8 @@ export class MemorandoComponent implements OnInit {
     const parsedKey = Number(key);
     if (Number.isNaN(parsedKey)) return;
 
+    if (parsedKey === this.activeItemKey && !this.newMemorandoTab) return;
+
     if (parsedKey <= 1 && this.newMemorandoTab) {
       this.closeFormTab(parsedKey);
       return;
@@ -121,6 +123,8 @@ export class MemorandoComponent implements OnInit {
   }
 
   private applyStatusFilter(status?: MemorandoStatus): void {
+    if (!this.newMemorandoTab && this.activeItemKey === 0 && this.statusFilter === status) return;
+
     this.newMemorandoTab = false;
     this.activeItemKey = 0;
     this.statusFilter = status;
@@ -190,7 +194,10 @@ export class MemorandoComponent implements OnInit {
   }
 
   protected onSorterChange(sorter: { column?: string; state?: 'asc' | 'desc' }): void {
-    this.currentSort = sorter?.column && sorter?.state ? { column: sorter.column, state: sorter.state } : undefined;
+    const nextSort = sorter?.column && sorter?.state ? { column: sorter.column, state: sorter.state } : undefined;
+    if (this.currentSort?.column === nextSort?.column && this.currentSort?.state === nextSort?.state) return;
+
+    this.currentSort = nextSort;
     this.currentPage = 1;
     this.loadMemorandos();
   }
@@ -207,6 +214,8 @@ export class MemorandoComponent implements OnInit {
   }
 
   protected onFullTextChange(value: boolean): void {
+    if (value === this.fullText) return;
+
     this.fullText = value;
     this.currentPage = 1;
     this.loadMemorandos();
@@ -240,7 +249,8 @@ export class MemorandoComponent implements OnInit {
       this.cdr.detectChanges();
     })).subscribe({
       next: result => {
-        this.memorandos = result.content ?? [];
+        const content = result.content ?? [];
+        this.memorandos = this.currentSort?.state === 'desc' ? [...content].reverse() : content;
         this.totalItems = result.totalElements ?? 0;
         this.totalPages = result.totalPages || 1;
         if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
