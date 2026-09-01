@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 @Service
 @RequiredArgsConstructor
 public class FoccoConfigService {
+    static final String BASE_URL_PARAM = "focco.integration.base-url";
     static final String KEY_PARAM = "focco.integration.key";
     static final String TOKEN_PARAM = "focco.integration.token";
 
@@ -21,12 +22,14 @@ public class FoccoConfigService {
 
     @Transactional(readOnly = true)
     public FoccoConfigDto getConfig() {
+        String baseUrl = findValue(BASE_URL_PARAM);
         String key = findValue(KEY_PARAM);
-        return new FoccoConfigDto(key, StringUtils.hasText(findValue(TOKEN_PARAM)));
+        return new FoccoConfigDto(baseUrl, key, StringUtils.hasText(findValue(TOKEN_PARAM)));
     }
 
     @Transactional
     public FoccoConfigDto updateConfig(FoccoConfigUpdateDto dto) {
+        String baseUrl = dto.getBaseUrl().trim();
         String key = dto.getKey().trim();
         String currentToken = findValue(TOKEN_PARAM);
         String newToken = StringUtils.hasText(dto.getToken()) ? dto.getToken().trim() : currentToken;
@@ -35,19 +38,21 @@ public class FoccoConfigService {
             throw new UnprocessableEntityException("Informe o token do FoccoERP.");
         }
 
+        saveValue(BASE_URL_PARAM, baseUrl);
         saveValue(KEY_PARAM, key);
         saveValue(TOKEN_PARAM, newToken);
-        return new FoccoConfigDto(key, true);
+        return new FoccoConfigDto(baseUrl, key, true);
     }
 
     @Transactional(readOnly = true)
     public FoccoCredentialsDto getCredentials() {
+        String baseUrl = findValue(BASE_URL_PARAM);
         String key = findValue(KEY_PARAM);
         String token = findValue(TOKEN_PARAM);
-        if (!StringUtils.hasText(key) || !StringUtils.hasText(token)) {
+        if (!StringUtils.hasText(baseUrl) || !StringUtils.hasText(key) || !StringUtils.hasText(token)) {
             throw new UnprocessableEntityException("A integração com o FoccoERP não está configurada.");
         }
-        return new FoccoCredentialsDto(key, token);
+        return new FoccoCredentialsDto(baseUrl, key, token);
     }
 
     private String findValue(String name) {

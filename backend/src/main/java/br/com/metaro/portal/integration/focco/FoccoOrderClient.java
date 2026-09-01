@@ -27,19 +27,16 @@ import java.util.List;
 @Component
 public class FoccoOrderClient {
     private final FoccoConfigService configService;
-    private final String baseUrl;
     private final String stepFlowEndpoint;
     private final String memorandoEndpoint;
     private final RestTemplate restTemplate;
 
     public FoccoOrderClient(
             FoccoConfigService configService,
-            @Value("${focco.base-url}") String baseUrl,
             @Value("${focco.module.step-flow}") String stepFlowEndpoint,
             @Value("${focco.module.memorando}") String memorandoEndpoint
     ) {
         this.configService = configService;
-        this.baseUrl = baseUrl;
         this.stepFlowEndpoint = stepFlowEndpoint;
         this.memorandoEndpoint = memorandoEndpoint;
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
@@ -71,7 +68,7 @@ public class FoccoOrderClient {
 
     private FoccoOrderResponseDto requestOrder(String endpoint, int orderNumber) {
         FoccoCredentialsDto credentials = configService.getCredentials();
-        URI uri = UriComponentsBuilder.fromUriString(buildUrl(endpoint))
+        URI uri = UriComponentsBuilder.fromUriString(buildUrl(credentials.getBaseUrl(), endpoint))
                 .queryParam("Chave", credentials.getKey())
                 .queryParam("order_number", orderNumber)
                 .build()
@@ -96,7 +93,7 @@ public class FoccoOrderClient {
         }
     }
 
-    private String buildUrl(String endpoint) {
+    private String buildUrl(String baseUrl, String endpoint) {
         String normalizedBaseUrl = baseUrl.replaceAll("/+$", "");
         String normalizedEndpoint = endpoint.replaceAll("^/+", "");
         return normalizedBaseUrl + "/" + normalizedEndpoint;

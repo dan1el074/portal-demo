@@ -29,7 +29,7 @@ public class AuthController {
     private final NotificationSessionManager notificationSessionManager;
 
     @GetMapping("/active-sessions")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     public ResponseEntity<List<ActiveSessionDto>> activeSessions() {
         return ResponseEntity.ok(authorizationService.findActiveSessions());
     }
@@ -42,7 +42,7 @@ public class AuthController {
     }
 
     @DeleteMapping("/active-sessions/{sessionId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     public ResponseEntity<Void> disconnectSession(@PathVariable String sessionId) {
         authorizationService.disconnect(sessionId)
                 .ifPresent(userId -> notificationSessionManager.forceLogoutSession(sessionId));
