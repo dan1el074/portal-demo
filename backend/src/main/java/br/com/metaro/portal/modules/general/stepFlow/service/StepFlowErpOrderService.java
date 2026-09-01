@@ -7,39 +7,36 @@ import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityExceptio
 import br.com.metaro.portal.modules.general.stepFlow.entities.Order;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStatus;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepository;
+import br.com.metaro.portal.integration.focco.FoccoOrderClient;
+import br.com.metaro.portal.util.erp.ErpSource;
 import br.com.metaro.portal.util.erp.ErpOrderQueryService;
 import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderItemDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class StepFlowErpOrderService {
     private final UserService userService;
     private final ErpOrderQueryService erpOrderQueryService;
     private final OrderRepository orderRepository;
-
-    public StepFlowErpOrderService(
-            UserService userService,
-            ErpOrderQueryService erpOrderQueryService,
-            OrderRepository orderRepository
-    ) {
-        this.userService = userService;
-        this.erpOrderQueryService = erpOrderQueryService;
-        this.orderRepository = orderRepository;
-    }
+    private final FoccoOrderClient foccoOrderClient;
 
     @Transactional(readOnly = true)
-    public ErpOrderDto findAvailableOrderByNumber(int orderNumber) {
+    public ErpOrderDto findAvailableOrderByNumber(int orderNumber, ErpSource source) {
         User me = userService.authenticate();
         boolean isAdmin = me.getAuthorities().stream().anyMatch(a -> a
                 .getAuthority().equals("ROLE_ADMIN"));
 
         ErpOrderDto orderFromErp;
 
-        if (isAdmin) {
+        if (source == ErpSource.FOCCO) {
+            orderFromErp = foccoOrderClient.findProductionOrderByNumber(orderNumber);
+        } else if (isAdmin) {
             orderFromErp = erpOrderQueryService.findProductionOrderByNumberWithoutRules(orderNumber)
                 .orElseThrow(ResourceNotFoundException::new);
         } else {
@@ -47,7 +44,12 @@ public class StepFlowErpOrderService {
                 .orElseThrow(ResourceNotFoundException::new);
         }
 
-        List<Order> localOrders = orderRepository.findByNumber(orderNumber, OrderStatus.CANCELLED);
+        orderFromErp.setSource(source);
+        List<Order> localOrders = orderRepository.findByNumberAndErpSource(
+                orderNumber,
+                source,
+                OrderStatus.CANCELLED
+        );
 
         addLocallyProducedQuantities(orderFromErp, localOrders);
         ensureOrderHasPendingProduction(orderFromErp);

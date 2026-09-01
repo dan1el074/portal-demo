@@ -1,6 +1,7 @@
 package br.com.metaro.portal.modules.general.memorando.dto;
 
 import br.com.metaro.portal.modules.general.memorando.entity.MemorandoStatus;
+import br.com.metaro.portal.util.erp.ErpSource;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,8 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class MemorandoInsertDto {
-    @Min(value = 4293, message = "Pedido inválido")
+    @Min(value = 1, message = "Pedido inválido")
     private Long request;
+    private ErpSource erpSource = ErpSource.PROBUS;
     @NotBlank(message = "Cliente é obrigatório")
     private String client;
     @NotEmpty(message = "Lista de itens não pode ser vazia")

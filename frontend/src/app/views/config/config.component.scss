@@ -131,6 +131,55 @@
   color: var(--cui-body-color);
 }
 
+.focco-tool,
+.erp-tool {
+  align-items: flex-start !important;
+}
+
+.focco-config-control,
+.erp-config-control {
+  display: grid;
+  grid-template-columns: minmax(140px, .65fr) minmax(260px, 1.35fr) auto;
+  align-items: end;
+  gap: 10px;
+  width: min(100%, 680px);
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+
+    span {
+      color: var(--cui-secondary-color);
+      font-size: 12px;
+      font-weight: 600;
+    }
+  }
+
+  input {
+    width: 100%;
+    min-height: 36px;
+    padding: .45rem .6rem;
+    border: 1px solid var(--cui-border-color);
+    border-radius: .5rem;
+    background: var(--cui-body-bg);
+    color: var(--cui-body-color);
+  }
+}
+
+.probus-config-control {
+  grid-template-columns: minmax(180px, 1fr) 140px 180px auto;
+  width: min(100%, 780px);
+}
+
+@media (max-width: 900px) {
+  .probus-config-control {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+}
+
 @media (max-width: 600px) {
   .history-retention-control {
     width: 100%;
@@ -140,6 +189,12 @@
 
   .history-retention-control input,
   .history-retention-control .admin-action {
+    width: 100%;
+  }
+
+  .focco-config-control,
+  .erp-config-control {
+    grid-template-columns: 1fr;
     width: 100%;
   }
 }
@@ -287,7 +342,6 @@
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 14px;
   color: var(--cui-secondary-color);
   font-size: 13px;
 

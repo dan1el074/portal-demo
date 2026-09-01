@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,10 +23,11 @@ public class ErpOrderController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("/{number}")
     public ResponseEntity<List<ErpOrderLineDto>> findOrderLinesByNumber(
-            @PathVariable Integer number
+            @PathVariable Integer number,
+            @RequestParam(defaultValue = "PROBUS") ErpSource source
     ) {
         return ResponseEntity.ok(
-                erpOrderQueryService.findOrderLinesByNumber(number)
+                erpOrderQueryService.findOrderLinesByNumber(number, source)
         );
     }
 }

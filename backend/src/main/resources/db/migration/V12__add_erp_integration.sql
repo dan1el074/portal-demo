@@ -1,0 +1,8 @@
+ALTER TABLE tb_stepflow_order
+    ADD COLUMN erp_source VARCHAR(16) NOT NULL DEFAULT 'PROBUS';
+
+ALTER TABLE tb_memorando
+    ADD COLUMN erp_source VARCHAR(16) NOT NULL DEFAULT 'PROBUS';
+
+ALTER TABLE tb_param
+    ALTER COLUMN content TYPE VARCHAR(4000);

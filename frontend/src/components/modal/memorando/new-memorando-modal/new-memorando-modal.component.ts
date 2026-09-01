@@ -4,6 +4,7 @@ import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelD
 import { cilPencil } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
+import { ErpOrderSearch, ErpSource } from '../../../../app/interface/erp.interface';
 
 @Component({
   selector: 'app-new-memorando-modal',
@@ -29,7 +30,7 @@ import { ModalBackNavigationDirective } from '../../../../app/directive/modal-ba
 export class NewMemorandoModalComponent implements OnChanges {
   @Input() visible!: boolean;
   @Output() closeModal = new EventEmitter<any>();
-  @Output() createNewMemorando = new EventEmitter<number>();
+  @Output() createNewMemorando = new EventEmitter<ErpOrderSearch>();
 
   protected newMemorandoForm: FormGroup;
   protected showErrors = false;
@@ -37,6 +38,7 @@ export class NewMemorandoModalComponent implements OnChanges {
 
   constructor(private formBuilder: FormBuilder) {
     this.newMemorandoForm = this.formBuilder.group({
+      source: ['FOCCO' as ErpSource, Validators.required],
       orderNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
     });
   }
@@ -58,10 +60,13 @@ export class NewMemorandoModalComponent implements OnChanges {
       return;
     }
 
-    this.createNewMemorando.emit(this.newMemorandoForm.get('orderNumber')?.value);
+    this.createNewMemorando.emit({
+      orderNumber: Number(this.newMemorandoForm.get('orderNumber')?.value),
+      source: this.newMemorandoForm.get('source')?.value as ErpSource,
+    });
   }
 
   private resetForm(): void {
-    this.newMemorandoForm.reset({ orderNumber: '' });
+    this.newMemorandoForm.reset({ source: 'FOCCO', orderNumber: '' });
   }
 }

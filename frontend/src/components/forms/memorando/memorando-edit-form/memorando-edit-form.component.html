@@ -34,7 +34,7 @@
 
   <aside class='memorando-notice' role='note'>
     <svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9'></circle><path d='M12 8v5'></path><path d='M12 17h.01'></path></svg>
-    <span>Após publicar este memorando, registre as informações relevantes nas <strong>observações</strong> do Pedido de Venda no <strong>Probus</strong> para garantir o acompanhamento do processo, o alinhamento entre os setores e a rastreabilidade das informações.</span>
+    <span>Após publicar este memorando, registre as informações relevantes nas <strong>observações</strong> do Pedido de Venda no <strong>{{ editForm.get('erpSource')?.value === 'FOCCO' ? 'FoccoERP' : 'Probus' }}</strong> para garantir o acompanhamento do processo, o alinhamento entre os setores e a rastreabilidade das informações.</span>
   </aside>
 
   <div class='form-actions'>

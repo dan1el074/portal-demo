@@ -2,26 +2,36 @@ package br.com.metaro.portal.util.erp;
 
 import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderLineDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.metaro.portal.integration.focco.FoccoOrderClient;
+import br.com.metaro.portal.integration.probus.ProbusOrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ErpOrderQueryService {
-    @Autowired
-    private ErpOrderRepository erpOrderRepository;
+    private final ProbusOrderRepository probusOrderRepository;
+    private final FoccoOrderClient foccoOrderClient;
 
     public Optional<ErpOrderDto> findProductionOrderByNumber(int orderNumber) {
-        return erpOrderRepository.findProductionOrderByNumber(orderNumber);
+        return probusOrderRepository.findProductionOrderByNumber(orderNumber);
     }
 
     public Optional<ErpOrderDto> findProductionOrderByNumberWithoutRules(int orderNumber) {
-        return erpOrderRepository.findProductionOrderByNumberWithoutRules(orderNumber);
+        return probusOrderRepository.findProductionOrderByNumberWithoutRules(orderNumber);
     }
 
     public List<ErpOrderLineDto> findOrderLinesByNumber(int orderNumber) {
-        return erpOrderRepository.findOrderLinesByNumber(orderNumber);
+        return probusOrderRepository.findOrderLinesByNumber(orderNumber);
+    }
+
+    public List<ErpOrderLineDto> findOrderLinesByNumber(int orderNumber, ErpSource source) {
+        if (source == ErpSource.FOCCO) {
+            return foccoOrderClient.findOrderLinesByNumber(orderNumber);
+        }
+        return findOrderLinesByNumber(orderNumber);
     }
 }
