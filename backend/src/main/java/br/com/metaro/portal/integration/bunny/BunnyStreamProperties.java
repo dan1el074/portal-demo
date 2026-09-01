@@ -10,7 +10,5 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class BunnyStreamProperties {
-    private String apiKey;
-    private String libraryId;
     private String embedBaseUrl = "https://player.mediadelivery.net/embed";
 }

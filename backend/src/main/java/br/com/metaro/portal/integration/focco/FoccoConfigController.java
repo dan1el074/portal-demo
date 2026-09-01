@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class FoccoConfigController {
     private final FoccoConfigService configService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     @GetMapping
     public ResponseEntity<FoccoConfigDto> getConfig() {
         return ResponseEntity.ok(configService.getConfig());
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     @PutMapping
     public ResponseEntity<FoccoConfigDto> updateConfig(@Valid @RequestBody FoccoConfigUpdateDto dto) {
         return ResponseEntity.ok(configService.updateConfig(dto));

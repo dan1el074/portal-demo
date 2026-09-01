@@ -11,6 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FoccoConfigUpdateDto {
+    @NotBlank(message = "Informe a URL base do FoccoERP.")
+    private String baseUrl;
     @NotBlank(message = "Informe a Chave do FoccoERP.")
     private String key;
     private String token;

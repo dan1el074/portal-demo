@@ -28,6 +28,10 @@ export const routes: Routes = [
       {
         path: 'general',
         loadChildren: () => import('./views/general/routes').then((m) => m.routes),
+      },
+      {
+        path: 'system',
+        loadChildren: () => import('./views/system/routes').then((m) => m.routes),
       }
     ],
   },
