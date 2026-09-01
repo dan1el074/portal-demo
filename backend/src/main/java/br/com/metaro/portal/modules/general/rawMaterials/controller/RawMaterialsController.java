@@ -104,13 +104,13 @@ public class RawMaterialsController {
         service.updateAccess(dto); return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     @GetMapping("/settings/history-retention")
     public ResponseEntity<RawMaterialHistoryRetentionDto> retention() {
         return ResponseEntity.ok(service.getRetention());
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     @PutMapping("/settings/history-retention")
     public ResponseEntity<RawMaterialHistoryRetentionDto> retention(@Valid @RequestBody RawMaterialHistoryRetentionDto dto) {
         return ResponseEntity.ok(service.updateRetention(dto));

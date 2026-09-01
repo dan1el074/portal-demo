@@ -4,6 +4,7 @@ import br.com.metaro.portal.integration.focco.dto.FoccoCredentialsDto;
 import br.com.metaro.portal.util.erp.ErpSource;
 import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderLineDto;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,15 +27,15 @@ class FoccoOrderClientTests {
     void mapsFoccoResponseAndSendsConfiguredCredentials() {
         FoccoConfigService configService = mock(FoccoConfigService.class);
         when(configService.getCredentials())
-                .thenReturn(new FoccoCredentialsDto("test-key", "test-token"));
+                .thenReturn(new FoccoCredentialsDto("https://focco.example", "test-key", "test-token"));
 
         FoccoOrderClient client = new FoccoOrderClient(
                 configService,
-                "https://focco.example/",
                 "/orders",
                 "/order"
         );
         RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(client, "restTemplate");
+        Assertions.assertNotNull(restTemplate);
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 
         server.expect(requestTo("https://focco.example/orders?Chave=test-key&order_number=149"))
@@ -83,15 +84,15 @@ class FoccoOrderClientTests {
     void mapsMemorandoOrderLinesFromOrderEndpoint() {
         FoccoConfigService configService = mock(FoccoConfigService.class);
         when(configService.getCredentials())
-                .thenReturn(new FoccoCredentialsDto("test-key", "test-token"));
+                .thenReturn(new FoccoCredentialsDto("https://focco.example", "test-key", "test-token"));
 
         FoccoOrderClient client = new FoccoOrderClient(
                 configService,
-                "https://focco.example/",
                 "/orders",
                 "/order"
         );
         RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(client, "restTemplate");
+        Assertions.assertNotNull(restTemplate);
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 
         server.expect(requestTo("https://focco.example/order?Chave=test-key&order_number=140"))

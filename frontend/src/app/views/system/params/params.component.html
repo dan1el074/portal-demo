@@ -1,0 +1,341 @@
+<c-container class="h-auto px-4 params-page" fluid>
+  <header class="params-header">
+    <p class="ops-header">
+      <span class="ops-welcome">Parâmetros do Sistema</span>
+      <span class="ops-access-level">Gerencie integrações, retenção de dados e ferramentas operacionais do portal</span>
+    </p>
+  </header>
+
+  <c-card class="params-card border">
+    <div class="params-card-header">
+      <div>
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"></path>
+            <rect x="14" y="2" width="8" height="8" rx="1"></rect>
+          </svg>
+          Integrações
+        </h2>
+        <p>Credenciais e endereços usados para conectar o portal aos serviços externos</p>
+      </div>
+    </div>
+    <c-card-body class="integration-body">
+      <section class="integration-panel" aria-labelledby="focco-title">
+        <div class="panel-heading">
+          <h3 id="focco-title">FoccoERP</h3>
+          <p>Usado pelo Fluxo de etapas e pelo Memorando para consultar pedidos.</p>
+        </div>
+
+        <div class="form-grid">
+          <label class="full-field">
+            <span>URL base</span>
+            <input
+              cFormControl
+              type="url"
+              autocomplete="url"
+              placeholder="https://exemplo.foccoerp.com.br"
+              [disabled]="foccoConfigLoading || foccoConfigSaving"
+              [(ngModel)]="foccoBaseUrl"
+            >
+          </label>
+          <label>
+            <span>Chave</span>
+            <input
+              cFormControl
+              type="text"
+              autocomplete="off"
+              [disabled]="foccoConfigLoading || foccoConfigSaving"
+              [(ngModel)]="foccoKey"
+            >
+          </label>
+          <label>
+            <span>Token</span>
+            <input
+              cFormPassword
+              type="password"
+              autocomplete="new-password"
+              [placeholder]="foccoTokenConfigured ? 'Deixe vazio para manter o token atual' : 'Informe o token'"
+              [disabled]="foccoConfigLoading || foccoConfigSaving"
+              [(ngModel)]="foccoToken"
+            >
+          </label>
+        </div>
+
+        <div class="panel-actions">
+          <span class="credential-status" [class.configured]="foccoTokenConfigured">
+            {{ foccoTokenConfigured ? 'Token configurado' : 'Token não configurado' }}
+          </span>
+          <button
+            class="params-action primary"
+            type="button"
+            [disabled]="foccoConfigLoading || foccoConfigSaving"
+            (click)="saveFoccoConfig()"
+          >
+            {{ foccoConfigSaving ? 'Salvando...' : (foccoConfigLoading ? 'Carregando...' : 'Salvar') }}
+          </button>
+        </div>
+      </section>
+
+      <section class="integration-panel" aria-labelledby="bunny-title">
+        <div class="panel-heading">
+          <h3 id="bunny-title">Bunny Stream</h3>
+          <p>Serviço usado para armazenamento, upload e reprodução dos vídeos.</p>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            <span>Library ID</span>
+            <input
+              cFormControl
+              type="text"
+              autocomplete="off"
+              [disabled]="bunnyConfigLoading || bunnyConfigSaving"
+              [(ngModel)]="bunnyLibraryId"
+            >
+          </label>
+          <label>
+            <span>API key</span>
+            <input
+              cFormPassword
+              type="password"
+              autocomplete="new-password"
+              [placeholder]="bunnyApiKeyConfigured ? 'Deixe vazio para manter a chave atual' : 'Informe a API key'"
+              [disabled]="bunnyConfigLoading || bunnyConfigSaving"
+              [(ngModel)]="bunnyApiKey"
+            >
+          </label>
+        </div>
+
+        <div class="panel-actions">
+          <span class="credential-status" [class.configured]="bunnyApiKeyConfigured">
+            {{ bunnyApiKeyConfigured ? 'API key configurada' : 'API key não configurada' }}
+          </span>
+          <button
+            class="params-action primary"
+            type="button"
+            [disabled]="bunnyConfigLoading || bunnyConfigSaving"
+            (click)="saveBunnyConfig()"
+          >
+            {{ bunnyConfigSaving ? 'Salvando...' : (bunnyConfigLoading ? 'Carregando...' : 'Salvar') }}
+          </button>
+        </div>
+      </section>
+    </c-card-body>
+  </c-card>
+
+  <c-card class="params-card border">
+    <div class="params-card-header">
+      <div>
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Sistema
+        </h2>
+        <p>Ajustes de armazenamento, manutenção e apoio técnico</p>
+      </div>
+    </div>
+    <c-card-body class="tools-body">
+      <div class="tool-row">
+        <div class="tool-copy">
+          <h3>Histórico de matérias-primas</h3>
+          <p>Quantidade máxima de movimentações mantidas por item.</p>
+        </div>
+        <div class="history-control">
+          <input
+            cFormControl
+            type="number"
+            min="10"
+            max="100000"
+            step="10"
+            aria-label="Movimentações mantidas por item"
+            [disabled]="historyRetentionLoading || savingHistoryRetention"
+            [(ngModel)]="rawMaterialHistoryRetention"
+          >
+          <button
+            class="params-action primary"
+            type="button"
+            [disabled]="historyRetentionLoading || savingHistoryRetention"
+            (click)="saveHistoryRetention()"
+          >
+            {{ savingHistoryRetention ? 'Salvando...' : (historyRetentionLoading ? 'Carregando...' : 'Salvar') }}
+          </button>
+        </div>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-copy">
+          <h3>Cache do sistema</h3>
+          <p>Limpe os dados temporários para forçar a atualização das informações.</p>
+        </div>
+        <button class="params-action secondary" type="button" (click)="clearCache()">
+          Limpar cache
+        </button>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-copy">
+          <h3>Documentação da API</h3>
+          <p>Consulte e teste os endpoints disponíveis pelo Swagger.</p>
+        </div>
+        <a class="params-action secondary" href="/swagger-ui.html" target="_blank" rel="noopener noreferrer">
+          Abrir Swagger
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 3h6v6"></path>
+            <path d="M10 14 21 3"></path>
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          </svg>
+        </a>
+      </div>
+    </c-card-body>
+  </c-card>
+
+  <c-card class="params-card border">
+    <div class="params-card-header">
+      <div>
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+          </svg>
+          Monitoramento
+        </h2>
+        <p>Consulte atividades recentes e intervenha quando necessário</p>
+      </div>
+    </div>
+    <c-card-body class="tools-body">
+      <div class="tool-row">
+        <div class="tool-copy">
+          <h3>Histórico de e-mails</h3>
+          <p>Consulte os e-mails enviados pelo portal e eventuais falhas.</p>
+        </div>
+        <button class="params-action secondary" type="button" (click)="openEmailLogs()">
+          Ver e-mails
+        </button>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-copy">
+          <h3>Sessões ativas</h3>
+          <p>Consulte os usuários que possuem tokens válidos no portal.</p>
+        </div>
+        <button class="params-action secondary" type="button" (click)="openActiveSessions()">
+          Ver sessões
+        </button>
+      </div>
+    </c-card-body>
+  </c-card>
+</c-container>
+
+<c-modal
+  modalBackNavigation
+  [visible]="activeSessionsVisible"
+  (visibleChange)="onActiveSessionsVisibleChange($event)"
+  alignment="center"
+  backdrop="static"
+  size="lg"
+  scrollable
+>
+  <c-modal-header>
+    <div>
+      <h5 cModalTitle>Sessões ativas</h5>
+      <span class="modal-subtitle">Tokens de acesso válidos nesta instância do portal</span>
+    </div>
+    <button cButtonClose (click)="closeActiveSessions()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (activeSessionsLoading) {
+      <div class="modal-state"><c-spinner aria-hidden="true" /><span>Carregando sessões...</span></div>
+    } @else if (activeSessionsError) {
+      <div class="modal-state error">{{ activeSessionsError }}</div>
+    } @else if (!activeSessions.length) {
+      <div class="modal-state">Nenhuma sessão ativa encontrada.</div>
+    } @else {
+      <div class="modal-summary">{{ activeSessions.length }} {{ activeSessions.length === 1 ? 'sessão ativa' : 'sessões ativas' }}</div>
+      <div class="table-wrapper">
+        <table class="data-table sessions-table">
+          <thead><tr><th>Usuário</th><th>Início</th><th>Expira em</th><th>Desconectar</th></tr></thead>
+          <tbody>
+            @for (session of activeSessions; track session.sessionId) {
+              <tr>
+                <td><strong>{{ session.username }}</strong></td>
+                <td>{{ session.issuedAt | date:'dd/MM/yyyy HH:mm':'-0300' }}</td>
+                <td>{{ session.expiresAt | date:'dd/MM/yyyy HH:mm':'-0300' }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="disconnect-session"
+                    [disabled]="disconnectingSessions.has(session.sessionId)"
+                    (click)="disconnectSession(session)"
+                  >
+                    {{ disconnectingSessions.has(session.sessionId) ? 'Desconectando...' : 'Desconectar' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </c-modal-body>
+</c-modal>
+
+<c-modal
+  modalBackNavigation
+  [visible]="emailLogsVisible"
+  (visibleChange)="onEmailLogsVisibleChange($event)"
+  alignment="center"
+  backdrop="static"
+  size="xl"
+  scrollable
+>
+  <c-modal-header>
+    <div>
+      <h5 cModalTitle>Histórico de e-mails</h5>
+      <span class="modal-subtitle">Resumo dos envios realizados pelo Portal Metaro</span>
+    </div>
+    <button cButtonClose (click)="closeEmailLogs()"></button>
+  </c-modal-header>
+  <c-modal-body>
+    @if (emailLogsLoading) {
+      <div class="modal-state"><c-spinner aria-hidden="true" /><span>Carregando e-mails...</span></div>
+    } @else if (emailLogsError) {
+      <div class="modal-state error">{{ emailLogsError }}</div>
+    } @else if (!emailLogs.length) {
+      <div class="modal-state">Nenhum envio de e-mail registrado.</div>
+    } @else {
+      <div class="modal-summary">{{ emailLogsTotalElements }} {{ emailLogsTotalElements === 1 ? 'e-mail registrado' : 'e-mails registrados' }}</div>
+      <div class="table-wrapper">
+        <table class="data-table email-table">
+          <thead><tr><th>Data</th><th>Assunto</th><th>Destinatário</th><th>Módulo</th><th>Status</th></tr></thead>
+          <tbody>
+            @for (email of emailLogs; track email.id) {
+              <tr>
+                <td>{{ email.createdAt | date:'dd/MM/yyyy HH:mm':'-0300' }}</td>
+                <td class="email-subject-cell">
+                  <strong class="email-subject" [title]="email.subject">{{ email.subject }}</strong>
+                </td>
+                <td>{{ email.recipient }}</td>
+                <td>{{ email.module }}</td>
+                <td>
+                  <span class="email-status" [class.sent]="email.status === 'SENT'" [class.error]="email.status === 'ERROR'" [title]="email.errorMessage || ''">
+                    {{ email.status === 'SENT' ? 'Enviado' : 'Erro' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </c-modal-body>
+  <c-modal-footer>
+    @if (emailLogsTotalPages > 1) {
+      <div class="pagination">
+        <button type="button" [disabled]="emailLogsPage === 0" (click)="changeEmailLogsPage(emailLogsPage - 1)">Anterior</button>
+        <span>Página {{ emailLogsPage + 1 }} de {{ emailLogsTotalPages }}</span>
+        <button type="button" [disabled]="emailLogsPage + 1 >= emailLogsTotalPages" (click)="changeEmailLogsPage(emailLogsPage + 1)">Próxima</button>
+      </div>
+    }
+  </c-modal-footer>
+</c-modal>
