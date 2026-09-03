@@ -1,0 +1,54 @@
+<c-offcanvas placement='end' [visible]='visible' [scroll]='false' [backdrop]='true' (visibleChange)='onVisibleChange($event)' class='trello-detail-offcanvas'>
+  @if (record) {
+    <c-offcanvas-header class='detail-header'>
+      <div class='mail-icon' aria-hidden='true'>
+        <svg viewBox='0 0 24 24'><rect width='20' height='16' x='2' y='4' rx='2'></rect><path d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'></path></svg>
+      </div>
+      <div class='heading-copy'>
+        <h2 cOffcanvasTitle>#{{ record.order }}</h2>
+        <span class='client-name'>{{ record.client }}</span>
+      </div>
+      <span class='status-badge' [class.sent]='record.status === "SENT"' [class.pending]='record.status === "PENDING"' [class.error]='record.status === "ERROR"'>
+        <span class='bullet'></span>{{ record.statusLabel }}
+      </span>
+      <button cButtonClose type='button' aria-label='Fechar detalhes' (click)='close()'></button>
+    </c-offcanvas-header>
+
+    <c-offcanvas-body>
+      <section class='detail-section' aria-label='Informações do pedido'>
+        <dl class='detail-grid'>
+          <div><dt>Pedido</dt><dd>{{ record.order }}</dd></div>
+          <div><dt>Tipo</dt><dd>{{ record.orderType }}</dd></div>
+          <div class='wide'><dt>Cliente</dt><dd>{{ record.client }}</dd></div>
+          <div class='wide'><dt>Código</dt><dd>{{ record.code }}</dd></div>
+          <div class='wide'><dt>Descrição</dt><dd>{{ record.description }}</dd></div>
+          <div><dt>Quantidade</dt><dd>{{ record.quantity | number:'1.0-2' }}</dd></div>
+          <div><dt>Vendedor</dt><dd>{{ record.seller }}</dd></div>
+          <div><dt>Liberação</dt><dd>{{ record.releaseDate | date:'dd/MM/yyyy':'-0300' }}</dd></div>
+          <div><dt>Previsão de entrega</dt><dd>{{ record.expectedDelivery | date:'dd/MM/yyyy':'-0300' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class='tracking-card' aria-labelledby='tracking-title'>
+        <div class='section-heading'>
+          <h3 id='tracking-title'>Rastreio de envio</h3>
+        </div>
+        <div class='tracking-list'>
+          <div><p><span>Trazido pelo portal</span><strong>{{ record.importedAt | date:'dd/MM/yyyy HH:mm':'-0300' }}</strong></p></div>
+          <div><p><span>Caixa de e-mail destinatária</span><strong>{{ record.destinationEmail }}</strong></p></div>
+          <div><p><span>{{ record.lastResentAt ? 'Último reenvio' : 'Enviado em' }}</span><strong>{{ (record.lastResentAt || record.sentAt) ? ((record.lastResentAt || record.sentAt) | date:'dd/MM/yyyy HH:mm':'-0300') : 'Aguardando envio' }}</strong></p></div>
+        </div>
+      </section>
+    </c-offcanvas-body>
+
+    <footer class='detail-footer'>
+      <button cButton type='button' color='primary' size='lg' class='resend-button' [disabled]='resending' (click)='resendEmail()'>
+        <svg aria-hidden='true' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'></path><path d='M3 3v5h5'></path></svg>
+        {{ resending ? 'Reenviando...' : 'Reenviar e-mail' }}
+      </button>
+      @if (record.status !== 'PENDING') {
+        <small>E-mail já foi enviado anteriormente — o reenvio forçará a criação de um novo card no Trello.</small>
+      }
+    </footer>
+  }
+</c-offcanvas>

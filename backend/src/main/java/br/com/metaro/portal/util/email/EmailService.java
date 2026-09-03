@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,5 +35,24 @@ public class EmailService {
             throw exception;
         }
         emailLogService.record(para, assunto, module, EmailStatus.SENT, null);
+    }
+
+    public void sendPlainTextEmail(String to, String cc, String subject, String text, String module) throws Exception {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+
+            helper.setTo(to);
+            if (StringUtils.hasText(cc)) helper.setCc(cc);
+            helper.setSubject(subject);
+            helper.setText(text, false);
+            helper.setFrom(new InternetAddress(mailFrom, "Portal Metaro"));
+
+            mailSender.send(message);
+        } catch (Exception exception) {
+            emailLogService.record(to, subject, module, EmailStatus.ERROR, exception);
+            throw exception;
+        }
+        emailLogService.record(to, subject, module, EmailStatus.SENT, null);
     }
 }
