@@ -22,8 +22,8 @@ public class OpenApiConfig {
                         .description("API REST do Portal Metaro")
                         .version("v1")
                         .contact(new Contact()
-                                .name("Metaro")
-                                .url("https://portal.metaro.com.br")))
+                                .name("Acessar")
+                                .url("http://portal.metaro.com.br")))
                 .addSecurityItem(new SecurityRequirement().addList(JWT_SCHEME))
                 .components(new Components().addSecuritySchemes(
                         JWT_SCHEME,

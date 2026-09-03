@@ -14,7 +14,7 @@ public class EmailLogController {
     private final EmailLogService service;
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     public ResponseEntity<Page<EmailLogDto>> list(Pageable pageable) {
         return ResponseEntity.ok(service.list(pageable));
     }

@@ -18,10 +18,6 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String mailFrom;
 
-    public void sendHtmlEmail(String para, String assunto, String html) throws Exception {
-        sendHtmlEmail(para, assunto, html, "Portal");
-    }
-
     public void sendHtmlEmail(String para, String assunto, String html, String module) throws Exception {
         try {
             MimeMessage message = mailSender.createMimeMessage();

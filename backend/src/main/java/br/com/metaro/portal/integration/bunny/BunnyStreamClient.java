@@ -4,7 +4,6 @@ import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityExceptio
 import br.com.metaro.portal.integration.bunny.dto.TusCredentialsDto;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,24 +16,26 @@ import java.util.Map;
 
 @Component
 public class BunnyStreamClient {
-    public static final String TUS_UPLOAD_ENDPOINT = "https://video.bunnycdn.com/tusupload";
     private static final String API_BASE_URL = "https://video.bunnycdn.com/library";
+    private static final String TUS_UPLOAD_ENDPOINT = "https://video.bunnycdn.com/tusupload";
 
     private final BunnyStreamProperties properties;
+    private final BunnyConfigService configService;
     private final RestTemplate restTemplate;
 
-    public BunnyStreamClient(BunnyStreamProperties properties) {
+    public BunnyStreamClient(BunnyStreamProperties properties, BunnyConfigService configService) {
         this.properties = properties;
+        this.configService = configService;
         this.restTemplate = new RestTemplate();
     }
 
     public String createVideo(String title) {
-        validateConfiguration();
-        HttpHeaders headers = createAuthenticationHeaders();
+        BunnyConfigService.BunnyCredentials config = configService.getCredentials();
+        HttpHeaders headers = createAuthenticationHeaders(config);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Map<String, String>> request = new HttpEntity<>(Map.of("title", title), headers);
-        String url = API_BASE_URL + "/" + properties.getLibraryId() + "/videos";
+        String url = API_BASE_URL + "/" + config.libraryId() + "/videos";
         ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
         if (response.getBody() == null || response.getBody().get("guid") == null) {
@@ -45,9 +46,9 @@ public class BunnyStreamClient {
     }
 
     public void deleteVideo(String providerVideoId) {
-        validateConfiguration();
-        HttpEntity<Void> request = new HttpEntity<>(createAuthenticationHeaders());
-        String url = API_BASE_URL + "/" + properties.getLibraryId() + "/videos/" + providerVideoId;
+        BunnyConfigService.BunnyCredentials config = configService.getCredentials();
+        HttpEntity<Void> request = new HttpEntity<>(createAuthenticationHeaders(config));
+        String url = API_BASE_URL + "/" + config.libraryId() + "/videos/" + providerVideoId;
 
         try {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
@@ -57,23 +58,24 @@ public class BunnyStreamClient {
     }
 
     public TusCredentialsDto generateTusCredentials(String providerVideoId) {
-        validateConfiguration();
+        BunnyConfigService.BunnyCredentials config = configService.getCredentials();
         long expiration = Instant.now().plus(1, ChronoUnit.HOURS).getEpochSecond();
-        String content = properties.getLibraryId() + properties.getApiKey() + expiration + providerVideoId;
+        String content = config.libraryId() + config.apiKey() + expiration + providerVideoId;
 
         return new TusCredentialsDto(sha256Hex(content), expiration);
     }
 
     public String buildPlaybackUrl(String providerVideoId) {
+        BunnyConfigService.BunnyCredentials config = configService.getCredentials();
         return removeTrailingSlash(properties.getEmbedBaseUrl())
-                + "/" + properties.getLibraryId()
+                + "/" + config.libraryId()
                 + "/" + providerVideoId;
     }
 
     public String getPreviewUrl(String providerVideoId, boolean animated) {
-        validateConfiguration();
-        HttpEntity<Void> request = new HttpEntity<>(createAuthenticationHeaders());
-        String url = API_BASE_URL + "/" + properties.getLibraryId() + "/videos/" + providerVideoId + "/play";
+        BunnyConfigService.BunnyCredentials config = configService.getCredentials();
+        HttpEntity<Void> request = new HttpEntity<>(createAuthenticationHeaders(config));
+        String url = API_BASE_URL + "/" + config.libraryId() + "/videos/" + providerVideoId + "/play";
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
         Map body = response.getBody();
         String key = animated ? "previewUrl" : "thumbnailUrl";
@@ -85,16 +87,10 @@ public class BunnyStreamClient {
         return body.get(key).toString();
     }
 
-    private HttpHeaders createAuthenticationHeaders() {
+    private HttpHeaders createAuthenticationHeaders(BunnyConfigService.BunnyCredentials config) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("AccessKey", properties.getApiKey());
+        headers.set("AccessKey", config.apiKey());
         return headers;
-    }
-
-    private void validateConfiguration() {
-        if (!StringUtils.hasText(properties.getApiKey()) || !StringUtils.hasText(properties.getLibraryId())) {
-            throw new UnprocessableEntityException("A integração com o Bunny Stream não está configurada!");
-        }
     }
 
     private String removeTrailingSlash(String value) {
@@ -112,6 +108,10 @@ public class BunnyStreamClient {
     }
 
     public String getLibraryId() {
-        return properties.getLibraryId();
+        return configService.getCredentials().libraryId();
+    }
+
+    public String getTusUploadEndpoint() {
+        return TUS_UPLOAD_ENDPOINT;
     }
 }

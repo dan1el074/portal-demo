@@ -22,7 +22,7 @@ public class InfoController {
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SYSTEM_PARAMS')")
     @PutMapping(value = "/clear-all")
     public ResponseEntity<Void> clearCache() {
         infoService.clearAllCache();

@@ -41,7 +41,7 @@ public class VideoService {
                 video.getId(),
                 video.getProviderVideoId(),
                 bunnyStreamClient.getLibraryId(),
-                BunnyStreamClient.TUS_UPLOAD_ENDPOINT,
+                bunnyStreamClient.getTusUploadEndpoint(),
                 credentials.getSignature(),
                 credentials.getExpiration(),
                 video.getPlaybackUrl()
