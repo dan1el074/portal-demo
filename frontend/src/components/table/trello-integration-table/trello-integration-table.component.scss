@@ -1,0 +1,51 @@
+:host { display: block; min-width: 0; }
+
+:host ::ng-deep .administration-smart-table {
+  input, select { border-radius: var(--cui-border-radius); }
+  table { width: 100%; min-width: max-content; table-layout: auto; }
+  th, td { max-width: none; white-space: nowrap; }
+}
+
+:host ::ng-deep .trello-smart-table,
+:host ::ng-deep .trello-smart-table input,
+:host ::ng-deep .trello-smart-table select,
+:host ::ng-deep .trello-smart-table button,
+:host ::ng-deep .trello-smart-table th,
+:host ::ng-deep .trello-smart-table td,
+:host ::ng-deep .trello-smart-table td * {
+  font-family: var(--cui-body-font-family);
+  font-size: 13px;
+}
+
+:host ::ng-deep .administration-wide-search c-smart-table-filter input {
+  width: 256px;
+  max-width: calc(100vw - 64px);
+}
+
+.custom-header { font-size: 13px; font-weight: 600; }
+.custom-td { padding: 12px 16px; border-bottom: 1px solid var(--cui-border-color); font-family: var(--cui-body-font-family); font-size: 13px; }
+.order-field { color: #285ea5; font-weight: 700; }
+.code-field { color: var(--cui-secondary-color); font-weight: 600; }
+.date-field { color: var(--cui-secondary-color); }
+.client-field, .description-field { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.client-field { width: clamp(170px, 24vw, 330px); font-weight: 600; }
+.description-field { width: clamp(200px, 30vw, 440px); color: var(--cui-secondary-color); }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 650;
+
+  &.sent { color: #16845b; background: rgba(22, 132, 91, .1); }
+  &.pending { color: #b45d17; background: rgba(180, 93, 23, .1); }
+  &.error { color: #c5232a; background: rgba(197, 35, 42, .1); }
+  .bullet { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+}
+
+@media (max-width: 768px) {
+  .custom-td { padding: 10px 12px; }
+}
