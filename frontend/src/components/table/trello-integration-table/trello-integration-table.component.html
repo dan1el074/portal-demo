@@ -1,0 +1,46 @@
+<c-smart-table
+  [items]='data'
+  [loading]='loading'
+  [pagination]='true'
+  [itemsPerPage]='10'
+  [itemsPerPageSelect]='true'
+  [itemsPerPageOptions]='[10, 20, 30]'
+  [columnSorter]='true'
+  [columns]='columns'
+  [cleaner]='true'
+  [tableFilter]='true'
+  [tableFilterValue]='tableFilterValue'
+  [tableProps]='{ hover: true, responsive: true }'
+  [tableBodyProps]="{ align: 'middle' }"
+  itemsPerPageLabel='Itens por página'
+  tableFilterLabel=''
+  tableFilterPlaceholder='Buscar...'
+  noItemsLabel='Nenhum registro importado encontrado.'
+  (tableFilterValueChange)='tableFilterValue = $event'
+  (rowClick)='open($event)'
+  header
+  clickableRows
+  class='step-flow-table administration-smart-table administration-wide-search search-cleaner-inline trello-smart-table'
+>
+  <ng-template cTemplateId='columnLabel_all' let-column>
+    <span class='custom-header'>{{ column.label }}</span>
+  </ng-template>
+
+  <ng-template cTemplateId='tableData' let-columnName='columnName' let-item='item' let-tdContent='tdContent'>
+    <td class='custom-td'>
+      @switch (columnName) {
+        @case ('order') { <span class='order-field'>{{ item.order }}</span> }
+        @case ('client') { <span class='client-field' [title]='item.client'>{{ item.client }}</span> }
+        @case ('code') { <span class='code-field'>{{ item.code }}</span> }
+        @case ('description') { <span class='description-field' [title]='item.description'>{{ item.description }}</span> }
+        @case ('releaseDate') { <span class='date-field'>{{ item.releaseDate | date:'dd/MM/yyyy':'-0300' }}</span> }
+        @case ('status') {
+          <span class='status-badge' [class.sent]='item.status === "SENT"' [class.pending]='item.status === "PENDING"' [class.error]='item.status === "ERROR"'>
+            <span class='bullet'></span>{{ item.statusLabel }}
+          </span>
+        }
+        @default { {{ tdContent }} }
+      }
+    </td>
+  </ng-template>
+</c-smart-table>

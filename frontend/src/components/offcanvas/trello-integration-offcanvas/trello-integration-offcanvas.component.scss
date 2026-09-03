@@ -1,0 +1,127 @@
+:host ::ng-deep .trello-detail-offcanvas {
+  --cui-offcanvas-width: min(620px, 100vw);
+  display: flex;
+  flex-direction: column;
+
+  > div:not(.cdk-visually-hidden) { display: flex; height: 100%; min-height: 0; flex-direction: column; }
+  .offcanvas-body { flex: 1 1 auto; min-height: 0; padding: 22px; overflow-y: auto; }
+}
+
+.detail-header {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  position: relative;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 60px 18px 20px;
+  border-bottom: 1px solid var(--cui-border-color);
+
+  .btn-close { position: absolute; top: 50%; right: 20px; margin: 0; transform: translateY(-50%); }
+}
+
+.mail-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 11px;
+  background: color-mix(in srgb, #155dfb 10%, transparent);
+  color: #155dfb;
+
+  svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+}
+
+.heading-copy { flex: 1 1 auto; min-width: 0; }
+.heading-copy h2 { margin: 0; font-size: 18px; font-weight: 700; }
+.client-name { display: block; overflow: hidden; margin-top: 3px; color: var(--cui-secondary-color); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 650;
+
+  &.sent { color: #16845b; background: rgba(22, 132, 91, .1); }
+  &.pending { color: #b45d17; background: rgba(180, 93, 23, .1); }
+  &.error { color: #c5232a; background: rgba(197, 35, 42, .1); }
+  .bullet { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+}
+
+.detail-section { margin-bottom: 32px; font-size: 13px; }
+.section-heading {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+
+  h3 { margin: 0; font-size: 13px; font-weight: 700; }
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+  margin: 0;
+
+  div { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+  .wide { grid-column: 1 / -1; }
+  dt { color: var(--cui-secondary-color); font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  dd { margin: 0; font-size: 13px; font-weight: 500; overflow-wrap: anywhere; }
+}
+
+.tracking-card {
+  padding: 18px;
+  border: 1px solid var(--cui-border-color);
+  border-radius: 12px;
+  background: rgba(var(--cui-emphasis-color-rgb), .025);
+}
+
+.tracking-list {
+  display: grid;
+  gap: 14px;
+
+  > div { min-width: 0; }
+  p { display: flex; min-width: 0; flex-direction: column; margin: 0; }
+  p span { color: var(--cui-secondary-color); font-size: 13px; }
+  p strong { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+}
+
+.detail-footer {
+  flex: 0 0 auto;
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--cui-border-color);
+  background: var(--cui-body-bg);
+  text-align: center;
+
+  small { display: block; margin-top: 8px; color: var(--cui-secondary-color); font-size: 11px; line-height: 1.4; }
+}
+
+.resend-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-color: #155dfb;
+  border-radius: 14px;
+  background-color: #155dfb;
+  font-size: 14px;
+  font-weight: 650;
+
+  &:hover, &:focus-visible { border-color: #1447e6; background-color: #1447e6; }
+
+  svg { width: 20px; height: 20px; }
+}
+
+@media (max-width: 500px) {
+  :host ::ng-deep .trello-detail-offcanvas .offcanvas-body { padding: 18px 16px; }
+  .detail-header { padding: 16px 52px 16px 16px; }
+  .detail-header .btn-close { right: 16px; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .detail-grid .wide { grid-column: auto; }
+  .detail-footer { padding: 14px 16px 18px; }
+}

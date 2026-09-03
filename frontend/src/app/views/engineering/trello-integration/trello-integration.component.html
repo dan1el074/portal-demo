@@ -1,0 +1,111 @@
+<c-container class='h-auto px-4 trello-page' fluid>
+  <header class='page-header'>
+    <p class='ops-header'>
+      <span class='ops-welcome'>Integração Trello</span>
+      <span class='ops-access-level'>Consulte pedidos no ERP e acompanhe o envio de cards para o Trello</span>
+    </p>
+
+    @if (canSwitchViews) {
+      <c-dropdown class='fix-dropdown'>
+        <button cDropdownToggle [caret]='false' class='view-mode-btn'>
+          <div class='view-mode-icon'>
+            @if (currentView === 'admin') {
+              <svg viewBox='0 0 24 24'><path d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'></path><path d='m9 12 2 2 4-4'></path></svg>
+            } @else {
+              <svg viewBox='0 0 24 24'><path d='M20 7h-9'></path><path d='M14 17H5'></path><circle cx='17' cy='17' r='3'></circle><circle cx='7' cy='7' r='3'></circle></svg>
+            }
+          </div>
+          <div class='view-mode-text'><span>Visualizando como</span>{{ viewLabel() }}</div>
+          <svg aria-hidden='true' viewBox='0 0 24 24' class='view-mode-caret'><path d='m6 9 6 6 6-6'></path></svg>
+        </button>
+        <div cDropdownMenu class='view-menu'>
+          <span cDropdownItemPlain class='view-menu-label'>Perfil de acesso</span>
+          @for (view of views; track view.value) {
+            <button cDropdownItem [class.custom-active]='view.value === currentView' (click)='setView(view.value)'>
+              <span class='view-option-icon'>
+                @if (view.value === 'admin') {
+                  <svg viewBox='0 0 24 24'><path d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'></path><path d='m9 12 2 2 4-4'></path></svg>
+                } @else {
+                  <svg viewBox='0 0 24 24'><path d='M20 7h-9'></path><path d='M14 17H5'></path><circle cx='17' cy='17' r='3'></circle><circle cx='7' cy='7' r='3'></circle></svg>
+                }
+              </span>
+              <span class='view-option-title'>{{ view.label }}</span>
+              <svg aria-hidden='true' viewBox='0 0 24 24' class='active-icon' [class.show]='view.value === currentView'><circle cx='12' cy='12' r='10'></circle><path d='m9 12 2 2 4-4'></path></svg>
+            </button>
+          }
+        </div>
+      </c-dropdown>
+    } @else {
+      <div class='fixed-view'>
+        <span class='view-mode-icon'><svg viewBox='0 0 24 24'><path d='M20 7h-9'></path><path d='M14 17H5'></path><circle cx='17' cy='17' r='3'></circle><circle cx='7' cy='7' r='3'></circle></svg></span>
+        <div><small>Perfil de acesso</small><strong>Operador</strong></div>
+      </div>
+    }
+  </header>
+
+  @if (currentView === 'admin') {
+    <section class='settings-grid' aria-label='Configurações da integração'>
+      <c-card class='settings-card'>
+        <c-card-body>
+          <div class='settings-heading'>
+            <span class='settings-icon'><svg viewBox='0 0 24 24'><path d='M12 2v4'></path><path d='M12 18v4'></path><path d='m4.93 4.93 2.83 2.83'></path><path d='m16.24 16.24 2.83 2.83'></path><path d='M2 12h4'></path><path d='M18 12h4'></path><path d='m4.93 19.07 2.83-2.83'></path><path d='m16.24 7.76 2.83-2.83'></path></svg></span>
+            <div><h2>Retenção e periodicidade</h2><p>Defina o histórico mantido e a janela consultada no ERP.</p></div>
+          </div>
+          <div class='form-grid'>
+            <label>Retenção dos registros <span class='input-suffix'><input cFormControl type='number' min='1' max='3650' [disabled]='loadingSettings || savingSettings' [(ngModel)]='settings.retentionDays'><small>dias</small></span></label>
+            <label>Consultar pedidos dos últimos <span class='input-suffix'><input cFormControl type='number' min='1' max='3650' [disabled]='loadingSettings || savingSettings' [(ngModel)]='settings.erpLookbackDays'><small>dias</small></span></label>
+          </div>
+        </c-card-body>
+      </c-card>
+
+      <c-card class='settings-card'>
+        <c-card-body>
+          <div class='settings-heading'>
+            <span class='settings-icon'><svg viewBox='0 0 24 24'><rect width='20' height='16' x='2' y='4' rx='2'></rect><path d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'></path></svg></span>
+            <div><h2>Destinatários</h2><p>Informe os endereços usados para criar os cards por e-mail.</p></div>
+          </div>
+          <div class='form-grid'>
+            <label>Caixa de e-mail destinatária (Trello)<input cFormControl type='email' [disabled]='loadingSettings || savingSettings' [(ngModel)]='settings.destinationEmail' placeholder='quadro@boards.trello.com'></label>
+            <label>E-mail em cópia (CC)<input cFormControl type='email' [disabled]='loadingSettings || savingSettings' [(ngModel)]='settings.ccEmail' placeholder='email@exemplo.com'></label>
+          </div>
+        </c-card-body>
+      </c-card>
+      <div class='settings-actions'><button cButton type='button' color='secondary' variant='outline' [disabled]='loadingSettings || savingSettings' (click)='saveSettings()'>{{ savingSettings ? 'Salvando...' : 'Salvar configurações' }}</button></div>
+    </section>
+  }
+
+  <section class='summary-grid' aria-label='Resumo dos registros importados'>
+    <c-card class='summary-card total'><c-card-body><strong>{{ summary.total }}</strong><span>Total de registros</span></c-card-body></c-card>
+    <c-card class='summary-card sent'><c-card-body><strong>{{ summary.sent }}</strong><span>Enviados</span></c-card-body></c-card>
+    <c-card class='summary-card pending'><c-card-body><strong>{{ summary.pending }}</strong><span>Pendentes</span></c-card-body></c-card>
+    <c-card class='summary-card error'><c-card-body><strong>{{ summary.errors }}</strong><span>Erros de envio</span></c-card-body></c-card>
+  </section>
+
+  <c-card class='records-card'>
+    <div class='records-header'>
+      <div>
+        <h2>Registros importados</h2>
+        <p>{{ lastUpdatedAt ? ('Dados atualizados em ' + (lastUpdatedAt | date:'dd/MM/yyyy HH:mm':'-0300')) : 'Atualizando dados...' }}</p>
+      </div>
+      <div class='records-actions'>
+        <button cButton type='button' color='secondary' variant='outline' class='refresh-button' [disabled]='loadingTable || consultingErp' (click)='refreshData()' title='Atualizar dados' aria-label='Atualizar dados'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><path d='M21 12a9 9 0 0 1-15.26 6.48L3 16'></path><path d='M3 21v-5h5'></path><path d='M3 12A9 9 0 0 1 18.26 5.52L21 8'></path><path d='M16 8h5V3'></path></svg>
+        </button>
+        <button cButton type='button' color='primary' class='erp-button' [disabled]='consultingErp || loadingTable' (click)='consultErp()'>
+          <svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='11' cy='11' r='8'></circle><path d='m21 21-4.3-4.3'></path></svg>
+          {{ consultingErp ? 'Consultando...' : 'Consultar ERP' }}
+        </button>
+      </div>
+    </div>
+    <c-card-body>
+      <app-trello-integration-table
+        [data]='records'
+        [loading]='loadingTable'
+        [resetKey]='tableResetKey'
+        (openRecord)='openRecord($event)'
+      ></app-trello-integration-table>
+    </c-card-body>
+  </c-card>
+</c-container>
+
+<app-trello-integration-offcanvas #recordOffcanvas [resending]='resendingEmail' (resend)='resendEmail($event)'></app-trello-integration-offcanvas>
