@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonCloseDirective, ColDirective, ModalBodyComponent, ModalComponent, ModalHeaderComponent, PlaceholderAnimationDirective, PlaceholderDirective } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilCursor, cilFork } from '@coreui/icons';
-import { FileService } from '../../../../app/services/file.service';
+import { FileService, ProjectSearchResult } from '../../../../app/services/file.service';
 import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
 import { Role } from '../../../../app/interface/role.interface';
 import { getNavigationTools, NavigationTool } from '../../../../app/shared/navigation-tool';
@@ -34,7 +34,7 @@ export class LayoutSearchModalComponent implements OnChanges {
   @Output() closeModal = new EventEmitter<any>();
 
   protected icons = { cilCursor, cilFork };
-  protected resultList: Array<string> = [];
+  protected resultList: Array<ProjectSearchResult> = [];
   protected toolList: Array<NavigationTool> = [];
   protected searchInput = "";
   protected loadSeach = false;
@@ -90,8 +90,8 @@ export class LayoutSearchModalComponent implements OnChanges {
     this.resetForm()
   }
 
-  protected openPdf(projectName: string): void {
-    this.fileService.openProject(projectName);
+  protected openPdf(project: ProjectSearchResult): void {
+    this.fileService.openProject(project.fileName, project.source);
   }
 
   protected openTool(tool: NavigationTool): void {
