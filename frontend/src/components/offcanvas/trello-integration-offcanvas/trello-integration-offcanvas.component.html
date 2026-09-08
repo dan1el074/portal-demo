@@ -17,12 +17,12 @@
     <c-offcanvas-body>
       <section class='detail-section' aria-label='Informações do pedido'>
         <dl class='detail-grid'>
-          <div><dt>Pedido</dt><dd>{{ record.order }}</dd></div>
-          <div><dt>Tipo</dt><dd>{{ record.orderType }}</dd></div>
+          <div class='wide'><dt>Tipo</dt><dd>{{ record.orderType }}</dd></div>
           <div class='wide'><dt>Cliente</dt><dd>{{ record.client }}</dd></div>
-          <div class='wide'><dt>Código</dt><dd>{{ record.code }}</dd></div>
-          <div class='wide'><dt>Descrição</dt><dd>{{ record.description }}</dd></div>
+          <div><dt>Código</dt><dd>{{ record.code }}</dd></div>
           <div><dt>Quantidade</dt><dd>{{ record.quantity | number:'1.0-2' }}</dd></div>
+          <div class='wide'><dt>Descrição</dt><dd>{{ record.description }}</dd></div>
+          <div><dt>Pedido</dt><dd>{{ record.order }}</dd></div>
           <div><dt>Vendedor</dt><dd>{{ record.seller }}</dd></div>
           <div><dt>Liberação</dt><dd>{{ record.releaseDate | date:'dd/MM/yyyy':'-0300' }}</dd></div>
           <div><dt>Previsão de entrega</dt><dd>{{ record.expectedDelivery | date:'dd/MM/yyyy':'-0300' }}</dd></div>
