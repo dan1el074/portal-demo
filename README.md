@@ -73,6 +73,30 @@ EXTERNAL_DATASOURCE_PASSWORD
 EXTERNAL_DATASOURCE_DRIVER_CLASS_NAME
 ```
 
+### Busca de projetos PDF
+
+A busca consulta dois compartilhamentos no mesmo servidor, `metaro-server2`.
+Nos perfis `dev` e `prod`, `app.smb.hostname=192.168.1.250` define esse servidor,
+usando `app.smb.username` e `app.smb.password` para ambos os compartilhamentos.
+A pasta antiga, `Projetos`, é configurada em `app.smb.legacy-projects-path` e
+mantém as subpastas por código. A pasta nova, `Projetos PDF`, é configurada em
+`app.smb.projects-path` e contém os PDFs diretamente na raiz.
+
+Na pasta nova, versões com sufixo `_dd.MM.aa_HH.mm.pdf` (ou ano com quatro
+dígitos) são omitidas. Complementos como `-ADQ`, `-DET1` e `_FABR1` continuam
+visíveis. Ocorrências da pasta antiga são preservadas, mesmo com nomes iguais.
+O modal identifica cada origem com o badge `novo` ou `antigo`.
+
+`GET /api/pdf/search?term=60390` retorna objetos com `fileName` e `source`.
+Para abrir o resultado, use `GET /api/pdf/{fileName}?source=NEW` ou `source=OLD`.
+Sem `source`, a abertura continua usando a pasta antiga. Publique backend e
+frontend juntos, pois o formato da resposta da busca mudou.
+
+Os cards de arquivos acessam `\\metaro-server2\Arquivos\TI\Outros\portal`.
+Nos dois perfis, `app.smb.files-path=Arquivos` define o compartilhamento;
+o backend abre os arquivos na subpasta `TI/Outros/portal`, usando o mesmo
+`app.smb.hostname`, usuário e senha da busca de projetos.
+
 ### 2. Frontend
 
 ```powershell

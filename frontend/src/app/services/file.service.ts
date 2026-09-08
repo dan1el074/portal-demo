@@ -12,6 +12,11 @@ declare global {
   }
 }
 
+export interface ProjectSearchResult {
+  fileName: string;
+  source: 'NEW' | 'OLD';
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -20,12 +25,12 @@ export class FileService {
 
   constructor(private http: HttpClient) {}
 
-  public searchProject(projectNumber: string): Observable<any> {
-    return this.http.get<Array<string>>(this.api + '/api/pdf/search?term=' + projectNumber);
+  public searchProject(projectNumber: string): Observable<ProjectSearchResult[]> {
+    return this.http.get<ProjectSearchResult[]>(this.api + '/api/pdf/search', { params: { term: projectNumber } });
   }
 
-  public openProject(projectName: string): void {
-    const url = this.api + '/api/pdf/' + encodeURIComponent(projectName);
+  public openProject(projectName: string, source: ProjectSearchResult['source'] = 'OLD'): void {
+    const url = this.api + '/api/pdf/' + encodeURIComponent(projectName) + '?source=' + source;
 
     if (window.PortalMetaroAndroid) {
       window.PortalMetaroAndroid.openPdf(url, '', projectName);

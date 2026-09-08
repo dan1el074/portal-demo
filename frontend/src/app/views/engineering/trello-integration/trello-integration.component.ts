@@ -1,28 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  ButtonDirective,
-  CardBodyComponent,
-  CardComponent,
-  ContainerComponent,
-  DropdownComponent,
-  DropdownItemDirective,
-  DropdownItemPlainDirective,
-  DropdownMenuDirective,
-  DropdownToggleDirective,
-  FormControlDirective,
-} from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective, FormControlDirective } from '@coreui/angular';
 import { finalize } from 'rxjs';
 import { TrelloIntegrationOffcanvasComponent } from '../../../../components/offcanvas/trello-integration-offcanvas/trello-integration-offcanvas.component';
 import { TrelloIntegrationTableComponent } from '../../../../components/table/trello-integration-table/trello-integration-table.component';
-import {
-  TrelloIntegrationRecord,
-  TrelloIntegrationSettings,
-  TrelloIntegrationSummary,
-  TrelloIntegrationView,
-} from '../../../interface/trello-integration.interface';
-import { ToastrService } from '../../../services/toast.service';
+import { TrelloIntegrationRecord, TrelloIntegrationSettings, TrelloIntegrationSummary, TrelloIntegrationView } from '../../../interface/trello-integration.interface';
+import { ToastOptions, ToastrService } from '../../../services/toast.service';
 import { ErrorService } from '../../../services/error.service';
 import { TrelloIntegrationService } from '../../../services/trello-integration.service';
 import { UserService } from '../../../services/user.service';
@@ -62,6 +46,8 @@ export class TrelloIntegrationComponent implements OnInit {
   protected totalItems = 0;
   protected lastUpdatedAt?: Date;
   protected tableResetKey = 0;
+  protected records: TrelloIntegrationRecord[] = [];
+  protected summary: TrelloIntegrationSummary = { total: 0, sent: 0, pending: 0, errors: 0 };
   protected readonly views: Array<{ value: TrelloIntegrationView; label: string }> = [
     { value: 'operator', label: 'Operador' },
     { value: 'admin', label: 'Administrador' },
@@ -72,8 +58,6 @@ export class TrelloIntegrationComponent implements OnInit {
     destinationEmail: '',
     ccEmail: '',
   };
-  protected records: TrelloIntegrationRecord[] = [];
-  protected summary: TrelloIntegrationSummary = { total: 0, sent: 0, pending: 0, errors: 0 };
 
   constructor(
     private userService: UserService,
@@ -111,11 +95,10 @@ export class TrelloIntegrationComponent implements OnInit {
       next: result => {
         this.loadData();
         const details = [
-          `${result.imported} importado(s)`,
-          `${result.scheduled} e-mail(s) programado(s)`,
-          `${result.ignored} ignorado(s)`,
-        ].join(', ');
-        this.toasterService.success(`Consulta concluída: ${details}.`, 'Consultar ERP');
+          `importados: ${result.imported}`,
+          `programados: ${result.scheduled}`
+        ].join('<br>');
+        this.toasterService.success(details, 'Consulta concluída!', { enableHtml: true });
       },
       error: error => this.errorService.showError(error),
     });
@@ -198,7 +181,7 @@ export class TrelloIntegrationComponent implements OnInit {
         this.recordOffcanvas.update(updated);
         this.loadSummary();
         if (updated.status === 'SENT') {
-          this.toasterService.success(`E-mail do pedido ${updated.order}, item ${updated.code}, reenviado com sucesso.`);
+          this.toasterService.success(`Pedido: ${updated.order}<br>Item: ${updated.code}`, 'Pedido reenviado com sucesso!', { enableHtml: true });
         } else {
           this.toasterService.error(updated.errorMessage || 'Não foi possível reenviar o e-mail para o Trello.');
         }
