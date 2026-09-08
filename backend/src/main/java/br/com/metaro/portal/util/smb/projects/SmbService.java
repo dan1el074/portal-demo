@@ -1,6 +1,8 @@
 package br.com.metaro.portal.util.smb.projects;
 
+import br.com.metaro.portal.util.smb.SmbConnection;
 import br.com.metaro.portal.util.smb.projects.dto.SmbFileStreamDto;
+import br.com.metaro.portal.util.smb.projects.dto.ProjectSearchResultDto;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
@@ -20,6 +22,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 @Service
 public class SmbService {
@@ -33,67 +37,66 @@ public class SmbService {
     private String projectsPath;
     @Value("${app.smb.files-path}")
     private String filesPath;
+    @Value("${app.smb.legacy-projects-path}")
+    private String legacyProjectsPath;
 
-    private final Object lock = new Object();
-    private SMBClient client;
-    private Connection connection;
-    private Session session;
-    private DiskShare share;
+    private static final Pattern VERSION_SUFFIX = Pattern.compile(
+            "_\\d{2}\\.\\d{2}\\.\\d{2}(?:\\d{2})?_\\d{2}\\.\\d{2}\\.pdf$", Pattern.CASE_INSENSITIVE);
+    private final SmbConnection oldProjects = new SmbConnection();
+    private final SmbConnection newProjects = new SmbConnection();
 
     @PreDestroy
     public void close() {
-        try { if (share != null) share.close(); } catch (Exception ignored) {}
-        try { if (session != null) session.close(); } catch (Exception ignored) {}
-        try { if (connection != null) connection.close(); } catch (Exception ignored) {}
-        try { if (client != null) client.close(); } catch (Exception ignored) {}
+        oldProjects.close();
+        newProjects.close();
     }
 
-    private DiskShare getShare() throws Exception {
-        synchronized (lock) {
-            if (share == null || !share.isConnected()) {
-                reconnect();
-            }
-            return share;
+    DiskShare getShare(ProjectSource source) throws Exception {
+        if (source == ProjectSource.NEW) {
+            return newProjects.getShare(hostname, username, password, projectsPath);
         }
+        return oldProjects.getShare(hostname, username, password, legacyProjectsPath);
     }
 
-    private void reconnect() throws Exception {
-        close();
-
-        client = new SMBClient();
-        connection = client.connect(hostname);
-        AuthenticationContext ac = new AuthenticationContext(username, password.toCharArray(), null);
-        session = connection.authenticate(ac);
-        share = (DiskShare) session.connectShare(projectsPath);
-    }
-
-    public List<String> searchProject(String term) {
-        List<String> results = new ArrayList<>();
-        String folder = getProjectFolder(term);
+    public List<ProjectSearchResultDto> searchProject(String term) {
+        List<ProjectSearchResultDto> results = new ArrayList<>();
+        term = term.trim();
+        if (term.isEmpty()) return results;
 
         try {
-            DiskShare share = getShare();
-
-            for (var file : share.list(folder)) {
-                String name = file.getFileName();
-
-                if (name == null) continue;
-
-                if (name.toLowerCase().endsWith(".pdf") && name.startsWith(term)) {
-                    results.add(name);
+            for (ProjectSource source : ProjectSource.values()) {
+                DiskShare share = getShare(source);
+                String folder = source == ProjectSource.NEW ? "" : getProjectFolder(term);
+                if (!folder.isEmpty() && !share.folderExists(folder)) continue;
+                for (var file : share.list(folder)) {
+                    String name = file.getFileName();
+                    if ((file.getFileAttributes() & 0x10) == 0 && matchesProject(name, term, source)) {
+                        results.add(new ProjectSearchResultDto(name, source));
+                    }
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar arquivos SMB", e);
+            throw new RuntimeException("Failed to search SMB files", e);
         }
 
         return results;
     }
 
-    public SmbFileStreamDto getProjectPdfStream(String fileName) {
+    static boolean matchesProject(String name, String term, ProjectSource source) {
+        return name != null && name.toLowerCase(Locale.ROOT).endsWith(".pdf")
+                && name.regionMatches(true, 0, term, 0, term.length())
+                && (source == ProjectSource.OLD || !VERSION_SUFFIX.matcher(name).find());
+    }
+
+    public SmbFileStreamDto getProjectPdfStream(String fileName, ProjectSource source) {
+        if (fileName.contains("/") || fileName.contains("\\") || fileName.contains(":")
+                || !fileName.toLowerCase(Locale.ROOT).endsWith(".pdf")) {
+            return null;
+        }
         try {
-            DiskShare share = getShare();
-            String fullPath = getProjectFolder(fileName) + "/" + fileName;
+            DiskShare share = getShare(source);
+            String folder = source == ProjectSource.NEW ? "" : getProjectFolder(fileName);
+            String fullPath = folder.isEmpty() ? fileName : folder + "/" + fileName;
 
             if (!share.fileExists(fullPath)) return null;
 
@@ -111,7 +114,7 @@ public class SmbService {
             return new SmbFileStreamDto(file, inputStream);
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao obter PDF SMB", e);
+            throw new RuntimeException("Failed to retrieve SMB PDF", e);
         }
     }
 
@@ -124,7 +127,7 @@ public class SmbService {
             Session tempSession = tempConnection.authenticate(ac);
             DiskShare tempShare = (DiskShare) tempSession.connectShare(filesPath);
 
-            String fullPath = "outros/portal/" + fileName;
+            String fullPath = "TI/Outros/portal/" + fileName;
 
             if (!tempShare.fileExists(fullPath)) {
                 tempShare.close();
@@ -148,7 +151,7 @@ public class SmbService {
 
             return new SmbFileStreamDto(file, inputStream, tempShare, tempSession, tempConnection, tempClient);
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao obter mídia SMB", e);
+            throw new RuntimeException("Failed to retrieve SMB media", e);
         }
     }
 
@@ -169,7 +172,7 @@ public class SmbService {
 
         if (!baseProject.matches("\\d+")) return "";
 
-        baseProject = String.valueOf(Integer.parseInt(baseProject));
+        baseProject = baseProject.replaceFirst("^0+(?!$)", "");
         String folder = "000";
 
         if (baseProject.length() == 4) {

@@ -53,6 +53,23 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      .project-name {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .project-source {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        width: fit-content;
+        margin-left: auto;
+        flex-shrink: 0;
+        font-size: 11px;
+        color: var(--cui-medium-emphasis);
+        background-color: rgba(var(--cui-emphasis-color-rgb), 0.04);
+      }
+
       padding: 16px 8px 16px 16px;
       border-bottom: var(--cui-border-width) solid var(--cui-border-color-translucent);
 

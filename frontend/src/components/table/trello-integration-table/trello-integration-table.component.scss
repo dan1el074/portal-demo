@@ -6,17 +6,6 @@
   th, td { max-width: none; white-space: nowrap; }
 }
 
-:host ::ng-deep .trello-smart-table,
-:host ::ng-deep .trello-smart-table input,
-:host ::ng-deep .trello-smart-table select,
-:host ::ng-deep .trello-smart-table button,
-:host ::ng-deep .trello-smart-table th,
-:host ::ng-deep .trello-smart-table td,
-:host ::ng-deep .trello-smart-table td * {
-  font-family: var(--cui-body-font-family);
-  font-size: 13px;
-}
-
 :host ::ng-deep .administration-wide-search c-smart-table-filter input {
   width: 256px;
   max-width: calc(100vw - 64px);
@@ -37,7 +26,7 @@
   gap: 5px;
   padding: 5px 9px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 650;
 
   &.sent { color: #16845b; background: rgba(22, 132, 91, .1); }
