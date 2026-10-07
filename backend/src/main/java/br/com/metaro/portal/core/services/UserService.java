@@ -326,7 +326,7 @@ public class UserService implements UserDetailsService {
     private void validateRoleIsActivated(Role role) {
         if (!role.isActivated()) {
             throw new UnprocessableEntityException(
-                    "A permissão está desativada e não pode ser atribuída a um usuário!".formatted(role.getAuthority())
+                    "A permissão %s está desativada e não pode ser atribuída a um usuário!".formatted(role.getAuthority())
             );
         }
     }

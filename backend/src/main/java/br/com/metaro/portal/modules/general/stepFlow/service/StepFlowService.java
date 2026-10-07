@@ -10,6 +10,7 @@ import br.com.metaro.portal.modules.general.stepFlow.entities.*;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepository;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StatusCountsProjection;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.projections.StepCountProjection;
+import br.com.metaro.portal.modules.quality.checklist.service.ChecklistStepFlowService;
 import br.com.metaro.portal.util.erp.dto.ErpOrderDto;
 import br.com.metaro.portal.util.erp.dto.ErpOrderItemDto;
 import br.com.metaro.portal.util.others.StringUtils;
@@ -42,6 +43,8 @@ public class StepFlowService {
     private UserService userService;
     @Autowired
     private PictureService pictureService;
+    @Autowired
+    private ChecklistStepFlowService checklistStepFlowService;
 
     @Transactional(readOnly = true)
     public OrderDto findById(Long id) {
@@ -195,6 +198,7 @@ public class StepFlowService {
         }
 
         StepType type = order.getCurrentStep();
+        checklistStepFlowService.assertStepCanFinish(order.getId(), type);
         OrderStep currentStep = order.getSteps().stream().filter(step -> step.getStep().equals(type))
                 .findFirst().orElseThrow(ResourceNotFoundException::new);
 

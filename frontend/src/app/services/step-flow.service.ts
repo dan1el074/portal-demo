@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { AdminDashboard, PagedResult, StepFlowData, StepFlowOrder, StepFlowOrderInfo } from './../interface/step-flow.interface';
 import { ErpSource } from '../interface/erp.interface';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -55,5 +55,14 @@ export class StepFlowService {
 
   public deleteImageById(id: number): Observable<void> {
     return this.http.delete<void>(this.api + '/image/' + id);
+  }
+
+  public listChecklistEquipment(orderId: number): Observable<Array<{ flowId: string; serial: string; item: string; selected: boolean }>> {
+    return this.http.get<Array<{ flowId: string; serial: string; item: string; selected: boolean }>>(`${environment.apiUrl}/api/checklist/step-flow/orders/${orderId}/equipment`)
+      .pipe(map((equipment) => equipment.map((item) => ({ ...item, flowId: String(item.flowId) }))));
+  }
+
+  public replaceChecklistEquipment(orderId: number, flowIds: string[]): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/api/checklist/step-flow/orders/${orderId}/equipment`, { flowIds });
   }
 }

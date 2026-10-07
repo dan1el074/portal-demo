@@ -49,6 +49,17 @@
         </div>
       </div>
       <app-step-flow-history [order]="order" />
+      @if(checklistEquipment.length || checklistEquipmentLoading){
+        <div class="sofd-box checklist-equipment-box">
+          <div class="sofd-box-info"><span class="sofd-box-info-label">Equipamentos do checklist</span><span>Selecione pelos números de série</span></div>
+          <div class="sof-file-container">
+            @for(equipment of checklistEquipment;track equipment.flowId){
+              <label class="sof-file-item"><input type="checkbox" [checked]="equipment.selected" (change)="toggleChecklistEquipment(equipment.flowId,$any($event.target).checked)" /><span><strong>{{ equipment.serial }}</strong> · {{ equipment.item }}</span></label>
+            }
+          </div>
+          <div class="buttons-container"><span>{{ selectedChecklistEquipmentCount }} equipamento(s) selecionado(s)</span><button cButton type="button" color="secondary" [disabled]="checklistEquipmentLoading" (click)="saveChecklistEquipment()">Salvar equipamentos</button></div>
+        </div>
+      }
       <app-step-flow-editable-media
         #filesSection
         [order]="order"
