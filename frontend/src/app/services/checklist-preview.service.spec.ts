@@ -39,15 +39,16 @@ describe('ChecklistPreviewService', () => {
 function testState(): ChecklistState {
   const category = { ...emptyChecklistCategory(), id: 'category', name: 'Production', operators: [999991] };
   const section = emptyChecklistSection(true);
+  section.name = 'Inspection';
   section.questions[0].label = 'Original question';
   const template: Template = {
     id: 'template',
     categoryId: category.id,
     name: 'Equipment',
-    equipmentId: '',
+    equipmentId: 'equipment',
     title: '%serie',
     sections: [section],
-    signature: false,
+    signature: true,
     predecessorId: '',
     automatic: false,
     version: 1,
@@ -55,7 +56,7 @@ function testState(): ChecklistState {
   return {
     schema: 1,
     categories: [category],
-    equipment: [],
+    equipment: [{ id: 'equipment', name: 'Equipment', abbreviation: 'EQ' }],
     templates: [template],
     flows: [],
     records: [],

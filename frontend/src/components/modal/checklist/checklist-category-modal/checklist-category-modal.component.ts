@@ -87,7 +87,15 @@ export class ChecklistCategoryModalComponent {
     this.category.name = this.category.name.trim();
     this.category.documentTitle = this.category.documentTitle.trim();
     state.categories = [...state.categories.filter(item => item.id !== this.category.id), copy(this.category)];
-    this.store.commit(state); this.editing = false; this.toaster.success('Categoria salva com sucesso.'); this.cdr.detectChanges();
+    const saved = await this.store.commit(state);
+    if (!saved) {
+      this.toaster.warning('Não foi possível salvar a categoria.');
+      this.cdr.detectChanges();
+      return;
+    }
+    this.editing = false;
+    this.toaster.success('Categoria salva com sucesso.');
+    this.cdr.detectChanges();
   }
 
   protected async toggle(category: Category): Promise<void> {

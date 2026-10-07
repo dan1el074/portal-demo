@@ -28,10 +28,10 @@ export class ChecklistPreviewService {
     return this.loading;
   }
 
-  commit(data: ChecklistState): void {
+  commit(data: ChecklistState): Promise<boolean> {
     const previous = this.state();
     this.state.set(copy(data));
-    void this.persistConfiguration(previous, data);
+    return this.persistConfiguration(previous, data);
   }
 
   private async fetchState(): Promise<void> {
@@ -53,15 +53,7 @@ export class ChecklistPreviewService {
         category.integration = normalizeChecklistIntegration(category.integration);
       });
       result.equipment.forEach((equipment) => equipment.id = String(equipment.id));
-      result.templates.forEach((template) => {
-        template.id = String(template.id);
-        template.categoryId = String(template.categoryId);
-        template.equipmentId = template.equipmentId == null ? '' : String(template.equipmentId);
-        template.predecessorId = template.predecessorId == null ? '' : String(template.predecessorId);
-        template.equipmentId ||= '';
-        template.predecessorId ||= '';
-        migrateTitleFormula(template);
-      });
+      result.templates.forEach((template) => this.normalizeTemplate(template));
       this.state.set({
         schema: 1,
         categories: result.categories,
@@ -130,7 +122,16 @@ export class ChecklistPreviewService {
     return flow;
   }
 
-  private async persistConfiguration(previous: ChecklistState, current: ChecklistState): Promise<void> {
+  private normalizeTemplate(template: Template): Template {
+    template.id = String(template.id);
+    template.categoryId = String(template.categoryId);
+    template.equipmentId = template.equipmentId == null ? '' : String(template.equipmentId);
+    template.predecessorId = template.predecessorId == null ? '' : String(template.predecessorId);
+    migrateTitleFormula(template);
+    return template;
+  }
+
+  private async persistConfiguration(previous: ChecklistState, current: ChecklistState): Promise<boolean> {
     const requests: Array<Promise<unknown>> = [];
     for (const category of current.categories) {
       const old = previous.categories.find((item) => item.id === category.id);
@@ -154,9 +155,11 @@ export class ChecklistPreviewService {
     try {
       await Promise.all(requests);
       if (requests.length) await this.load(true);
+      return true;
     } catch {
-      this.warning.set('Uma alteração não pôde ser salva no servidor. Os dados foram recarregados.');
       await this.load(true).catch(() => undefined);
+      this.warning.set('Uma alteração não pôde ser salva no servidor. Os dados foram recarregados.');
+      return false;
     }
   }
 
@@ -251,7 +254,7 @@ export class ChecklistPreviewService {
     const error = validateTemplate(model, this.state());
     if (error) throw new Error(error);
     const previous = this.state().templates.find((item) => item.id === model.id);
-    const saved = await firstValueFrom(previous ? this.api.updateTemplate(model) : this.api.createTemplate(model));
+    const saved = this.normalizeTemplate(await firstValueFrom(previous ? this.api.updateTemplate(model) : this.api.createTemplate(model)));
     this.state.update((data) => ({ ...data, templates: [...data.templates.filter((item) => item.id !== model.id), saved] }));
   }
 
