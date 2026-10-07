@@ -57,7 +57,7 @@ export class ChecklistService {
   constructor(private readonly http: HttpClient) {}
 
   listCategories(): Observable<Category[]> { return this.http.get<Category[]>(`${this.api}/categories`); }
-  createCategory(value: Category): Observable<Category> { return this.http.post<Category>(`${this.api}/categories`, value); }
+  createCategory(value: Category): Observable<Category> { return this.http.post<Category>(`${this.api}/categories`, this.withoutId(value)); }
   updateCategory(value: Category): Observable<Category> { return this.http.put<Category>(`${this.api}/categories/${value.id}`, value); }
   deleteCategory(id: string): Observable<void> { return this.http.delete<void>(`${this.api}/categories/${id}`); }
   myAccess(): Observable<string[]> { return this.http.get<string[]>(`${this.api}/access/me`); }
@@ -66,12 +66,12 @@ export class ChecklistService {
   }
 
   listEquipment(): Observable<Equipment[]> { return this.http.get<Equipment[]>(`${this.api}/equipment`); }
-  createEquipment(value: Equipment): Observable<Equipment> { return this.http.post<Equipment>(`${this.api}/equipment`, value); }
+  createEquipment(value: Equipment): Observable<Equipment> { return this.http.post<Equipment>(`${this.api}/equipment`, this.withoutId(value)); }
   updateEquipment(value: Equipment): Observable<Equipment> { return this.http.put<Equipment>(`${this.api}/equipment/${value.id}`, value); }
   deleteEquipment(id: string): Observable<void> { return this.http.delete<void>(`${this.api}/equipment/${id}`); }
 
   listTemplates(): Observable<Template[]> { return this.http.get<Template[]>(`${this.api}/templates`); }
-  createTemplate(value: Template): Observable<Template> { return this.http.post<Template>(`${this.api}/templates`, this.templatePayload(value)); }
+  createTemplate(value: Template): Observable<Template> { return this.http.post<Template>(`${this.api}/templates`, this.withoutId(this.templatePayload(value))); }
   updateTemplate(value: Template): Observable<Template> { return this.http.put<Template>(`${this.api}/templates/${value.id}`, this.templatePayload(value)); }
   deleteTemplate(id: string): Observable<void> { return this.http.delete<void>(`${this.api}/templates/${id}`); }
 
@@ -159,5 +159,10 @@ export class ChecklistService {
 
   private templatePayload(value: Template): object {
     return { ...value, equipmentId: value.equipmentId || null, predecessorId: value.predecessorId || null };
+  }
+
+  private withoutId<T extends object>(value: T): Omit<T, 'id'> {
+    const { id, ...payload } = value as T & { id?: unknown };
+    return payload;
   }
 }
