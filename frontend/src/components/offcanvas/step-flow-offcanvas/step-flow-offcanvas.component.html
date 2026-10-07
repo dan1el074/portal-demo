@@ -42,7 +42,7 @@
 
                 <div class="sof-filed">
                   <span class="sof-field-label">Telefone</span>
-                  <span class="sof-field-value">{{ order.phone }}</span>
+                  <span class="sof-field-value">{{ order.phone?.trim() || '-' }}</span>
                 </div>
 
                 <div class="sof-filed">

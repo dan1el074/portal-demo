@@ -88,6 +88,9 @@ export class StepFlowInputOffcanvasComponent {
   protected uploadingVideos = signal<Array<UploadingVideo>>([]);
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
+  protected checklistEquipment: Array<{ flowId: string; serial: string; item: string; selected: boolean }> = [];
+  protected checklistEquipmentLoading = false;
+  protected get selectedChecklistEquipmentCount(): number { return this.checklistEquipment.filter((item) => item.selected).length; }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -157,6 +160,7 @@ export class StepFlowInputOffcanvasComponent {
         this.buildItemsForm(data.items);
         this.loading = false;
         this.cdf.detectChanges();
+        this.loadChecklistEquipment();
 
         if (this.isAdmin) {
           const current = this.steps.find(s => s.title === data.currentStep);
@@ -168,6 +172,27 @@ export class StepFlowInputOffcanvasComponent {
         this.loading = false;
         this.cdf.detectChanges();
       },
+    });
+  }
+
+  private loadChecklistEquipment(): void {
+    this.checklistEquipmentLoading = true;
+    this.stepFlowService.listChecklistEquipment(this.orderId).subscribe({
+      next: (equipment) => { this.checklistEquipment = equipment; this.checklistEquipmentLoading = false; this.cdf.detectChanges(); },
+      error: () => { this.checklistEquipment = []; this.checklistEquipmentLoading = false; this.cdf.detectChanges(); },
+    });
+  }
+
+  protected toggleChecklistEquipment(flowId: string, selected: boolean): void {
+    this.checklistEquipment = this.checklistEquipment.map((item) => item.flowId === flowId ? { ...item, selected } : item);
+  }
+
+  protected saveChecklistEquipment(): void {
+    const flowIds = this.checklistEquipment.filter((item) => item.selected).map((item) => item.flowId);
+    this.checklistEquipmentLoading = true;
+    this.stepFlowService.replaceChecklistEquipment(this.orderId, flowIds).subscribe({
+      next: () => { this.checklistEquipmentLoading = false; this.toasterService.success('Equipamentos vinculados ao processo.'); this.loadChecklistEquipment(); },
+      error: () => { this.checklistEquipmentLoading = false; this.toasterService.error('Não foi possível vincular os equipamentos.'); this.loadChecklistEquipment(); },
     });
   }
 

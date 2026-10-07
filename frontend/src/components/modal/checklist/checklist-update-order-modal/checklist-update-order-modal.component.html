@@ -1,0 +1,12 @@
+<c-modal modalBackNavigation [visible]="visible" (visibleChange)="visible = $event" alignment="center" backdrop="static" size="lg">
+  <c-modal-header><h5 cModalTitle>Atualizar pedido do fluxo</h5><button cButtonClose type="button" aria-label="Fechar" cTooltip="Fechar" cTooltipPlacement="bottom" (click)="close()"></button></c-modal-header>
+  <c-modal-body>
+    @if (flow) {
+      <div class="current-data"><div><span>Pedido atual</span><strong>{{ flow.order }}</strong></div><div><span>Cliente atual</span><strong>{{ flow.client }}</strong></div><div><span>Item preservado</span><strong>{{ flow.item }}</strong></div></div>
+      <label>Novo pedido<input cFormControl [(ngModel)]="selectedOrder" (keyup.enter)="search()" (blur)="search()" placeholder="Informe o pedido" /></label>
+      @if (selected) { <div class="new-data"><span>Novo cliente</span><strong>{{ selected.client }}</strong></div> }
+      <div class="notice"><strong>O que será alterado</strong><p>O número do pedido e as informações do cliente serão atualizados em todos os checklists deste fluxo. Série, equipamento, item, respostas e não conformidades serão preservados.</p></div>
+    }
+  </c-modal-body>
+  <c-modal-footer><button cButton type="button" color="secondary" variant="outline" (click)="close()">Cancelar</button><button cButton type="button" color="primary" [disabled]="!selected || loading" (click)="save()">Atualizar pedido</button></c-modal-footer>
+</c-modal>
