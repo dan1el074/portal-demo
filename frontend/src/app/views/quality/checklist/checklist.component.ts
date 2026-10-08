@@ -13,6 +13,8 @@ import { ChecklistEquipmentModalComponent } from '../../../../components/modal/c
 import { ChecklistAccessModalComponent } from '../../../../components/modal/checklist/checklist-access-modal/checklist-access-modal.component';
 import { ChecklistCatalogModalComponent } from '../../../../components/modal/checklist/checklist-catalog-modal/checklist-catalog-modal.component';
 import { ChecklistNewRecordModalComponent } from '../../../../components/modal/checklist/checklist-new-record-modal/checklist-new-record-modal.component';
+import { ChecklistRecordCreate } from '../../../services/checklist.service';
+import { ToastrService } from '../../../services/toast.service';
 
 type ChecklistView = 'admin' | 'operator' | 'consultation';
 
@@ -52,6 +54,7 @@ export class ChecklistComponent implements OnInit {
   protected readonly store = inject(ChecklistPreviewService);
   private readonly router = inject(Router);
   private readonly backNavigation = inject(BackNavigationService);
+  private readonly toaster = inject(ToastrService);
   private categoryHistoryRegistered = false;
   protected currentView: ChecklistView = 'consultation';
   protected readonly views: Array<{ value: ChecklistView; label: string }> = [
@@ -178,11 +181,19 @@ export class ChecklistComponent implements OnInit {
     void this.router.navigate(['/qualidade/checklist/models']);
   }
 
-  protected createRecord(event: { templateId: string; predecessorId: string; }): void {
+  protected createRecord(event: ChecklistRecordCreate): void {
     this.backNavigation.runAfterOverlayClose(() => {
-      void this.router.navigate(['/qualidade/checklist/new', event.templateId], {
-        queryParams: event.predecessorId ? { previous: event.predecessorId } : {},
-      });
+      void this.createAndOpenRecord(event);
     });
+  }
+
+  private async createAndOpenRecord(event: ChecklistRecordCreate): Promise<void> {
+    try {
+      const record = await this.store.createRecord(event);
+      this.toaster.success('Checklist criado. A identificação foi registrada e está bloqueada para o preenchimento.');
+      await this.router.navigate(['/qualidade/checklist', record.id, 'edit']);
+    } catch (error) {
+      this.toaster.warning(error instanceof Error ? error.message : 'Não foi possível criar o checklist.');
+    }
   }
 }

@@ -637,6 +637,16 @@
   min-width: 0;
 }
 
+.problem-number {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--cui-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .problems-card article.has-media .problem-details {
   display: flex;
   flex: 0 1 42%;
@@ -729,6 +739,19 @@
 .comment p {
   margin: 5px 0 0;
   font-size: 13px;
+}
+
+.comment-problem-reference {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: var(--cui-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.comment-problem-reference:hover {
+  text-decoration: underline;
 }
 
 .comment-actions {

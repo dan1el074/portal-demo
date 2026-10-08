@@ -86,6 +86,12 @@ export class ChecklistRecordDetailComponent implements OnInit {
     return Object.values(this.record.answers).flatMap((answer) => answer.problems);
   }
 
+  protected problemNumber(problemId?: string): number | null {
+    if (!problemId) return null;
+    const index = this.problems.findIndex((problem) => problem.id === problemId);
+    return index >= 0 ? index + 1 : null;
+  }
+
   protected get process() {
     return this.store.state().processes.find((item) => item.flowIds.includes(this.flow.id) && !item.cancelled);
   }
@@ -300,7 +306,7 @@ export class ChecklistRecordDetailComponent implements OnInit {
 
   protected orderUpdated(): void {
     this.load();
-    this.toaster.success('Pedido e cliente atualizados em todo o fluxo.');
+    this.toaster.success('Pedido, cliente e item atualizados em todo o fluxo.');
     this.cdr.detectChanges();
   }
 }

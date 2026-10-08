@@ -8,7 +8,7 @@
 }
 
 .evidence-item {
-  width: max-content;
+  width: 267px;
   max-width: 100%;
   min-width: 0;
   flex: 0 0 auto;
@@ -36,6 +36,7 @@
 
 .evidence-image-link {
   display: block;
+  width: 100%;
   max-width: 100%;
   padding: 0;
   overflow: hidden;
@@ -47,7 +48,7 @@
 .evidence-image-link img,
 .print-image {
   display: block;
-  width: auto;
+  width: 100%;
   max-width: 100%;
   height: 150px;
   object-fit: cover;
@@ -104,7 +105,9 @@ figcaption {
 
 figcaption {
   padding: 8px 10px;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media print {
@@ -121,7 +124,7 @@ figcaption {
   }
 
   .evidence-item {
-    width: max-content;
+    width: 46mm;
     max-width: 100%;
     min-width: 0;
     flex: 0 0 auto;
@@ -136,7 +139,7 @@ figcaption {
   }
 
   .print-image {
-    width: auto;
+    width: 100%;
     max-width: 100%;
     height: 26mm;
     object-fit: contain;

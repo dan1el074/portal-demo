@@ -11,4 +11,7 @@ import lombok.Setter;
 public class ChecklistOrderUpdateDto {
     @NotBlank
     private String order;
+
+    @NotBlank
+    private String item;
 }
