@@ -503,11 +503,14 @@
 }
 
 .question-additional-fields div {
-  display: grid;
-  gap: 1px;
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  gap: 6px;
 }
 
 .question-additional-fields span {
+  flex: 0 0 auto;
   color: var(--cui-secondary-color);
   font-size: 10px;
   font-weight: 700;
@@ -516,6 +519,8 @@
 }
 
 .question-additional-fields strong {
+  min-width: 0;
+  flex: 1;
   font-size: 12px;
   font-weight: 500;
   white-space: pre-wrap;
