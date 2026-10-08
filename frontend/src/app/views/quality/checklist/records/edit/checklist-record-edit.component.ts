@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContainerComponent } from '@coreui/angular';
 import { ChecklistPendingChanges } from '../../../../../config/checklist-leave.guard';
@@ -9,6 +9,7 @@ import { ToastrService } from '../../../../../services/toast.service';
 import { ChecklistRecordFormComponent } from '../../../../../../components/forms/checklist/checklist-record-form/checklist-record-form.component';
 import { ChecklistActionModalComponent } from '../../../../../../components/modal/checklist/checklist-action-modal/checklist-action-modal.component';
 import { ChecklistIconComponent } from '../../../../../../components/icons/checklist-icon/checklist-icon.component';
+import { ChecklistUploadModalComponent } from '../../../../../../components/modal/checklist/checklist-upload-modal/checklist-upload-modal.component';
 
 @Component({
   selector: 'app-checklist-record-edit',
@@ -17,6 +18,7 @@ import { ChecklistIconComponent } from '../../../../../../components/icons/check
     ChecklistRecordFormComponent,
     ChecklistActionModalComponent,
     ChecklistIconComponent,
+    ChecklistUploadModalComponent,
   ],
   templateUrl: './checklist-record-edit.component.html',
   styleUrl: './checklist-record-edit.component.scss',
@@ -30,6 +32,7 @@ export class ChecklistRecordEditComponent implements OnInit, ChecklistPendingCha
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toaster = inject(ToastrService);
+  private readonly cdr = inject(ChangeDetectorRef);
   protected record!: Checklist;
   protected flow!: Flow;
   protected dirty = false;
@@ -48,6 +51,7 @@ export class ChecklistRecordEditComponent implements OnInit, ChecklistPendingCha
     const current = this.store.state().records.find((item) => item.id === id)!;
     this.record = copy(current);
     this.flow = copy(this.store.flow(current));
+    this.cdr.detectChanges();
   }
 
   @HostListener('window:beforeunload', ['$event']) beforeUnload(event: BeforeUnloadEvent): void {

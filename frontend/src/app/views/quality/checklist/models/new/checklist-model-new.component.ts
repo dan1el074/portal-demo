@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContainerComponent } from '@coreui/angular';
 import { ChecklistPendingChanges } from '../../../../../config/checklist-leave.guard';
@@ -13,8 +13,9 @@ import { ChecklistActionModalComponent } from '../../../../../../components/moda
 export class ChecklistModelNewComponent implements OnInit, ChecklistPendingChanges {
   @ViewChild(ChecklistActionModalComponent) private actionModal!: ChecklistActionModalComponent;
   protected readonly store = inject(ChecklistPreviewService); private readonly router = inject(Router); private readonly route = inject(ActivatedRoute); private readonly toaster = inject(ToastrService);
+  private readonly cdr = inject(ChangeDetectorRef);
   protected model!: Template; protected dirty = false;
-  async ngOnInit(): Promise<void> { await this.store.load(); this.store.requireAdmin(); const source = this.store.state().templates.find(item => item.id === this.route.snapshot.queryParamMap.get('copy')); const sourceCategory = source && this.store.state().categories.find(item => item.id === source.categoryId); this.model = source ? { ...copy(source), id: uid(), name: sourceCategory?.integration === 'production' ? '' : `${source.name} (cópia)`, equipmentId: '', predecessorId: '', automatic: false, version: 0 } : { id: uid(), categoryId: this.store.state().categories[0]?.id ?? '', name: '', equipmentId: '', title: '%data', sections: [emptySection(this.store.state().categories[0]?.integration === 'production')], signature: true, predecessorId: '', automatic: false, version: 0 }; this.dirty = !!source; }
+  async ngOnInit(): Promise<void> { await this.store.load(); this.store.requireAdmin(); const source = this.store.state().templates.find(item => item.id === this.route.snapshot.queryParamMap.get('copy')); const sourceCategory = source && this.store.state().categories.find(item => item.id === source.categoryId); this.model = source ? { ...copy(source), id: uid(), name: sourceCategory?.integration === 'production' ? '' : `${source.name} (cópia)`, equipmentId: '', predecessorId: '', automatic: false, version: 0 } : { id: uid(), categoryId: this.store.state().categories[0]?.id ?? '', name: '', equipmentId: '', title: '%data', sections: [emptySection(this.store.state().categories[0]?.integration === 'production')], signature: true, predecessorId: '', automatic: false, version: 0 }; this.dirty = !!source; this.cdr.detectChanges(); }
   @HostListener('window:beforeunload', ['$event']) beforeUnload(event: BeforeUnloadEvent): void { if (this.dirty) event.preventDefault(); }
   canDeactivate(): boolean | Promise<boolean> { return !this.dirty || this.confirmDiscard(); }
   private async confirmDiscard(): Promise<boolean> { return !!(await this.actionModal.open({ title: 'Descartar alterações?', message: 'As alterações feitas neste modelo ainda não foram salvas.', danger: true, confirmLabel: 'Descartar' })); }

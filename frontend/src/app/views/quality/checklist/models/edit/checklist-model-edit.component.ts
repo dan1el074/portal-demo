@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContainerComponent } from '@coreui/angular';
 import { ChecklistPendingChanges } from '../../../../../config/checklist-leave.guard';
@@ -23,6 +23,7 @@ export class ChecklistModelEditComponent implements OnInit, ChecklistPendingChan
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toaster = inject(ToastrService);
+  private readonly cdr = inject(ChangeDetectorRef);
   protected model!: Template;
   protected dirty=false;
 
@@ -35,7 +36,8 @@ export class ChecklistModelEditComponent implements OnInit, ChecklistPendingChan
       void this.router.navigate(['/qualidade/checklist/models']);
       return;
     }
-    this.model=copy(model)
+    this.model=copy(model);
+    this.cdr.detectChanges();
   }
 
   @HostListener('window:beforeunload',['$event'])

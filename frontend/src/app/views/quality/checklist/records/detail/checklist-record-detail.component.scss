@@ -843,6 +843,37 @@
 }
 
 @media print {
+  .document-card .quality-brand span,
+  .document-card .quality-reference span,
+  .document-card .metadata-grid strong {
+    font-size: 13px;
+  }
+
+  .document-card .document-identification > span,
+  .document-card .nok-description span,
+  .document-card .signature small {
+    font-size: 10px;
+  }
+
+  .document-card .document-header h1 {
+    font-size: 19px;
+  }
+
+  .document-card .document-header p,
+  .document-card .detail-table th,
+  .document-card .nok-description strong {
+    font-size: 11px;
+  }
+
+  .document-card .document-label,
+  .document-card .detail-table td {
+    font-size: 12px;
+  }
+
+  .document-card .signature span {
+    font-size: 23px;
+  }
+
   .problems-card {
     overflow: visible !important;
     margin-top: 0;

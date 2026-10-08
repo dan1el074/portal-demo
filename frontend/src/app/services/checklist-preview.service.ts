@@ -15,6 +15,7 @@ export class ChecklistPreviewService {
   private readonly mediaPreview = inject(ChecklistMediaPreviewService);
   readonly state = signal<ChecklistState>(this.emptyState());
   readonly warning = signal('');
+  readonly uploadState = signal<{ fileName: string; kind: 'image' | 'video'; progress: number; current: number; total: number } | null>(null);
   private loading?: Promise<void>;
   private catalogEntries: ChecklistCatalogEntry[] = [];
 
@@ -87,7 +88,10 @@ export class ChecklistPreviewService {
     record.logs ??= [];
     record.revisions ??= [];
     record.comments.forEach((comment) => comment.id = String(comment.id));
-    record.logs.forEach((log) => log.id = String(log.id));
+    record.logs.forEach((log) => {
+      log.id = String(log.id);
+      log.action = this.auditAction(log.action);
+    });
     Object.values(record.answers ?? {}).forEach((answer) => {
       answer.description ??= '';
       answer.problems ??= [];
@@ -400,7 +404,11 @@ export class ChecklistPreviewService {
       target.fields = record.fields;
       target.departments = record.departments;
     }
-    await this.synchronizeEvidence(target.id, old, record);
+    try {
+      await this.synchronizeEvidence(target.id, old, record);
+    } finally {
+      this.uploadState.set(null);
+    }
     const saved = this.normalizeRecord(await firstValueFrom(this.api.saveRecord({ ...target, answers: record.answers, fields: record.fields, departments: record.departments }, finish)));
     const savedFlow = this.normalizeFlow(await firstValueFrom(this.api.getFlow(saved.id)));
     this.state.update((data) => ({
@@ -422,19 +430,25 @@ export class ChecklistPreviewService {
     const submittedMedia = Object.values(submitted.answers).flatMap((answer) => answer.problems.map((problem) => ({ problem, media: problem.media }))).flatMap(({ problem, media }) => media.map((evidence) => ({ problemId: problem.id, evidence })));
     const submittedIds = new Set(submittedMedia.map(({ evidence }) => evidence.id));
     await Promise.all([...previousIds].filter((id) => !submittedIds.has(id)).map((id) => firstValueFrom(this.api.deleteEvidence(recordId, id))));
-    for (const { problemId, evidence } of submittedMedia) {
+    const pending = submittedMedia.filter(({ evidence }) => this.mediaPreview.getFile(evidence.id));
+    let current = 0;
+    for (const { problemId, evidence } of pending) {
       const file = this.mediaPreview.getFile(evidence.id);
       if (!file) continue;
+      current++;
+      const kind = file.type.startsWith('image/') ? 'image' : 'video';
+      this.uploadState.set({ fileName: file.name, kind, progress: 0, current, total: pending.length });
       if (file.type.startsWith('image/')) {
         await firstValueFrom(this.api.uploadImages(recordId, problemId, [file]));
+        this.uploadState.set({ fileName: file.name, kind, progress: 100, current, total: pending.length });
       } else {
-        await this.uploadVideo(recordId, problemId, file);
+        await this.uploadVideo(recordId, problemId, file, (progress) => this.uploadState.set({ fileName: file.name, kind, progress, current, total: pending.length }));
       }
       this.mediaPreview.remove(evidence.id);
     }
   }
 
-  private async uploadVideo(recordId: string, problemId: string, file: File): Promise<void> {
+  private async uploadVideo(recordId: string, problemId: string, file: File, onProgress: (progress: number) => void): Promise<void> {
     const info = await firstValueFrom(this.api.createVideo(recordId, problemId, file.name));
     await new Promise<void>((resolve, reject) => {
       const upload = new Upload(file, {
@@ -447,12 +461,16 @@ export class ChecklistPreviewService {
           LibraryId: info.upload.libraryId,
         },
         metadata: { filetype: file.type, title: file.name },
+        onProgress: (uploaded, total) => onProgress(total ? Math.round(uploaded * 100 / total) : 0),
         onError: reject,
         onSuccess: () => resolve(),
       });
       upload.start();
     });
     await firstValueFrom(this.api.completeVideo(recordId, info.evidence.id));
+  }
+  private auditAction(action: string): string {
+    return ({ CREATED: 'Criado', SAVED: 'Salvo', COMMENTED: 'Comentário adicionado', COMMENT_UPDATED: 'Comentário atualizado', COMMENT_DELETED: 'Comentário excluído', FINISHED: 'Finalizado', FINISHED_INPUT: 'Preenchimento finalizado', CLAIMED: 'Assumido', DELEGATED: 'Delegado', REOPENED: 'Reaberto', CANCELLED: 'Cancelado', TREATED: 'Tratado', PROBLEM_TREATED: 'Problema tratado', TREATMENT_REVERSED: 'Tratamento revertido', ORDER_UPDATED: 'Pedido atualizado', SERIAL_UPDATED: 'Número de série atualizado', CATEGORY_SKIPPED: 'Categoria ignorada', GENERATED: 'Gerado automaticamente' } as Record<string, string>)[action] ?? action;
   }
   private nextSnapshot(flow: Flow, templateId: string) {
     let index = flow.plan.findIndex((s) => s.template.id === templateId) + 1;

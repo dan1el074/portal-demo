@@ -5,16 +5,16 @@ import { Evidence } from '../../../app/interface/checklist.interface';
 import { ChecklistMediaPreviewService } from '../../../app/services/checklist-media-preview.service';
 import { ChecklistIconComponent } from '../../icons/checklist-icon/checklist-icon.component';
 import { environment } from '../../../environments/environment';
+import { VideoModalComponent } from '../../modal/media/video-modal/video-modal.component';
 
 interface PresentedEvidence extends Evidence {
   source?: string;
-  safePublicUrl?: SafeResourceUrl;
   qrCode?: string;
 }
 
 @Component({
   selector: 'app-checklist-evidence',
-  imports: [ChecklistIconComponent],
+  imports: [ChecklistIconComponent, VideoModalComponent],
   templateUrl: './checklist-evidence.component.html',
   styleUrl: './checklist-evidence.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,6 +22,7 @@ interface PresentedEvidence extends Evidence {
 export class ChecklistEvidenceComponent implements OnChanges {
   @Input() media: Evidence[] = [];
   protected presented: PresentedEvidence[] = [];
+  protected selectedVideo: { name: string; safeUrl: SafeResourceUrl } | null = null;
   private readonly previews = inject(ChecklistMediaPreviewService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -29,12 +30,10 @@ export class ChecklistEvidenceComponent implements OnChanges {
   ngOnChanges(): void {
     this.presented = this.media.map((item) => {
       const publicUrl = item.publicUrl?.startsWith('/') ? environment.apiUrl + item.publicUrl : item.publicUrl;
+      const previewUrl = item.previewUrl?.startsWith('/') ? environment.apiUrl + item.previewUrl : item.previewUrl;
       return ({
-      ...item, publicUrl,
+      ...item, publicUrl, previewUrl,
       source: item.dataUrl || this.previews.get(item.id),
-      safePublicUrl: publicUrl
-        ? this.sanitizer.bypassSecurityTrustResourceUrl(publicUrl)
-        : undefined,
     }); });
     void this.createQrCodes();
   }
@@ -52,6 +51,15 @@ export class ChecklistEvidenceComponent implements OnChanges {
     if (!url || !/^(blob:|data:image\/|https?:\/\/)/i.test(url)) return;
     const imageWindow = window.open(url, '_blank', 'noopener,noreferrer');
     if (imageWindow) imageWindow.opener = null;
+  }
+
+  protected openVideo(item: PresentedEvidence): void {
+    if (!item.publicUrl) return;
+    this.selectedVideo = { name: item.name, safeUrl: this.sanitizer.bypassSecurityTrustResourceUrl(item.publicUrl) };
+  }
+
+  protected closeVideo(): void {
+    this.selectedVideo = null;
   }
 
   private async createQrCodes(): Promise<void> {

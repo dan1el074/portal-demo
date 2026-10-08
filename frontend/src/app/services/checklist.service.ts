@@ -50,6 +50,12 @@ export interface ChecklistVideoUpload {
   };
 }
 
+export interface ChecklistOperator {
+  id: number;
+  name: string;
+  activated: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ChecklistService {
   private readonly api = environment.apiUrl + '/api/checklist';
@@ -61,6 +67,7 @@ export class ChecklistService {
   updateCategory(value: Category): Observable<Category> { return this.http.put<Category>(`${this.api}/categories/${value.id}`, value); }
   deleteCategory(id: string): Observable<void> { return this.http.delete<void>(`${this.api}/categories/${id}`); }
   myAccess(): Observable<string[]> { return this.http.get<string[]>(`${this.api}/access/me`); }
+  listOperators(): Observable<ChecklistOperator[]> { return this.http.get<ChecklistOperator[]>(`${this.api}/access/operators`); }
   updateAccess(categoryId: string, operatorIds: number[]): Observable<void> {
     return this.http.put<void>(`${this.api}/access`, { categoryId, userIds: operatorIds });
   }

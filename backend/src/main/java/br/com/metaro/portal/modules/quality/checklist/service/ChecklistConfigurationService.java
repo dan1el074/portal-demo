@@ -34,6 +34,14 @@ public class ChecklistConfigurationService {
         return categoryRepository.findAll(Sort.by("displayOrder").and(Sort.by("name"))).stream().map(mapper::toDto).toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ChecklistOperatorDto> listOperators() {
+        return userRepository.findAll(Sort.by("name")).stream()
+                .filter(user -> user.hasRole("ROLE_CHECKLIST_OPERATOR"))
+                .map(user -> new ChecklistOperatorDto(user.getId(), user.getName(), Boolean.TRUE.equals(user.getActivated())))
+                .toList();
+    }
+
     @Transactional
     public ChecklistCategoryDto saveCategory(ChecklistCategoryDto dto) {
         Long id = dto.getId();
@@ -58,7 +66,7 @@ public class ChecklistConfigurationService {
             throw new UnprocessableEntityException("É necessário informar uma justificativa para desativar a categoria.");
         }
         if (!entity.isActive() && checklistStepFlowService.categoryIsRequired(entity.getId())) {
-            throw new UnprocessableEntityException("Uma categoria exigida pelo step-flow não pode ser desativada.");
+            throw new UnprocessableEntityException("Uma categoria exigida pelo Fluxo de etapas não pode ser desativada.");
         }
         entity.setDisplayOrder(dto.getDisplayOrder());
         entity.setLogo(dto.isLogo());
@@ -251,6 +259,9 @@ public class ChecklistConfigurationService {
                 throw new UnprocessableEntityException("As opções da seção não podem ser duplicadas.");
             }
             boolean hasNok = section.getOptions().contains("NOK");
+            if (!section.getOptions().contains("N/A")) {
+                throw new UnprocessableEntityException("A opção N/A é obrigatória em todas as seções.");
+            }
             if ((category.getIntegration() == ChecklistIntegration.PRODUCTION) != hasNok) {
                 throw new UnprocessableEntityException("A opção NOK é obrigatória somente para categorias de produção.");
             }

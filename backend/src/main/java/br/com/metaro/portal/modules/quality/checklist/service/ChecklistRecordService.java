@@ -151,8 +151,11 @@ public class ChecklistRecordService {
         }
 
         recordRepository.save(record);
-        if (record.getStatus() == ChecklistStatus.FINISHED) advanceFlow(record, user);
+        if (record.getStatus() == ChecklistStatus.FINISHED) {
+            advanceFlow(record, user);
+        }
         reconcileFlow(record.getFlow(), user);
+        checklistStepFlowService.completeWaitingSteps(record.getFlow().getId(), user);
         return mapper.toDto(findRecord(id));
     }
 
@@ -197,6 +200,7 @@ public class ChecklistRecordService {
             recordRepository.save(record);
         }
         reconcileFlow(record.getFlow(), user);
+        checklistStepFlowService.completeWaitingSteps(record.getFlow().getId(), user);
         return mapper.toDto(findRecord(id));
     }
 
@@ -234,7 +238,7 @@ public class ChecklistRecordService {
         ChecklistRecord record = findRecord(recordId);
         ChecklistFlow flow = record.getFlow();
         if (checklistStepFlowService.hasActiveDependency(flow.getId())) {
-            throw new UnprocessableEntityException("O fluxo de checklist é exigido por um processo de step-flow ativo.");
+            throw new UnprocessableEntityException("O fluxo de checklist é exigido por um Fluxo de etapas ativo.");
         }
         if (flow.isCancelled()) throw new UnprocessableEntityException("O fluxo de checklist já está cancelado.");
         flow.setCancelled(true);
@@ -488,7 +492,9 @@ public class ChecklistRecordService {
                 if (answer == null || !section.getOptions().contains(answer.getValue())) {
                     throw new UnprocessableEntityException("Todas as perguntas do checklist precisam de uma resposta válida.");
                 }
-                for (ChecklistFieldDto field : question.getFields()) requireValue(answer.getFields().get(field.getId()), "É necessário preencher o campo da pergunta.");
+                if (!"N/A".equals(answer.getValue())) {
+                    for (ChecklistFieldDto field : question.getFields()) requireValue(answer.getFields().get(field.getId()), "É necessário preencher o campo da pergunta.");
+                }
                 if ("NOK".equals(answer.getValue())) {
                     if (answer.getProblems() == null || answer.getProblems().isEmpty()) {
                         throw new UnprocessableEntityException("Toda resposta NOK precisa de pelo menos um problema.");

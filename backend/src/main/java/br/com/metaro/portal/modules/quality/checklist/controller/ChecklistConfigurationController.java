@@ -53,6 +53,12 @@ public class ChecklistConfigurationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST_ADMIN')")
+    @GetMapping("/access/operators")
+    public ResponseEntity<List<ChecklistOperatorDto>> listOperators() {
+        return ResponseEntity.ok(service.listOperators());
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR')")
     @GetMapping("/access/me")
     public ResponseEntity<List<Long>> myAccess() {

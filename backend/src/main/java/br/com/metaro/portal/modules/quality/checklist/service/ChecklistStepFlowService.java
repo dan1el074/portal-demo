@@ -6,6 +6,7 @@ import br.com.metaro.portal.core.services.exceptions.ResourceNotFoundException;
 import br.com.metaro.portal.core.services.exceptions.UnprocessableEntityException;
 import br.com.metaro.portal.modules.general.stepFlow.entities.Order;
 import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStatus;
+import br.com.metaro.portal.modules.general.stepFlow.entities.OrderStep;
 import br.com.metaro.portal.modules.general.stepFlow.entities.StepType;
 import br.com.metaro.portal.modules.general.stepFlow.repositories.OrderRepository;
 import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistSnapshotDto;
@@ -50,7 +51,7 @@ public class ChecklistStepFlowService {
         User user = userService.authenticate();
         StepType stepType = parseStepType(dto.getStepType());
         ChecklistCategory category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(ResourceNotFoundException::new);
-        if (!category.isActive()) throw new UnprocessableEntityException("Uma categoria inativa não pode ser requisito do step-flow.");
+        if (!category.isActive()) throw new UnprocessableEntityException("Uma categoria inativa não pode ser requisito do Fluxo de etapas.");
         ChecklistStepRequirement requirement = requirementRepository.findByStepType(stepType).orElseGet(ChecklistStepRequirement::new);
         requirement.setStepType(stepType);
         requirement.setCategory(category);
@@ -85,6 +86,25 @@ public class ChecklistStepFlowService {
         }
     }
 
+    @Transactional
+    public void createBindings(Order order, List<Long> flowIds) {
+        if (flowIds == null || flowIds.isEmpty()) {
+            throw new UnprocessableEntityException("Selecione ao menos um item de checklist para criar o Fluxo de etapas.");
+        }
+
+        User user = userService.authenticate();
+        for (Long flowId : new LinkedHashSet<>(flowIds)) {
+            ChecklistFlow flow = flowRepository.findById(flowId).orElseThrow(ResourceNotFoundException::new);
+            validateBinding(order, flow);
+            ChecklistStepBinding binding = new ChecklistStepBinding();
+            binding.setOrder(order);
+            binding.setFlow(flow);
+            binding.setCreatedBy(user);
+            binding.setCreatedAt(Instant.now());
+            bindingRepository.save(binding);
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<ChecklistStepEquipmentDto> listEquipment(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(ResourceNotFoundException::new);
@@ -97,13 +117,69 @@ public class ChecklistStepFlowService {
                 .filter(flow -> selected.contains(flow.getId())
                         || !bindingRepository.existsByFlowIdAndNonCancelledOrderOtherThan(flow.getId(), orderId))
                 .map(flow -> {
-                    ChecklistStepEquipmentDto dto = new ChecklistStepEquipmentDto();
-                    dto.setFlowId(flow.getId());
-                    dto.setSerial(flow.getSerialNumber());
-                    dto.setItem(flow.getCommercialItem());
+                    ChecklistStepEquipmentDto dto = toEquipmentDto(flow);
                     dto.setSelected(selected.contains(flow.getId()));
                     return dto;
                 }).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChecklistStepEquipmentDto> listAvailableEquipment(String orderNumber) {
+        return flowRepository.findByOrderNumberAndCancelledFalseOrderBySerialNumberAsc(orderNumber).stream()
+                .filter(flow -> flow.getSerialNumber() != null && !flow.getSerialNumber().isBlank())
+                .filter(flow -> recordRepository.existsByFlowIdAndStatus(flow.getId(), ChecklistStatus.FINISHED))
+                .filter(flow -> !bindingRepository.existsByFlowIdAndNonCancelledOrder(flow.getId()))
+                .map(this::toEquipmentDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public void assertOrderCanStart(String orderNumber) {
+        boolean available = flowRepository.findByOrderNumberAndCancelledFalseOrderBySerialNumberAsc(orderNumber).stream()
+                .anyMatch(flow -> flow.getSerialNumber() != null && !flow.getSerialNumber().isBlank()
+                        && recordRepository.existsByFlowIdAndStatus(flow.getId(), ChecklistStatus.FINISHED)
+                        && !bindingRepository.existsByFlowIdAndNonCancelledOrder(flow.getId()));
+        if (!available) {
+            throw new UnprocessableEntityException("O pedido precisa possuir ao menos um número de série com o primeiro checklist finalizado.");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isStepRequirementSatisfied(Long orderId, StepType stepType) {
+        ChecklistStepRequirement requirement = requirementRepository.findByStepType(stepType).orElse(null);
+        if (requirement == null) return true;
+        List<ChecklistStepBinding> bindings = bindingRepository.findByOrderId(orderId);
+        if (bindings.isEmpty()) {
+            throw new UnprocessableEntityException("Selecione os números de série dos equipamentos exigidos por esta etapa antes de finalizá-la.");
+        }
+        return bindings.stream().allMatch(binding -> isCategoryFinished(binding.getFlow(), requirement.getCategory().getId()));
+    }
+
+    @Transactional
+    public void completeWaitingSteps(Long flowId, User user) {
+        for (ChecklistStepBinding binding : bindingRepository.findByFlowId(flowId)) {
+            Order order = binding.getOrder();
+            if (!order.isChecklistIntegration() || order.getStatus() != OrderStatus.IN_PROGRESS || order.getCurrentStep() == null) continue;
+            OrderStep current = order.getSteps().stream()
+                    .filter(step -> step.getStep() == order.getCurrentStep())
+                    .findFirst().orElse(null);
+            if (current == null || !current.isChecklistPending() || !isStepRequirementSatisfied(order.getId(), order.getCurrentStep())) continue;
+            StepType completedType = order.getCurrentStep();
+            current.setChecklistPending(false);
+            current.setStatus(br.com.metaro.portal.modules.general.stepFlow.entities.StepStatus.DONE);
+            current.setFinishedAt(Instant.now());
+            current.setFinishedBy(user);
+            if (completedType == StepType.SHIPPING) {
+                order.setStatus(OrderStatus.COMPLETED);
+            } else {
+                StepType nextType = StepType.values()[completedType.ordinal() + 1];
+                OrderStep next = order.getSteps().stream().filter(step -> step.getStep() == nextType).findFirst().orElseThrow(ResourceNotFoundException::new);
+                order.setCurrentStep(nextType);
+                next.setStatus(br.com.metaro.portal.modules.general.stepFlow.entities.StepStatus.ACTIVE);
+                next.setStartedAt(Instant.now());
+            }
+            orderRepository.save(order);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -122,7 +198,7 @@ public class ChecklistStepFlowService {
             Order order = binding.getOrder();
             alerts.putIfAbsent(order.getId(), new PendingIssuesDto(
                     order.getId(),
-                    "Step-flow pedido " + order.getDisplayNumber(),
+                    "Fluxo de etapas do pedido " + order.getDisplayNumber(),
                     "Finalize o checklist da categoria " + requirement.getCategory().getName() + ".",
                     "pending"
             ));
@@ -164,23 +240,31 @@ public class ChecklistStepFlowService {
     }
 
     private void validateBinding(Order order, ChecklistFlow flow) {
-        if (flow.isCancelled()) throw new UnprocessableEntityException("Fluxos de checklist cancelados não podem ser vinculados ao step-flow.");
+        if (flow.isCancelled()) throw new UnprocessableEntityException("Fluxos de checklist cancelados não podem ser vinculados ao Fluxo de etapas.");
         if (!Objects.equals(String.valueOf(order.getNumber()), flow.getOrderNumber())) {
             throw new UnprocessableEntityException("O equipamento do checklist pertence a outro pedido.");
         }
         if (!recordRepository.existsByFlowIdAndStatus(flow.getId(), ChecklistStatus.FINISHED)) {
-            throw new UnprocessableEntityException("O equipamento precisa ter um checklist finalizado antes de iniciar o step-flow.");
+            throw new UnprocessableEntityException("O equipamento precisa ter um checklist finalizado antes de iniciar o Fluxo de etapas.");
         }
         if (bindingRepository.existsByFlowIdAndNonCancelledOrderOtherThan(flow.getId(), order.getId())) {
-            throw new UnprocessableEntityException("O equipamento do checklist já pertence a outro processo de step-flow não cancelado.");
+            throw new UnprocessableEntityException("O equipamento do checklist já pertence a outro Fluxo de etapas não cancelado.");
         }
+    }
+
+    private ChecklistStepEquipmentDto toEquipmentDto(ChecklistFlow flow) {
+        ChecklistStepEquipmentDto dto = new ChecklistStepEquipmentDto();
+        dto.setFlowId(flow.getId());
+        dto.setSerial(flow.getSerialNumber());
+        dto.setItem(flow.getCommercialItem());
+        return dto;
     }
 
     private StepType parseStepType(String value) {
         try {
             return StepType.valueOf(value.trim().toUpperCase(Locale.ROOT));
         } catch (RuntimeException exception) {
-            throw new UnprocessableEntityException("Tipo de step-flow inválido.");
+            throw new UnprocessableEntityException("Tipo de Fluxo de etapas inválido.");
         }
     }
 }

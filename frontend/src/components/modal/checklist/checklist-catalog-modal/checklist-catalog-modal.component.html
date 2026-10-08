@@ -2,10 +2,11 @@
   <c-modal-header><h5 cModalTitle class="modal-title-with-icon"><app-checklist-icon name="settings" />Integração de Produção</h5><button cButtonClose type="button" aria-label="Fechar" cTooltip="Fechar" cTooltipPlacement="bottom" (click)="close()"></button></c-modal-header>
   <c-modal-body>
     <nav class="category-tabs" aria-label="Configurações da Integração de Produção">
-      <button type="button" [class.active]="tab === 'items'" (click)="changeTab(0)">Tipos de item <span>{{ store.state().items.length }}</span></button>
-      <button type="button" [class.active]="tab === 'defects'" (click)="changeTab(1)">Defeitos <span>{{ store.state().defects.length }}</span></button>
+      <button type="button" [class.active]="tab === 'items'" (click)="changeTab('items')">Tipos de item <span>{{ store.state().items.length }}</span></button>
+      <button type="button" [class.active]="tab === 'defects'" (click)="changeTab('defects')">Defeitos <span>{{ store.state().defects.length }}</span></button>
       @if(store.admin){
-        <button type="button" [class.active]="tab === 'history'" (click)="changeTab(2)">Histórico por categoria <span>{{ store.state().categories.length }}</span></button>
+        <button type="button" [class.active]="tab === 'requirements'" (click)="changeTab('requirements')">Fluxo de etapas <span>{{ steps.length }}</span></button>
+        <button type="button" [class.active]="tab === 'history'" (click)="changeTab('history')">Histórico por categoria <span>{{ store.state().categories.length }}</span></button>
       }
     </nav>
 
@@ -23,6 +24,23 @@
         <div class="configuration-content">
           <div class="field-create"><input cFormControl [(ngModel)]="newFieldLabel" (keyup.enter)="addField()" placeholder="Nome do novo campo" /><select cSelect [(ngModel)]="newFieldType">@for(type of addableFieldTypes;track type.value){<option [value]="type.value">{{ type.label }}</option>}</select><button cButton color="primary" type="button" [disabled]="!newFieldLabel.trim()" (click)="addField()"><app-checklist-icon name="plus" />Adicionar campo</button></div>
           <div class="form-field-list">@for(field of formFields;track field.id;let index=$index){<div class="form-field-row"><span class="drag-index">{{ index + 1 }}</span><input cFormControl [(ngModel)]="field.label" aria-label="Nome do campo" /><select cSelect [(ngModel)]="field.type" [disabled]="field.binding === 'media'" [attr.aria-label]="'Tipo do campo ' + field.label">@for(type of addableFieldTypes;track type.value){<option [value]="type.value">{{ type.label }}</option>}@if(field.type === 'files'){<option value="files">{{ fieldTypeLabel(field.type) }}</option>}</select><label class="required-option"><input cFormCheckInput type="checkbox" [(ngModel)]="field.required" />Obrigatório</label><span class="actions"><button type="button" [disabled]="index === 0" (click)="moveField(index,-1)" cTooltip="Mover para cima" cTooltipPlacement="top" aria-label="Mover para cima"><app-checklist-icon name="chevron-up" /></button><button type="button" [disabled]="index === formFields.length - 1" (click)="moveField(index,1)" cTooltip="Mover para baixo" cTooltipPlacement="top" aria-label="Mover para baixo"><app-checklist-icon name="chevron-down" /></button><button type="button" class="danger" (click)="removeField(index)" cTooltip="Remover campo" cTooltipPlacement="top" aria-label="Remover campo"><app-checklist-icon name="trash" /></button></span></div>}</div>
+        </div>
+      </section>
+    }@else if(tab === 'requirements'){
+      <section class="configuration-card">
+        <header><div><h6>Requisitos por etapa do Fluxo de etapas</h6><p>Defina a categoria de checklist que deve ser concluída em cada etapa.</p></div></header>
+        <div class="configuration-content">
+          <div class="requirements-list">
+            @for(step of steps; track step.id; let index = $index){
+              <div class="requirement-row">
+                <span class="drag-index">{{ index + 1 }}</span>
+                <div class="requirement-step"><strong>{{ step.label }}</strong><small>Categoria obrigatória</small></div>
+                <select cSelect [(ngModel)]="requirements[step.id]" [attr.aria-label]="'Categoria obrigatória para ' + step.label"><option value="">Sem requisito</option>@for(item of store.state().categories;track item.id){@if(item.active){<option [value]="item.id">{{ item.name }}</option>}}</select>
+                <span class="actions"><button type="button" (click)="saveRequirement(step.id)" cTooltip="Salvar requisito" cTooltipPlacement="top" [attr.aria-label]="'Salvar requisito de ' + step.label"><app-checklist-icon name="save" /></button></span>
+              </div>
+            }
+          </div>
+          <small class="note">Selecione “Sem requisito” para permitir o avanço da etapa sem depender da conclusão de um checklist.</small>
         </div>
       </section>
     }@else{

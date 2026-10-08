@@ -103,46 +103,50 @@
         </div>
       </div>
 
-      <span class="sub-title">Itens</span>
+      <span class="sub-title">Itens a produzir</span>
 
       <div class="items-container">
-        @for (itemGroup of itemsFormControls; track itemGroup.get('code')?.value; let i = $index) {
-          <div class="search-item" [formGroup]="itemGroup">
-            <span class="search-item-code">{{ itemGroup.get('code')?.value }}</span>
-            <span class="search-item-description">{{ $safeNavigationMigration(itemGroup.get('description')?.value) | truncate: 70 }}</span>
-
-            <div class="search-item-quantity">
-              <input
-                cFormControl
-                type="number"
-                formControlName="producedQuantity"
-                [min]="0"
-                [max]="$safeNavigationMigration(itemGroup.get('maxQuantity')?.value)"
-                [class.invalid]="itemGroup.get('producedQuantity')?.invalid ? true : false"
-                class="custom-form"
-              />
-              <span class="quantity-limit">/ {{ itemGroup.get('quantity')?.value }}</span>
-            </div>
-          </div>
-
-          @if (itemGroup.get('producedQuantity')?.invalid && itemGroup.get('producedQuantity')?.touched) {
-            <small class="text-danger">
-              @if (itemGroup.get('maxQuantity')?.value) {
-                Quantidade deve ser entre 0 e {{ itemGroup.get('maxQuantity')?.value }}.
-              } @else {
-                Esse item já foi produzido!
-              }
-            </small>
-          }
+        @for (equipment of checklistEquipment; track equipment.flowId) {
+          <label class="search-item checklist-item">
+            <input type="checkbox" [checked]="equipment.selected" (change)="toggleChecklistEquipment(equipment.flowId, $any($event.target).checked)" />
+            <span class="produced-item-description">
+              <strong>{{ equipment.item }}</strong>
+              <small>Número de série: {{ equipment.serial }}</small>
+            </span>
+          </label>
         } @empty {
-          <i class="custom-error">Erro ao carregar itens do pedido</i>
+          <i class="custom-error">Nenhum item disponível com o primeiro checklist finalizado.</i>
         }
       </div>
+      <div class="work-items-summary">{{ selectedChecklistEquipmentCount }} item(ns) selecionado(s)</div>
     }
   </c-modal-body>
   <c-modal-footer class="m-footer">
     <button cButton class="default" (click)="closeMemorandoModal()">Cancelar</button>
     <button cButton class="color" [disabled]="!searchResult || itemsForm.invalid" (click)="onCreate()">Continuar</button>
+  </c-modal-footer>
+</c-modal>
+
+<c-modal
+  alignment="center"
+  backdrop="static"
+  [visible]="legacyWarningVisible"
+  (visibleChange)="!$event && closeLegacyWarning()"
+  id="legacyStepFlowOrderModal"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Pedido sem checklist disponível</h5>
+    <button cButtonClose type="button" (click)="closeLegacyWarning()"></button>
+  </c-modal-header>
+
+  <c-modal-body>
+    <p>O pedido nº <strong>{{ legacyOrder?.number }}</strong> ainda não possui um fluxo de checklist ativo com o primeiro checklist finalizado.</p>
+    <p class="mb-0">Se continuar, o registro será criado no modo legado e não terá integração, requisitos ou avanço automático por checklist.</p>
+  </c-modal-body>
+
+  <c-modal-footer>
+    <button cButton color="secondary" type="button" (click)="closeLegacyWarning()">Voltar</button>
+    <button cButton color="primary" type="button" (click)="confirmLegacyCreation()">Criar sem checklist</button>
   </c-modal-footer>
 </c-modal>
 

@@ -37,6 +37,7 @@ public class OrderDto {
     private List<StepFlowVideoDto> videos;
     private String currentStep;
     private String nextStep;
+    private boolean checklistIntegration;
 
     public OrderDto(Order entity) {
         id = entity.getId();
@@ -60,6 +61,7 @@ public class OrderDto {
         pictures = new ArrayList<>();
         videos = new ArrayList<>();
         nextStep = "";
+        checklistIntegration = entity.isChecklistIntegration();
 
         if (entity.getStatus().equals(OrderStatus.IN_PROGRESS)
                 && entity.getDueDate() != null

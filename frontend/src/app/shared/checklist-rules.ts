@@ -25,6 +25,10 @@ export function validateTemplate(
   if (category.integration === 'production' && !model.signature)
     return 'A assinatura é obrigatória em modelos com Integração Produção.';
   if (
+    model.sections.some((s) => !s.options.includes('N/A'))
+  )
+    return 'N/A é obrigatório em todas as seções.';
+  if (
     category.integration === 'production' &&
     (!model.equipmentId ||
       state.templates.some(
@@ -155,7 +159,7 @@ export function validateRecord(record: Checklist, flow: Flow, nokFields = defaul
       if (
         !answer ||
         !section.options.includes(answer.value) ||
-        question.fields.some((f) => !answer.fields[f.id]?.trim())
+        (answer.value !== 'N/A' && question.fields.some((f) => !answer.fields[f.id]?.trim()))
       )
         return 'Responda todas as perguntas e campos adicionais.';
       if (

@@ -3,11 +3,11 @@ import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Va
 import { ToastrService } from '../../../../app/services/toast.service';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, SpinnerComponent } from '@coreui/angular';
 import { StepFlowService } from '../../../../app/services/step-flow.service';
-import { StepFlowOrderInfo, StepFlowOrderItem } from '../../../../app/interface/step-flow.interface';
+import { StepFlowChecklistEquipment, StepFlowOrderInfo, StepFlowOrderItem } from '../../../../app/interface/step-flow.interface';
 import { ErpSource } from '../../../../app/interface/erp.interface';
 import { CommonModule } from '@angular/common';
-import { TruncatePipe } from '../../../../app/pipes/truncate.pipe';
 import { ModalBackNavigationDirective } from '../../../../app/directive/modal-back-navigation.directive';
+import { map, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-new-step-flow-modal',
@@ -25,8 +25,7 @@ import { ModalBackNavigationDirective } from '../../../../app/directive/modal-ba
     FormsModule,
     FormLabelDirective,
     FormControlDirective,
-    SpinnerComponent,
-    TruncatePipe
+    SpinnerComponent
   ],
   templateUrl: './new-step-flow-modal.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -36,6 +35,7 @@ export class NewStepFlowModalComponent {
   @Input() visible!: boolean;
   @Output() closeModal = new EventEmitter<void>();
   @Output() createNewOrder = new EventEmitter<StepFlowOrderInfo>();
+  @Output() createLegacyOrder = new EventEmitter<StepFlowOrderInfo>();
 
   protected newOrderForm: FormGroup;
   protected itemsForm!: FormArray;
@@ -44,6 +44,13 @@ export class NewStepFlowModalComponent {
   protected loadSearch: boolean = false;
   protected duplicateWarningVisible = false;
   protected pendingOrder: StepFlowOrderInfo | null = null;
+  protected legacyWarningVisible = false;
+  protected legacyOrder: StepFlowOrderInfo | null = null;
+  protected checklistEquipment: StepFlowChecklistEquipment[] = [];
+
+  protected get selectedChecklistEquipmentCount(): number {
+    return this.checklistEquipment.filter(item => item.selected).length;
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -83,6 +90,7 @@ export class NewStepFlowModalComponent {
     this.itemsForm.clear();
     this.valid = undefined;
     this.searchResult = null;
+    this.checklistEquipment = [];
     this.loadSearch = false;
     this.duplicateWarningVisible = false;
     this.pendingOrder = null;
@@ -96,15 +104,22 @@ export class NewStepFlowModalComponent {
 
     this.loadSearch = true;
     this.searchResult = null;
+    this.checklistEquipment = [];
     this.itemsForm.clear();
 
     const source = this.newOrderForm.get('source')?.value as ErpSource;
     this.stepFlowService.findOrderInfoByNumber(
       Number(this.newOrderForm.get('number')?.value),
       source
+    ).pipe(
+      switchMap((data: StepFlowOrderInfo) =>
+        this.stepFlowService.listAvailableChecklistEquipment(data.number)
+          .pipe(map(checklistEquipment => ({ data, checklistEquipment })))
+      )
     ).subscribe({
-      next: (data: StepFlowOrderInfo) => {
+      next: ({ data, checklistEquipment }) => {
         this.searchResult = data;
+        this.checklistEquipment = checklistEquipment;
         this.buildItemsForm(data.items);
         this.stopLoadButton();
       },
@@ -169,21 +184,47 @@ export class NewStepFlowModalComponent {
       return;
     }
 
-    const hasAtLeastOneItem = this.itemsForm.controls.some(
-      control => control.get('producedQuantity')?.value > 0
+    const selectedEquipment = this.checklistEquipment.filter(item => item.selected);
+    if (this.checklistEquipment.length > 0 && selectedEquipment.length === 0) {
+      this.toaster.error('Selecione ao menos um item para continuar.');
+      return;
+    }
+
+    const unmatchedEquipment = selectedEquipment.find(equipment =>
+      !this.searchResult!.items.some(item => this.equipmentBelongsToItem(equipment, item))
     );
+    if (unmatchedEquipment) {
+      this.toaster.error(`O item ${unmatchedEquipment.item} não foi encontrado no pedido consultado.`);
+      return;
+    }
+
+    const updatedItems: StepFlowOrderItem[] = this.searchResult!.items.map((item, index) => ({
+      ...item,
+      producedQuantity: selectedEquipment.length > 0
+        ? selectedEquipment.filter(equipment => this.equipmentBelongsToItem(equipment, item)).length
+        : this.itemsForm.at(index).get('producedQuantity')?.value,
+    }));
+
+    const exceedsAvailableQuantity = updatedItems.some((item, index) =>
+      item.producedQuantity > Number(this.itemsForm.at(index).get('maxQuantity')?.value)
+    );
+    if (exceedsAvailableQuantity) {
+      this.toaster.error('A quantidade de itens selecionados ultrapassa a quantidade disponível no pedido.');
+      return;
+    }
+
+    const hasAtLeastOneItem = updatedItems.some(item => item.producedQuantity > 0);
 
     if (!hasAtLeastOneItem) {
       this.toaster.error('Informe a quantidade de ao menos um item para continuar.');
       return;
     }
 
-    const updatedItems: StepFlowOrderItem[] = this.searchResult!.items.map((item, index) => ({
-      ...item,
-      producedQuantity: this.itemsForm.at(index).get('producedQuantity')?.value,
-    }));
-
-    const updatedResult: StepFlowOrderInfo = { ...this.searchResult!, items: updatedItems };
+    const updatedResult: StepFlowOrderInfo = {
+      ...this.searchResult!,
+      items: updatedItems,
+      checklistFlowIds: selectedEquipment.map(item => item.flowId),
+    };
 
     if (this.hasPreviouslyUsedQuantity()) {
       this.pendingOrder = updatedResult;
@@ -208,9 +249,39 @@ export class NewStepFlowModalComponent {
     this.createNewOrder.emit(order);
   }
 
+  public openLegacyWarning(order: StepFlowOrderInfo): void {
+    this.legacyOrder = order;
+    this.legacyWarningVisible = true;
+    this.cdf.detectChanges();
+  }
+
+  protected closeLegacyWarning(): void {
+    this.legacyWarningVisible = false;
+    this.legacyOrder = null;
+  }
+
+  protected confirmLegacyCreation(): void {
+    if (!this.legacyOrder) return;
+    const order = this.legacyOrder;
+    this.closeLegacyWarning();
+    this.createLegacyOrder.emit(order);
+  }
+
   private hasPreviouslyUsedQuantity(): boolean {
     return this.itemsForm.controls.some(control =>
       Number(control.get('maxQuantity')?.value) < Number(control.get('quantity')?.value)
     );
+  }
+
+  protected toggleChecklistEquipment(flowId: string, selected: boolean): void {
+    this.checklistEquipment = this.checklistEquipment.map(item =>
+      item.flowId === flowId ? { ...item, selected } : item
+    );
+  }
+
+  private equipmentBelongsToItem(equipment: StepFlowChecklistEquipment, item: StepFlowOrderItem): boolean {
+    const equipmentItem = equipment.item.trim().toLocaleLowerCase();
+    const itemCode = String(item.code).trim().toLocaleLowerCase();
+    return equipmentItem === itemCode || equipmentItem.startsWith(`${itemCode} -`);
   }
 }

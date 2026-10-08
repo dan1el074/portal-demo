@@ -52,6 +52,12 @@ public class ChecklistStepFlowController {
         return ResponseEntity.ok(service.listEquipment(orderId));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")
+    @GetMapping("/orders/available-equipment")
+    public ResponseEntity<List<ChecklistStepEquipmentDto>> listAvailableEquipment(@RequestParam String orderNumber) {
+        return ResponseEntity.ok(service.listAvailableEquipment(orderNumber));
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST_OPERATOR')")
     @GetMapping("/alerts")
     public ResponseEntity<List<PendingIssuesDto>> listAlerts() {

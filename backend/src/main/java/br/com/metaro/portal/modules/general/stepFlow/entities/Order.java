@@ -33,6 +33,8 @@ public class Order {
     private OrderStatus status; // LATE -> apenas quando a dueDate passar (apenas DTO)
     private Double shipment;
     private String carrier;
+    @Column(nullable = false)
+    private boolean checklistIntegration = true;
 
     // ERP
     private String client;
