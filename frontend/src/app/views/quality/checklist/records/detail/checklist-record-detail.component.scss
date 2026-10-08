@@ -742,16 +742,11 @@
 }
 
 .comment-problem-reference {
-  display: inline-block;
+  display: block;
   margin-bottom: 5px;
-  color: var(--cui-primary);
+  color: var(--cui-secondary-color);
   font-size: 12px;
   font-weight: 700;
-  text-decoration: none;
-}
-
-.comment-problem-reference:hover {
-  text-decoration: underline;
 }
 
 .comment-actions {
