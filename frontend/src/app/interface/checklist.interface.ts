@@ -65,6 +65,7 @@ export interface Evidence {
   size: number;
   dataUrl?: string;
   publicUrl?: string;
+  previewUrl?: string;
 }
 export type NokFieldType =
   | 'text'

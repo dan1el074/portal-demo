@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from '../../../app/services/toast.service';
-import { finalize } from 'rxjs';
+import { finalize, map, of, switchMap } from 'rxjs';
 import { Upload } from 'tus-js-client';
 import { ButtonCloseDirective, ButtonDirective, FormControlDirective, FormLabelDirective, FormSelectDirective, SpinnerComponent } from '@coreui/angular';
 import { CancelStepFlowModalComponent } from '../../modal/step-flow/cancel-step-flow-modal/cancel-step-flow-modal.component';
@@ -14,7 +14,7 @@ import { CurrencyMaskDirective } from './../../../app/directive/currency-mask.di
 import { StepFlowVideosService } from './../../../app/services/step-flow-videos.service';
 import { BackNavigationService } from '../../../app/services/back-navigation.service';
 import { StepFlowService } from '../../../app/services/step-flow.service';
-import { Step, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
+import { Step, StepFlowChecklistEquipment, StepFlowOrder, StepFlowOrderItem, StepFlowVideo, UploadingVideo, UploadedFile } from '../../../app/interface/step-flow.interface';
 import { StepFlowImage } from '../../../app/interface/image.interface';
 import { EditableItem, QuantityStepFlowModalComponent } from '../../modal/step-flow/quantity-step-flow-modal/quantity-step-flow-modal.component';
 import { StepFlowHistoryComponent } from './history/step-flow-history.component';
@@ -74,6 +74,7 @@ export class StepFlowInputOffcanvasComponent {
   protected editingFileExtension = '';
   private initialCurrentStepFormValue = '';
   private initialProducedQuantities = new Map<number, number>();
+  private initialChecklistFlowIds = new Set<string>();
 
   // file
   protected readonly isMobileDevice: boolean = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -88,7 +89,7 @@ export class StepFlowInputOffcanvasComponent {
   protected uploadingVideos = signal<Array<UploadingVideo>>([]);
   protected showVideoModal = false;
   protected selectedVideo: (StepFlowVideo & { safeUrl: SafeResourceUrl }) | null = null;
-  protected checklistEquipment: Array<{ flowId: string; serial: string; item: string; selected: boolean }> = [];
+  protected checklistEquipment: StepFlowChecklistEquipment[] = [];
   protected checklistEquipmentLoading = false;
   protected get selectedChecklistEquipmentCount(): number { return this.checklistEquipment.filter((item) => item.selected).length; }
 
@@ -178,8 +179,18 @@ export class StepFlowInputOffcanvasComponent {
   private loadChecklistEquipment(): void {
     this.checklistEquipmentLoading = true;
     this.stepFlowService.listChecklistEquipment(this.orderId).subscribe({
-      next: (equipment) => { this.checklistEquipment = equipment; this.checklistEquipmentLoading = false; this.cdf.detectChanges(); },
-      error: () => { this.checklistEquipment = []; this.checklistEquipmentLoading = false; this.cdf.detectChanges(); },
+      next: (equipment) => {
+        this.checklistEquipment = equipment;
+        this.captureChecklistSelection();
+        this.checklistEquipmentLoading = false;
+        this.cdf.detectChanges();
+      },
+      error: () => {
+        this.checklistEquipment = [];
+        this.initialChecklistFlowIds.clear();
+        this.checklistEquipmentLoading = false;
+        this.cdf.detectChanges();
+      },
     });
   }
 
@@ -231,7 +242,7 @@ export class StepFlowInputOffcanvasComponent {
 
     let hasQuantityChanges = false;
 
-    if (this.order?.currentStep === 'Montagem Final') {
+    if (this.order?.currentStep === 'Montagem Final' && !this.order.checklistIntegration) {
       if (this.itemsForm.invalid) {
         this.itemsForm.markAllAsTouched();
         return;
@@ -253,8 +264,9 @@ export class StepFlowInputOffcanvasComponent {
 
     const formData = this.buildFormData();
     const hasPendingVideos = this.files().some(f => f.kind === 'video');
+    const hasChecklistChanges = this.haveChecklistSelectionChanges();
 
-    if (this.isFormDataEmpty(formData) && !hasPendingVideos) {
+    if (this.isFormDataEmpty(formData) && !hasPendingVideos && !hasChecklistChanges) {
       this.toasterService.warning('Preencha ao menos um campo ou anexe um arquivo antes de salvar.');
       return;
     }
@@ -264,13 +276,19 @@ export class StepFlowInputOffcanvasComponent {
       this.scrollToFilesSection();
     }
 
-    if (this.isFormDataEmpty(formData)) {
+    if (this.isFormDataEmpty(formData) && !hasChecklistChanges) {
       return;
     }
 
     this.saveLoading = true;
+    const checklistRequest = hasChecklistChanges
+      ? this.stepFlowService.replaceChecklistEquipment(this.orderId, this.getSelectedChecklistFlowIds())
+      : of(undefined);
+    const saveRequest = this.isFormDataEmpty(formData)
+      ? checklistRequest.pipe(map(() => this.order as StepFlowOrder))
+      : checklistRequest.pipe(switchMap(() => this.stepFlowService.updateStep(this.orderId, formData)));
 
-    this.stepFlowService.updateStep(this.orderId, formData)
+    saveRequest
       .pipe(finalize(() => {
         this.saveLoading = false;
         this.cdf.detectChanges();
@@ -278,6 +296,7 @@ export class StepFlowInputOffcanvasComponent {
       .subscribe({
         next: (data: StepFlowOrder) => {
           this.toasterService.success('Informações atualizada com sucesso.');
+          this.captureChecklistSelection();
 
           if (hasQuantityChanges) {
             this.close();
@@ -321,7 +340,7 @@ export class StepFlowInputOffcanvasComponent {
       }
     }
 
-    if (this.order?.currentStep === 'Montagem Final') {
+    if (this.order?.currentStep === 'Montagem Final' && !this.order.checklistIntegration) {
       const itemsPayload = this.itemsForm.value.map((item: any) => ({
         id: item.id,
         producedQuantity: item.producedQuantity,
@@ -375,6 +394,7 @@ export class StepFlowInputOffcanvasComponent {
   private hasUnsavedCurrentStepChanges(): boolean {
     return this.getComparableFormValue() !== this.initialCurrentStepFormValue
       || this.haveProducedQuantitiesChanged()
+      || this.haveChecklistSelectionChanges()
       || this.files().length > 0;
   }
 
@@ -407,6 +427,26 @@ export class StepFlowInputOffcanvasComponent {
       const producedQuantity = itemGroup.get('producedQuantity')?.value as number;
       return producedQuantity !== this.initialProducedQuantities.get(id);
     });
+  }
+
+  private getSelectedChecklistFlowIds(): string[] {
+    return this.checklistEquipment
+      .filter(item => item.selected)
+      .map(item => item.flowId);
+  }
+
+  private captureChecklistSelection(): void {
+    this.initialChecklistFlowIds = new Set(this.getSelectedChecklistFlowIds());
+  }
+
+  private haveChecklistSelectionChanges(): boolean {
+    if (this.order?.currentStep !== 'Montagem Final' || !this.order.checklistIntegration) {
+      return false;
+    }
+
+    const currentFlowIds = this.getSelectedChecklistFlowIds();
+    return currentFlowIds.length !== this.initialChecklistFlowIds.size
+      || currentFlowIds.some(flowId => !this.initialChecklistFlowIds.has(flowId));
   }
 
   protected onCloseNextStepConfirmationModal(): void {

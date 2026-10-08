@@ -1,5 +1,6 @@
 package br.com.metaro.portal.modules.quality.checklist.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,11 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ChecklistEvidenceDto {
-    private String id;
+@AllArgsConstructor
+public class ChecklistOperatorDto {
+    private Long id;
     private String name;
-    private String type;
-    private long size;
-    private String publicUrl;
-    private String previewUrl;
+    private boolean activated;
 }

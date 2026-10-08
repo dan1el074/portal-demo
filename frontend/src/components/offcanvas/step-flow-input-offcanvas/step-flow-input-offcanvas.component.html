@@ -49,7 +49,7 @@
         </div>
       </div>
       <app-step-flow-history [order]="order" />
-      @if(checklistEquipment.length || checklistEquipmentLoading){
+      @if(!order.checklistIntegration && (checklistEquipment.length || checklistEquipmentLoading)){
         <div class="sofd-box checklist-equipment-box">
           <div class="sofd-box-info"><span class="sofd-box-info-label">Equipamentos do checklist</span><span>Selecione pelos números de série</span></div>
           <div class="sof-file-container">
@@ -80,6 +80,18 @@
             <label class="custom-label">Itens a produzir</label>
 
             <div class="sof-file-container">
+              @if (order.checklistIntegration) {
+                @for (equipment of checklistEquipment; track equipment.flowId) {
+                  <label class="sof-file-item integrated-checklist-item">
+                    <span class="produced-item-box">
+                      <input type="checkbox" [checked]="equipment.selected" (change)="toggleChecklistEquipment(equipment.flowId, $any($event.target).checked)" />
+                      <span class="produced-item-description"><strong>{{ equipment.item }}</strong><small>Número de série: {{ equipment.serial }}</small></span>
+                    </span>
+                  </label>
+                } @empty {
+                  <i class="custom-error">Nenhum item com o primeiro checklist finalizado.</i>
+                }
+              } @else {
               @for (itemGroup of itemsFormControls; track itemGroup.get('id')?.value; let i = $index) {
                 <div class="sof-file-item" [formGroup]="itemGroup">
                   <div class="produced-item-box">
@@ -106,7 +118,11 @@
               } @empty {
                 <i class="custom-error">Nenhum item disponível para produção.</i>
               }
+              }
             </div>
+            @if (order.checklistIntegration) {
+              <div class="work-items-summary">{{ selectedChecklistEquipmentCount }} item(ns) selecionado(s)</div>
+            }
           </div>
         }
 

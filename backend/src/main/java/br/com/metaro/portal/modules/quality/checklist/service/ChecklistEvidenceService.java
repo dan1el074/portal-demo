@@ -107,7 +107,10 @@ public class ChecklistEvidenceService {
         dto.setType(evidence.getContentType());
         dto.setSize(evidence.getSize());
         if (evidence.getPicture() != null) dto.setPublicUrl("/images/" + evidence.getPicture().getId());
-        if (evidence.getVideo() != null) dto.setPublicUrl(evidence.getVideo().getPlaybackUrl());
+        if (evidence.getVideo() != null) {
+            dto.setPublicUrl(evidence.getVideo().getPlaybackUrl());
+            dto.setPreviewUrl(videoService.getPreviewUrl(evidence.getVideo(), true));
+        }
         return dto;
     }
 

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild } from
 import { FormsModule } from '@angular/forms';
 import {
   ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent,
-  ModalHeaderComponent, ModalTitleDirective, TooltipDirective, FormSelectDirective,
+  ModalHeaderComponent, ModalTitleDirective, TooltipDirective,
 } from '@coreui/angular';
 import { Category } from '../../../../app/interface/checklist.interface';
 import { checklistCopy as copy, emptyChecklistCategory as emptyCategory } from '../../../../app/shared/checklist-factory';
@@ -13,15 +13,13 @@ import { ChecklistCategoryFormComponent } from '../../../forms/checklist/checkli
 import { ChecklistIconComponent } from '../../../icons/checklist-icon/checklist-icon.component';
 import { ChecklistActionModalComponent } from '../checklist-action-modal/checklist-action-modal.component';
 import { checklistIntegrationLabel } from '../../../../app/shared/checklist-rules';
-import { ChecklistService } from '../../../../app/services/checklist.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-checklist-category-modal',
   imports: [
     ButtonCloseDirective, ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent,
     ModalHeaderComponent, ModalTitleDirective, ModalBackNavigationDirective,
-    FormsModule, FormSelectDirective, ChecklistCategoryFormComponent, ChecklistIconComponent, ChecklistActionModalComponent, TooltipDirective,
+    FormsModule, ChecklistCategoryFormComponent, ChecklistIconComponent, ChecklistActionModalComponent, TooltipDirective,
   ],
   templateUrl: './checklist-category-modal.component.html',
   styleUrl: './checklist-category-modal.component.scss',
@@ -33,26 +31,14 @@ export class ChecklistCategoryModalComponent {
   protected editing = false;
   protected category = emptyCategory();
   protected readonly integrationLabel = checklistIntegrationLabel;
-  protected readonly steps = [
-    { id: 'PCP', label: 'PCP' },
-    { id: 'FINAL_ASSEMBLY', label: 'Montagem Final' },
-    { id: 'FREIGHT', label: 'Frete' },
-    { id: 'BILLING', label: 'Faturamento' },
-    { id: 'SHIPPING', label: 'Expedição' },
-  ];
-  protected requirements: Record<string, string> = {};
-  protected get systemAdmin(): boolean { return this.store.user.roles.some((role) => role.authority === 'ROLE_ADMIN'); }
 
   constructor(
     protected store: ChecklistPreviewService,
     private toaster: ToastrService,
-    private api: ChecklistService,
     private cdr: ChangeDetectorRef,
   ) {}
 
-  public open(): void { this.visible = true; this.editing = false; if (this.systemAdmin) this.loadRequirements(); this.cdr.detectChanges(); }
-  private loadRequirements(): void { this.api.listStepRequirements().subscribe({ next: values => { this.requirements = Object.fromEntries(values.map(value => [value.stepType, String(value.categoryId)])); this.cdr.detectChanges(); } }); }
-  protected saveRequirement(stepType: string): void { const categoryId=this.requirements[stepType]; const request:Observable<unknown>=categoryId?this.api.saveStepRequirement(stepType,categoryId):this.api.deleteStepRequirement(stepType);request.subscribe({next:()=>{this.toaster.success('Requisito do step-flow atualizado.');this.loadRequirements()},error:()=>this.toaster.warning('Não foi possível atualizar o requisito.')}); }
+  public open(): void { this.visible = true; this.editing = false; this.cdr.detectChanges(); }
   protected close(): void { this.visible = false; this.editing = false; this.cdr.detectChanges(); }
   protected onVisibleChange(visible: boolean): void { this.visible = visible; if (!visible) this.editing = false; }
   protected create(): void { this.category = emptyCategory(); this.editing = true; }
@@ -100,7 +86,7 @@ export class ChecklistCategoryModalComponent {
 
   protected async toggle(category: Category): Promise<void> {
     const state = copy(this.store.state()); const target = state.categories.find(item => item.id === category.id)!;
-    if (target.active && state.processes.some(process => !process.cancelled && process.categoryId === target.id)) { this.toaster.warning('A categoria é requisito de um processo step-flow ativo.'); return; }
+    if (target.active && state.processes.some(process => !process.cancelled && process.categoryId === target.id)) { this.toaster.warning('A categoria é requisito de um Fluxo de etapas ativo.'); return; }
     let reason = '';
     if (target.active) {
       const result = await this.openAction({ title: 'Desativar categoria', message: 'Registros criados poderão ser concluídos. Apenas etapas ainda não geradas serão puladas.', inputLabel: 'Justificativa', required: true, danger: true, confirmLabel: 'Desativar' });

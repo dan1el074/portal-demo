@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonDirective, CardBodyComponent, CardComponent, FormCheckInputDirective, FormControlDirective, FormSelectDirective, TooltipDirective } from '@coreui/angular';
 import { Field, Template } from '../../../../app/interface/checklist.interface';
@@ -27,6 +27,7 @@ import { ChecklistIconComponent } from '../../../icons/checklist-icon/checklist-
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChecklistModelFormComponent {
+  @ViewChildren(TooltipDirective) private readonly tooltips!: QueryList<TooltipDirective>;
   @Input({ required: true }) model!: Template;
   @Output() modelChange = new EventEmitter<Template>();
   @Output() saveModel = new EventEmitter<void>();
@@ -106,7 +107,12 @@ export class ChecklistModelFormComponent {
   }
 
   protected options(sectionIndex: number, value: string): void {
-    this.model.sections[sectionIndex].options = value.split(',').map((item) => item.trim()).filter(Boolean);
+    const options = [...new Set(value.split(',').map((item) => item.trim()).filter(Boolean))];
+    if (!options.includes('N/A')) options.push('N/A');
+    if (this.category?.integration === 'production' && !options.includes('NOK')) options.push('NOK');
+    this.model.sections[sectionIndex].options = this.category?.integration === 'production'
+      ? options
+      : options.filter((option) => option !== 'NOK');
     this.changed();
   }
 
@@ -146,6 +152,7 @@ export class ChecklistModelFormComponent {
   }
 
   protected move<T>(items: T[], index: number, offset: number): void {
+    this.tooltips.forEach((tooltip) => tooltip.visible.set(false));
     const target = index + offset;
     if (target < 0 || target >= items.length) return;
     [items[index], items[target]] = [items[target], items[index]];

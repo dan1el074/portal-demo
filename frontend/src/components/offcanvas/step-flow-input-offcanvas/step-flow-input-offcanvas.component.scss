@@ -410,3 +410,28 @@
     width: 100%;
   }
 }
+.produced-item-description small {
+  display: block;
+  margin-top: .2rem;
+  color: var(--cui-secondary-color);
+  font-weight: 400;
+}
+
+.integrated-checklist-item {
+  cursor: pointer;
+}
+
+.integrated-checklist-item .produced-item-box > input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin: 0;
+  accent-color: var(--cui-primary);
+}
+
+.work-items-summary {
+  margin-top: 6px;
+  color: var(--cui-secondary-color);
+  font-size: 11px;
+  text-align: right;
+}
