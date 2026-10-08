@@ -18,7 +18,7 @@ import java.util.List;
 public class ChecklistConfigurationController {
     private final ChecklistConfigurationService service;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/categories")
     public ResponseEntity<List<ChecklistCategoryDto>> listCategories() {
         return ResponseEntity.ok(service.listCategories());
@@ -65,7 +65,7 @@ public class ChecklistConfigurationController {
         return ResponseEntity.ok(service.myCategoryAccess());
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/equipment")
     public ResponseEntity<List<ChecklistEquipmentDto>> listEquipment() {
         return ResponseEntity.ok(service.listEquipment());
@@ -93,7 +93,7 @@ public class ChecklistConfigurationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/templates")
     public ResponseEntity<List<ChecklistTemplateDto>> listTemplates() {
         return ResponseEntity.ok(service.listTemplates());
@@ -127,7 +127,7 @@ public class ChecklistConfigurationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/catalog/{type}")
     public ResponseEntity<List<ChecklistCatalogEntryDto>> listCatalog(@PathVariable ChecklistCatalogType type) {
         return ResponseEntity.ok(service.listCatalog(type));

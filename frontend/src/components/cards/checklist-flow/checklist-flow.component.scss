@@ -56,6 +56,15 @@
   font-size: 0.68rem;
 }
 
+.skip-reason {
+  max-width: 140px;
+  color: var(--cui-secondary-color);
+  font-size: 0.66rem;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 .connector {
   color: var(--cui-secondary-color);
   margin: 0 0.35rem;

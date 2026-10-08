@@ -119,8 +119,8 @@ export class ChecklistService {
     return this.http.put<void>(`${this.api}/records/${id}/cancel`, { reason });
   }
   deleteDraft(id: string): Observable<void> { return this.http.delete<void>(`${this.api}/records/${id}`); }
-  updateOrder(id: string, order: string): Observable<Flow> {
-    return this.http.put<Flow>(`${this.api}/records/${id}/order`, { order });
+  updateOrder(id: string, order: string, item: string): Observable<Flow> {
+    return this.http.put<Flow>(`${this.api}/records/${id}/order`, { order, item });
   }
   updateSerial(id: string, serial: string): Observable<Flow> {
     return this.http.put<Flow>(`${this.api}/records/${id}/serial`, { serial });

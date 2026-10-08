@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { Checklist, ChecklistState, Flow, Template } from '../interface/checklist.interface';
 import { checklistCopy as copy, checklistId as uid, checklistNow as now, defaultChecklistNokFields } from '../shared/checklist-factory';
 import { blockingPredecessor, migrateTitleFormula, normalizeChecklistIntegration, recordTitle, validateRecord, validateTemplate } from '../shared/checklist-rules';
-import { ChecklistCatalogEntry, ChecklistService } from './checklist.service';
+import { ChecklistCatalogEntry, ChecklistRecordCreate, ChecklistService } from './checklist.service';
 import { ChecklistMediaPreviewService } from './checklist-media-preview.service';
 import { Upload } from 'tus-js-client';
 
@@ -224,11 +224,11 @@ export class ChecklistPreviewService {
     return this.state().categories.find((category) => category.id === categoryId)?.clientNokHistory ?? false;
   }
 
-  async updateFlowOrder(flowId: string, orderNumber: string): Promise<void> {
+  async updateFlowOrder(flowId: string, orderNumber: string, item: string): Promise<void> {
     this.requireAdmin();
     const record = this.state().records.find((item) => item.flowId === flowId);
     if (!record) throw new Error('Fluxo não encontrado.');
-    await firstValueFrom(this.api.updateOrder(record.id, orderNumber));
+    await firstValueFrom(this.api.updateOrder(record.id, orderNumber, item));
     await this.load(true);
   }
 
@@ -384,6 +384,19 @@ export class ChecklistPreviewService {
       revisions: [],
     };
   }
+
+  async createRecord(input: ChecklistRecordCreate): Promise<Checklist> {
+    this.newRecord(input.templateId, input.predecessorRecordId);
+    const record = this.normalizeRecord(await firstValueFrom(this.api.createRecord(input)));
+    const flow = this.normalizeFlow(await firstValueFrom(this.api.getFlow(record.id)));
+    this.state.update((data) => ({
+      ...data,
+      records: [...data.records.filter((item) => item.id !== record.id), record],
+      flows: [...data.flows.filter((item) => item.id !== flow.id), flow],
+    }));
+    return record;
+  }
+
   async saveRecord(record: Checklist, flow: Flow, finish: boolean): Promise<Checklist> {
     const old = this.state().records.find((item) => item.id === record.id);
     const snapshot = flow.plan.find(

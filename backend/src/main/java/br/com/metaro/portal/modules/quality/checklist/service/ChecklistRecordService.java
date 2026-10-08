@@ -330,9 +330,10 @@ public class ChecklistRecordService {
         assertAdministrator(actor);
         ChecklistFlow flow = findRecord(recordId).getFlow();
         ErpOrderDto order = findErpOrder(input.getOrder());
-        ErpOrderItemDto item = findCommercialItem(order, flow.getCommercialItem());
+        ErpOrderItemDto item = findCommercialItem(order, input.getItem());
         String previousOrder = flow.getOrderNumber();
         String previousClient = flow.getClientName();
+        String previousItem = flow.getCommercialItem();
         flow.setOrderNumber(order.getNumber().toString());
         flow.setClientId(order.getCnpj());
         flow.setClientName(order.getClient());
@@ -342,7 +343,8 @@ public class ChecklistRecordService {
         flowRepository.save(flow);
         for (ChecklistRecord record : recordRepository.findByFlowId(flow.getId())) {
             addAudit(record, actor, "ORDER_UPDATED", "Pedido alterado de " + previousOrder + " para "
-                    + flow.getOrderNumber() + "; cliente alterado de " + previousClient + " para " + flow.getClientName() + ".");
+                    + flow.getOrderNumber() + "; cliente alterado de " + previousClient + " para " + flow.getClientName()
+                    + "; item alterado de " + previousItem + " para " + flow.getCommercialItem() + ".");
         }
         return mapper.toDto(flow);
     }

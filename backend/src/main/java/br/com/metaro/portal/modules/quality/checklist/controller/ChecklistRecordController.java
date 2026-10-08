@@ -19,32 +19,32 @@ import java.util.List;
 public class ChecklistRecordController {
     private final ChecklistRecordService service;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping
     public ResponseEntity<Page<ChecklistRecordDto>> listRecords(Pageable pageable) {
         return ResponseEntity.ok(service.listRecords(pageable));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/flows")
     public ResponseEntity<List<ChecklistFlowDto>> listFlows() {
         return ResponseEntity.ok(service.listVisibleFlows());
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/{id}")
     public ResponseEntity<ChecklistRecordDto> getRecord(@PathVariable Long id) {
         return ResponseEntity.ok(service.getRecord(id));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/{id}/flow")
     public ResponseEntity<ChecklistFlowDto> getFlow(@PathVariable Long id) {
         ChecklistRecordDto record = service.getRecord(id);
         return ResponseEntity.ok(service.getFlow(record.getFlowId()));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
     @GetMapping("/client/{clientId}/problems")
     public ResponseEntity<List<ChecklistRecordDto>> getClientHistory(@PathVariable String clientId) {
         return ResponseEntity.ok(service.getClientHistory(clientId));

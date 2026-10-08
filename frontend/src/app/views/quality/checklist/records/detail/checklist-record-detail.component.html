@@ -91,7 +91,7 @@
                         <td class="item-description">
                           @if (snapshot.category.integration === 'production') {
                             @for (problem of record.answers[question.id].problems; track problem.id) {
-                              <div class="nok-description"><strong>{{ problem.item }} · {{ problem.code }}</strong><span>{{ problem.defect }} · {{ problem.description }} · {{ problem.department }}</span></div>
+                              <div class="nok-description"><strong>Não conformidade #{{ problemNumber(problem.id) }} · {{ problem.item }} · {{ problem.code }}</strong><span>{{ problem.defect }} · {{ problem.description }} · {{ problem.department }}</span></div>
                             } @empty {
                               <span>—</span>
                             }
@@ -115,10 +115,11 @@
         <section class="detail-card problems-card">
           <header class="section-card-header"><div><h2><app-checklist-icon name="ban" />Não conformidades</h2><p>{{ problems.length }} ocorrência(s) registrada(s)</p></div></header>
           <div class="card-content">
-            @for (problem of problems; track problem.id) {
-              <article [class.has-media]="problem.media.length">
+            @for (problem of problems; track problem.id; let problemIndex = $index) {
+              <article [attr.id]="'nonconformity-' + problem.id" [class.has-media]="problem.media.length">
                 <div class="problem-details">
                   <div class="problem-copy">
+                    <span class="problem-number">Não conformidade #{{ problemIndex + 1 }}</span>
                     <strong>{{ problem.item }} · {{ problem.code }}</strong>
                     <p>{{ problem.description }}</p>
                     <small>{{ problem.defect }} · {{ problem.department }}</small>
@@ -137,7 +138,7 @@
 
       <section class="detail-card comments-card no-print">
         <header class="section-card-header"><div><h2><app-checklist-icon name="message-square" />Comentários</h2><p>Observações posteriores ao preenchimento ficam registradas aqui.</p></div></header>
-        <div class="card-content">@for (comment of record.comments; track comment.id) { <article class="comment"><div><strong>{{ comment.author }}</strong><small>{{ comment.at | date:'dd/MM/yyyy HH:mm':'-0300' }}</small><p>{{ comment.text }}</p></div>@if (canEditComment(comment)) { <div class="comment-actions"><button type="button" (click)="editComment(comment)" cTooltip="Editar comentário" cTooltipPlacement="top" aria-label="Editar comentário"><app-checklist-icon name="pencil" /></button><button type="button" class="danger" (click)="deleteComment(comment)" cTooltip="Excluir comentário" cTooltipPlacement="top" aria-label="Excluir comentário"><app-checklist-icon name="trash" /></button></div> }</article> } @empty { <p class="empty">Nenhum comentário.</p> }<div class="comment-form"><textarea cFormControl rows="3" [(ngModel)]="commentText" placeholder="Adicionar comentário"></textarea><button class="action-button primary-action" type="button" [disabled]="!commentText.trim()" (click)="addComment()">Comentar</button></div></div>
+        <div class="card-content">@for (comment of record.comments; track comment.id) { <article class="comment"><div>@if (problemNumber(comment.problemId); as number) { <a class="comment-problem-reference" [href]="'#nonconformity-' + comment.problemId">Tratamento da não conformidade #{{ number }}</a> }<strong>{{ comment.author }}</strong><small>{{ comment.at | date:'dd/MM/yyyy HH:mm':'-0300' }}</small><p>{{ comment.text }}</p></div>@if (canEditComment(comment)) { <div class="comment-actions"><button type="button" (click)="editComment(comment)" cTooltip="Editar comentário" cTooltipPlacement="top" aria-label="Editar comentário"><app-checklist-icon name="pencil" /></button><button type="button" class="danger" (click)="deleteComment(comment)" cTooltip="Excluir comentário" cTooltipPlacement="top" aria-label="Excluir comentário"><app-checklist-icon name="trash" /></button></div> }</article> } @empty { <p class="empty">Nenhum comentário.</p> }<div class="comment-form"><textarea cFormControl rows="3" [(ngModel)]="commentText" placeholder="Adicionar comentário"></textarea><button class="action-button primary-action" type="button" [disabled]="!commentText.trim()" (click)="addComment()">Comentar</button></div></div>
       </section>
 
       <section class="detail-card history-card no-print">
@@ -148,7 +149,7 @@
       <div class="document-actions no-print">
         @if (record.status === 'Rascunho' && (store.admin || record.creatorId === store.user.id)) { <button type="button" class="action-button danger-action" (click)="deleteDraft()"><app-checklist-icon name="trash" /> Excluir rascunho</button> }
         @if (store.admin && (record.status === 'Rascunho' || record.status === 'Em andamento')) { <button type="button" class="action-button neutral-action" (click)="delegate()"><app-checklist-icon name="user-cog" /> Delegar</button> }
-        @if (store.admin && snapshot.category.erp && flow.order) { <button type="button" class="action-button neutral-action" (click)="updateOrder.open(flow.id)"><app-checklist-icon name="history" /> Atualizar pedido</button> }
+        @if (store.admin && snapshot.category.erp && flow.order) { <button type="button" class="action-button neutral-action" (click)="updateOrder.open(flow.id)"><app-checklist-icon name="history" /> Atualizar pedido/item</button> }
         @if (store.admin && snapshot.category.serial && !flow.cancelled) { <button type="button" class="action-button neutral-action" (click)="updateSerial()"><app-checklist-icon name="pencil" /> Corrigir série</button> }
         @if (store.admin && record.status === 'Finalizado') { <button type="button" class="action-button neutral-action" (click)="reopen()"><app-checklist-icon name="pencil" /> Voltar para edição</button> }
         @if (store.admin && !flow.cancelled) { <button type="button" class="action-button danger-action" (click)="cancelFlow()"><app-checklist-icon name="ban" /> Cancelar fluxo</button> }
