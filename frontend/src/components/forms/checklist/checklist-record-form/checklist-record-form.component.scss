@@ -153,6 +153,11 @@ table {
   table-layout: fixed;
 }
 
+.checklist-striped-table > tbody > tr:nth-of-type(even) > * {
+  --cui-table-color-type: var(--cui-table-striped-color);
+  --cui-table-bg-type: var(--cui-table-striped-bg);
+}
+
 .number-column {
   width: 48px;
 }

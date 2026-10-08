@@ -80,7 +80,7 @@
                           @if (question.fields.length) {
                             <div class="question-additional-fields">
                               @for (field of question.fields; track field.id) {
-                                <div><span>{{ field.label }}</span><strong>{{ record.answers[question.id].fields[field.id] || '—' }}</strong></div>
+                                <div><span>{{ field.label }}:</span><strong>{{ record.answers[question.id].fields[field.id] || '—' }}</strong></div>
                               }
                             </div>
                           }

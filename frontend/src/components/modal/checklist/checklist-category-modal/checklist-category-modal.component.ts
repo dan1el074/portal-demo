@@ -32,6 +32,12 @@ export class ChecklistCategoryModalComponent {
   protected category = emptyCategory();
   protected readonly integrationLabel = checklistIntegrationLabel;
 
+  protected get sortedCategories(): Category[] {
+    return [...this.store.state().categories].sort((first, second) =>
+      first.id.localeCompare(second.id, undefined, { numeric: true })
+    );
+  }
+
   constructor(
     protected store: ChecklistPreviewService,
     private toaster: ToastrService,
