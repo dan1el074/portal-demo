@@ -353,6 +353,27 @@
   }
 }
 
+.additional-metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--cui-border-color);
+
+  div {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
+
 .document-label {
   color: var(--cui-secondary-color);
   font-size: 13px;
@@ -463,6 +484,41 @@
 }
 
 .question-description {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.question-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.question-additional-fields {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid var(--cui-border-color);
+}
+
+.question-additional-fields div {
+  display: grid;
+  gap: 1px;
+}
+
+.question-additional-fields span {
+  color: var(--cui-secondary-color);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.question-additional-fields strong {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
@@ -845,7 +901,8 @@
 @media print {
   .document-card .quality-brand span,
   .document-card .quality-reference span,
-  .document-card .metadata-grid strong {
+  .document-card .metadata-grid strong,
+  .document-card .additional-metadata-grid strong {
     font-size: 13px;
   }
 
@@ -868,6 +925,14 @@
   .document-card .document-label,
   .document-card .detail-table td {
     font-size: 12px;
+  }
+
+  .document-card .question-additional-fields span {
+    font-size: 9px;
+  }
+
+  .document-card .question-additional-fields strong {
+    font-size: 11px;
   }
 
   .document-card .signature span {
@@ -1047,6 +1112,11 @@
       "serial order"
       "client client"
       "item item";
+  }
+
+  .additional-metadata-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 16px 18px;
   }
 
   .metadata-order {

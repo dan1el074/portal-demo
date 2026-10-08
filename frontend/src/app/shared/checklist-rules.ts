@@ -148,7 +148,7 @@ export function validateRecord(record: Checklist, flow: Flow, nokFields = defaul
   if (snap.category.serial && !flow.serial.trim())
     return 'Informe o número de série.';
   if (snap.category.erp && (!flow.order || !flow.item || !flow.clientId))
-    return 'Selecione pedido e item na consulta ERP demonstrativa.';
+    return 'Selecione o pedido e o item na consulta ao ERP.';
   if (snap.category.departments && !record.departments.length)
     return 'Selecione pelo menos um setor.';
   if (snap.category.fields.some((f) => !record.fields[f.id]?.trim()))

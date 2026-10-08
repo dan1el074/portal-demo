@@ -184,7 +184,20 @@ td {
 }
 
 .question-cell {
+  min-width: 0;
   padding-right: 12px;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.question-cell strong {
+  display: block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 tbody tr:last-child td {
@@ -261,6 +274,15 @@ tbody tr:last-child td {
 
 .answer-option input:checked + .answer-checkbox svg {
   opacity: 1;
+}
+
+:host-context(html[data-coreui-theme='dark']) .answer-option input:checked + .answer-checkbox {
+  border-color: #111;
+  background: #111;
+}
+
+:host-context(html[data-coreui-theme='dark']) .answer-option input:checked + .answer-checkbox svg {
+  stroke: #fff;
 }
 
 .answer-option input:focus-visible + .answer-checkbox {

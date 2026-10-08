@@ -4,8 +4,8 @@ import { Router, RouterLink } from '@angular/router';
 import { AccordionButtonDirective, AccordionComponent, AccordionItemComponent, ButtonDirective, ContainerComponent, TemplateIdDirective, TooltipDirective } from '@coreui/angular';
 import { ChecklistPreviewService } from '../../../../services/checklist-preview.service';
 import { Template } from '../../../../interface/checklist.interface';
-import { checklistCopy as copy } from '../../../../shared/checklist-factory';
 import { checklistIntegrationLabel } from '../../../../shared/checklist-rules';
+import { ToastrService } from '../../../../services/toast.service';
 import { ChecklistIconComponent } from '../../../../../components/icons/checklist-icon/checklist-icon.component';
 import { ChecklistActionModalComponent } from '../../../../../components/modal/checklist/checklist-action-modal/checklist-action-modal.component';
 
@@ -33,6 +33,7 @@ export class ChecklistModelsComponent implements OnInit {
   private actionModal!: ChecklistActionModalComponent;
   protected readonly store = inject(ChecklistPreviewService);
   private readonly router = inject(Router);
+  private readonly toaster = inject(ToastrService);
   protected readonly integrationLabel = checklistIntegrationLabel;
 
   async ngOnInit(): Promise<void> {
@@ -68,7 +69,7 @@ export class ChecklistModelsComponent implements OnInit {
   }
 
   protected async remove(model: Template): Promise<void> {
-    if (this.store.state().flows.some((flow) => flow.plan.some((step) => step.template.id === model.id))) return;
+    if (this.modelUsed(model.id)) return;
 
     const confirmed = await this.actionModal.open({
       title: 'Excluir modelo',
@@ -79,8 +80,17 @@ export class ChecklistModelsComponent implements OnInit {
 
     if (!confirmed) return;
 
-    const data = copy(this.store.state());
-    data.templates = data.templates.filter((item) => item.id !== model.id);
-    this.store.commit(data);
+    try {
+      await this.store.deleteTemplate(model.id);
+      this.toaster.success('Modelo excluído com sucesso.');
+    } catch (error) {
+      const message = (error as { error?: { error?: string } })?.error?.error;
+      this.toaster.warning(message || 'Não foi possível excluir o modelo.');
+    }
+  }
+
+  protected modelUsed(id: string): boolean {
+    return this.store.state().records.some(record => record.templateId === id)
+      || this.store.state().templates.some(template => template.predecessorId === id);
   }
 }
