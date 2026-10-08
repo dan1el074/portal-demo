@@ -81,7 +81,7 @@ export class NewStepFlowModalComponent {
     this.resetForm();
   }
 
-  protected handleLiveDemoChange(event: boolean): void {
+  protected handleVisibilityChange(event: boolean): void {
     if (!event && !this.duplicateWarningVisible) this.closeMemorandoModal();
   }
 

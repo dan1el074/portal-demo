@@ -52,6 +52,14 @@
             </div>
           }
 
+          @if (snapshot.category.fields.length) {
+            <div class="additional-metadata-grid">
+              @for (field of snapshot.category.fields; track field.id) {
+                <div><span class="document-label">{{ field.label }}</span><strong>{{ record.fields[field.id] || '—' }}</strong></div>
+              }
+            </div>
+          }
+
           <section class="document-section">
             @for (section of snapshot.template.sections; track section.id; let sectionIndex = $index) {
               <div class="detail-table-container">
@@ -67,7 +75,16 @@
                     @for (question of section.questions; track question.id; let questionIndex = $index) {
                       <tr>
                         <td class="number">{{ sectionIndex + 1 }}.{{ questionIndex + 1 }}</td>
-                        <td class="question-description"><span class="mobile-question-number">{{ sectionIndex + 1 }}.{{ questionIndex + 1 }}</span>{{ question.label }}</td>
+                        <td class="question-description">
+                          <div class="question-label"><span class="mobile-question-number">{{ sectionIndex + 1 }}.{{ questionIndex + 1 }}</span>{{ question.label }}</div>
+                          @if (question.fields.length) {
+                            <div class="question-additional-fields">
+                              @for (field of question.fields; track field.id) {
+                                <div><span>{{ field.label }}</span><strong>{{ record.answers[question.id].fields[field.id] || '—' }}</strong></div>
+                              }
+                            </div>
+                          }
+                        </td>
                         @for (option of section.options; track option) {
                           <td class="mark"><span class="answer-checkbox" [class.checked]="record.answers[question.id].value === option" [attr.aria-label]="option + (record.answers[question.id].value === option ? ' selecionado' : ' não selecionado')" role="img"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg></span></td>
                         }

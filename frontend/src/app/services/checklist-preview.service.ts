@@ -87,6 +87,7 @@ export class ChecklistPreviewService {
     record.comments ??= [];
     record.logs ??= [];
     record.revisions ??= [];
+    record.fields ??= {};
     record.comments.forEach((comment) => comment.id = String(comment.id));
     record.logs.forEach((log) => {
       log.id = String(log.id);
@@ -94,6 +95,7 @@ export class ChecklistPreviewService {
     });
     Object.values(record.answers ?? {}).forEach((answer) => {
       answer.description ??= '';
+      answer.fields ??= {};
       answer.problems ??= [];
       answer.problems.forEach((problem) => problem.customFields ??= {});
     });
@@ -260,6 +262,15 @@ export class ChecklistPreviewService {
     const previous = this.state().templates.find((item) => item.id === model.id);
     const saved = this.normalizeTemplate(await firstValueFrom(previous ? this.api.updateTemplate(model) : this.api.createTemplate(model)));
     this.state.update((data) => ({ ...data, templates: [...data.templates.filter((item) => item.id !== model.id), saved] }));
+  }
+
+  async deleteTemplate(id: string): Promise<void> {
+    this.requireAdmin();
+    await firstValueFrom(this.api.deleteTemplate(id));
+    this.state.update(data => ({
+      ...data,
+      templates: data.templates.filter(template => template.id !== id),
+    }));
   }
 
   newRecord(
