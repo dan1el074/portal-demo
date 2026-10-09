@@ -4,14 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class ChecklistStepEquipmentDto {
-    private Long flowId;
-    private Long recordId;
-    private String serial;
-    private String item;
-    private boolean selected;
+public class ChecklistLinkedStepFlowDto {
+    private Long id;
+    private String order;
+    private String status;
+    private String currentStep;
 }

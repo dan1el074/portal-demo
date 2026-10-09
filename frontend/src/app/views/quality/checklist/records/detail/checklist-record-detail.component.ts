@@ -14,6 +14,7 @@ import { ChecklistClientHistoryComponent } from '../../../../../../components/of
 import { ChecklistUpdateOrderModalComponent } from '../../../../../../components/modal/checklist/checklist-update-order-modal/checklist-update-order-modal.component';
 import { ChecklistEvidenceComponent } from '../../../../../../components/cards/checklist-evidence/checklist-evidence.component';
 import { ChecklistDelegateModalComponent } from '../../../../../../components/modal/checklist/checklist-delegate-modal/checklist-delegate-modal.component';
+import { ChecklistLinkedStepFlow, ChecklistService } from '../../../../../services/checklist.service';
 
 @Component({
   selector: 'app-checklist-record-detail',
@@ -50,9 +51,11 @@ export class ChecklistRecordDetailComponent implements OnInit {
   private readonly toaster = inject(ToastrService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly checklistApi = inject(ChecklistService);
   private recordId = '';
   protected record!: Checklist;
   protected commentText = '';
+  protected linkedStepFlows: ChecklistLinkedStepFlow[] = [];
 
   async ngOnInit(): Promise<void> {
     await this.store.load();
@@ -72,6 +75,7 @@ export class ChecklistRecordDetailComponent implements OnInit {
       return;
     }
     this.record = record;
+    this.loadLinkedStepFlows(record.flowId);
   }
 
   protected get flow() {
@@ -92,10 +96,6 @@ export class ChecklistRecordDetailComponent implements OnInit {
     return index >= 0 ? index + 1 : null;
   }
 
-  protected get process() {
-    return this.store.state().processes.find((item) => item.flowIds.includes(this.flow.id) && !item.cancelled);
-  }
-
   protected canEditComment(comment: Comment): boolean {
     return this.store.admin || comment.authorId === this.store.user.id;
   }
@@ -106,6 +106,22 @@ export class ChecklistRecordDetailComponent implements OnInit {
       (this.store.admin ||
         (this.store.operator && this.record.finisherId === this.store.user.id))
     );
+  }
+
+  private loadLinkedStepFlows(flowId: string): void {
+    this.linkedStepFlows = [];
+    this.checklistApi.listLinkedStepFlows(flowId).subscribe({
+      next: (items) => {
+        if (this.record?.flowId !== flowId) return;
+        this.linkedStepFlows = items;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        if (this.record?.flowId !== flowId) return;
+        this.linkedStepFlows = [];
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   protected get visibleRecords(): Checklist[] {

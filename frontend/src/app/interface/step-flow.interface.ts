@@ -120,6 +120,7 @@ export interface StepFlowOrderInfo {
 
 export interface StepFlowChecklistEquipment {
   flowId: string;
+  recordId: string | null;
   serial: string;
   item: string;
   selected: boolean;

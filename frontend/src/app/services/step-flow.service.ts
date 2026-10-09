@@ -60,7 +60,11 @@ export class StepFlowService {
 
   public listChecklistEquipment(orderId: number): Observable<StepFlowChecklistEquipment[]> {
     return this.http.get<StepFlowChecklistEquipment[]>(`${environment.apiUrl}/api/checklist/step-flow/orders/${orderId}/equipment`)
-      .pipe(map((equipment) => equipment.map((item) => ({ ...item, flowId: String(item.flowId) }))));
+      .pipe(map((equipment) => equipment.map((item) => ({
+        ...item,
+        flowId: String(item.flowId),
+        recordId: item.recordId == null ? null : String(item.recordId),
+      }))));
   }
 
   public listAvailableChecklistEquipment(orderNumber: number): Observable<StepFlowChecklistEquipment[]> {

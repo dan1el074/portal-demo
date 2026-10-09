@@ -105,9 +105,7 @@ export class ChecklistComponent implements OnInit {
 
   protected get todos() {
     return this.store.state().records.filter((record) => {
-      return this.store.visible(record)
-        && this.store.canOperate(this.store.snapshot(record).category.id)
-        && ['Em andamento', 'Pendente'].includes(record.status);
+      return this.store.editable(record);
     });
   }
 

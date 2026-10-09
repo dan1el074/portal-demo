@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, DestroyRef, OnInit, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ToastrService } from '../../../services/toast.service';
 import { ButtonDirective, CardBodyComponent, CardComponent, ContainerComponent, DropdownComponent, DropdownDividerDirective, DropdownItemDirective, DropdownItemPlainDirective, DropdownMenuDirective, DropdownToggleDirective } from '@coreui/angular';
@@ -44,7 +46,7 @@ interface StepFlowView extends Step {
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './step-flow.component.scss',
 })
-export class StepFlowComponent implements OnInit {
+export class StepFlowComponent implements OnInit, AfterViewInit {
   @ViewChild('stepFlowOffcanvas')stepFlowOffcanvas!: StepFlowOffcanvasComponent;
   @ViewChild('stepFlowInputOffcanvas')stepFlowInputOffcanvas!: StepFlowInputOffcanvasComponent;
   @ViewChild(NewStepFlowModalComponent) newStepFlowModal!: NewStepFlowModalComponent;
@@ -75,13 +77,15 @@ export class StepFlowComponent implements OnInit {
   protected currentStepFilter?: string;
   private itemsPerPage = 10;
   private currentSort?: { column: string; state: 'asc' | 'desc' };
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private stepFlowService: StepFlowService,
     private userService: UserService,
     private sanitizer: DomSanitizer,
     private toaster: ToastrService,
-    private cdf: ChangeDetectorRef
+    private cdf: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {}
 
   public ngOnInit(): void {
@@ -178,6 +182,13 @@ export class StepFlowComponent implements OnInit {
 
     if (this.hasConsultationAccess) this.loadDashboard();
     this.loadCurrentSectorOrders();
+  }
+
+  public ngAfterViewInit(): void {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const orderId = Number(params.get('orderId'));
+      if (Number.isInteger(orderId) && orderId > 0) queueMicrotask(() => this.openOrder(orderId));
+    });
   }
 
   public openOrder(orderId: number) {

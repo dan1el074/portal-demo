@@ -3,6 +3,7 @@ package br.com.metaro.portal.modules.quality.checklist.controller;
 import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistStepBindingDto;
 import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistStepRequirementDto;
 import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistStepEquipmentDto;
+import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistLinkedStepFlowDto;
 import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
 import br.com.metaro.portal.modules.quality.checklist.service.ChecklistStepFlowService;
 import jakarta.validation.Valid;
@@ -46,10 +47,16 @@ public class ChecklistStepFlowController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW','ROLE_STEP_FLOW_OPERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW','ROLE_STEP_FLOW_ADMIN','ROLE_STEP_FLOW_OPERATOR','ROLE_STEP_FLOW_CONSULTATION')")
     @GetMapping("/orders/{orderId}/equipment")
     public ResponseEntity<List<ChecklistStepEquipmentDto>> listEquipment(@PathVariable Long orderId) {
         return ResponseEntity.ok(service.listEquipment(orderId));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CHECKLIST','ROLE_CHECKLIST_ADMIN','ROLE_CHECKLIST_OPERATOR','ROLE_CHECKLIST_CONSULTATION')")
+    @GetMapping("/flows/{flowId}/orders")
+    public ResponseEntity<List<ChecklistLinkedStepFlowDto>> listLinkedStepFlows(@PathVariable Long flowId) {
+        return ResponseEntity.ok(service.listLinkedStepFlows(flowId));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_STEP_FLOW_OPERATOR')")

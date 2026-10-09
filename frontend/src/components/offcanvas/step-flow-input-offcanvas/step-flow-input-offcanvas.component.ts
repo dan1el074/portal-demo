@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from '../../../app/services/toast.service';
@@ -25,6 +26,7 @@ import { StepFlowUploadComponent } from './upload/step-flow-upload.component';
   selector: 'app-step-flow-input-offcanvas',
   imports: [
     CommonModule,
+    RouterLink,
     ButtonDirective,
     ButtonCloseDirective,
     ReactiveFormsModule,
@@ -92,6 +94,7 @@ export class StepFlowInputOffcanvasComponent {
   protected checklistEquipment: StepFlowChecklistEquipment[] = [];
   protected checklistEquipmentLoading = false;
   protected get selectedChecklistEquipmentCount(): number { return this.checklistEquipment.filter((item) => item.selected).length; }
+  protected get linkedChecklistEquipment(): StepFlowChecklistEquipment[] { return this.checklistEquipment.filter((item) => item.selected); }
 
   constructor(
     private formBuilder: FormBuilder,
