@@ -22,7 +22,7 @@
       @if (flow.plan.length > 1) { <app-checklist-flow class="no-print" [flow]="flow" [records]="store.state().records" [currentId]="record.id" (openRecord)="open($event)" /> }
 
       <div>
-        @if (process) { <aside class="context-alert no-print"><app-checklist-icon name="history" /><div><strong>Processo vinculado</strong><p>Este fluxo está vinculado à etapa {{ process.stage }} do step-flow.</p></div></aside> }
+        @if (linkedStepFlows.length) { <aside class="context-alert no-print"><app-checklist-icon name="history" /><div><strong>Fluxo de etapas vinculado</strong><div class="linked-step-flow-list">@for (stepFlow of linkedStepFlows; track stepFlow.id) { <p><span>Pedido #{{ stepFlow.order }} · {{ stepFlow.status }}@if (stepFlow.currentStep) { · Etapa {{ stepFlow.currentStep }} }</span><a [routerLink]="['/general/step-flow']" [queryParams]="{ orderId: stepFlow.id }">Acessar fluxo de etapas</a></p> }</div></div></aside> }
         @if (flow.clientId && store.clientNokHistoryEnabled(snapshot.category.id)) { <div class="outside-actions no-print"><button class="catalog-style-button" type="button" (click)="history.open(flow.clientId)"><app-checklist-icon name="history" /> Ver histórico de NOKs do cliente</button></div> }
 
         <section class="detail-card document-card">
@@ -91,7 +91,7 @@
                         <td class="item-description">
                           @if (snapshot.category.integration === 'production') {
                             @for (problem of record.answers[question.id].problems; track problem.id) {
-                              <div class="nok-description"><strong>Não conformidade #{{ problemNumber(problem.id) }} · {{ problem.item }} · {{ problem.code }}</strong><span>{{ problem.defect }} · {{ problem.description }} · {{ problem.department }}</span></div>
+                              <div class="nok-description"><strong>#{{ problemNumber(problem.id) }} · {{ problem.item }} · {{ problem.code }}</strong><span>{{ problem.defect }} · {{ problem.description }} · {{ problem.department }}</span></div>
                             } @empty {
                               <span>—</span>
                             }

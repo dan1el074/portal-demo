@@ -56,6 +56,13 @@ export interface ChecklistOperator {
   activated: boolean;
 }
 
+export interface ChecklistLinkedStepFlow {
+  id: number;
+  order: string;
+  status: string;
+  currentStep: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ChecklistService {
   private readonly api = environment.apiUrl + '/api/checklist';
@@ -162,6 +169,9 @@ export class ChecklistService {
   }
   listStepFlowAlerts(): Observable<PendingIssues[]> {
     return this.http.get<PendingIssues[]>(`${this.api}/step-flow/alerts`);
+  }
+  listLinkedStepFlows(flowId: string): Observable<ChecklistLinkedStepFlow[]> {
+    return this.http.get<ChecklistLinkedStepFlow[]>(`${this.api}/step-flow/flows/${flowId}/orders`);
   }
 
   private templatePayload(value: Template): object {

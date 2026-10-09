@@ -13,6 +13,7 @@ import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistSnapshotDto;
 import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistStepBindingDto;
 import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistStepRequirementDto;
 import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistStepEquipmentDto;
+import br.com.metaro.portal.modules.quality.checklist.dto.ChecklistLinkedStepFlowDto;
 import br.com.metaro.portal.core.dto.notification.PendingIssuesDto;
 import br.com.metaro.portal.modules.quality.checklist.entity.*;
 import br.com.metaro.portal.modules.quality.checklist.repository.*;
@@ -108,17 +109,39 @@ public class ChecklistStepFlowService {
     @Transactional(readOnly = true)
     public List<ChecklistStepEquipmentDto> listEquipment(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(ResourceNotFoundException::new);
-        Set<Long> selected = bindingRepository.findByOrderId(orderId).stream()
+        List<ChecklistStepBinding> bindings = bindingRepository.findByOrderId(orderId);
+        Set<Long> selected = bindings.stream()
                 .map(binding -> binding.getFlow().getId())
                 .collect(java.util.stream.Collectors.toSet());
-        return flowRepository.findByOrderNumberAndCancelledFalseOrderBySerialNumberAsc(String.valueOf(order.getNumber())).stream()
+        Map<Long, ChecklistFlow> candidates = new LinkedHashMap<>();
+        flowRepository.findByOrderNumberAndCancelledFalseOrderBySerialNumberAsc(String.valueOf(order.getNumber())).stream()
                 .filter(flow -> flow.getSerialNumber() != null && !flow.getSerialNumber().isBlank())
                 .filter(flow -> recordRepository.existsByFlowIdAndStatus(flow.getId(), ChecklistStatus.FINISHED))
                 .filter(flow -> selected.contains(flow.getId())
                         || !bindingRepository.existsByFlowIdAndNonCancelledOrderOtherThan(flow.getId(), orderId))
+                .forEach(flow -> candidates.put(flow.getId(), flow));
+        bindings.forEach(binding -> candidates.putIfAbsent(binding.getFlow().getId(), binding.getFlow()));
+        return candidates.values().stream()
+                .sorted(Comparator.comparing(flow -> Objects.requireNonNullElse(flow.getSerialNumber(), "")))
                 .map(flow -> {
                     ChecklistStepEquipmentDto dto = toEquipmentDto(flow);
                     dto.setSelected(selected.contains(flow.getId()));
+                    return dto;
+                }).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChecklistLinkedStepFlowDto> listLinkedStepFlows(Long flowId) {
+        if (!flowRepository.existsById(flowId)) throw new ResourceNotFoundException();
+        return bindingRepository.findByFlowId(flowId).stream()
+                .sorted(Comparator.comparing(binding -> binding.getOrder().getId()))
+                .map(binding -> {
+                    Order order = binding.getOrder();
+                    ChecklistLinkedStepFlowDto dto = new ChecklistLinkedStepFlowDto();
+                    dto.setId(order.getId());
+                    dto.setOrder(order.getDisplayNumber());
+                    dto.setStatus(order.getStatus().toString());
+                    dto.setCurrentStep(order.getCurrentStep() == null ? null : order.getCurrentStep().toString());
                     return dto;
                 }).toList();
     }
@@ -255,6 +278,7 @@ public class ChecklistStepFlowService {
     private ChecklistStepEquipmentDto toEquipmentDto(ChecklistFlow flow) {
         ChecklistStepEquipmentDto dto = new ChecklistStepEquipmentDto();
         dto.setFlowId(flow.getId());
+        recordRepository.findFirstByFlowIdOrderByIdAsc(flow.getId()).ifPresent(record -> dto.setRecordId(record.getId()));
         dto.setSerial(flow.getSerialNumber());
         dto.setItem(flow.getCommercialItem());
         return dto;

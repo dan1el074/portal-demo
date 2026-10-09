@@ -21,6 +21,7 @@ public interface ChecklistRecordRepository extends JpaRepository<ChecklistRecord
     Page<ChecklistRecord> findVisible(Pageable pageable, Long userId, boolean administrator);
 
     List<ChecklistRecord> findByFlowId(Long flowId);
+    Optional<ChecklistRecord> findFirstByFlowIdOrderByIdAsc(Long flowId);
     @EntityGraph(attributePaths = {"flow", "template", "template.category", "creator", "owner", "finisher"})
     @Query("select r from ChecklistRecord r where r.flow.clientId = :clientId and r.status not in (br.com.metaro.portal.modules.quality.checklist.entity.ChecklistStatus.DRAFT, br.com.metaro.portal.modules.quality.checklist.entity.ChecklistStatus.CANCELLED) order by r.updatedAt desc")
     List<ChecklistRecord> findClientHistory(String clientId);

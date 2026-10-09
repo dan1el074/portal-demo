@@ -53,6 +53,7 @@ export class ChecklistPreviewService {
         category.id = String(category.id);
         category.integration = normalizeChecklistIntegration(category.integration);
       });
+      result.categories.sort((first, second) => Number(first.id) - Number(second.id));
       result.equipment.forEach((equipment) => equipment.id = String(equipment.id));
       result.templates.forEach((template) => this.normalizeTemplate(template));
       this.state.set({

@@ -185,7 +185,7 @@
 }
 
 .context-alert {
-  align-items: flex-start;
+  align-items: center;
   gap: 11px;
   padding: 13px 15px;
   border: 1px solid rgba(var(--cui-info-rgb), 0.34);
@@ -196,16 +196,41 @@
 }
 
 .context-alert > app-checklist-icon {
-  flex: 0 0 18px;
-  margin-top: 1px;
+  align-self: center;
+  flex: 0 0 24px;
+  margin-top: 0;
+  font-size: 24px;
 }
 
 .context-alert strong {
   display: block;
+  line-height: 24px;
 }
 
 .context-alert p {
   margin: 2px 0 0;
+}
+
+.linked-step-flow-list {
+  display: grid;
+  gap: 2px;
+}
+
+.linked-step-flow-list p {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.linked-step-flow-list a {
+  color: var(--cui-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.linked-step-flow-list a:hover {
+  text-decoration: underline;
 }
 
 .outside-actions {

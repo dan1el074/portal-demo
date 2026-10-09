@@ -31,7 +31,7 @@ public class ChecklistConfigurationService {
 
     @Transactional(readOnly = true)
     public List<ChecklistCategoryDto> listCategories() {
-        return categoryRepository.findAll(Sort.by("displayOrder").and(Sort.by("name"))).stream().map(mapper::toDto).toList();
+        return categoryRepository.findAll(Sort.by(Sort.Direction.ASC, "id")).stream().map(mapper::toDto).toList();
     }
 
     @Transactional(readOnly = true)

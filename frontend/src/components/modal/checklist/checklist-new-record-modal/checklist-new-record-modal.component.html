@@ -3,7 +3,7 @@
   <c-modal-body>
     <p class="description">Selecione a categoria e o modelo. A identificação será consultada e registrada antes do preenchimento.</p>
     <div class="form-grid">
-      <label>Categoria<select cSelect [(ngModel)]="categoryId" (ngModelChange)="categoryChanged()">@for (categoryOption of store.state().categories; track categoryOption.id) { @if (categoryOption.active && store.canOperate(categoryOption.id)) { <option [value]="categoryOption.id">{{ categoryOption.name }}</option> } }</select></label>
+      <label>Categoria<select cSelect [(ngModel)]="categoryId" (ngModelChange)="categoryChanged()">@for (categoryOption of availableCategories; track categoryOption.id) { <option [value]="categoryOption.id">{{ categoryOption.name }}</option> }</select></label>
       <label>Modelo<select cSelect [(ngModel)]="templateId" (ngModelChange)="templateChanged()"><option value="">Selecione</option>@for (model of templates; track model.id) { <option [value]="model.id">{{ model.name }}</option> }</select></label>
     </div>
 

@@ -35,7 +35,7 @@ export class ChecklistNewRecordModalComponent {
   ) {}
 
   public open(): void {
-    this.categoryId = this.store.state().categories.find((item) => item.active && this.store.canOperate(item.id))?.id ?? '';
+    this.categoryId = this.availableCategories[0]?.id ?? '';
     this.selectDefaultTemplate();
     this.visible = true;
     this.cdr.detectChanges();
@@ -59,14 +59,22 @@ export class ChecklistNewRecordModalComponent {
     return this.store.state().categories.find((item) => item.id === this.categoryId);
   }
 
+  protected get availableCategories(): Category[] {
+    return this.store.state().categories.filter((item) => item.active && this.store.canOperate(item.id) && this.templatesForCategory(item.id).length > 0);
+  }
+
   protected get templates(): Template[] {
-    const models = this.store.state().templates.filter((item) => item.categoryId === this.categoryId && (!item.predecessorId || !item.automatic));
+    return this.templatesForCategory(this.categoryId);
+  }
+
+  private templatesForCategory(categoryId: string): Template[] {
+    const models = this.store.state().templates.filter((item) => item.categoryId === categoryId && !item.predecessorId);
     for (const record of this.store.state().records) {
       if (!this.store.visible(record) || record.status !== 'Finalizado' || this.store.blocked(record)) continue;
       const flow = this.store.flow(record);
       const index = flow.plan.findIndex((step) => step.template.id === record.templateId);
       const next = flow.plan.slice(index + 1).find((step) => !flow.skipped[step.template.id]);
-      if (next?.category.id === this.categoryId && !next.template.automatic && !this.store.state().records.some((item) => item.flowId === flow.id && item.templateId === next.template.id) && !models.some((item) => item.id === next.template.id)) models.push(next.template);
+      if (next?.category.id === categoryId && !next.template.automatic && !this.store.state().records.some((item) => item.flowId === flow.id && item.templateId === next.template.id) && !models.some((item) => item.id === next.template.id)) models.push(next.template);
     }
     return models;
   }
